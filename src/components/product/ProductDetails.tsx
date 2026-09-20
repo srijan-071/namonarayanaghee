@@ -122,11 +122,12 @@ export default function ProductDetails({ product }: { product: Product }) {
         </div>
 
         {/* Add to cart */}
-        <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="nn-btn nn-btn-primary w-full py-4 text-base disabled:opacity-70 disabled:cursor-not-allowed mb-4 flex items-center justify-center gap-2">
-    {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-    {isAdding ? "Adding..." : (variant?.available ? "Add to Cart" : "Sold Out")}
-  </button>
-
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-nn-hairline z-50 md:relative md:bottom-auto md:left-auto md:right-auto md:p-0 md:bg-transparent md:border-t-0 md:z-auto mb-4">
+          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="nn-btn nn-btn-primary w-full py-4 text-base disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl md:shadow-none">
+            {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+            {isAdding ? "Adding..." : (variant?.available ? "Add to Cart" : "Sold Out")}
+          </button>
+        </div>
         {/* Description */}
         <div className="mt-6 border-t border-nn-hairline pt-6">
           <h2 className="font-serif text-lg font-bold text-nn-ink mb-3">Product Details</h2>
