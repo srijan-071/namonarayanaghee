@@ -51,6 +51,8 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
     title: r.title as string,
     description: (r.description as string) ?? "",
     price: (r.price as number) ?? 0,
+    salePrice: (r.price as number) ?? 0,
+    mrp: (r.compare_at_price as number | null) ?? null,
     compareAtPrice: (r.compare_at_price as number | null) ?? null,
     currency: "INR",
     sku: variants.length > 0 ? variants[0].sku : ((r.sku as string) ?? ""),
@@ -71,6 +73,7 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
       title: seo.title ?? (r.title as string),
       description: seo.description ?? "",
     },
+    updatedAt: (r.updated_at as string) ?? (r.published_at as string) ?? (r.created_at as string) ?? undefined,
   };
 }
 

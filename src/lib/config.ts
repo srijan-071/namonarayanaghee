@@ -1,8 +1,8 @@
 // Site configuration - single source of truth
 export const siteConfig = {
-  name: "Namo Narayana Ghee",
-  tagline: "Pure, Authentic & Traditional",
-  description: "Premium A2 Gir Cow Ghee, Wood Pressed Oils, Raw Forest Honey and more - made the traditional way, delivered to your doorstep.",
+  name: "Namo Narayana",
+  tagline: "Pure A2 Gir Cow Ghee & Traditional Indian Foods",
+  description: "Namo Narayana is an Indian food brand focused on traditional food products, including A2 Gir Cow Ghee prepared using the traditional Bilona process. Pure, authentic, and delivered to your doorstep.",
   url: "https://namonarayanaghee.store",
   locale: "en_IN",
   currency: "INR",

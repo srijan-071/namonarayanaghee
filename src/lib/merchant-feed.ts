@@ -17,6 +17,7 @@ export function generateMerchantFeedTsv(): string {
     "image_link",
     "additional_image_link",
     "price",
+    "sale_price",
     "availability",
     "condition",
     "brand",
@@ -24,7 +25,9 @@ export function generateMerchantFeedTsv(): string {
     "mpn",
     "google_product_category",
     "product_type",
-    "shipping"
+    "shipping",
+    "product_detail"
+
   ];
 
   const rows = [headers.join("\t")];
@@ -45,7 +48,9 @@ export function generateMerchantFeedTsv(): string {
         const link = absoluteUrl(`/products/${product.slug}`);
         const imageLink = product.images[0] ? absoluteUrl(product.images[0]) : "";
         const additionalImageLink = product.images[1] ? absoluteUrl(product.images[1]) : "";
-        const price = `${variant.price.toFixed(2)} INR`;
+        const price = `${((variant.compareAtPrice || variant.price) / 100).toFixed(2)} INR`;
+        const salePrice = `${(variant.price / 100).toFixed(2)} INR`;
+        const productDetail = `General:Milk Source:A2 Gir Cow Milk,General:Preparation Method:Traditional Bilona,General:Pack Size:${product.packSize || "N/A"},General:Country of Origin:India`;
         const availability = variant.available ? "in_stock" : "out_of_stock";
         const condition = "new";
         const brand = product.vendor;
@@ -63,6 +68,7 @@ export function generateMerchantFeedTsv(): string {
           imageLink,
           additionalImageLink,
           price,
+          salePrice,
           availability,
           condition,
           brand,
@@ -70,7 +76,8 @@ export function generateMerchantFeedTsv(): string {
           mpn,
           googleProductCategory,
           productType,
-          shipping
+          shipping,
+          productDetail
         ].join("\t"));
       }
     } else {
@@ -81,7 +88,9 @@ export function generateMerchantFeedTsv(): string {
       const link = absoluteUrl(`/products/${product.slug}`);
       const imageLink = product.images[0] ? absoluteUrl(product.images[0]) : "";
       const additionalImageLink = product.images[1] ? absoluteUrl(product.images[1]) : "";
-      const price = `${product.price.toFixed(2)} INR`;
+      const price = `${((product.mrp || product.price) / 100).toFixed(2)} INR`;
+      const salePrice = `${(product.salePrice / 100).toFixed(2)} INR`;
+      const productDetail = `General:Milk Source:A2 Gir Cow Milk,General:Preparation Method:Traditional Bilona,General:Pack Size:${product.packSize || "N/A"},General:Country of Origin:India`;
       const availability = product.available ? "in_stock" : "out_of_stock";
       const condition = "new";
       const brand = product.vendor;
@@ -99,6 +108,7 @@ export function generateMerchantFeedTsv(): string {
         imageLink,
         additionalImageLink,
         price,
+        salePrice,
         availability,
         condition,
         brand,
@@ -106,7 +116,8 @@ export function generateMerchantFeedTsv(): string {
         mpn,
         googleProductCategory,
         productType,
-        shipping
+        shipping,
+        productDetail
       ].join("\t"));
     }
   }

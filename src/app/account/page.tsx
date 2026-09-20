@@ -6,7 +6,8 @@ import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import AuthUpgrade from "@/components/auth/AuthUpgrade";
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
-import { Package, MapPin, CreditCard, LogOut, Loader2, ArrowRight } from "lucide-react";
+import { downloadInvoice } from "@/lib/invoice";
+import { Package, MapPin, CreditCard, LogOut, Loader2, ArrowRight, FileDown } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -148,7 +149,6 @@ export default function AccountPage() {
                           {order.items?.map((item: any, idx: number) => (
                             <div key={idx} className="flex gap-4 items-center">
                               <div className="w-16 h-16 bg-[#F7F4EB] rounded-lg overflow-hidden flex-shrink-0 relative">
-                                {/* Assuming item.image exists, fallback if not */}
                                 {item.image ? (
                                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                 ) : (
@@ -164,6 +164,20 @@ export default function AccountPage() {
                               </div>
                             </div>
                           ))}
+                        </div>
+
+                        {/* Invoice Download */}
+                        <div className="mt-4 pt-4 border-t border-[#EAE2D2] flex justify-end">
+                          <button
+                            onClick={() => {
+                              downloadInvoice(order);
+                              toast.success("Invoice opened! Use Print / Save as PDF.");
+                            }}
+                            className="flex items-center gap-2 text-sm font-semibold text-[#C99A3D] hover:text-[#1E3A24] transition-colors"
+                          >
+                            <FileDown className="w-4 h-4" />
+                            Download Invoice
+                          </button>
                         </div>
                       </div>
                     </div>

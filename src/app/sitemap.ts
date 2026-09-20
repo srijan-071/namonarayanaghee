@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllProductSlugs, getAllCollectionSlugs, getAllPageSlugs, getAllBlogSlugs } from "@/lib/data";
+import { getAllProducts, getAllProductSlugs, getAllCollectionSlugs, getAllPageSlugs, getAllBlogSlugs } from "@/lib/data";
 import { siteConfig } from "@/lib/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -7,40 +7,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date().toISOString();
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: base, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${base}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
-    { url: `${base}/a2-ghee-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${base}/bilona-ghee`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${base}/gir-cow-ghee`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${base}/our-story`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: base, lastModified: now },
+    { url: `${base}/blog`, lastModified: now },
+    { url: `${base}/a2-ghee-guide`, lastModified: now },
+    { url: `${base}/bilona-ghee`, lastModified: now },
+    { url: `${base}/gir-cow-ghee`, lastModified: now },
+    { url: `${base}/our-story`, lastModified: now },
   ];
 
-  const products = getAllProductSlugs().map((slug) => ({
-    url: `${base}/products/${slug}`,
-    lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.8,
+  const products = getAllProducts().map((product) => ({
+    url: `${base}/products/${product.slug}`,
+    lastModified: product.updatedAt || now,
   }));
 
   const collections = getAllCollectionSlugs().map((slug) => ({
     url: `${base}/collections/${slug}`,
-    lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.7,
+    lastModified: now
   }));
 
   const pages = getAllPageSlugs().map((slug) => ({
     url: `${base}/pages/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.5,
+    lastModified: now
   }));
 
   const blogs = getAllBlogSlugs().map((slug) => ({
     url: `${base}/blog/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
+    lastModified: now
   }));
 
   return [...staticPages, ...products, ...collections, ...pages, ...blogs];

@@ -12,6 +12,8 @@ export interface ProductVariant {
   id: number;
   title: string;
   price: number;
+  salePrice: number;
+  mrp: number | null;
   compareAtPrice: number | null;
   sku: string;
   gtin?: string;
@@ -58,6 +60,7 @@ export interface Product {
     title: string;
     description: string;
   };
+  updatedAt?: string;
 }
 
 export interface Collection {

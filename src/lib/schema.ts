@@ -56,7 +56,7 @@ export function generateProductSchema(product: Product) {
       "@type": "Offer",
       url: url,
       priceCurrency: product.currency || "INR",
-      price: product.price.toString(),
+      price: (product.price / 100).toFixed(2),
       availability: product.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
       shippingDetails: {

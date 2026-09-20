@@ -1,32 +1,70 @@
-// Analytics abstraction layer
-// Add providers here without touching every component
+// E-Commerce Conversion Analytics 
+// This is a foundational architecture to track SEO conversion effectiveness.
 
-type EventName =
-  | "page_view"
-  | "view_item"
-  | "add_to_cart"
-  | "remove_from_cart"
-  | "begin_checkout"
-  | "purchase";
-
-interface AnalyticsPayload {
-  [key: string]: unknown;
-}
-
-const providers: Array<(event: EventName, payload: AnalyticsPayload) => void> = [];
-
-export function registerProvider(
-  fn: (event: EventName, payload: AnalyticsPayload) => void
-) {
-  providers.push(fn);
-}
-
-export function track(event: EventName, payload: AnalyticsPayload = {}) {
-  for (const fn of providers) {
-    try {
-      fn(event, payload);
-    } catch {
-      // silently ignore provider errors
-    }
+export const trackEvent = (eventName: string, data: Record<string, any> = {}) => {
+  // In a real implementation, this would push to dataLayer (GTM), GA4, or Meta Pixel.
+  if (typeof window !== "undefined") {
+    // console.log(\`[Analytics Event]: \$\{eventName\}\`, data);
+    
+    // Example GTM integration:
+    // window.dataLayer = window.dataLayer || [];
+    // window.dataLayer.push({ event: eventName, ...data });
   }
-}
+};
+
+export const trackPageView = (url: string) => {
+  trackEvent("page_view", { page_url: url });
+};
+
+export const trackProductView = (product: any) => {
+  trackEvent("view_item", {
+    currency: product.currency || "INR",
+    value: (product.price / 100),
+    items: [{
+      item_id: product.sku,
+      item_name: product.title,
+      price: (product.price / 100),
+      item_category: product.type
+    }]
+  });
+};
+
+export const trackAddToCart = (item: any) => {
+  trackEvent("add_to_cart", {
+    currency: "INR",
+    value: (item.price / 100) * item.quantity,
+    items: [{
+      item_id: item.variantId || item.productId,
+      item_name: item.title,
+      price: (item.price / 100),
+      quantity: item.quantity
+    }]
+  });
+};
+
+export const trackBeginCheckout = (cart: any) => {
+  trackEvent("begin_checkout", {
+    currency: "INR",
+    value: cart.subtotal / 100,
+    items: cart.items.map((item: any) => ({
+      item_id: item.variantId,
+      item_name: item.title,
+      price: item.price / 100,
+      quantity: item.quantity
+    }))
+  });
+};
+
+export const trackPurchase = (transactionId: string, cart: any) => {
+  trackEvent("purchase", {
+    transaction_id: transactionId,
+    currency: "INR",
+    value: cart.subtotal / 100,
+    items: cart.items.map((item: any) => ({
+      item_id: item.variantId,
+      item_name: item.title,
+      price: item.price / 100,
+      quantity: item.quantity
+    }))
+  });
+};
