@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       const errorData = await response.json().catch(() => ({}));
       console.error("Payment hub error:", errorData);
       return NextResponse.json(
-        { error: "Failed to create payment session" },
+        { error: "Failed to create payment session on potter-world", details: errorData },
         { status: 500 }
       );
     }
