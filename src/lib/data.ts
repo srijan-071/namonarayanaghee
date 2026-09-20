@@ -1,25 +1,5 @@
-import fs from "fs";
-import path from "path";
 import type { Product, Collection, BlogPost, StaticPage } from "./types";
-
-const dataDir = path.join(process.cwd(), "data");
-
-function readJSON<T>(filePath: string): T | null {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T;
-  } catch {
-    return null;
-  }
-}
-
-function listSlugs(dir: string): string[] {
-  const full = path.join(dataDir, dir);
-  if (!fs.existsSync(full)) return [];
-  return fs
-    .readdirSync(full)
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => f.replace(".json", ""));
-}
+import { RAW_PRODUCTS, RAW_COLLECTIONS, RAW_PAGES, RAW_BLOGS } from "./data-store";
 
 // ─── Products ───────────────────────────────────────────
 function normaliseProduct(raw: Record<string, unknown>): Product {
@@ -78,28 +58,24 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
 }
 
 export function getProduct(slug: string): Product | null {
-  const raw = readJSON<Record<string, unknown>>(
-    path.join(dataDir, "products", `${slug}.json`)
-  );
+  const raw = RAW_PRODUCTS[slug];
   if (!raw) return null;
   return normaliseProduct(raw);
 }
 
 export function getAllProducts(): Product[] {
-  return listSlugs("products")
+  return Object.keys(RAW_PRODUCTS)
     .map(getProduct)
     .filter((p): p is Product => p !== null);
 }
 
 export function getAllProductSlugs(): string[] {
-  return listSlugs("products");
+  return Object.keys(RAW_PRODUCTS);
 }
 
 // ─── Collections ────────────────────────────────────────
 export function getCollection(slug: string): Collection | null {
-  const raw = readJSON<Record<string, unknown>>(
-    path.join(dataDir, "collections", `${slug}.json`)
-  );
+  const raw = RAW_COLLECTIONS[slug];
   if (!raw) return null;
   const seo = (raw.seo as Record<string, string>) ?? {};
   return {
@@ -117,20 +93,18 @@ export function getCollection(slug: string): Collection | null {
 }
 
 export function getAllCollections(): Collection[] {
-  return listSlugs("collections")
+  return Object.keys(RAW_COLLECTIONS)
     .map(getCollection)
     .filter((c): c is Collection => c !== null);
 }
 
 export function getAllCollectionSlugs(): string[] {
-  return listSlugs("collections");
+  return Object.keys(RAW_COLLECTIONS);
 }
 
 // ─── Pages ──────────────────────────────────────────────
 export function getPage(slug: string): StaticPage | null {
-  const raw = readJSON<Record<string, unknown>>(
-    path.join(dataDir, "pages", `${slug}.json`)
-  );
+  const raw = RAW_PAGES[slug];
   if (!raw) return null;
   const seo = (raw.seo as Record<string, string>) ?? {};
   return {
@@ -145,14 +119,12 @@ export function getPage(slug: string): StaticPage | null {
 }
 
 export function getAllPageSlugs(): string[] {
-  return listSlugs("pages");
+  return Object.keys(RAW_PAGES);
 }
 
 // ─── Blog ───────────────────────────────────────────────
 export function getBlogPost(slug: string): BlogPost | null {
-  const raw = readJSON<Record<string, unknown>>(
-    path.join(dataDir, "blogs", `${slug}.json`)
-  );
+  const raw = RAW_BLOGS[slug];
   if (!raw) return null;
   const seo = (raw.seo as Record<string, string>) ?? {};
   return {
@@ -170,11 +142,11 @@ export function getBlogPost(slug: string): BlogPost | null {
 }
 
 export function getAllBlogSlugs(): string[] {
-  return listSlugs("blogs");
+  return Object.keys(RAW_BLOGS);
 }
 
 export function getAllBlogPosts(): BlogPost[] {
-  return listSlugs("blogs")
+  return Object.keys(RAW_BLOGS)
     .map(getBlogPost)
     .filter((b): b is BlogPost => b !== null);
 }
