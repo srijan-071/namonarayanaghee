@@ -1,0 +1,42 @@
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getProduct, getAllProductSlugs } from "@/lib/data";
+import { generateProductMetadata } from "@/lib/seo";
+import { generateProductSchema, generateBreadcrumbSchema } from "@/lib/schema";
+import ProductDetails from "@/components/product/ProductDetails";
+
+export function generateStaticParams() {
+  return getAllProductSlugs().map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = getProduct(slug);
+  if (!product) return {};
+  return generateProductMetadata(product);
+}
+
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = getProduct(slug);
+  if (!product) notFound();
+
+  const productSchema = generateProductSchema(product);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Products", url: "/collections/ghee" },
+    { name: product.title, url: `/products/${slug}` },
+  ]);
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <section className="nn-section bg-white">
+        <div className="nn-container">
+          <ProductDetails product={product} />
+        </div>
+      </section>
+    </>
+  );
+}

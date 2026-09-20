@@ -1,0 +1,192 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ─── Tailwind v4 @theme tokens ──────────────────────── */
+@theme {
+  --font-sans: var(--font-figtree), system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+
+  /* Forest */
+  --color-nn-forest:       #075B4F;
+  --color-nn-forest-deep:  #03483F;
+  --color-nn-forest-dark:  #0A6659;
+  
+  /* Cream / Light */
+  --color-nn-ivory:        #FCFAF5;
+  --color-nn-cream:        #F7F2E8;
+  --color-nn-beige:        #EAE2D2;
+  
+  /* Earth */
+  --color-nn-earth:        #7A5A3A;
+  --color-nn-earth-light:  #A87845;
+  
+  /* Gold / Accent */
+  --color-nn-gold:         #C99A3D;
+  --color-nn-saffron:      #D88927;
+  
+  /* Sage / Subtle */
+  --color-nn-sage:         #9DAE8C;
+
+  /* Core UI */
+  --color-nn-ink:          #1A2421;
+  --color-nn-bark:         #4A5450;
+  --color-nn-hairline:     #DCD5C5;
+  --color-nn-bg:           #FCFAF5;
+
+  --radius-card: 16px;
+  --radius-btn:  8px;
+  --radius-pill: 9999px;
+
+  --shadow-card:       0 4px 12px rgba(3, 72, 63, 0.04);
+  --shadow-card-hover: 0 16px 32px rgba(3, 72, 63, 0.08);
+  --shadow-glow:       0 0 40px rgba(10, 102, 89, 0.15);
+}
+
+/* ─── Base ───────────────────────────────────────────── */
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--color-nn-bg);
+    color: var(--color-nn-ink);
+    /* Subtle global noise/grain texture */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background-color: var(--color-nn-forest);
+    color: var(--color-nn-ivory);
+  }
+}
+
+/* ─── Reusable component classes ─────────────────────── */
+@layer components {
+  /* Container */
+  .nn-container {
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 5vw, 40px);
+  }
+
+  /* Section rhythm */
+  .nn-section {
+    padding-block: clamp(64px, 8vw, 120px);
+    position: relative;
+  }
+
+  /* Typography */
+  .nn-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-nn-earth);
+  }
+
+  .nn-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-nn-forest-deep);
+  }
+
+  .nn-title-light {
+    color: var(--color-nn-ivory);
+  }
+
+  .nn-sub {
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 0.95rem + 0.4vw, 1.125rem);
+    line-height: 1.7;
+    color: var(--color-nn-bark);
+  }
+
+  /* Buttons */
+  .nn-btn {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1;
+    border-radius: var(--radius-btn);
+    padding: 1em 1.75em;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .nn-btn-primary {
+    background: var(--color-nn-forest);
+    color: var(--color-nn-ivory);
+    box-shadow: 0 4px 12px rgba(7, 91, 79, 0.15);
+  }
+  .nn-btn-primary:hover {
+    background: var(--color-nn-forest-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(7, 91, 79, 0.25);
+  }
+  
+  .nn-btn-accent {
+    background: var(--color-nn-gold);
+    color: var(--color-nn-ivory);
+    box-shadow: 0 4px 12px rgba(201, 154, 61, 0.15);
+  }
+  .nn-btn-accent:hover {
+    background: var(--color-nn-saffron);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 154, 61, 0.25);
+  }
+  
+  .nn-btn-ghost {
+    background: transparent;
+    border-color: var(--color-nn-hairline);
+    color: var(--color-nn-forest);
+  }
+  .nn-btn-ghost:hover {
+    border-color: var(--color-nn-forest);
+    background: var(--color-nn-cream);
+  }
+
+  /* Card */
+  .nn-card {
+    background: var(--color-nn-ivory);
+    border: 1px solid var(--color-nn-hairline);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .nn-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(7, 91, 79, 0.1);
+  }
+
+  /* Sale badge */
+  .nn-badge-sale {
+    background: var(--color-nn-saffron);
+    color: var(--color-nn-ivory);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.3em 0.75em;
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* ─── Reduce motion ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "id": 9545146237096,
+  "title": "Pure A2 Gir Cow Ghee 2.5 Litre",
+  "handle": "pure-desi-cow-ghee-2-5-litre",
+  "description": "<p><strong>100% Pure Desi Cow Ghee</strong> — made using traditional bilona method. No additives, no preservatives. Rich in nutrients, perfect for pooja, cooking and health.</p><ul>\n<li>Made from A2 desi cow milk</li>\n<li>Traditional churned bilona method</li>\n<li>No artificial colour or preservatives</li>\n<li>Ideal for daily cooking &amp; pooja rituals</li>\n</ul>",
+  "published_at": "2026-07-28T19:32:58+05:30",
+  "created_at": "2026-07-28T19:32:58+05:30",
+  "vendor": "Namo Narayana",
+  "type": "Ghee",
+  "tags": [
+    "bilona",
+    "cow ghee",
+    "desi",
+    "ghee",
+    "organic",
+    "pure"
+  ],
+  "price": 388500,
+  "price_min": 555000,
+  "price_max": 555000,
+  "available": true,
+  "price_varies": false,
+  "compare_at_price": 612430,
+  "compare_at_price_min": 874900,
+  "compare_at_price_max": 874900,
+  "compare_at_price_varies": false,
+  "variants": [
+    {
+      "id": 55811997728936,
+      "title": "2.5 Litre",
+      "option1": "2.5 Litre",
+      "option2": null,
+      "option3": null,
+      "sku": "NN-GHEE-2.5L",
+      "requires_shipping": true,
+      "taxable": true,
+      "featured_image": null,
+      "available": true,
+      "name": "Pure A2 Gir Cow Ghee 2.5 Litre - 2.5 Litre",
+      "public_title": "2.5 Litre",
+      "options": [
+        "2.5 Litre"
+      ],
+      "price": 388500,
+      "weight": 0,
+      "compare_at_price": 612430,
+      "inventory_management": "shopify",
+      "barcode": null,
+      "quantity_rule": {
+        "min": 1,
+        "max": null,
+        "increment": 1
+      },
+      "quantity_price_breaks": [],
+      "requires_selling_plan": false,
+      "selling_plan_allocations": []
+    }
+  ],
+  "images": [
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922"
+  ],
+  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
+  "options": [
+    {
+      "name": "Size",
+      "position": 1,
+      "values": [
+        "2.5 Litre"
+      ]
+    }
+  ],
+  "url": "/products/pure-desi-cow-ghee-2-5-litre",
+  "media": [
+    {
+      "alt": null,
+      "id": 41092685758632,
+      "position": 1,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092687003816,
+      "position": 2,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1254,
+        "width": 1254,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896"
+      },
+      "aspect_ratio": 1,
+      "height": 1254,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896",
+      "width": 1254
+    },
+    {
+      "alt": null,
+      "id": 41092641259688,
+      "position": 3,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092638277800,
+      "position": 4,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092688216232,
+      "position": 5,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092689887400,
+      "position": 6,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41046395748520,
+      "position": 7,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/preview_images/e60e9e9216384286ad7445ea474c6420.thumbnail.0000000000.jpg?v=1785253682"
+      },
+      "aspect_ratio": 1,
+      "duration": 53000,
+      "media_type": "video",
+      "sources": [
+        {
+          "format": "mp4",
+          "height": 480,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.SD-480p-1.5Mbps-90130411.mp4",
+          "width": 480
+        },
+        {
+          "format": "mp4",
+          "height": 1080,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-1080p-7.2Mbps-90130411.mp4",
+          "width": 1080
+        },
+        {
+          "format": "mp4",
+          "height": 720,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-720p-4.5Mbps-90130411.mp4",
+          "width": 720
+        },
+        {
+          "format": "m3u8",
+          "height": 1080,
+          "mime_type": "application/x-mpegURL",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.m3u8",
+          "width": 1080
+        }
+      ]
+    }
+  ],
+  "requires_selling_plan": false,
+  "selling_plan_groups": [],
+  "localImages": [
+    "/assets/product_6-2p5_jpg.webp",
+    "/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp",
+    "/assets/product_1-2p5.webp",
+    "/assets/product_IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp",
+    "/assets/product_2-2p5_jpg.webp",
+    "/assets/product_3-2p5_jpg.webp"
+  ],
+  "seo": {
+    "title": "Pure A2 Gir Cow Ghee 2.5 Litre\n – Namo Narayana",
+    "description": "100% Pure Desi Cow Ghee — made using traditional bilona method. No additives, no preservatives. Rich in nutrients, perfect for pooja, cooking and health. Made from A2 desi cow milk Traditional churned bilona method No artificial colour or preservatives Ideal for daily cooking &amp; pooja rituals",
+    "ogImage": "http://namonarayana.com/cdn/shop/files/6-2p5_jpg.webp?v=1785769883"
+  }
+}

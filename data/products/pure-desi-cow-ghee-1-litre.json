@@ -1,0 +1,254 @@
+{
+  "id": 9545153446056,
+  "title": "Pure A2 Gir Cow Ghee 1 Litre",
+  "handle": "pure-desi-cow-ghee-1-litre",
+  "description": "<p><strong>100% Pure Desi Cow Ghee</strong> — made using traditional bilona method. No additives, no preservatives. Rich in nutrients, perfect for pooja, cooking and health.</p><ul>\n<li>Made from A2 desi cow milk</li>\n<li>Traditional churned bilona method</li>\n<li>No artificial colour or preservatives</li>\n<li>Ideal for daily cooking &amp; pooja rituals</li>\n</ul>",
+  "published_at": "2026-07-28T19:44:51+05:30",
+  "created_at": "2026-07-28T19:44:51+05:30",
+  "vendor": "Namo Narayana",
+  "type": "Ghee",
+  "tags": [
+    "bilona",
+    "cod",
+    "cow ghee",
+    "desi",
+    "ghee",
+    "organic",
+    "pure"
+  ],
+  "price": 164500,
+  "price_min": 235000,
+  "price_max": 235000,
+  "available": true,
+  "price_varies": false,
+  "compare_at_price": 244930,
+  "compare_at_price_min": 349900,
+  "compare_at_price_max": 349900,
+  "compare_at_price_varies": false,
+  "variants": [
+    {
+      "id": 55812012572840,
+      "title": "1 Litre",
+      "option1": "1 Litre",
+      "option2": null,
+      "option3": null,
+      "sku": "NMO-GHEE-1L",
+      "requires_shipping": true,
+      "taxable": true,
+      "featured_image": null,
+      "available": true,
+      "name": "Pure A2 Gir Cow Ghee 1 Litre - 1 Litre",
+      "public_title": "1 Litre",
+      "options": [
+        "1 Litre"
+      ],
+      "price": 164500,
+      "weight": 0,
+      "compare_at_price": 244930,
+      "inventory_management": "shopify",
+      "barcode": null,
+      "quantity_rule": {
+        "min": 1,
+        "max": null,
+        "increment": 1
+      },
+      "quantity_price_breaks": [],
+      "requires_selling_plan": false,
+      "selling_plan_allocations": []
+    }
+  ],
+  "images": [
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp?v=1785769819",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/4_jpg_7ae1f462-43e7-4a48-b169-2f632af1e706.webp?v=1785769832",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0121_jpg.webp?v=1785769502",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b.webp?v=1785769477",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/5_jpg_b47e45c2-a1e1-4cd5-9de3-5f4f689abfd9.webp?v=1785769844",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/2_jpg_955716ab-fc20-478e-b3b3-485f4ad8ffcd.webp?v=1785769857",
+    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/3_jpg_fd2e607e-a84e-4712-9a33-85099d813ec2.webp?v=1785769870"
+  ],
+  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp?v=1785769819",
+  "options": [
+    {
+      "name": "Size",
+      "position": 1,
+      "values": [
+        "1 Litre"
+      ]
+    }
+  ],
+  "url": "/products/pure-desi-cow-ghee-1-litre",
+  "media": [
+    {
+      "alt": null,
+      "id": 41092678484136,
+      "position": 1,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp?v=1785769819"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp?v=1785769819",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092679729320,
+      "position": 2,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/4_jpg_7ae1f462-43e7-4a48-b169-2f632af1e706.webp?v=1785769832"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/4_jpg_7ae1f462-43e7-4a48-b169-2f632af1e706.webp?v=1785769832",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092641816744,
+      "position": 3,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0121_jpg.webp?v=1785769502"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0121_jpg.webp?v=1785769502",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092639424680,
+      "position": 4,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b.webp?v=1785769477"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b.webp?v=1785769477",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092681597096,
+      "position": 5,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/5_jpg_b47e45c2-a1e1-4cd5-9de3-5f4f689abfd9.webp?v=1785769844"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/5_jpg_b47e45c2-a1e1-4cd5-9de3-5f4f689abfd9.webp?v=1785769844",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092682711208,
+      "position": 6,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2_jpg_955716ab-fc20-478e-b3b3-485f4ad8ffcd.webp?v=1785769857"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2_jpg_955716ab-fc20-478e-b3b3-485f4ad8ffcd.webp?v=1785769857",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41092683464872,
+      "position": 7,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3_jpg_fd2e607e-a84e-4712-9a33-85099d813ec2.webp?v=1785769870"
+      },
+      "aspect_ratio": 1,
+      "height": 1080,
+      "media_type": "image",
+      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3_jpg_fd2e607e-a84e-4712-9a33-85099d813ec2.webp?v=1785769870",
+      "width": 1080
+    },
+    {
+      "alt": null,
+      "id": 41046395748520,
+      "position": 8,
+      "preview_image": {
+        "aspect_ratio": 1,
+        "height": 1080,
+        "width": 1080,
+        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/preview_images/e60e9e9216384286ad7445ea474c6420.thumbnail.0000000000.jpg?v=1785253682"
+      },
+      "aspect_ratio": 1,
+      "duration": 53000,
+      "media_type": "video",
+      "sources": [
+        {
+          "format": "mp4",
+          "height": 480,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.SD-480p-1.5Mbps-90130411.mp4",
+          "width": 480
+        },
+        {
+          "format": "mp4",
+          "height": 1080,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-1080p-7.2Mbps-90130411.mp4",
+          "width": 1080
+        },
+        {
+          "format": "mp4",
+          "height": 720,
+          "mime_type": "video/mp4",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-720p-4.5Mbps-90130411.mp4",
+          "width": 720
+        },
+        {
+          "format": "m3u8",
+          "height": 1080,
+          "mime_type": "application/x-mpegURL",
+          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.m3u8",
+          "width": 1080
+        }
+      ]
+    }
+  ],
+  "requires_selling_plan": false,
+  "selling_plan_groups": [],
+  "localImages": [
+    "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
+    "/assets/product_4_jpg_7ae1f462-43e7-4a48-b169-2f632af1e706.webp",
+    "/assets/product_IMG-20260728-WA0121_jpg.webp",
+    "/assets/product_IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b.webp",
+    "/assets/product_5_jpg_b47e45c2-a1e1-4cd5-9de3-5f4f689abfd9.webp",
+    "/assets/product_2_jpg_955716ab-fc20-478e-b3b3-485f4ad8ffcd.webp",
+    "/assets/product_3_jpg_fd2e607e-a84e-4712-9a33-85099d813ec2.webp"
+  ],
+  "seo": {
+    "title": "Pure A2 Gir Cow Ghee 1 Litre\n – Namo Narayana",
+    "description": "100% Pure Desi Cow Ghee — made using traditional bilona method. No additives, no preservatives. Rich in nutrients, perfect for pooja, cooking and health. Made from A2 desi cow milk Traditional churned bilona method No artificial colour or preservatives Ideal for daily cooking &amp; pooja rituals",
+    "ogImage": "http://namonarayana.com/cdn/shop/files/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp?v=1785769819"
+  }
+}
