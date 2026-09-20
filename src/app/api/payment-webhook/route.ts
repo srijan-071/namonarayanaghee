@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { importPKCS8, SignJWT } from "jose";
 
-export const runtime = "edge";
 
 const PAYMENT_HUB_SECRET = process.env.PAYMENT_HUB_SECRET || "INTERNAL_HUB_SECRET_2026";
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || "namonarayanaghee";

@@ -1,4 +1,4 @@
-import { doc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore/lite";
 import { db } from "./firebase";
 import { CartItem } from "@/lib/types";
 

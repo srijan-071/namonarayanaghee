@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
 import { Search, Package, MapPin, AlertCircle, Loader2 } from "lucide-react";

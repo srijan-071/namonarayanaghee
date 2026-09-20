@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore/lite";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { auth, db } from "@/lib/firebase";

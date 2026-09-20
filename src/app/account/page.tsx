@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore/lite";
 import { auth, db } from "@/lib/firebase";
 import AuthUpgrade from "@/components/auth/AuthUpgrade";
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
