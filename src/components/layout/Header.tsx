@@ -103,9 +103,9 @@ export default function Header() {
             </Link>
             <button onClick={open} className="relative p-2 text-[#364935] hover:text-[#B58231] transition-colors group flex items-center" aria-label="Open cart">
               <ShoppingBag strokeWidth={1.5} size={22} />
-              {cart.totalItems >= 0 && (
+              {cart.totalItems > 0 && (
                 <span className="absolute top-1 right-0 bg-[#B58231] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/4">
-                  2
+                  {cart.totalItems}
                 </span>
               )}
             </button>
