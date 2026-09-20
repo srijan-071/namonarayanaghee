@@ -5,13 +5,13 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Info, CheckCircle2, ShieldCheck, Truck, Loader2, CreditCard, Banknote, Tag, Percent } from "lucide-react";
+import { Info, CheckCircle2, ShieldCheck, Truck, Loader2, CreditCard, Banknote, Tag, Percent, Key, MapPin } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { saveUserCheckoutProfile, createOrder, calculateCheckoutPricing, CheckoutData, Address, GstDetails } from "@/lib/orders";
 
-type Step = "info" | "shipping" | "billing" | "payment" | "review";
+type Step = "info" | "shipping" | "payment" | "review";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -20,6 +20,16 @@ export default function CheckoutPage() {
   
   const [step, setStep] = useState<Step>("info");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleNextStep = (nextStep: Step) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setStep(nextStep);
+      setIsTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 400);
+  };
   
   // Form states
   const [email, setEmail] = useState("");
@@ -32,6 +42,34 @@ export default function CheckoutPage() {
   const [billing, setBilling] = useState<Address>({ name: "", address: "", city: "", state: "", pincode: "", country: "India" });
   
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [isFetchingPincode, setIsFetchingPincode] = useState(false);
+
+  const handlePincodeChange = async (val: string, target: 'shipping' | 'billing') => {
+    if (target === 'shipping') {
+      setShipping({ ...shipping, pincode: val });
+    } else {
+      setBilling({ ...billing, pincode: val });
+    }
+
+    if (val.length === 6) {
+      setIsFetchingPincode(true);
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${val}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          if (target === 'shipping') {
+            setShipping(prev => ({ ...prev, city: postOffice.District, state: postOffice.State }));
+          } else {
+            setBilling(prev => ({ ...prev, city: postOffice.District, state: postOffice.State }));
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch pincode", e);
+      }
+      setIsFetchingPincode(false);
+    }
+  };
 
   // Compute pricing reactively
   const pricing = useMemo(() => {
@@ -53,7 +91,6 @@ export default function CheckoutPage() {
   const steps: { key: Step; label: string }[] = [
     { key: "info", label: "Information" },
     { key: "shipping", label: "Shipping" },
-    { key: "billing", label: "Billing" },
     { key: "payment", label: "Payment" },
     { key: "review", label: "Review" },
   ];
@@ -176,85 +213,82 @@ export default function CheckoutPage() {
                   )}
 
                   <div className="pt-4 flex justify-end">
-                    <button onClick={() => setStep("shipping")} disabled={!email || !phone || (hasGst && (!gstDetails.companyName || !gstDetails.gstin))} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      Continue to Shipping
+                    <button onClick={() => handleNextStep("shipping")} disabled={!email || !phone || (hasGst && (!gstDetails.companyName || !gstDetails.gstin))} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Continue to Shipping"}
                     </button>
                   </div>
                 </div>
               )}
 
+              
               {/* 2. SHIPPING STEP */}
               {step === "shipping" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Shipping Address</h2>
+                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Shipping & Billing Address</h2>
                   <div className="space-y-4">
                     <input type="text" placeholder="Full Name *" value={shipping.name} onChange={(e) => setShipping({...shipping, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
                     <input type="text" placeholder="Street Address / Apartment / Suite *" value={shipping.address} onChange={(e) => setShipping({...shipping, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <input type="text" maxLength={6} placeholder="PIN Code / Zip Code *" value={shipping.pincode} onChange={(e) => handlePincodeChange(e.target.value, 'shipping')} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                        {isFetchingPincode && <Loader2 className="w-4 h-4 animate-spin absolute right-4 top-4 text-[#576B55]" />}
+                      </div>
                       <input type="text" placeholder="City *" value={shipping.city} onChange={(e) => setShipping({...shipping, city: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                      <input type="text" placeholder="State / Province *" value={shipping.state} onChange={(e) => setShipping({...shipping, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input type="text" placeholder="PIN Code / Zip Code *" value={shipping.pincode} onChange={(e) => setShipping({...shipping, pincode: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                      <input type="text" placeholder="State / Province *" value={shipping.state} onChange={(e) => setShipping({...shipping, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
                       <input type="text" value={shipping.country} readOnly className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 bg-[#FAF9F5] text-[#576B55] outline-none" />
                     </div>
                   </div>
 
-                  <div className="pt-6 flex items-center justify-between">
-                    <button onClick={() => setStep("info")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Info</button>
-                    <button onClick={() => setStep("billing")} disabled={!shipping.name || !shipping.address || !shipping.city || !shipping.state || !shipping.pincode} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      Continue to Billing
-                    </button>
-                  </div>
-                </div>
-              )}
+                  <div className="pt-6 border-t border-[#E9E5D9]">
+                    <h3 className="font-serif text-lg font-bold text-[#1E3A24] mb-4">Billing Address</h3>
+                    <div className="space-y-3">
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition ${billingSameAsShipping ? "border-[#1E3A24] bg-[#F4F6F0]" : "border-[#E9E5D9] hover:border-[#D5D8D0]"}`}>
+                        <input type="radio" name="billingAddress" checked={billingSameAsShipping} onChange={() => setBillingSameAsShipping(true)} className="w-5 h-5 accent-[#1E3A24]" />
+                        <span className="font-medium text-[#1E3A24]">Same as shipping address</span>
+                      </label>
 
-              {/* 3. BILLING STEP */}
-              {step === "billing" && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Billing Address</h2>
-                  
-                  <div className="space-y-3">
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition ${billingSameAsShipping ? "border-[#1E3A24] bg-[#F4F6F0]" : "border-[#E9E5D9] hover:border-[#D5D8D0]"}`}>
-                      <input type="radio" name="billingAddress" checked={billingSameAsShipping} onChange={() => setBillingSameAsShipping(true)} className="w-5 h-5 accent-[#1E3A24]" />
-                      <span className="font-medium text-[#1E3A24]">Same as shipping address</span>
-                    </label>
-
-                    <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition ${!billingSameAsShipping ? "border-[#1E3A24] bg-[#F4F6F0]" : "border-[#E9E5D9] hover:border-[#D5D8D0]"}`}>
-                      <input type="radio" name="billingAddress" checked={!billingSameAsShipping} onChange={() => setBillingSameAsShipping(false)} className="w-5 h-5 accent-[#1E3A24]" />
-                      <span className="font-medium text-[#1E3A24]">Use a different billing address</span>
-                    </label>
-                  </div>
-
-                  {!billingSameAsShipping && (
-                    <div className="space-y-4 pt-4 animate-in fade-in slide-in-from-top-2">
-                      <input type="text" placeholder="Full Name *" value={billing.name} onChange={(e) => setBilling({...billing, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                      <input type="text" placeholder="Street Address / Apartment / Suite *" value={billing.address} onChange={(e) => setBilling({...billing, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="City *" value={billing.city} onChange={(e) => setBilling({...billing, city: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                        <input type="text" placeholder="State / Province *" value={billing.state} onChange={(e) => setBilling({...billing, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="PIN Code / Zip Code *" value={billing.pincode} onChange={(e) => setBilling({...billing, pincode: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                        <input type="text" value={billing.country} readOnly className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 bg-[#FAF9F5] text-[#576B55] outline-none" />
-                      </div>
+                      <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition ${!billingSameAsShipping ? "border-[#1E3A24] bg-[#F4F6F0]" : "border-[#E9E5D9] hover:border-[#D5D8D0]"}`}>
+                        <input type="radio" name="billingAddress" checked={!billingSameAsShipping} onChange={() => setBillingSameAsShipping(false)} className="w-5 h-5 accent-[#1E3A24]" />
+                        <span className="font-medium text-[#1E3A24]">Use a different billing address</span>
+                      </label>
                     </div>
-                  )}
 
-                  <div className="pt-6 flex items-center justify-between">
-                    <button onClick={() => setStep("shipping")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Shipping</button>
-                    <button onClick={() => setStep("payment")} disabled={!billingSameAsShipping && (!billing.name || !billing.address || !billing.city || !billing.state || !billing.pincode)} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      Continue to Payment
+                    {!billingSameAsShipping && (
+                      <div className="space-y-4 pt-4 animate-in fade-in slide-in-from-top-2">
+                        <input type="text" placeholder="Full Name *" value={billing.name} onChange={(e) => setBilling({...billing, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                        <input type="text" placeholder="Street Address / Apartment / Suite *" value={billing.address} onChange={(e) => setBilling({...billing, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="relative">
+                            <input type="text" maxLength={6} placeholder="PIN Code / Zip Code *" value={billing.pincode} onChange={(e) => handlePincodeChange(e.target.value, 'billing')} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                            {isFetchingPincode && <Loader2 className="w-4 h-4 animate-spin absolute right-4 top-4 text-[#576B55]" />}
+                          </div>
+                          <input type="text" placeholder="City *" value={billing.city} onChange={(e) => setBilling({...billing, city: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input type="text" placeholder="State / Province *" value={billing.state} onChange={(e) => setBilling({...billing, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                          <input type="text" value={billing.country} readOnly className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 bg-[#FAF9F5] text-[#576B55] outline-none" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-6 flex items-center justify-between border-t border-[#E9E5D9] mt-6">
+                    <button onClick={() => handleNextStep("info")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Info</button>
+                    <button onClick={() => handleNextStep("payment")} disabled={isTransitioning || !shipping.name || !shipping.address || !shipping.city || !shipping.state || !shipping.pincode || (!billingSameAsShipping && (!billing.name || !billing.address || !billing.city || !billing.state || !billing.pincode))} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Continue to Payment"}
                     </button>
                   </div>
                 </div>
               )}
 
               {/* 4. PAYMENT STEP */}
+
               {step === "payment" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Payment Method</h2>
@@ -310,21 +344,21 @@ export default function CheckoutPage() {
 
                       {pricing.isAdmin && (
                         <div className="flex justify-between text-purple-700">
-                          <span className="flex items-center gap-1">🔑 Admin Test Mode</span>
+                          <span className="flex items-center gap-1"><Key className="w-4 h-4 inline mr-1" /> Admin Test Mode</span>
                           <span className="font-semibold">₹1</span>
                         </div>
                       )}
 
                       <div className="border-t border-[#E9DFD1] pt-2">
                         <div className="flex justify-between font-bold text-[#1E3A24]">
-                          <span>💳 Pay Now Online</span>
+                          <span className="flex items-center"><CreditCard className="w-4 h-4 inline mr-1" /> Pay Now Online</span>
                           <span className="text-lg">{formatPrice(pricing.amountToPay)}</span>
                         </div>
                       </div>
                       
                       {pricing.amountRemaining > 0 && (
                         <div className="flex justify-between text-[#576B55] bg-white px-3 py-2 rounded-lg">
-                          <span>🚚 Pay on Delivery</span>
+                          <span><Truck className="w-4 h-4 inline mr-1" /> Pay on Delivery</span>
                           <span className="font-semibold text-[#1E3A24]">{formatPrice(pricing.amountRemaining)}</span>
                         </div>
                       )}
@@ -332,9 +366,9 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="pt-6 flex items-center justify-between">
-                    <button onClick={() => setStep("billing")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Billing</button>
-                    <button onClick={() => setStep("review")} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all">
-                      Review Order
+                    <button onClick={() => handleNextStep("shipping")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Shipping</button>
+                    <button onClick={() => handleNextStep("review")} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Review Order"}
                     </button>
                   </div>
                 </div>
@@ -349,7 +383,7 @@ export default function CheckoutPage() {
                     <div className="p-5 bg-[#FAF9F5] rounded-xl border border-[#E9E5D9]">
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="font-bold text-[#1E3A24]">Contact Info</h3>
-                        <button onClick={() => setStep("info")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
+                        <button onClick={() => handleNextStep("info")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
                       </div>
                       <p className="text-sm text-[#364935]">{email} • {phone}</p>
                       {hasGst && <p className="text-sm text-[#364935] mt-1"><strong>GSTIN:</strong> {gstDetails.gstin} ({gstDetails.companyName})</p>}
@@ -359,7 +393,7 @@ export default function CheckoutPage() {
                       <div className="p-5 bg-[#FAF9F5] rounded-xl border border-[#E9E5D9]">
                         <div className="flex justify-between items-center mb-3">
                           <h3 className="font-bold text-[#1E3A24]">Shipping</h3>
-                          <button onClick={() => setStep("shipping")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
+                          <button onClick={() => handleNextStep("shipping")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
                         </div>
                         <p className="text-sm text-[#364935] leading-relaxed">
                           {shipping.name}<br/>
@@ -372,7 +406,7 @@ export default function CheckoutPage() {
                       <div className="p-5 bg-[#FAF9F5] rounded-xl border border-[#E9E5D9]">
                         <div className="flex justify-between items-center mb-3">
                           <h3 className="font-bold text-[#1E3A24]">Billing</h3>
-                          <button onClick={() => setStep("billing")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
+                          <button onClick={() => handleNextStep("shipping")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
                         </div>
                         <p className="text-sm text-[#364935] leading-relaxed">
                           {billingSameAsShipping ? "Same as shipping address" : (
@@ -394,7 +428,7 @@ export default function CheckoutPage() {
                         <button onClick={() => setStep("payment")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
                       </div>
                       <div className="text-sm text-[#364935] space-y-1">
-                        <p className="font-semibold">{paymentMethod === "prepaid" ? "💳 Prepaid (10% Discount)" : "🚚 Cash on Delivery"}</p>
+                        <p className="font-semibold">{paymentMethod === "prepaid" ? <><CreditCard className="w-4 h-4 inline mr-1" /> Prepaid (10% Discount)</> : <><Banknote className="w-4 h-4 inline mr-1" /> Cash on Delivery</>}</p>
                         <p>Pay now: <strong>{formatPrice(pricing.amountToPay)}</strong></p>
                         {pricing.amountRemaining > 0 && <p>Pay on delivery: <strong>{formatPrice(pricing.amountRemaining)}</strong></p>}
                       </div>
@@ -402,7 +436,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E9E5D9]">
-                    <button onClick={() => setStep("payment")} disabled={isSubmitting} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2 order-2 sm:order-1 w-full sm:w-auto text-center">Back to Payment</button>
+                    <button onClick={() => handleNextStep("payment")} disabled={isSubmitting} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2 order-2 sm:order-1 w-full sm:w-auto text-center">Back to Payment</button>
                     <button onClick={handlePlaceOrder} disabled={isSubmitting} className="bg-[#C38936] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#b0782b] shadow-lg hover:shadow-xl transition-all order-1 sm:order-2 w-full sm:w-auto flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                       {isSubmitting ? (
                         <>
@@ -436,7 +470,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary Sidebar */}
-          <div className="w-full lg:w-[40%] sticky top-24">
+          <div className="w-full lg:w-[40%] lg:sticky lg:top-24 h-fit">
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#E9E5D9]">
               <h3 className="font-serif text-2xl font-bold text-[#1E3A24] mb-6">Order Summary</h3>
               
@@ -484,7 +518,7 @@ export default function CheckoutPage() {
               <div className="border-t border-[#D5D8D0] mt-4 pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-6 md:pb-8 -mb-6 md:-mb-8 rounded-b-2xl space-y-3">
                 {pricing.isAdmin && (
                   <div className="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-2 rounded-lg text-center">
-                    🔑 Admin Test Mode — Checkout for ₹1
+                    <Key className="w-4 h-4 inline mr-1" /> Admin Test Mode — Checkout for ₹1
                   </div>
                 )}
                 
@@ -500,7 +534,7 @@ export default function CheckoutPage() {
 
                 {pricing.amountRemaining > 0 && (
                   <div className="flex justify-between items-center bg-white px-4 py-3 rounded-xl border border-[#E9E5D9]">
-                    <span className="text-sm text-[#576B55]">🚚 Pay on Delivery</span>
+                    <span className="text-sm text-[#576B55] flex items-center"><Truck className="w-4 h-4 inline mr-1" /> Pay on Delivery</span>
                     <span className="font-bold text-[#1E3A24]">{formatPrice(pricing.amountRemaining)}</span>
                   </div>
                 )}

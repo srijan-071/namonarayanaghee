@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <FirebaseProvider>
           <CartDrawerProvider>
-            <Toaster position="bottom-right" richColors />
+            <Toaster position="top-center" duration={2000} richColors />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
