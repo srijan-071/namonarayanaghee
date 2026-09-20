@@ -183,7 +183,7 @@ export default function CheckoutPage() {
           ))}
         </div>
 
-        <div className="flex flex-col-reverse lg:flex-row gap-10 items-start">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
           
           {/* Main Form Area */}
           <div className="w-full lg:w-[60%] space-y-6">
