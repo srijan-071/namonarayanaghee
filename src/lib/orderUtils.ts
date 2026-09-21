@@ -1,7 +1,13 @@
 export function getDynamicOrderStatus(
   createdAt: { seconds: number; nanoseconds: number } | Date | null | undefined,
-  dbStatus: string
+  dbStatus: string,
+  paymentStatus?: string,
+  paymentMethod?: string
 ): string {
+  if (paymentMethod !== "cod" && paymentStatus === "pending") {
+    return "Payment Pending";
+  }
+
   if (!createdAt) return "Processing";
 
   let createdDate: Date;

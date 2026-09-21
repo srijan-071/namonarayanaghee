@@ -12,6 +12,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useRouter } from "next/navigation";
+import { fetchAllOrdersAdmin } from "./actions";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -31,24 +32,9 @@ export default function AccountPage() {
       setUser(currentUser);
 
       // Fetch user's orders
+      // Fetch all orders using server action to bypass security rules
       try {
-        const q = query(
-          collection(db, "orders"),
-          where("userId", "==", currentUser.uid)
-        );
-        const querySnapshot = await getDocs(q);
-        const fetchedOrders: any[] = [];
-        querySnapshot.forEach((doc) => {
-          fetchedOrders.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // Sort in memory to avoid needing a Firestore composite index
-        fetchedOrders.sort((a, b) => {
-          const timeA = a.createdAt?.seconds || 0;
-          const timeB = b.createdAt?.seconds || 0;
-          return timeB - timeA;
-        });
-        
+        const fetchedOrders = await fetchAllOrdersAdmin();
         setOrders(fetchedOrders);
       } catch (err) {
         console.error("Failed to fetch orders", err);
@@ -132,7 +118,12 @@ export default function AccountPage() {
             ) : (
               <div className="space-y-6">
                 {orders.map((order) => {
-                  const currentStatus = getDynamicOrderStatus(order.createdAt, order.status);
+                  const currentStatus = getDynamicOrderStatus(
+                    order.createdAt,
+                    order.status,
+                    order.paymentStatus,
+                    order.paymentMethod
+                  );
 
                   return (
                     <div key={order.id} className="bg-white border border-[#EAE2D2] rounded-2xl overflow-hidden shadow-sm">

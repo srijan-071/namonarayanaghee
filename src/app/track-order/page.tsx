@@ -129,7 +129,7 @@ export default function TrackOrderPage() {
               <div className="bg-[#03483F] p-8 text-white text-center">
                 <p className="text-sm text-[#EAE2D2] mb-2 uppercase tracking-widest font-semibold">Current Status</p>
                 <h2 className="text-2xl md:text-3xl font-serif text-[#F39C12]">
-                  {getDynamicOrderStatus(order.createdAt, order.status)}
+                  {getDynamicOrderStatus(order.createdAt, order.status, order.paymentStatus, order.paymentMethod)}
                 </h2>
               </div>
               
