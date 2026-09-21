@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Package, Truck, Phone, ArrowRight, XCircle, RotateCw } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase";
 
 function Confetti() {
   const [particles, setParticles] = useState<{ id: number; x: number; delay: number; duration: number; color: string; size: number }[]>([]);
@@ -72,6 +74,22 @@ function SuccessContent() {
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [checkVisible, setCheckVisible] = useState(false);
+  const [orderData, setOrderData] = useState<any>(null);
+  const [orderLoading, setOrderLoading] = useState(false);
+
+  useEffect(() => {
+    if (orderId && isSuccess) {
+      setOrderLoading(true);
+      getDoc(doc(db, "orders", orderId))
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            setOrderData(docSnap.data());
+          }
+        })
+        .catch(console.error)
+        .finally(() => setOrderLoading(false));
+    }
+  }, [orderId, isSuccess]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -138,9 +156,59 @@ function SuccessContent() {
         </p>
 
         {orderId && (
-          <div className={`bg-[#FAF9F5] rounded-xl p-6 mb-10 max-w-md mx-auto border border-[#E9E5D9] transition-all duration-700 delay-900 ${checkVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
-            <p className="text-[#364935] text-sm uppercase tracking-wider font-bold mb-1">Order Reference</p>
-            <p className="text-[#1E3A24] font-mono text-xl">{orderId}</p>
+          <div className={`bg-[#FAF9F5] rounded-xl p-6 mb-10 text-left border border-[#E9E5D9] transition-all duration-700 delay-900 ${checkVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+            <div className="flex justify-between items-center border-b border-[#E9E5D9] pb-4 mb-4">
+              <div>
+                <p className="text-[#364935] text-xs uppercase tracking-wider font-bold mb-1">Order Reference</p>
+                <p className="text-[#1E3A24] font-mono text-lg font-semibold">#{orderId}</p>
+              </div>
+              {orderData && (
+                <div className="text-right">
+                  <p className="text-[#364935] text-xs uppercase tracking-wider font-bold mb-1">Total Paid</p>
+                  <p className="text-[#C38936] font-bold text-lg">₹{orderData.amountToPay || orderData.totalAmount}</p>
+                </div>
+              )}
+            </div>
+
+            {orderLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="w-8 h-8 border-4 border-[#E9E5D9] border-t-[#1E3A24] rounded-full animate-spin" />
+              </div>
+            ) : orderData ? (
+              <div className="space-y-4">
+                <div className="max-h-60 overflow-y-auto pr-2 space-y-3">
+                  {orderData.items?.map((item: any, idx: number) => (
+                    <div key={idx} className="flex gap-4 items-center bg-white p-3 rounded-lg border border-[#E9E5D9]">
+                      <div className="w-16 h-16 bg-[#F7F4EB] rounded-lg overflow-hidden flex-shrink-0 relative">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Package className="w-6 h-6 text-[#8C988B] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-[#1C2B26] text-sm line-clamp-1">{item.name}</h4>
+                        <p className="text-[#8C988B] text-xs mt-1">Qty: {item.quantity}</p>
+                      </div>
+                      <div className="font-semibold text-sm text-[#4A5450]">
+                        ₹{item.price * item.quantity}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-[#E9E5D9]">
+                  <h4 className="text-sm font-bold text-[#1E3A24] mb-2">Shipping Details</h4>
+                  <p className="text-sm text-[#576B55]">
+                    {orderData.shippingAddress?.name}<br/>
+                    {orderData.shippingAddress?.address}, {orderData.shippingAddress?.city}<br/>
+                    {orderData.shippingAddress?.state}, {orderData.shippingAddress?.pincode}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-[#576B55] text-center">Your order details will appear in your account.</p>
+            )}
           </div>
         )}
 
