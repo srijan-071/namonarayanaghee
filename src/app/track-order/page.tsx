@@ -146,8 +146,8 @@ export default function TrackOrderPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#8C988B] uppercase tracking-wider mb-1">Total</p>
-                    <p className="font-bold text-[#1C2B26]">₹{order.totalAmount}</p>
+                    <p className="text-xs text-[#8C988B] uppercase tracking-wider mb-1">Total Paid</p>
+                    <p className="font-bold text-[#1C2B26]">₹{order.amountToPay || order.totalAmount}</p>
                   </div>
                 </div>
 
@@ -171,6 +171,29 @@ export default function TrackOrderPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="pt-6 mt-4 border-t border-[#EAE2D2] space-y-3 text-[#4A5450]">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-semibold">Subtotal</span>
+                    <span className="font-bold text-[#1C2B26]">₹{order.subtotal}</span>
+                  </div>
+                  {order.discount > 0 && (
+                    <div className="flex justify-between items-center text-sm text-[#2E8B57]">
+                      <span className="font-semibold">Discount ({order.discountPercent}%)</span>
+                      <span className="font-bold">-₹{order.discount}</span>
+                    </div>
+                  )}
+                  {order.amountRemaining > 0 && (
+                    <div className="flex justify-between items-center text-sm text-[#C38936]">
+                      <span className="font-semibold">Remaining Balance (COD)</span>
+                      <span className="font-bold">₹{order.amountRemaining}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-lg mt-4 pt-4 border-t border-[#EAE2D2]">
+                    <span className="font-bold text-[#1C2B26]">Total Paid</span>
+                    <span className="font-bold text-[#C99A3D]">₹{order.amountToPay || order.totalAmount}</span>
+                  </div>
                 </div>
                 
                 <div className="mt-8 pt-8 border-t border-[#EAE2D2]">

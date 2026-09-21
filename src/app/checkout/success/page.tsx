@@ -196,6 +196,25 @@ function SuccessContent() {
                     </div>
                   ))}
                 </div>
+
+                <div className="pt-2 pb-2 space-y-2 text-sm text-[#4A5450]">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span className="font-semibold">₹{orderData.subtotal}</span>
+                  </div>
+                  {orderData.discount > 0 && (
+                    <div className="flex justify-between text-[#2E8B57]">
+                      <span>Discount ({orderData.discountPercent}%)</span>
+                      <span className="font-semibold">-₹{orderData.discount}</span>
+                    </div>
+                  )}
+                  {orderData.amountRemaining > 0 && (
+                    <div className="flex justify-between text-[#C38936]">
+                      <span>Remaining Balance (COD)</span>
+                      <span className="font-semibold">₹{orderData.amountRemaining}</span>
+                    </div>
+                  )}
+                </div>
                 
                 <div className="mt-4 pt-4 border-t border-[#E9E5D9]">
                   <h4 className="text-sm font-bold text-[#1E3A24] mb-2">Shipping Details</h4>
