@@ -1,59 +1,39 @@
 import { NextResponse } from "next/server";
 
-const PAYMENT_HUB_URL = "https://potter-world.com";
-const PAYMENT_HUB_SECRET = process.env.PAYMENT_HUB_SECRET || "INTERNAL_HUB_SECRET_2026";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://namonarayanaghee.store";
+const PAYU_PROXY_URL = "https://octopusperfume.in/payu-proxy";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { orderId, amount, customerDetails, paymentMethod } = body;
 
-    if (!orderId || !amount) {
+    if (!orderId || !amount || !customerDetails) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Amount is in paise, convert to INR for the hub
+    // Amount is in paise, convert to INR for PayU
     const amountInINR = amount / 100;
 
-    const sessionPayload = {
-      originApp: "Namo Narayana",
-      orderId,
-      customerDetails: customerDetails || {},
-      amount: amountInINR,
-      currency: "INR",
-      returnUrl: `${SITE_URL}/checkout/success?orderId=${orderId}`,
-      webhookUrl: `${SITE_URL}/api/payment-webhook`,
-      metadata: {
-        paymentMethod,
-        source: "namonarayanaghee.store",
-      },
-    };
+    // Create a unique txnid for PayU (max 25 chars). We can just use orderId, 
+    // but typically we'd prepend something if orderId might collide, or just use orderId.
+    const txnid = orderId; 
 
-    const response = await fetch(`${PAYMENT_HUB_URL}/api/payment/session`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${PAYMENT_HUB_SECRET}`,
-      },
-      body: JSON.stringify(sessionPayload),
-    });
+    // Construct query parameters for the PayU proxy
+    const proxyParams = new URLSearchParams();
+    proxyParams.set("txnid", txnid);
+    proxyParams.set("amount", amountInINR.toString());
+    proxyParams.set("productinfo", `Order ${orderId}`);
+    proxyParams.set("firstname", customerDetails.name || "Customer");
+    proxyParams.set("email", customerDetails.email || "");
+    proxyParams.set("phone", customerDetails.phone || "");
+    proxyParams.set("udf1", "namonarayanaghee"); // Identifies the origin site for the callback
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("Payment hub error:", errorData);
-      return NextResponse.json(
-        { error: "Failed to create payment session on potter-world", details: errorData },
-        { status: 500 }
-      );
-    }
-
-    const data = await response.json();
+    const checkoutUrl = `${PAYU_PROXY_URL}?${proxyParams.toString()}`;
 
     return NextResponse.json({
       success: true,
-      sessionId: data.sessionId,
-      checkoutUrl: data.checkoutUrl,
+      sessionId: txnid,
+      checkoutUrl: checkoutUrl,
     });
   } catch (error: any) {
     console.error("Create payment session error:", error);

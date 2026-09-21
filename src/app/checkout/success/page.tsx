@@ -63,7 +63,7 @@ function Confetti() {
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId");
+  const orderId = searchParams.get("orderId") || searchParams.get("txnid");
   const status = searchParams.get("status");
   const sessionId = searchParams.get("session_id");
 

@@ -1,7 +1,7 @@
 "use client";
 import { toast } from "sonner";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -43,6 +43,45 @@ export default function CheckoutPage() {
   
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("nn_checkout_data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.hasGst !== undefined) setHasGst(parsed.hasGst);
+        if (parsed.gstDetails) setGstDetails(parsed.gstDetails);
+        if (parsed.shipping) setShipping(parsed.shipping);
+        if (parsed.billingSameAsShipping !== undefined) setBillingSameAsShipping(parsed.billingSameAsShipping);
+        if (parsed.billing) setBilling(parsed.billing);
+        if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
+      }
+    } catch (e) {
+      console.error("Failed to load checkout data from local storage", e);
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    try {
+      const dataToSave = {
+        email,
+        phone,
+        hasGst,
+        gstDetails,
+        shipping,
+        billingSameAsShipping,
+        billing,
+        paymentMethod
+      };
+      localStorage.setItem("nn_checkout_data", JSON.stringify(dataToSave));
+    } catch (e) {
+      console.error("Failed to save checkout data to local storage", e);
+    }
+  }, [email, phone, hasGst, gstDetails, shipping, billingSameAsShipping, billing, paymentMethod]);
 
   const handlePincodeChange = async (val: string, target: 'shipping' | 'billing') => {
     if (target === 'shipping') {
