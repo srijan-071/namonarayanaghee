@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const PAYU_PROXY_URL = "https://octopusperfume.in/payu-proxy";
+const PAYU_PROXY_URL = "https://octopusperfume.in/payu-proxy/namonarayanaghee";
 
 export async function POST(req: Request) {
   try {
