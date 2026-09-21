@@ -71,42 +71,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No email address found for this order" }, { status: 400 });
     }
 
-    // 3. Write to mail collection
-    const mailPayload = {
-      fields: {
-        to: { stringValue: email },
-        message: {
-          mapValue: {
-            fields: {
-              subject: { stringValue: `Order Confirmation - ${orderId}` },
-              html: { stringValue: `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2 style="color: #1E3A24;">Thank you for your order, ${name}!</h2>
-                  <p>We've received your order <strong>#${orderId}</strong> and it is now being processed.</p>
-                  <p>Total Amount: <strong>₹${amount}</strong></p>
-                  <p>You will receive another update when your order ships.</p>
-                  <br/>
-                  <p>Warm regards,<br/>Namo Narayana Team</p>
-                </div>
-              ` }
-            }
-          }
-        }
-      }
-    };
+    // 3. Send email via Brevo API
+    const brevoApiKey = "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";
+    const htmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1E3A24;">Thank you for your order, ${name}!</h2>
+        <p>We've received your order <strong>#${orderId}</strong> and it is now being processed.</p>
+        <p>Total Amount: <strong>₹${amount}</strong></p>
+        <p>You will receive another update when your order ships.</p>
+        <br/>
+        <p>Warm regards,<br/>Namo Narayana Team</p>
+      </div>
+    `;
 
-    const mailPath = `projects/${PROJECT_ID}/databases/(default)/documents/mail`;
-    const mailRes = await fetch(`https://firestore.googleapis.com/v1/${mailPath}`, {
+    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "api-key": brevoApiKey
       },
-      body: JSON.stringify(mailPayload)
+      body: JSON.stringify({
+        sender: { name: "Namo Narayana", email: "noreply@namonarayanaghee.store" },
+        to: [{ email, name }],
+        subject: `Order Confirmation - ${orderId}`,
+        htmlContent
+      })
     });
 
-    if (!mailRes.ok) {
-      throw new Error("Failed to write to mail collection");
+    if (!brevoRes.ok) {
+      const errorText = await brevoRes.text();
+      console.error("Brevo API error:", errorText);
+      throw new Error("Failed to send email via Brevo");
     }
 
     // 4. Mark order as emailSent

@@ -34,14 +34,21 @@ export default function AccountPage() {
       try {
         const q = query(
           collection(db, "orders"),
-          where("userId", "==", currentUser.uid),
-          orderBy("createdAt", "desc")
+          where("userId", "==", currentUser.uid)
         );
         const querySnapshot = await getDocs(q);
         const fetchedOrders: any[] = [];
         querySnapshot.forEach((doc) => {
           fetchedOrders.push({ id: doc.id, ...doc.data() });
         });
+        
+        // Sort in memory to avoid needing a Firestore composite index
+        fetchedOrders.sort((a, b) => {
+          const timeA = a.createdAt?.seconds || 0;
+          const timeB = b.createdAt?.seconds || 0;
+          return timeB - timeA;
+        });
+        
         setOrders(fetchedOrders);
       } catch (err) {
         console.error("Failed to fetch orders", err);
