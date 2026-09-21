@@ -181,11 +181,16 @@ export default function CheckoutPage() {
         }),
       });
 
-      if (!sessionRes.ok) {
-        throw new Error("Failed to create payment session");
+      let sessionData;
+      try {
+        sessionData = await sessionRes.json();
+      } catch (e) {
+        throw new Error("Failed to parse payment session response");
       }
 
-      const sessionData = await sessionRes.json();
+      if (!sessionRes.ok) {
+        throw new Error(sessionData?.error || "Failed to create payment session");
+      }
       
       // 4. Clear Cart
       clearCart();
