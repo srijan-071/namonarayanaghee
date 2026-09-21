@@ -59,43 +59,49 @@ export function generateProductSchema(product: Product) {
       price: (product.price / 100).toFixed(2),
       availability: product.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: "0",
-          currency: "INR"
-        },
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "IN"
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 0,
-            maxValue: 1,
-            unitCode: "d"
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: 3,
-            maxValue: 7,
-            unitCode: "d"
-          }
-        }
-      },
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        applicableCountry: "IN",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: 7,
-        returnMethod: "https://schema.org/ReturnByMail",
-        returnFees: "https://schema.org/FreeReturn"
-      }
     },
   };
+
+  if (product.shipping) {
+    schema.offers.shippingDetails = {
+      "@type": "OfferShippingDetails",
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: (product.shipping.cost / 100).toFixed(2),
+        currency: "INR"
+      },
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "IN"
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type": "QuantitativeValue",
+          minValue: 0,
+          maxValue: 1,
+          unitCode: "d"
+        },
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: product.shipping.daysMin,
+          maxValue: product.shipping.daysMax,
+          unitCode: "d"
+        }
+      }
+    };
+  }
+
+  if (product.returns) {
+    schema.offers.hasMerchantReturnPolicy = {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "IN",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: product.returns.days,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn"
+    };
+  }
 
   if (product.gtin) {
     schema.gtin = product.gtin;

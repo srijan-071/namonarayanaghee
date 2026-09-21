@@ -49,6 +49,8 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
     options,
     rating: (r.rating as { value: number; count: number }) ?? undefined,
     reviews: (r.reviews as import('./types').Review[]) ?? undefined,
+    shipping: (r.shipping as any) ?? undefined,
+    returns: (r.returns as any) ?? undefined,
     seo: {
       title: seo.title ?? (r.title as string),
       description: seo.description ?? "",

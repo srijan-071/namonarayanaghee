@@ -50,7 +50,6 @@ export function generateMerchantFeedTsv(): string {
         const additionalImageLink = product.images[1] ? absoluteUrl(product.images[1]) : "";
         const price = `${((variant.compareAtPrice || variant.price) / 100).toFixed(2)} INR`;
         const salePrice = `${(variant.price / 100).toFixed(2)} INR`;
-        const productDetail = `General:Milk Source:A2 Gir Cow Milk,General:Preparation Method:Traditional Bilona,General:Pack Size:${product.packSize || "N/A"},General:Country of Origin:India`;
         const availability = variant.available ? "in_stock" : "out_of_stock";
         const condition = "new";
         const brand = product.vendor;
@@ -58,7 +57,8 @@ export function generateMerchantFeedTsv(): string {
         const mpn = variant.mpn || "";
         const googleProductCategory = "422"; // Food, Beverages & Tobacco > Food Items > Cooking & Baking Ingredients > Cooking Oils
         const productType = product.type;
-        const shipping = "IN:::0 INR"; // Example: Free shipping in India
+        const shipping = product.shipping ? `IN:::${(product.shipping.cost / 100).toFixed(2)} INR` : "";
+        const productDetail = ""; // Remove fabricated product details
 
         rows.push([
           id,
@@ -90,7 +90,6 @@ export function generateMerchantFeedTsv(): string {
       const additionalImageLink = product.images[1] ? absoluteUrl(product.images[1]) : "";
       const price = `${((product.compareAtPrice || product.price) / 100).toFixed(2)} INR`;
       const salePrice = `${(product.price / 100).toFixed(2)} INR`;
-      const productDetail = `General:Milk Source:A2 Gir Cow Milk,General:Preparation Method:Traditional Bilona,General:Pack Size:${product.packSize || "N/A"},General:Country of Origin:India`;
       const availability = product.available ? "in_stock" : "out_of_stock";
       const condition = "new";
       const brand = product.vendor;
@@ -98,7 +97,8 @@ export function generateMerchantFeedTsv(): string {
       const mpn = product.mpn || "";
       const googleProductCategory = "422";
       const productType = product.type;
-      const shipping = "IN:::0 INR";
+      const shipping = product.shipping ? `IN:::${(product.shipping.cost / 100).toFixed(2)} INR` : "";
+      const productDetail = ""; // Remove fabricated product details
 
       rows.push([
         id,

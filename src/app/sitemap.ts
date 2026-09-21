@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/bilona-ghee`, lastModified: now },
     { url: `${base}/gir-cow-ghee`, lastModified: now },
     { url: `${base}/our-story`, lastModified: now },
+    { url: `${base}/elvish-yadav-ghee`, lastModified: now },
   ];
 
   const products = getAllProducts().map((product) => ({

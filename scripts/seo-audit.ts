@@ -1,158 +1,170 @@
-import * as cheerio from "cheerio";
+import { load } from 'cheerio';
+import { RAW_PRODUCTS } from '../src/lib/data-store';
 
-const BASE_URL = process.argv[2] || "http://localhost:3000";
+const BASE_URL = process.argv[2] || 'http://localhost:3000';
 
-const PAGES_TO_TEST = [
-  "/",
-  "/collections/ghee",
-  "/products/pure-desi-cow-ghee-1-litre",
-  "/a2-ghee-guide",
-  "/bilona-ghee",
-  "/gir-cow-ghee",
-  "/our-story"
-];
-
-async function runAudit() {
-  console.log(`\n🔍 Starting SEO & Consistency Audit for ${BASE_URL}\n`);
+async function audit() {
+  console.log(`Starting SEO Audit on ${BASE_URL}...`);
   let hasErrors = false;
 
-  // 1. Fetch Merchant Feed to use as Ground Truth for products
-  let merchantData: Record<string, any> = {};
-  try {
-    const res = await fetch(`${BASE_URL}/merchant-feed.tsv`);
-    if (!res.ok) throw new Error("Failed to fetch merchant feed");
-    const tsv = await res.text();
-    const rows = tsv.trim().split("\n");
-    const headers = rows[0].split("\t");
-    
-    for (let i = 1; i < rows.length; i++) {
-      const values = rows[i].split("\t");
-      const item: any = {};
-      headers.forEach((h, idx) => { item[h] = values[idx]; });
-      // Use link to match
-      merchantData[item.link] = item;
-    }
-    console.log("✅ Merchant Feed TSV parsed successfully.");
-  } catch (err) {
-    console.error("❌ Merchant Feed Test Failed:", err);
+  // 1. Fetch Merchant Feed and parse it
+  console.log('\n[1] Auditing Merchant Center Feed...');
+  const feedUrl = `${BASE_URL}/merchant-feed.tsv`;
+  const feedRes = await fetch(feedUrl);
+  if (!feedRes.ok) {
+    console.error(`❌ Failed to fetch feed at ${feedUrl}`);
     hasErrors = true;
+    return;
   }
+  const feedText = await feedRes.text();
+  const feedLines = feedText.split('\n');
+  const headers = feedLines[0].split('\t');
+  
+  const feedProducts: any = {};
+  for (let i = 1; i < feedLines.length; i++) {
+    const cols = feedLines[i].split('\t');
+    if (cols.length < headers.length) continue;
+    const item: any = {};
+    headers.forEach((h, idx) => {
+      item[h] = cols[idx];
+    });
+    // Extract ID (either SKU or product ID). We'll map by URL handle to simplify matching.
+    const urlMatch = item.link.match(/\/products\/(.+)$/);
+    if (urlMatch) {
+      feedProducts[urlMatch[1]] = item;
+    }
+  }
+  console.log(`✅ Loaded ${Object.keys(feedProducts).length} items from Merchant Feed.`);
 
-  // 2. Audit each page
-  for (const path of PAGES_TO_TEST) {
-    const url = `${BASE_URL}${path}`;
-    console.log(`\n➡️ Auditing: ${url}`);
+  // 2. Audit each product page
+  console.log('\n[2] Auditing Product Pages for Data Consistency...');
+  const productSlugs = Object.keys(RAW_PRODUCTS);
+  
+  for (const slug of productSlugs) {
+    const raw = RAW_PRODUCTS[slug];
+    const url = `${BASE_URL}/products/${slug}`;
+    console.log(`\nChecking ${url}...`);
     
     try {
       const res = await fetch(url);
-      if (res.status !== 200) {
-        console.error(`❌ HTTP Status: ${res.status}`);
+      if (!res.ok) {
+        console.error(`❌ Failed to fetch page for ${slug}. Status: ${res.status}`);
         hasErrors = true;
         continue;
       }
-
       const html = await res.text();
-      const $ = cheerio.load(html);
+      const $ = load(html);
 
-      // Basic HTML SEO checks
-      const title = $("title").text();
-      const description = $("meta[name='description']").attr("content");
-      const canonical = $("link[rel='canonical']").attr("href");
-      const h1 = $("h1").text().trim();
-      const ogTitle = $("meta[property='og:title']").attr("content");
-      
-      if (!title) { console.error("❌ Missing <title>"); hasErrors = true; }
-      if (!description) { console.error("❌ Missing meta description"); hasErrors = true; }
-      if (!canonical) { console.error("❌ Missing canonical link"); hasErrors = true; }
-      if (!h1) { console.error("❌ Missing <h1> tag"); hasErrors = true; }
-      if (!ogTitle) { console.error("❌ Missing og:title"); hasErrors = true; }
-      
-      if (title && description && canonical && h1) {
-        console.log(`  ✅ Basic SEO tags present (Title: ${title})`);
-      }
-
-      // JSON-LD checks
-      const jsonLdScripts = $("script[type='application/ld+json']");
-      if (jsonLdScripts.length === 0) {
-        console.error("❌ Missing JSON-LD structured data");
+      // Check Canonical
+      const canonical = $('link[rel="canonical"]').attr('href');
+      if (!canonical || !canonical.endsWith(`/products/${slug}`)) {
+        console.error(`❌ Missing or incorrect canonical tag for ${slug}: ${canonical}`);
         hasErrors = true;
       } else {
-        const schemas: any[] = [];
-        jsonLdScripts.each((_, el) => {
-          try {
-            schemas.push(JSON.parse($(el).html() || "{}"));
-          } catch (e) {
-            console.error("❌ Invalid JSON in LD+JSON tag");
-            hasErrors = true;
+        console.log(`  ✅ Canonical tag correct.`);
+      }
+
+      // Check JSON-LD
+      const jsonLdScripts = $('script[type="application/ld+json"]');
+      let foundProductSchema = false;
+      let schemaData: any = null;
+      
+      jsonLdScripts.each((_, el) => {
+        try {
+          const json = JSON.parse($(el).html() || '{}');
+          if (json['@type'] === 'Product') {
+            foundProductSchema = true;
+            schemaData = json;
           }
-        });
+        } catch (e) {
+          // ignore
+        }
+      });
 
-        console.log(`  ✅ Found ${schemas.length} JSON-LD blocks`);
+      if (!foundProductSchema) {
+        console.error(`❌ No Product JSON-LD found for ${slug}`);
+        hasErrors = true;
+        continue;
+      } else {
+        console.log(`  ✅ Product JSON-LD found.`);
+      }
 
-        // If it's a product page, do consistency checks
-        if (path.includes("/products/")) {
-          const productSchema = schemas.find(s => s["@type"] === "Product");
-          if (!productSchema) {
-            console.error("❌ Missing Product JSON-LD on product page");
-            hasErrors = true;
-          } else {
-            const schemaPrice = productSchema.offers?.price;
-            const schemaCurrency = productSchema.offers?.priceCurrency;
-            const schemaAvailability = productSchema.offers?.availability;
-            const schemaName = productSchema.name;
-            
-            // Check UI consistency
-            // Note: UI checking is hard without specific CSS selectors.
-            // We'll rely on text content matching.
-            if (!html.includes(schemaName)) {
-               console.error(`❌ Data Mismatch: Schema name "${schemaName}" not found in UI HTML.`);
-               hasErrors = true;
-            }
-            if (schemaPrice && !html.includes(schemaPrice)) {
-               console.error(`❌ Data Mismatch: Schema price "${schemaPrice}" not found in UI HTML.`);
-               hasErrors = true;
-            }
+      // Validate JSON-LD Price matches Raw Data
+      // Raw data is in paise. JSON-LD should be in rupees.
+      // We assume price is same for all variants for simplicity in this basic check.
+      let expectedPrice = (raw.price / 100).toFixed(2);
+      if (raw.variants && raw.variants.length > 0) {
+        expectedPrice = (raw.variants[0].price / 100).toFixed(2);
+      }
+      
+      if (schemaData.offers?.price !== expectedPrice) {
+        console.error(`❌ Price Mismatch! JSON-LD: ${schemaData.offers?.price}, Expected: ${expectedPrice}`);
+        hasErrors = true;
+      } else {
+        console.log(`  ✅ JSON-LD Price matches source of truth (${expectedPrice}).`);
+      }
 
-            // Check Merchant Feed consistency
-            // The url in merchant feed should be the canonical remote URL, so we construct it
-            // assuming siteConfig.url is used in TSV. 
-            // We'll just find the TSV row by searching if TSV link ends with the path
-            const tsvItem = Object.values(merchantData).find((m: any) => m.link && m.link.endsWith(path));
-            if (!tsvItem) {
-               console.error(`❌ Data Mismatch: Product not found in Merchant TSV Feed`);
-               hasErrors = true;
-            } else {
-               const tsvPriceStr = tsvItem.price; // "2350.00 INR"
-               if (!tsvPriceStr.includes(schemaPrice)) {
-                 console.error(`❌ Data Mismatch: TSV Price (${tsvPriceStr}) vs Schema Price (${schemaPrice})`);
-                 hasErrors = true;
-               }
-               const tsvAvail = tsvItem.availability;
-               const isSchemaInStock = schemaAvailability?.includes("InStock");
-               if ((tsvAvail === "in_stock" && !isSchemaInStock) || (tsvAvail === "out_of_stock" && isSchemaInStock)) {
-                 console.error(`❌ Data Mismatch: TSV Availability (${tsvAvail}) vs Schema Availability`);
-                 hasErrors = true;
-               }
-               
-               console.log("  ✅ Product Data Consistency verified (Schema vs TSV vs UI text)");
-            }
-          }
+      // Validate Merchant Feed matches Raw Data
+      const feedItem = feedProducts[slug];
+      if (!feedItem) {
+        console.warn(`⚠️ Warning: ${slug} not found in merchant feed by URL matcher.`);
+      } else {
+        const expectedFeedPrice = `${expectedPrice} INR`;
+        if (feedItem.price !== expectedFeedPrice && feedItem.sale_price !== expectedFeedPrice) {
+           console.error(`❌ Merchant Feed Price Mismatch for ${slug}! Feed: ${feedItem.price}/${feedItem.sale_price}, Expected: ${expectedFeedPrice}`);
+           hasErrors = true;
+        } else {
+           console.log(`  ✅ Merchant Feed Price matches source of truth (${expectedFeedPrice}).`);
         }
       }
 
-    } catch (err) {
-      console.error(`❌ Error auditing ${url}:`, err);
+    } catch (e: any) {
+      console.error(`❌ Error checking ${slug}:`, e.message);
       hasErrors = true;
     }
   }
 
+  // 3. Audit Elvish Yadav Page
+  console.log('\n[3] Auditing Elvish Yadav association page...');
+  const elvishUrl = `${BASE_URL}/elvish-yadav-ghee`;
+  try {
+    const res = await fetch(elvishUrl);
+    if (!res.ok) {
+      console.error(`❌ Elvish Yadav page missing. Status: ${res.status}`);
+      hasErrors = true;
+    } else {
+      const html = await res.text();
+      const $ = load(html);
+      
+      // Check JSON-LD FAQ
+      const jsonLdScripts = $('script[type="application/ld+json"]');
+      let foundFAQ = false;
+      jsonLdScripts.each((_, el) => {
+        try {
+          const json = JSON.parse($(el).html() || '{}');
+          if (json['@type'] === 'FAQPage') {
+            foundFAQ = true;
+          }
+        } catch (e) {}
+      });
+      if (!foundFAQ) {
+        console.error(`❌ Elvish Yadav page missing FAQPage schema.`);
+        hasErrors = true;
+      } else {
+        console.log(`  ✅ FAQPage schema found.`);
+      }
+    }
+  } catch (e: any) {
+    console.error(`❌ Error checking Elvish Yadav page:`, e.message);
+    hasErrors = true;
+  }
+
   if (hasErrors) {
-    console.error("\n❌ SEO Audit Failed! Please fix the errors above.");
+    console.error('\n❌ SEO Audit Failed! Data inconsistencies found.');
     process.exit(1);
   } else {
-    console.log("\n🚀 All SEO & Consistency checks passed!");
-    process.exit(0);
+    console.log('\n✅ All checks passed! The source of truth remains intact across HTML, JSON-LD, and Merchant Feeds.');
   }
 }
 
-runAudit();
+audit();

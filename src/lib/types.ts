@@ -56,6 +56,15 @@ export interface Product {
   };
   reviews?: Review[];
 
+  shipping?: {
+    cost: number;
+    daysMin: number;
+    daysMax: number;
+  };
+  returns?: {
+    days: number;
+  };
+
   seo: {
     title: string;
     description: string;
