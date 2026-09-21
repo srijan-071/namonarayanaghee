@@ -25,7 +25,7 @@ function PayDirectContent() {
 
     const loadRazorpayScript = () => {
       return new Promise((resolve) => {
-        if (window.Razorpay) {
+        if (typeof window !== 'undefined' && (window as any).Razorpay) {
           resolve(true);
           return;
         }
