@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Create payment session error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error: " + (error?.message || String(error)) },
       { status: 500 }
     );
   }
