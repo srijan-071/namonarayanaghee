@@ -125,7 +125,7 @@ export default function CheckoutPage() {
       toast.info("Creating your order...");
       const orderId = await createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
       
-      // 3. Create payment session locally
+      // 3. Create payment session on potter-world
       toast.info("Setting up secure payment...");
       const sessionRes = await fetch("/api/create-payment-session", {
         method: "POST",
@@ -148,65 +148,12 @@ export default function CheckoutPage() {
 
       const sessionData = await sessionRes.json();
       
-      // 4. Load Razorpay script if not present
-      if (!(window as any).Razorpay) {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = "https://checkout.razorpay.com/v1/checkout.js";
-          script.onload = () => resolve(true);
-          script.onerror = () => reject(new Error("Failed to load Razorpay SDK"));
-          document.body.appendChild(script);
-        });
-      }
-
-      // 5. Open Razorpay Modal
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: sessionData.amount,
-        currency: sessionData.currency,
-        name: "Namo Narayana Ghee",
-        description: "Order Checkout",
-        order_id: sessionData.sessionId,
-        handler: async function (response: any) {
-          try {
-            const verifyRes = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(response),
-            });
-            if (!verifyRes.ok) throw new Error("Payment verification failed");
-            
-            clearCart();
-            toast.success("Payment successful! Redirecting...");
-            window.location.href = `/checkout/success?orderId=${orderId}`;
-          } catch (error) {
-            console.error(error);
-            toast.error("Payment verification failed. Please contact support.");
-          }
-        },
-        prefill: {
-          name: shipping.name,
-          email: email,
-          contact: phone,
-        },
-        theme: {
-          color: "#1E3A24",
-        },
-        modal: {
-          ondismiss: function () {
-            setIsSubmitting(false);
-            toast.error("Payment cancelled. Please try again.");
-          },
-        },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
-        console.error(response.error);
-        toast.error(response.error.description || "Payment failed");
-        setIsSubmitting(false);
-      });
-      rzp.open();
+      // 4. Clear Cart
+      clearCart();
+      
+      // 5. Redirect to potter-world payment page
+      toast.success("Redirecting to payment gateway...");
+      window.location.href = sessionData.checkoutUrl;
       
     } catch (error) {
       console.error("Order creation failed:", error);

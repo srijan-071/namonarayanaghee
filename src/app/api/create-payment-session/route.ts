@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import Razorpay from "razorpay";
+
+const PAYMENT_HUB_URL = "https://potter-world.com";
+const PAYMENT_HUB_SECRET = process.env.PAYMENT_HUB_SECRET || "INTERNAL_HUB_SECRET_2026";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://namonarayanaghee.store";
 
 export async function POST(req: Request) {
   try {
@@ -10,28 +13,47 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-      return NextResponse.json({ error: "Server missing payment configuration" }, { status: 500 });
-    }
+    // Amount is in paise, convert to INR for the hub
+    const amountInINR = amount / 100;
 
-    const razorpay = new Razorpay({
-      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-
-    const options = {
-      amount: Math.round(amount), // ensure it's an integer in paise
+    const sessionPayload = {
+      originApp: "Namo Narayana",
+      orderId,
+      customerDetails: customerDetails || {},
+      amount: amountInINR,
       currency: "INR",
-      receipt: orderId,
+      returnUrl: `${SITE_URL}/checkout/success?orderId=${orderId}`,
+      webhookUrl: `${SITE_URL}/api/payment-webhook`,
+      metadata: {
+        paymentMethod,
+        source: "namonarayanaghee.store",
+      },
     };
 
-    const order = await razorpay.orders.create(options);
+    const response = await fetch(`${PAYMENT_HUB_URL}/api/payment/session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${PAYMENT_HUB_SECRET}`,
+      },
+      body: JSON.stringify(sessionPayload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Payment hub error:", errorData);
+      return NextResponse.json(
+        { error: "Failed to create payment session on potter-world", details: errorData },
+        { status: 500 }
+      );
+    }
+
+    const data = await response.json();
 
     return NextResponse.json({
       success: true,
-      sessionId: order.id,
-      amount: order.amount,
-      currency: order.currency,
+      sessionId: data.sessionId,
+      checkoutUrl: data.checkoutUrl,
     });
   } catch (error: any) {
     console.error("Create payment session error:", error);
