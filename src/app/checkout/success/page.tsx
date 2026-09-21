@@ -78,9 +78,19 @@ function SuccessContent() {
       setShowConfetti(true);
       const timer = setTimeout(() => setCheckVisible(true), 300);
       const confettiTimer = setTimeout(() => setShowConfetti(false), 5000);
+      
+      // Trigger order confirmation email
+      if (orderId) {
+        fetch("/api/send-order-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId }),
+        }).catch(console.error);
+      }
+
       return () => { clearTimeout(timer); clearTimeout(confettiTimer); };
     }
-  }, [isSuccess]);
+  }, [isSuccess, orderId]);
 
   if (isFailed) {
     return (
