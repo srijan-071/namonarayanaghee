@@ -2,6 +2,7 @@
 
 import { useCart, useCartDrawer, removeFromCart, updateQuantity } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 export default function CartDrawer() {
   const cart = useCart();
   const { isOpen, close } = useCartDrawer();
+  const router = useRouter();
 
   const handleRemove = (variantId: number) => {
     removeFromCart(variantId);
@@ -107,9 +109,15 @@ export default function CartDrawer() {
               <span>Total</span>
               <span className="text-nn-leaf">{formatPrice(cart.subtotal)}</span>
             </div>
-            <Link href="/checkout" onClick={close} className="nn-btn nn-btn-primary w-full text-center py-3">
+            <button 
+              onClick={() => {
+                close();
+                setTimeout(() => router.push("/checkout"), 150);
+              }} 
+              className="nn-btn nn-btn-primary w-full text-center py-3"
+            >
               Proceed to Checkout
-            </Link>
+            </button>
             <p className="text-center text-[11px] text-nn-bark">Secure Payments • COD Available</p>
           </div>
         )}
