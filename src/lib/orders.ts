@@ -63,14 +63,14 @@ export function calculateCheckoutPricing(
     amountAfterDiscount = subtotal - discount;
   }
 
-  // Admin bypass: ₹1
+  // Admin bypass: ₹1 (which is 100 paise)
   if (isAdmin) {
     return {
       subtotal,
       discount,
       discountPercent,
-      amountAfterDiscount: isAdmin ? 1 : amountAfterDiscount,
-      amountToPay: 1, // ₹1
+      amountAfterDiscount: isAdmin ? 100 : amountAfterDiscount,
+      amountToPay: 100, // ₹1
       amountRemaining: 0,
       isAdmin: true,
     };
