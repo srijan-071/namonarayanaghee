@@ -12,7 +12,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useRouter } from "next/navigation";
-import { fetchAllOrdersAdmin } from "./actions";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -31,10 +30,25 @@ export default function AccountPage() {
 
       setUser(currentUser);
 
-      // Fetch user's orders
-      // Fetch all orders using server action to bypass security rules
+      // Fetch user's orders using client side to avoid Cloudflare Worker CPU limits
       try {
-        const fetchedOrders = await fetchAllOrdersAdmin();
+        const q = query(
+          collection(db, "orders"),
+          where("userId", "==", currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedOrders: any[] = [];
+        querySnapshot.forEach((doc) => {
+          fetchedOrders.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Sort in memory to avoid needing a Firestore composite index
+        fetchedOrders.sort((a, b) => {
+          const timeA = a.createdAt?.seconds || 0;
+          const timeB = b.createdAt?.seconds || 0;
+          return timeB - timeA;
+        });
+        
         setOrders(fetchedOrders);
       } catch (err) {
         console.error("Failed to fetch orders", err);
