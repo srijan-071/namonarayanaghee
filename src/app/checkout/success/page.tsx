@@ -83,7 +83,25 @@ function SuccessContent() {
       getDoc(doc(db, "orders", orderId))
         .then((docSnap) => {
           if (docSnap.exists()) {
-            setOrderData(docSnap.data());
+            const data = docSnap.data();
+            setOrderData(data);
+            
+            // Trigger email if not already sent on this device
+            const emailSentKey = `emailSent_${orderId}`;
+            if (!localStorage.getItem(emailSentKey)) {
+              fetch("/api/send-order-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                  orderId,
+                  email: data.contactInfo?.email,
+                  name: data.shippingAddress?.name,
+                  amount: data.amountToPay || data.totalAmount
+                }),
+              }).then(res => {
+                if (res.ok) localStorage.setItem(emailSentKey, "true");
+              }).catch(console.error);
+            }
           }
         })
         .catch(console.error)
@@ -96,19 +114,9 @@ function SuccessContent() {
       setShowConfetti(true);
       const timer = setTimeout(() => setCheckVisible(true), 300);
       const confettiTimer = setTimeout(() => setShowConfetti(false), 5000);
-      
-      // Trigger order confirmation email
-      if (orderId) {
-        fetch("/api/send-order-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId }),
-        }).catch(console.error);
-      }
-
       return () => { clearTimeout(timer); clearTimeout(confettiTimer); };
     }
-  }, [isSuccess, orderId]);
+  }, [isSuccess]);
 
   if (isFailed) {
     return (
