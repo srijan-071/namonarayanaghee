@@ -164,40 +164,26 @@ export default function CheckoutPage() {
       toast.info("Creating your order...");
       const orderId = await createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
       
-      // 3. Create payment session on potter-world
+      // 3. Create payment session URL directly
       toast.info("Setting up secure payment...");
-      const sessionRes = await fetch("/api/create-payment-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          amount: pricing.amountToPay, // already in paise
-          customerDetails: {
-            name: shipping.name,
-            email,
-            phone,
-          },
-          paymentMethod,
-        }),
-      });
-
-      let sessionData;
-      try {
-        sessionData = await sessionRes.json();
-      } catch (e) {
-        throw new Error("Failed to parse payment session response");
-      }
-
-      if (!sessionRes.ok) {
-        throw new Error(sessionData?.error || "Failed to create payment session");
-      }
+      const amountInINR = pricing.amountToPay / 100;
+      const proxyParams = new URLSearchParams();
+      proxyParams.set("txnid", orderId);
+      proxyParams.set("amount", amountInINR.toString());
+      proxyParams.set("productinfo", `Order ${orderId}`);
+      proxyParams.set("firstname", shipping.name || "Customer");
+      proxyParams.set("email", email || "");
+      proxyParams.set("phone", phone || "");
+      proxyParams.set("udf1", "namonarayanaghee");
+      
+      const checkoutUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
       
       // 4. Clear Cart
       clearCart();
       
       // 5. Redirect to potter-world payment page
       toast.success("Redirecting to payment gateway...");
-      window.location.href = sessionData.checkoutUrl;
+      window.location.href = checkoutUrl;
       
     } catch (error) {
       console.error("Order creation failed:", error);
