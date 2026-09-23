@@ -86,9 +86,10 @@ function SuccessContent() {
             const data = docSnap.data();
             setOrderData(data);
             
-            // Trigger email if not already sent on this device
+            // Trigger email and telegram if not already sent on this device
             const emailSentKey = `emailSent_${orderId}`;
             if (!localStorage.getItem(emailSentKey)) {
+              // Send Email
               fetch("/api/send-order-email", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -100,6 +101,13 @@ function SuccessContent() {
                 }),
               }).then(res => {
                 if (res.ok) localStorage.setItem(emailSentKey, "true");
+              }).catch(console.error);
+
+              // Send Telegram Notification
+              fetch("/api/send-telegram-notification", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId, orderData: data }),
               }).catch(console.error);
             }
           }
