@@ -12,6 +12,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useRouter } from "next/navigation";
+import { formatPrice } from "@/lib/utils";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function AccountPage() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-bold text-[#1C2B26]">₹{order.totalAmount}</p>
+                          <p className="text-sm font-bold text-[#1C2B26]">{formatPrice(order.totalAmount)}</p>
                           <div className="inline-flex items-center px-2.5 py-1 mt-1 rounded-full text-xs font-semibold bg-[#C99A3D]/10 text-[#A87845]">
                             {currentStatus}
                           </div>
@@ -172,7 +173,7 @@ export default function AccountPage() {
                                 <p className="text-[#8C988B] text-xs">Qty: {item.quantity}</p>
                               </div>
                               <div className="font-semibold text-sm text-[#4A5450]">
-                                ₹{item.price * item.quantity}
+                                {formatPrice(item.price * item.quantity)}
                               </div>
                             </div>
                           ))}

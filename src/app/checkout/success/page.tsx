@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Package, Truck, Phone, ArrowRight, XCircle, RotateCw } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
+import { formatPrice } from "@/lib/utils";
 
 function Confetti() {
   const [particles, setParticles] = useState<{ id: number; x: number; delay: number; duration: number; color: string; size: number }[]>([]);
@@ -181,7 +182,7 @@ function SuccessContent() {
               {orderData && (
                 <div className="text-right">
                   <p className="text-[#364935] text-xs uppercase tracking-wider font-bold mb-1">Total Paid</p>
-                  <p className="text-[#C38936] font-bold text-lg">₹{orderData.amountToPay || orderData.totalAmount}</p>
+                  <p className="text-[#C38936] font-bold text-lg">{formatPrice(orderData.amountToPay || orderData.totalAmount)}</p>
                 </div>
               )}
             </div>
@@ -207,7 +208,7 @@ function SuccessContent() {
                         <p className="text-[#8C988B] text-xs mt-1">Qty: {item.quantity}</p>
                       </div>
                       <div className="font-semibold text-sm text-[#4A5450]">
-                        ₹{item.price * item.quantity}
+                        {formatPrice(item.price * item.quantity)}
                       </div>
                     </div>
                   ))}
@@ -216,18 +217,18 @@ function SuccessContent() {
                 <div className="pt-2 pb-2 space-y-2 text-sm text-[#4A5450]">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span className="font-semibold">₹{orderData.subtotal}</span>
+                    <span className="font-semibold">{formatPrice(orderData.subtotal)}</span>
                   </div>
                   {orderData.discount > 0 && (
                     <div className="flex justify-between text-[#2E8B57]">
                       <span>Discount ({orderData.discountPercent}%)</span>
-                      <span className="font-semibold">-₹{orderData.discount}</span>
+                      <span className="font-semibold">-{formatPrice(orderData.discount)}</span>
                     </div>
                   )}
                   {orderData.amountRemaining > 0 && (
                     <div className="flex justify-between text-[#C38936]">
                       <span>Remaining Balance (COD)</span>
-                      <span className="font-semibold">₹{orderData.amountRemaining}</span>
+                      <span className="font-semibold">{formatPrice(orderData.amountRemaining)}</span>
                     </div>
                   )}
                 </div>
