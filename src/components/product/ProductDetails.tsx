@@ -8,7 +8,10 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-export default function ProductDetails({ product }: { product: Product }) {
+import { useRouter } from "next/navigation";
+
+export default function ProductDetails({ product, gheePacks }: { product: Product; gheePacks?: Product[] | null }) {
+  const router = useRouter();
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const [qty, setQty] = useState(1);
@@ -91,8 +94,59 @@ export default function ProductDetails({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Variants */}
-        {product.variants.length > 1 && (
+        {/* Variants & Packs */}
+        {gheePacks && gheePacks.length > 0 ? (
+          <div className="mb-6">
+            <label className="text-sm font-semibold text-nn-ink mb-3 block">
+              Choose your pack
+            </label>
+            <div className="flex flex-col gap-3">
+              {gheePacks.map((pack) => {
+                let ml = 1000;
+                let badge = null;
+                if (pack.slug.includes("1-litre")) {
+                  ml = 1000;
+                } else if (pack.slug.includes("2-5-litre")) {
+                  ml = 2500;
+                  badge = "Better value";
+                } else if (pack.slug.includes("5-litre")) {
+                  ml = 5000;
+                  badge = "Best value";
+                }
+                const per100ml = Math.round((pack.price / 100) / (ml / 100));
+                const isSelected = product.slug === pack.slug;
+
+                return (
+                  <button
+                    key={pack.id}
+                    onClick={() => {
+                      if (!isSelected) router.push(`/products/${pack.slug}`);
+                    }}
+                    className={`relative w-full text-left p-4 rounded-xl border-2 transition flex items-center justify-between ${
+                      isSelected 
+                        ? "border-nn-forest bg-nn-forest/5 shadow-sm" 
+                        : "border-nn-hairline hover:border-nn-forest/50"
+                    }`}
+                  >
+                    <div className="flex flex-col">
+                      <span className={`font-semibold text-lg ${isSelected ? "text-nn-forest" : "text-nn-ink"}`}>
+                        {pack.variants[0]?.title ?? pack.title}
+                      </span>
+                      <span className="text-sm text-nn-bark mt-1">
+                        {formatPrice(pack.price)} • ₹{per100ml}/100ml
+                      </span>
+                    </div>
+                    {badge && (
+                      <div className={`text-xs font-bold px-3 py-1 rounded-full ${isSelected ? "bg-nn-forest text-white" : "bg-nn-leaf/10 text-nn-leaf"}`}>
+                        {badge}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : product.variants.length > 1 ? (
           <div className="mb-6">
             <label className="text-sm font-semibold text-nn-ink mb-2 block">
               {product.options[0]?.name ?? "Size"}
@@ -109,7 +163,7 @@ export default function ProductDetails({ product }: { product: Product }) {
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Quantity */}
         <div className="mb-6">

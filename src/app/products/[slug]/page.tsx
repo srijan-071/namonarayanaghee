@@ -28,13 +28,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     { name: product.title, url: `/products/${slug}` },
   ]);
 
+  const GHEE_SLUGS = ["pure-desi-cow-ghee-1-litre", "pure-desi-cow-ghee-2-5-litre", "pure-desi-cow-ghee-5-litre"];
+  let gheePacks = null;
+  if (GHEE_SLUGS.includes(slug)) {
+    gheePacks = GHEE_SLUGS.map((s) => getProduct(s)).filter(Boolean);
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <section className="nn-section bg-white">
         <div className="nn-container">
-          <ProductDetails product={product} />
+          <ProductDetails product={product} gheePacks={gheePacks} />
         </div>
       </section>
     </>
