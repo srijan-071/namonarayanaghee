@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore/lite";
+// Top-level imports for Firebase removed to prevent Cloudflare 1102 errors
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +12,9 @@ export async function POST(req: Request) {
 
     // We use the email as the document ID to update the same abandoned cart session
     // Or we could generate a unique ID. Let's use email so it overwrites their latest cart.
+    const { db } = await import("@/lib/firebase");
+    const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
+    
     const cartRef = doc(db, "abandoned_carts", email);
     
     await setDoc(cartRef, {
@@ -37,7 +39,8 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
     if (email) {
-      const { deleteDoc } = await import("firebase/firestore/lite");
+      const { db } = await import("@/lib/firebase");
+      const { deleteDoc, doc } = await import("firebase/firestore/lite");
       const cartRef = doc(db, "abandoned_carts", email);
       await deleteDoc(cartRef);
     }

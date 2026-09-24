@@ -10,8 +10,8 @@ import { cn, formatPrice } from "@/lib/utils";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
 
-// Actual products data
-const allProducts = [
+// Actual Ghee products data matching the live store
+const gheeProducts = [
   {
     id: 9545153446056,
     variantId: 55812012572840,
@@ -50,112 +50,22 @@ const allProducts = [
     size: "5 Litre",
     price: 514500,
     image: "/assets/product_6-5L_jpg.webp"
-  },
-  {
-    id: 9545126379688,
-    variantId: 55811950706856,
-    slug: 'besan',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Besan',
-    variantTitle: 'Default Title',
-    subtitle: 'Freshly packed',
-    size: '1 Kg',
-    price: 10500,
-    image: '/assets/product_Besan.webp'
-  },
-  {
-    id: 9545039282344,
-    variantId: 55811323461800,
-    slug: 'black-mustard-oil',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Black Mustard Oil',
-    variantTitle: 'Default Title',
-    subtitle: 'Cold Pressed • Bold Flavour',
-    size: '1 Litre',
-    price: 21000,
-    image: '/assets/product_blackmusterd.webp'
-  },
-  {
-    id: 9545038823592,
-    variantId: 55811323363496,
-    slug: 'coconut-oil',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Coconut Oil',
-    variantTitle: 'Default Title',
-    subtitle: 'Pure • Natural • Versatile',
-    size: '1 Litre',
-    price: 28000,
-    image: '/assets/product_coconutoil.webp'
-  },
-  {
-    id: 9545045147816,
-    variantId: 55811350495400,
-    slug: 'honey',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Honey',
-    variantTitle: 'Default Title',
-    subtitle: 'Nature\'s Sweetener',
-    size: '500g',
-    price: 31500,
-    image: '/assets/product_honey.webp'
-  },
-  {
-    id: 9545042329768,
-    variantId: 55811334865064,
-    slug: 'jaggery-powder',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Jaggery Powder',
-    variantTitle: 'Default Title',
-    subtitle: 'Desi Goodness • Rich in Nutrients',
-    size: '1 Kg',
-    price: 14000,
-    image: '/assets/product_jaggery.webp'
-  },
-  {
-    id: 9545130180776,
-    variantId: 55811961356456,
-    slug: 'khapli-atta',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Khapli Atta',
-    variantTitle: 'Default Title',
-    subtitle: 'Ancient Grain • Wholesome',
-    size: '5 Kg',
-    price: 17500,
-    image: '/assets/product_Khapliatta.webp'
-  },
-  {
-    id: 9545055633576,
-    variantId: 55811410919592,
-    slug: 'multi-grain-atta',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Multi Grain Atta',
-    variantTitle: 'Default Title',
-    subtitle: 'Nutritious • Everyday Essential',
-    size: '5 Kg',
-    price: 12600,
-    image: '/assets/product_Multigrainatta.webp'
-  },
-  {
-    id: 9545127887016,
-    variantId: 55811956211880,
-    slug: 'pickle',
-    badge: 'NEW',
-    badgeColor: 'bg-[#C38936]',
-    title: 'Pickle',
-    variantTitle: 'Default Title',
-    subtitle: 'Traditional Taste • Homemade Style',
-    size: '400g',
-    price: 15400,
-    image: '/assets/product_pickle.webp'
   }
 ];
+
+const comingSoonProducts = [
+  { id: 1, title: "Besan", subtitle: "Traditional • Pure • Wholesome", image: "/assets/product_Besan.webp" },
+  { id: 2, title: "Black Mustard Oil", subtitle: "Cold Pressed • Bold Flavour", image: "/assets/product_blackmusterd.webp" },
+  { id: 3, title: "Coconut Oil", subtitle: "Pure • Natural • Versatile", image: "/assets/product_coconutoil.webp" },
+  { id: 4, title: "Honey", subtitle: "Nature's Sweetener", image: "/assets/product_honey.webp" },
+  { id: 5, title: "Jaggery Powder", subtitle: "Desi Goodness • Rich in Nutrients", image: "/assets/product_jaggery.webp" },
+  { id: 6, title: "Khapli Atta", subtitle: "Ancient Grain • Wholesome", image: "/assets/product_Khapliatta.webp" },
+  { id: 7, title: "Multi Grain Atta", subtitle: "Nutritious • Everyday Essential", image: "/assets/product_Multigrainatta.webp" },
+  { id: 8, title: "Pickle", subtitle: "Traditional Taste • Homemade Style", image: "/assets/product_pickle.webp" },
+];
+
+
+
 export default function Bestsellers() {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   
@@ -182,7 +92,7 @@ export default function Bestsellers() {
 
   const { open } = useCartDrawer();
 
-  const handleAddToCart = (p: typeof allProducts[0]) => {
+  const handleAddToCart = (p: typeof gheeProducts[0]) => {
     addToCart({
       productId: p.id,
       variantId: p.variantId,
@@ -294,7 +204,7 @@ export default function Bestsellers() {
               <div
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
               >
-                {allProducts.map((p) => (
+                {gheeProducts.map((p) => (
                   <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-white/60 flex flex-col h-full group">
                     <Link href={`/products/${p.slug}`} className="relative aspect-square w-full bg-[#F7F4EB] p-6 flex items-center justify-center overflow-hidden block">
                       <Image src={p.image} alt={p.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -338,7 +248,66 @@ export default function Bestsellers() {
             </div>
           </div>
 
-          
+          {/* Coming Soon Section */}
+          <div className="pb-12 md:pb-16">
+            <div className="nn-container">
+              <div
+                className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-[#C2C7BB]/50 pb-6"
+              >
+                <div>
+                  <h3 className="font-serif text-3xl font-bold text-[#1E3A24] mb-2 drop-shadow-sm">Coming Soon</h3>
+                  <p className="text-[#364935] font-medium text-sm md:text-base">More natural goodness, on the way. Get notified when your favourites are back.</p>
+                </div>
+                
+                <button onClick={() => handleNotify('all', 'all products')} disabled={loading['all']} className="bg-white/60 backdrop-blur-md border border-[#C38936] text-[#C38936] hover:bg-[#C38936] hover:text-white rounded-lg px-6 py-2.5 flex items-center justify-center gap-2 transition-all font-medium text-sm shadow-sm active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed">
+  {loading['all'] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+                  <Bell className="w-4 h-4" />
+                  Notify Me for All Products
+                </button>
+              </div>
+              
+              <div
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+              >
+                {comingSoonProducts.map((p) => (
+                  <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-white/60 flex flex-col h-full group relative">
+                    
+                    {/* Image Area with Blur Effect */}
+                    <div className="relative aspect-[4/3] w-full bg-[#F7F4EB] overflow-hidden">
+                      <Image src={p.image} alt={p.title} fill className="object-cover blur-sm opacity-80 group-hover:scale-105 group-hover:blur-md transition-all duration-700" />
+                      
+                      {/* Dark overlay to make lock pop */}
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
+                      
+                      {/* Central Lock Animation */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <Lock className="w-4 h-4 text-[#1E3A24]" />
+                        </div>
+                      </div>
+
+                      <div className="absolute bottom-3 left-3 z-10">
+                        <span className="bg-[#E4EBDC] text-[#1E3A24] text-[10px] font-bold px-2 py-1 rounded-sm shadow-sm backdrop-blur-md">
+                          COMING SOON
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 flex flex-col flex-1 relative z-10 bg-white">
+                      <h4 className="font-serif font-bold text-base text-[#1E3A24] mb-1 opacity-80">{p.title}</h4>
+                      <p className="text-[11px] text-[#576B55] mb-4 opacity-70">{p.subtitle}</p>
+                      
+                      <button onClick={() => handleNotify(p.id, p.title)} disabled={loading[p.id]} className="mt-auto w-full bg-[#F4F6F0] border border-transparent text-[#364935] hover:border-[#1E3A24] hover:bg-[#1E3A24] hover:text-white rounded-lg py-2 flex items-center justify-center gap-2 transition-all font-medium text-xs active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed">
+  {loading[p.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+                        <Bell className="w-4 h-4" />
+                        Notify Me
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

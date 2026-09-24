@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore/lite";
-import { auth, db } from "@/lib/firebase";
+// Firebase dynamically imported to prevent Cloudflare 1102 errors
 import AuthUpgrade from "@/components/auth/AuthUpgrade";
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
 import { downloadInvoice } from "@/lib/invoice";
@@ -21,8 +19,15 @@ export default function AccountPage() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
+    let unsubscribe: () => void;
+
+    const initAuth = async () => {
+      const { auth, db } = await import("@/lib/firebase");
+      const { onAuthStateChanged } = await import("firebase/auth");
+      const { collection, query, where, getDocs } = await import("firebase/firestore/lite");
+
+      unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        if (!currentUser) {
         // If no user at all, wait or maybe redirect if strictly needed, 
         // but FirebaseProvider initializes anonymous auth on load.
         setLoading(false);
@@ -57,11 +62,18 @@ export default function AccountPage() {
         setLoading(false);
       }
     });
+  };
 
-    return () => unsubscribe();
+    initAuth();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const handleSignOut = async () => {
+    const { auth } = await import("@/lib/firebase");
+    const { signOut } = await import("firebase/auth");
     await signOut(auth);
     toast.success("Signed out successfully");
     router.push("/");
@@ -113,7 +125,7 @@ export default function AccountPage() {
           )}
         </div>
 
-        <AuthUpgrade />
+        <AuthUpgrade user={user} />
 
         <div className="grid lg:grid-cols-3 gap-8">
 

@@ -4,8 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Package, Truck, Phone, ArrowRight, XCircle, RotateCw } from "lucide-react";
-import { doc, getDoc } from "firebase/firestore/lite";
-import { db } from "@/lib/firebase";
+// Firebase dynamically imported to prevent Cloudflare 1102 errors
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 
@@ -82,8 +81,11 @@ function SuccessContent() {
   useEffect(() => {
     if (orderId && isSuccess) {
       setOrderLoading(true);
-      getDoc(doc(db, "orders", orderId))
-        .then((docSnap) => {
+      const fetchOrder = async () => {
+        try {
+          const { db } = await import("@/lib/firebase");
+          const { doc, getDoc } = await import("firebase/firestore/lite");
+          const docSnap = await getDoc(doc(db, "orders", orderId));
           if (docSnap.exists()) {
             const data = docSnap.data();
             setOrderData(data);
@@ -128,9 +130,13 @@ function SuccessContent() {
               });
             }
           }
-        })
-        .catch(console.error)
-        .finally(() => setOrderLoading(false));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setOrderLoading(false);
+        }
+      };
+      fetchOrder();
     }
   }, [orderId, isSuccess]);
 

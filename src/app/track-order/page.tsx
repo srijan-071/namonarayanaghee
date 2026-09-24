@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { doc, getDoc } from "firebase/firestore/lite";
-import { db } from "@/lib/firebase";
+// Firebase dynamically imported to prevent Cloudflare 1102 errors
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
 import { Search, Package, MapPin, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -25,6 +24,8 @@ export default function TrackOrderPage() {
     setOrder(null);
 
     try {
+      const { db } = await import("@/lib/firebase");
+      const { doc, getDoc } = await import("firebase/firestore/lite");
       const orderRef = doc(db, "orders", orderId);
       const orderSnap = await getDoc(orderRef);
 

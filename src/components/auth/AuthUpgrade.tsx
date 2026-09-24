@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore/lite";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { auth, db } from "@/lib/firebase";
+// Firebase dynamically imported to prevent Cloudflare 1102 errors
 
-export default function AuthUpgrade() {
+export default function AuthUpgrade({ user }: { user: any }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,18 +13,24 @@ export default function AuthUpgrade() {
   const [success, setSuccess] = useState(false);
 
   // We only show this if the user is signed in and is anonymous
-  if (!auth.currentUser || !auth.currentUser.isAnonymous || success) {
+  if (!user || !user.isAnonymous || success) {
     return null;
   }
 
   const handleUpgrade = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser) return;
+    if (!user) return;
     
     setLoading(true);
     setError("");
 
     try {
+      const { auth, db } = await import("@/lib/firebase");
+      const { EmailAuthProvider, linkWithCredential } = await import("firebase/auth");
+      const { doc, updateDoc } = await import("firebase/firestore/lite");
+
+      if (!auth.currentUser) throw new Error("No current user");
+      
       const credential = EmailAuthProvider.credential(email, password);
       const usercred = await linkWithCredential(auth.currentUser, credential);
       

@@ -18,7 +18,7 @@ const categories = [
     subtitle: "Pure. Potent. Natural.",
     href: "/collections/oils",
     image: "/assets/product_musturdoil.webp",
-    badge: "AVAILABLE NOW",
+    badge: "COMING SOON",
     badgeColor: "bg-[#C38936] text-white",
   },
   {
@@ -26,7 +26,7 @@ const categories = [
     subtitle: "Nature's Sweetness",
     href: "/collections/honey",
     image: "/assets/product_honey.webp",
-    badge: "AVAILABLE NOW",
+    badge: "COMING SOON",
     badgeColor: "bg-[#C38936] text-white",
   },
   {
@@ -34,7 +34,7 @@ const categories = [
     subtitle: "Wholesome Goodness",
     href: "/collections/flours",
     image: "/assets/product_Khapliatta.webp",
-    badge: "AVAILABLE NOW",
+    badge: "COMING SOON",
     badgeColor: "bg-[#C38936] text-white",
   }
 ];

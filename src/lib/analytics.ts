@@ -1,6 +1,3 @@
-import { logEvent } from "firebase/analytics";
-import { analytics } from "./firebase";
-
 // Helper for Meta Pixel
 const fbq = (...args: any[]) => {
   if (typeof window !== "undefined" && (window as any).fbq) {
@@ -9,11 +6,15 @@ const fbq = (...args: any[]) => {
 };
 
 export const trackEvent = (eventName: string, eventParams?: any) => {
-  try {
-    // 1. Firebase Analytics
-    if (analytics) {
-      logEvent(analytics, eventName, eventParams);
-    }
+  // Run asynchronously so we don't block and can dynamic import
+  setTimeout(async () => {
+    try {
+      // 1. Firebase Analytics
+      const { analytics } = await import("./firebase");
+      if (analytics) {
+        const { logEvent } = await import("firebase/analytics");
+        logEvent(analytics, eventName, eventParams);
+      }
 
     // 2. Meta Pixel
     // Map Firebase event names to standard Meta Pixel events where applicable
@@ -71,4 +72,5 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
   } catch (e) {
     console.error("Analytics Error:", e);
   }
+  }, 0);
 };

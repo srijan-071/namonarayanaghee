@@ -147,8 +147,8 @@ export default function CheckoutPage() {
 
   // Compute pricing reactively
   const pricing = useMemo(() => {
-    return calculateCheckoutPricing(cart.subtotal, paymentMethod, email, couponCode);
-  }, [cart.subtotal, paymentMethod, email, couponCode]);
+    return calculateCheckoutPricing(cart.items, cart.subtotal, paymentMethod, email, couponCode);
+  }, [cart.items, cart.subtotal, paymentMethod, email, couponCode]);
 
   if (cart.items.length === 0 && !isSubmitting) {
     return (

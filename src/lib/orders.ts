@@ -1,5 +1,3 @@
-import { doc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore/lite";
-import { db } from "./firebase";
 import { CartItem } from "@/lib/types";
 
 export interface Address {
@@ -30,6 +28,8 @@ export interface CheckoutData {
  * Update the user's default information in Firestore.
  */
 export async function saveUserCheckoutProfile(uid: string, data: CheckoutData) {
+  const { db } = await import("./firebase");
+  const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
   const userRef = doc(db, "users", uid);
   
   await setDoc(userRef, {
@@ -47,6 +47,7 @@ export async function saveUserCheckoutProfile(uid: string, data: CheckoutData) {
  * Calculates pricing based on payment method and admin bypass.
  */
 export function calculateCheckoutPricing(
+  cartItems: CartItem[],
   subtotal: number,
   paymentMethod: string,
   email: string,
@@ -58,14 +59,25 @@ export function calculateCheckoutPricing(
   let discountPercent = 0;
   
   if (paymentMethod === "prepaid") {
-    discountPercent += 10;
+    discountPercent = 10;
+    discount += Math.round(subtotal * 0.10);
   }
 
   if (couponCode?.toUpperCase().trim() === "ELVISH10") {
-    discountPercent += 10;
+    if (paymentMethod === "prepaid") {
+      let eligibleSubtotal = 0;
+      for (const item of cartItems) {
+        if (item.slug === "pure-desi-cow-ghee-2-5-litre" || item.slug === "pure-desi-cow-ghee-5-litre") {
+          eligibleSubtotal += (item.price * item.quantity);
+        }
+      }
+      if (eligibleSubtotal > 0) {
+        // Add 10% on top of the existing discount, but only for eligible items
+        discount += Math.round(eligibleSubtotal * 0.10);
+      }
+    }
   }
 
-  discount = Math.round(subtotal * (discountPercent / 100));
   let amountAfterDiscount = subtotal - discount;
 
   // Admin bypass: ₹1 (which is 100 paise)
@@ -118,6 +130,8 @@ export async function createOrder(
   data: CheckoutData,
   pricing: ReturnType<typeof calculateCheckoutPricing>
 ) {
+  const { db } = await import("./firebase");
+  const { doc, setDoc, serverTimestamp, collection, addDoc } = await import("firebase/firestore/lite");
   const ordersRef = collection(db, "orders");
   
   const shippingCost = 0; 
