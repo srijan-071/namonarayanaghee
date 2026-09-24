@@ -1,70 +1,74 @@
-// E-Commerce Conversion Analytics 
-// This is a foundational architecture to track SEO conversion effectiveness.
+import { logEvent } from "firebase/analytics";
+import { analytics } from "./firebase";
 
-export const trackEvent = (eventName: string, data: Record<string, any> = {}) => {
-  // In a real implementation, this would push to dataLayer (GTM), GA4, or Meta Pixel.
-  if (typeof window !== "undefined") {
-    // console.log(\`[Analytics Event]: \$\{eventName\}\`, data);
-    
-    // Example GTM integration:
-    // window.dataLayer = window.dataLayer || [];
-    // window.dataLayer.push({ event: eventName, ...data });
+// Helper for Meta Pixel
+const fbq = (...args: any[]) => {
+  if (typeof window !== "undefined" && (window as any).fbq) {
+    (window as any).fbq(...args);
   }
 };
 
-export const trackPageView = (url: string) => {
-  trackEvent("page_view", { page_url: url });
-};
+export const trackEvent = (eventName: string, eventParams?: any) => {
+  try {
+    // 1. Firebase Analytics
+    if (analytics) {
+      logEvent(analytics, eventName, eventParams);
+    }
 
-export const trackProductView = (product: any) => {
-  trackEvent("view_item", {
-    currency: product.currency || "INR",
-    value: (product.price / 100),
-    items: [{
-      item_id: product.sku,
-      item_name: product.title,
-      price: (product.price / 100),
-      item_category: product.type
-    }]
-  });
-};
+    // 2. Meta Pixel
+    // Map Firebase event names to standard Meta Pixel events where applicable
+    let metaEvent = "CustomEvent";
+    let metaParams = eventParams || {};
 
-export const trackAddToCart = (item: any) => {
-  trackEvent("add_to_cart", {
-    currency: "INR",
-    value: (item.price / 100) * item.quantity,
-    items: [{
-      item_id: item.variantId || item.productId,
-      item_name: item.title,
-      price: (item.price / 100),
-      quantity: item.quantity
-    }]
-  });
-};
+    switch (eventName) {
+      case "page_view":
+        metaEvent = "PageView";
+        break;
+      case "view_item":
+        metaEvent = "ViewContent";
+        metaParams = {
+          content_ids: eventParams?.items?.map((i: any) => i.item_id),
+          content_type: 'product',
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+        };
+        break;
+      case "add_to_cart":
+        metaEvent = "AddToCart";
+        metaParams = {
+          content_ids: eventParams?.items?.map((i: any) => i.item_id),
+          content_type: 'product',
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+        };
+        break;
+      case "begin_checkout":
+        metaEvent = "InitiateCheckout";
+        metaParams = {
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+        };
+        break;
+      case "purchase":
+        metaEvent = "Purchase";
+        metaParams = {
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+        };
+        break;
+      default:
+        metaEvent = eventName; // Custom event
+    }
 
-export const trackBeginCheckout = (cart: any) => {
-  trackEvent("begin_checkout", {
-    currency: "INR",
-    value: cart.subtotal / 100,
-    items: cart.items.map((item: any) => ({
-      item_id: item.variantId,
-      item_name: item.title,
-      price: item.price / 100,
-      quantity: item.quantity
-    }))
-  });
-};
-
-export const trackPurchase = (transactionId: string, cart: any) => {
-  trackEvent("purchase", {
-    transaction_id: transactionId,
-    currency: "INR",
-    value: cart.subtotal / 100,
-    items: cart.items.map((item: any) => ({
-      item_id: item.variantId,
-      item_name: item.title,
-      price: item.price / 100,
-      quantity: item.quantity
-    }))
-  });
+    if (metaEvent === "PageView") {
+      fbq("track", "PageView");
+    } else if (["ViewContent", "AddToCart", "InitiateCheckout", "Purchase"].includes(metaEvent)) {
+      fbq("track", metaEvent, metaParams);
+    } else {
+      fbq("trackCustom", metaEvent, metaParams);
+    }
+    
+  } catch (e) {
+    console.error("Analytics Error:", e);
+  }
 };

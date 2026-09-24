@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { formatPrice, discountPercent } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -23,6 +24,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const compareAt = variant?.compareAtPrice ?? product.compareAtPrice;
   const discount = compareAt ? discountPercent(price, compareAt) : 0;
 
+  // Track view_item once on mount or when product changes
+  React.useEffect(() => {
+    trackEvent("view_item", {
+      currency: "INR",
+      value: price,
+      items: [{
+        item_id: product.id,
+        item_name: product.title,
+        price: price
+      }]
+    });
+  }, [product.id, product.title, price]);
+
   function handleAddToCart() {
     setIsAdding(true);
     setTimeout(() => {
@@ -38,6 +52,18 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         },
         qty
       );
+      
+      trackEvent("add_to_cart", {
+        currency: "INR",
+        value: price * qty,
+        items: [{
+          item_id: product.id,
+          item_name: product.title,
+          quantity: qty,
+          price: price
+        }]
+      });
+
       setIsAdding(false);
       open();
       toast.success(`Added ${qty} ${product.title} to cart`);

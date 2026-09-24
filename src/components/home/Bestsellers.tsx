@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Heart, Bell, ShoppingCart, ChevronDown, Leaf, Droplets, Lock } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { addToCart, useCartDrawer } from "@/lib/cart";
+import { trackEvent } from "@/lib/analytics";
 
 // Actual Ghee products data matching the live store
 const gheeProducts = [
@@ -101,6 +102,18 @@ export default function Bestsellers() {
       price: p.price,
       image: p.image
     });
+    
+    trackEvent("add_to_cart", {
+      currency: "INR",
+      value: p.price,
+      items: [{
+        item_id: p.id,
+        item_name: p.title,
+        quantity: 1,
+        price: p.price
+      }]
+    });
+
     open();
   };
 

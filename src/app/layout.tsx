@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
+import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
@@ -48,15 +49,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${figtree.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased flex flex-col min-h-screen">
-        <FirebaseProvider>
-          <CartDrawerProvider>
-            <Toaster position="top-center" duration={2000} richColors />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <CartDrawer />
-          </CartDrawerProvider>
-        </FirebaseProvider>
+        <AnalyticsProvider>
+          <FirebaseProvider>
+            <CartDrawerProvider>
+              <Toaster position="top-center" duration={2000} richColors />
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <CartDrawer />
+            </CartDrawerProvider>
+          </FirebaseProvider>
+        </AnalyticsProvider>
       </body>
     </html>
   );

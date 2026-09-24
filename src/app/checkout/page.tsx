@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Info, CheckCircle2, ShieldCheck, Truck, Loader2, CreditCard, Banknote, Tag, Percent, Key, MapPin } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { saveUserCheckoutProfile, createOrder, calculateCheckoutPricing, CheckoutData, Address, GstDetails } from "@/lib/orders";
 
@@ -63,6 +64,22 @@ export default function CheckoutPage() {
       console.error("Failed to load checkout data from local storage", e);
     }
   }, []);
+
+  // Track begin_checkout
+  useEffect(() => {
+    if (cart.items.length > 0) {
+      trackEvent("begin_checkout", {
+        currency: "INR",
+        value: cart.subtotal,
+        items: cart.items.map(item => ({
+          item_id: item.productId,
+          item_name: item.title,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      });
+    }
+  }, [cart.items.length]);
 
   // Save to localStorage on change
   useEffect(() => {
@@ -163,6 +180,32 @@ export default function CheckoutPage() {
       // 2. Create the order with pricing details
       toast.info("Creating your order...");
       const orderId = await createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
+
+      // Send Order Initiated Telegram Notification
+      try {
+        await fetch("/api/send-telegram-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "initiated",
+            orderId,
+            orderData: {
+              items: cart.items.map(i => ({ ...i, name: i.title })),
+              subtotal: cart.subtotal,
+              totalAmount: pricing.amountAfterDiscount,
+              discount: pricing.discount,
+              amountToPay: pricing.amountToPay,
+              amountRemaining: pricing.amountRemaining,
+              shippingAddress: shipping,
+              contactInfo: { email, phone },
+              paymentMethod,
+              paymentStatus: "pending"
+            }
+          })
+        });
+      } catch (e) {
+        console.error("Failed to send init telegram notification", e);
+      }
       
       // 3. Create payment session URL directly
       toast.info("Setting up secure payment...");

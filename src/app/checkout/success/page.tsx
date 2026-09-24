@@ -7,6 +7,7 @@ import { CheckCircle2, Package, Truck, Phone, ArrowRight, XCircle, RotateCw } fr
 import { doc, getDoc } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
 import { formatPrice } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 
 function Confetti() {
   const [particles, setParticles] = useState<{ id: number; x: number; delay: number; duration: number; color: string; size: number }[]>([]);
@@ -110,6 +111,21 @@ function SuccessContent() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orderId, orderData: data }),
               }).catch(console.error);
+              
+              // Track Purchase Event
+              trackEvent("purchase", {
+                transaction_id: orderId,
+                currency: "INR",
+                value: data.amountToPay || data.totalAmount,
+                tax: data.tax || 0,
+                shipping: data.shippingCost || 0,
+                items: data.items?.map((i: any) => ({
+                  item_id: i.productId,
+                  item_name: i.name,
+                  quantity: i.quantity,
+                  price: i.price
+                })) || []
+              });
             }
           }
         })

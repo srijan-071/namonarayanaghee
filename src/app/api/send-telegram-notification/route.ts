@@ -5,7 +5,7 @@ const TELEGRAM_CHAT_ID = "5804733110";
 
 export async function POST(req: Request) {
   try {
-    const { orderId, orderData } = await req.json();
+    const { orderId, orderData, event = "success" } = await req.json();
 
     if (!orderId || !orderData) {
       return NextResponse.json({ error: "Missing orderId or orderData" }, { status: 400 });
@@ -19,8 +19,14 @@ export async function POST(req: Request) {
     const shipping = orderData.shippingAddress || {};
     const contact = orderData.contactInfo || {};
 
+    // Branding based on event
+    const brandingHeader = event === "initiated" 
+      ? "🟡 ORDER INITIATED (Payment Pending) 🟡" 
+      : "🟢 ORDER SUCCESS (Payment Verified) 🟢";
+
     const message = `
-Namo Narayana Ghee - New Order
+Namo Narayana Ghee
+${brandingHeader}
 ------------------------------
 Order ID: #${orderId}
 Payment Method: ${orderData.paymentMethod?.toUpperCase() || 'N/A'}
