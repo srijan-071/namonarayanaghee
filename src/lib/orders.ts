@@ -23,6 +23,7 @@ export interface CheckoutData {
   billingAddress: Address;
   gstDetails?: GstDetails;
   paymentMethod: string;
+  couponCode?: string;
 }
 
 /**
@@ -48,20 +49,24 @@ export async function saveUserCheckoutProfile(uid: string, data: CheckoutData) {
 export function calculateCheckoutPricing(
   subtotal: number,
   paymentMethod: string,
-  email: string
+  email: string,
+  couponCode?: string
 ) {
   const isAdmin = email.toLowerCase().trim() === "littlecodr@gmail.com";
 
   let discount = 0;
   let discountPercent = 0;
-  let amountAfterDiscount = subtotal;
-
-  // Prepaid gets 10% discount
+  
   if (paymentMethod === "prepaid") {
-    discountPercent = 10;
-    discount = Math.round(subtotal * 0.10);
-    amountAfterDiscount = subtotal - discount;
+    discountPercent += 10;
   }
+
+  if (couponCode?.toUpperCase().trim() === "ELVISH10") {
+    discountPercent += 10;
+  }
+
+  discount = Math.round(subtotal * (discountPercent / 100));
+  let amountAfterDiscount = subtotal - discount;
 
   // Admin bypass: ₹1 (which is 100 paise)
   if (isAdmin) {
@@ -137,6 +142,7 @@ export async function createOrder(
     totalAmount: pricing.amountAfterDiscount,
     discount: pricing.discount,
     discountPercent: pricing.discountPercent,
+    couponCode: data.couponCode || null,
     amountToPay: pricing.amountToPay,
     amountRemaining: pricing.amountRemaining,
     shippingAddress: data.shippingAddress,

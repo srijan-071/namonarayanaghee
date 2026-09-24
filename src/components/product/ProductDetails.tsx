@@ -7,7 +7,7 @@ import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Flame, Timer, TrendingUp } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 
@@ -36,6 +36,11 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
       }]
     });
   }, [product.id, product.title, price]);
+
+  // Scarcity state (pseudo-random based on product ID to remain consistent per product)
+  const leftInStock = React.useMemo(() => {
+    return Math.floor(product.id % 7) + 3; // Returns between 3 and 9
+  }, [product.id]);
 
   function handleAddToCart() {
     setIsAdding(true);
@@ -70,8 +75,34 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     }, 400);
   }
 
+  // JSON-LD Schema
+  const jsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.title,
+    "image": product.images,
+    "description": product.description.replace(/<[^>]*>?/gm, ''), // strip html
+    "sku": product.id.toString(),
+    "brand": {
+      "@type": "Brand",
+      "name": "Namo Narayana"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://namonarayanaghee.com/products/${product.slug}`,
+      "priceCurrency": "INR",
+      "price": (price / 100).toFixed(2),
+      "availability": variant?.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Gallery */}
       <div className="space-y-4">
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-nn-cream border border-nn-hairline">
@@ -118,6 +149,18 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               <span className="nn-badge-sale">{discount}% OFF</span>
             </>
           )}
+        </div>
+
+        {/* Urgency & Scarcity Badges */}
+        <div className="mb-6 space-y-2">
+          <div className="flex items-center gap-2 text-[#C38936] bg-[#C38936]/10 px-3 py-2 rounded-lg text-sm font-bold w-fit">
+            <Flame className="w-4 h-4 animate-pulse" />
+            <span>High Demand! Only {leftInStock} jars left in this batch.</span>
+          </div>
+          <div className="flex items-center gap-2 text-[#1E3A24] bg-[#1E3A24]/5 px-3 py-2 rounded-lg text-sm font-medium w-fit">
+            <Timer className="w-4 h-4" />
+            <span>Order within 2 hours for dispatch today.</span>
+          </div>
         </div>
 
         {/* Variants & Packs */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart, useCartDrawer, removeFromCart, updateQuantity } from "@/lib/cart";
+import { useCart, useCartDrawer, removeFromCart, updateQuantity, addToCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -19,6 +19,21 @@ export default function CartDrawer() {
 
   const handleUpdate = (variantId: number, newQty: number) => {
     updateQuantity(variantId, newQty);
+  };
+
+  const hasHoney = cart.items.some(i => i.slug === "honey");
+
+  const handleAddHoney = () => {
+    addToCart({
+      productId: 9545045147816,
+      variantId: 55811350495400,
+      slug: "honey",
+      title: "Honey",
+      variantTitle: "Default Title",
+      price: 31500,
+      image: "/assets/product_honey.webp"
+    }, 1);
+    toast.success("Honey added to cart!");
   };
 
   return (
@@ -93,6 +108,23 @@ export default function CartDrawer() {
             </ul>
           )}
         </div>
+
+        {/* Upsell */}
+        {cart.items.length > 0 && !hasHoney && (
+          <div className="mx-5 mb-4 p-4 bg-[#F7F4EB] rounded-xl border border-[#E9DFD1] flex items-center justify-between gap-4 animate-in slide-in-from-bottom-2">
+            <div className="relative w-16 h-16 rounded bg-white border border-[#D5D8D0] shrink-0">
+              <Image src="/assets/product_honey.webp" alt="Honey" fill className="object-cover rounded" sizes="64px" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-[#C38936] font-bold uppercase tracking-wider mb-0.5">Frequently Bought Together</p>
+              <p className="font-bold text-[#1E3A24] text-sm truncate">Pure Forest Honey</p>
+              <p className="text-xs text-[#576B55]">Add to cart for just {formatPrice(31500)}!</p>
+            </div>
+            <button onClick={handleAddHoney} className="bg-[#1E3A24] text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-[#152919] transition shrink-0">
+              Add
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         {cart.items.length > 0 && (

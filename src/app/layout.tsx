@@ -8,6 +8,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
+import ExitIntentPopup from "@/components/home/ExitIntentPopup";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main className="flex-1">{children}</main>
               <Footer />
               <CartDrawer />
+              <ExitIntentPopup />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>

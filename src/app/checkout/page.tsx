@@ -24,6 +24,20 @@ export default function CheckoutPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleNextStep = (nextStep: Step) => {
+    if (nextStep === "shipping" && email && cart.items.length > 0) {
+      // Save abandoned cart silently
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          phone,
+          cartItems: cart.items,
+          subtotal: cart.subtotal
+        })
+      }).catch(e => console.error("Abandoned cart log failed", e));
+    }
+
     setIsTransitioning(true);
     setTimeout(() => {
       setStep(nextStep);
@@ -44,6 +58,8 @@ export default function CheckoutPage() {
   
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [tempCoupon, setTempCoupon] = useState("");
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -59,6 +75,7 @@ export default function CheckoutPage() {
         if (parsed.billingSameAsShipping !== undefined) setBillingSameAsShipping(parsed.billingSameAsShipping);
         if (parsed.billing) setBilling(parsed.billing);
         if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
+        if (parsed.couponCode) setCouponCode(parsed.couponCode);
       }
     } catch (e) {
       console.error("Failed to load checkout data from local storage", e);
@@ -92,13 +109,14 @@ export default function CheckoutPage() {
         shipping,
         billingSameAsShipping,
         billing,
-        paymentMethod
+        paymentMethod,
+        couponCode
       };
       localStorage.setItem("nn_checkout_data", JSON.stringify(dataToSave));
     } catch (e) {
       console.error("Failed to save checkout data to local storage", e);
     }
-  }, [email, phone, hasGst, gstDetails, shipping, billingSameAsShipping, billing, paymentMethod]);
+  }, [email, phone, hasGst, gstDetails, shipping, billingSameAsShipping, billing, paymentMethod, couponCode]);
 
   const handlePincodeChange = async (val: string, target: 'shipping' | 'billing') => {
     if (target === 'shipping') {
@@ -129,8 +147,8 @@ export default function CheckoutPage() {
 
   // Compute pricing reactively
   const pricing = useMemo(() => {
-    return calculateCheckoutPricing(cart.subtotal, paymentMethod, email);
-  }, [cart.subtotal, paymentMethod, email]);
+    return calculateCheckoutPricing(cart.subtotal, paymentMethod, email, couponCode);
+  }, [cart.subtotal, paymentMethod, email, couponCode]);
 
   if (cart.items.length === 0 && !isSubmitting) {
     return (
@@ -170,7 +188,8 @@ export default function CheckoutPage() {
         shippingAddress: shipping,
         billingAddress: finalBilling,
         gstDetails: hasGst ? gstDetails : undefined,
-        paymentMethod
+        paymentMethod,
+        couponCode: couponCode || undefined
       };
 
       // 1. Save profile to Firestore
@@ -221,8 +240,9 @@ export default function CheckoutPage() {
       
       const checkoutUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
       
-      // 4. Clear Cart
+      // 4. Clear Cart and Abandoned Cart
       clearCart();
+      fetch(`/api/abandoned-cart?email=${encodeURIComponent(email)}`, { method: "DELETE" }).catch(e => console.error(e));
       
       // 5. Redirect to potter-world payment page
       toast.success("Redirecting to payment gateway...");
@@ -409,7 +429,7 @@ export default function CheckoutPage() {
                       {pricing.discount > 0 && (
                         <div className="flex justify-between text-green-700">
                           <span className="flex items-center gap-1">
-                            <Percent className="w-3 h-3" /> Prepaid Discount ({pricing.discountPercent}%)
+                            <Percent className="w-3 h-3" /> Discount ({pricing.discountPercent}%)
                           </span>
                           <span className="font-semibold">-{formatPrice(pricing.discount)}</span>
                         </div>
@@ -573,10 +593,44 @@ export default function CheckoutPage() {
                 
                 {pricing.discount > 0 && (
                   <div className="flex justify-between items-center text-green-700">
-                    <span>Prepaid Discount ({pricing.discountPercent}%)</span>
+                    <span>Discount ({pricing.discountPercent}%)</span>
                     <span className="font-semibold">-{formatPrice(pricing.discount)}</span>
                   </div>
                 )}
+                
+                {/* Coupon Code Input */}
+                <div className="py-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Discount code"
+                      value={tempCoupon}
+                      onChange={(e) => setTempCoupon(e.target.value.toUpperCase())}
+                      className="flex-1 border border-[#D5D8D0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A24] bg-white uppercase"
+                    />
+                    <button
+                      onClick={() => {
+                        if (tempCoupon.trim() === "ELVISH10") {
+                          setCouponCode("ELVISH10");
+                          toast.success("Coupon ELVISH10 applied!");
+                          setTempCoupon("");
+                        } else {
+                          toast.error("Invalid coupon code");
+                        }
+                      }}
+                      disabled={!tempCoupon.trim()}
+                      className="bg-[#1E3A24] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#152919] disabled:opacity-50 transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponCode && (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 text-green-800 text-xs px-3 py-2 rounded-lg mt-2">
+                      <span className="font-bold flex items-center gap-1"><Tag className="w-3 h-3"/> {couponCode} APPLIED</span>
+                      <button onClick={() => setCouponCode("")} className="text-green-800 hover:text-green-900 underline">Remove</button>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex justify-between items-center text-[#576B55]">
                   <span>Shipping</span>
