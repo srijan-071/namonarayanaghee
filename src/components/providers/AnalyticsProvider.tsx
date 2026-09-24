@@ -11,9 +11,24 @@ function AnalyticsTracker() {
 
   useEffect(() => {
     if (pathname) {
+      // 1. UTM Parameters
+      const source = searchParams?.get("utm_source") || searchParams?.get("source");
+      const medium = searchParams?.get("utm_medium") || searchParams?.get("medium");
+      const campaign = searchParams?.get("utm_campaign") || searchParams?.get("campaign");
+      
+      // 2. Referrer Tracking
+      let referrer = "";
+      if (typeof document !== "undefined") {
+        referrer = document.referrer;
+      }
+
       trackEvent("page_view", {
         page_path: pathname,
         page_search: searchParams?.toString() || "",
+        page_referrer: referrer,
+        ...(source && { source }),
+        ...(medium && { medium }),
+        ...(campaign && { campaign }),
       });
     }
   }, [pathname, searchParams]);
