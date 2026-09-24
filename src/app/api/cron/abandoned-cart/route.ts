@@ -7,30 +7,62 @@ const BREVO_API_KEY = "xkeysib-ce43813e216edf0bbd4d96ead3e332d12458fe3aa9270381e
 
 export async function GET(req: Request) {
   try {
-    // Dynamic import to prevent SSR errors
-    const { db } = await import("@/lib/firebase");
-    const { collection, getDocs, doc, updateDoc, query, where } = await import("firebase/firestore/lite");
-
-    const cartsRef = collection(db, "abandoned_carts");
-    const q = query(
-      cartsRef,
-      where("notified", "==", false),
-      where("recovered", "==", false)
-    );
+    const FIREBASE_PROJECT_ID = "namonarayanaghee";
+    const firestoreQuery = {
+      structuredQuery: {
+        from: [{ collectionId: "abandoned_carts" }],
+        where: {
+          compositeFilter: {
+            op: "AND",
+            filters: [
+              { fieldFilter: { field: { fieldPath: "notified" }, op: "EQUAL", value: { booleanValue: false } } },
+              { fieldFilter: { field: { fieldPath: "recovered" }, op: "EQUAL", value: { booleanValue: false } } }
+            ]
+          }
+        }
+      }
+    };
     
-    const snapshot = await getDocs(q);
+    const queryRes = await fetch(`https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`, {
+      method: "POST",
+      body: JSON.stringify(firestoreQuery)
+    });
+    const snapshot = await queryRes.json();
     
     const now = Date.now();
     const ONE_HOUR = 60 * 60 * 1000;
     
     let processedCount = 0;
 
-    for (const cartDoc of snapshot.docs) {
-      const cartData = cartDoc.data();
-      const lastActive = cartData.lastActive?.toMillis ? cartData.lastActive.toMillis() : 0;
+    for (const result of snapshot) {
+      if (!result.document) continue;
+      const cartDoc = result.document;
+      const docId = cartDoc.name.split("/").pop();
+      
+      // Parse Firestore REST API document format
+      const cartData = {
+        email: cartDoc.fields.email?.stringValue,
+        phone: cartDoc.fields.phone?.stringValue,
+        subtotal: Number(cartDoc.fields.subtotal?.integerValue || 0),
+        lastActive: cartDoc.fields.lastActive?.timestampValue,
+        // We need to parse cartItems array if present, but since we are just sending an email,
+        // we can extract the item names and prices manually, or just skip item details in email to simplify
+        cartItems: []
+      };
+      
+      // If we really need cart items, we parse the ArrayValue
+      if (cartDoc.fields.cartItems?.arrayValue?.values) {
+        cartData.cartItems = cartDoc.fields.cartItems.arrayValue.values.map((v: any) => ({
+          name: v.mapValue.fields.name?.stringValue || v.mapValue.fields.title?.stringValue,
+          price: Number(v.mapValue.fields.price?.integerValue || 0),
+          quantity: Number(v.mapValue.fields.quantity?.integerValue || 0)
+        }));
+      }
+
+      const lastActiveTime = cartData.lastActive ? new Date(cartData.lastActive).getTime() : 0;
       
       // If the cart was last active more than 1 hour ago
-      if (now - lastActive > ONE_HOUR) {
+      if (now - lastActiveTime > ONE_HOUR) {
         
         // 1. Send Recovery Email via Brevo
         if (cartData.email) {
@@ -120,10 +152,11 @@ https://wa.me/91${cartData.phone.replace(/[^0-9]/g, '').slice(-10)}
           }).catch(console.error);
         }
 
-        // 3. Mark as notified
-        await updateDoc(doc(db, "abandoned_carts", cartDoc.id), {
-          notified: true
-        });
+        // 3. Mark as notified using REST API
+        await fetch(`https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/abandoned_carts/${docId}?updateMask.fieldPaths=notified`, {
+          method: "PATCH",
+          body: JSON.stringify({ fields: { notified: { booleanValue: true } } })
+        }).catch(console.error);
         
         processedCount++;
       }

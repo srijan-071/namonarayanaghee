@@ -26,16 +26,14 @@ export default function CheckoutPage() {
   const handleNextStep = (nextStep: Step) => {
     if (nextStep === "shipping" && email && cart.items.length > 0) {
       // Save abandoned cart silently
-      fetch("/api/abandoned-cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
+        logAbandonedCart({
           email,
           phone,
           cartItems: cart.items,
           subtotal: cart.subtotal
-        })
-      }).catch(e => console.error("Abandoned cart log failed", e));
+        });
+      });
     }
 
     setIsTransitioning(true);
@@ -247,7 +245,9 @@ export default function CheckoutPage() {
       
       // 5. Clear Cart and Abandoned Cart
       clearCart();
-      fetch(`/api/abandoned-cart?email=${encodeURIComponent(email)}`, { method: "DELETE", keepalive: true }).catch(e => console.error(e));
+      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
+        if (email) clearAbandonedCart(email);
+      });
       
       // 6. Redirect to payment page immediately
       toast.success("Redirecting to secure payment...", { id: loadingToastId });

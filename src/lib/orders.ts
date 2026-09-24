@@ -65,16 +65,9 @@ export function calculateCheckoutPricing(
 
   if (couponCode?.toUpperCase().trim() === "ELVISH10") {
     if (paymentMethod === "prepaid") {
-      let eligibleSubtotal = 0;
-      for (const item of cartItems) {
-        if (item.slug === "pure-desi-cow-ghee-2-5-litre" || item.slug === "pure-desi-cow-ghee-5-litre") {
-          eligibleSubtotal += (item.price * item.quantity);
-        }
-      }
-      if (eligibleSubtotal > 0) {
-        // Add 10% on top of the existing discount, but only for eligible items
-        discount += Math.round(eligibleSubtotal * 0.10);
-      }
+      // Add an extra 10% discount on the entire subtotal
+      discount += Math.round(subtotal * 0.10);
+      discountPercent += 10;
     }
   }
 
