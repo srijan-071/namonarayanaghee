@@ -200,42 +200,39 @@ export default function CheckoutPage() {
         couponCode: couponCode || undefined
       };
 
-      // 1. Save profile to Firestore
-      toast.info("Saving your information...");
-      await saveUserCheckoutProfile(user.uid, checkoutData);
+      // 1. Show single loading toast
+      const loadingToastId = toast.loading("Securely preparing your order...", { duration: 10000 });
       
-      // 2. Create the order with pricing details
-      toast.info("Creating your order...");
-      const orderId = await createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
+      // 2. Fire Firestore requests concurrently
+      const orderIdPromise = createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
+      const profilePromise = saveUserCheckoutProfile(user.uid, checkoutData);
+      
+      const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
 
-      // Send Order Initiated Telegram Notification
-      try {
-        await fetch("/api/send-telegram-notification", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            event: "initiated",
-            orderId,
-            orderData: {
-              items: cart.items.map(i => ({ ...i, name: i.title })),
-              subtotal: cart.subtotal,
-              totalAmount: pricing.amountAfterDiscount,
-              discount: pricing.discount,
-              amountToPay: pricing.amountToPay,
-              amountRemaining: pricing.amountRemaining,
-              shippingAddress: shipping,
-              contactInfo: { email, phone },
-              paymentMethod,
-              paymentStatus: "pending"
-            }
-          })
-        });
-      } catch (e) {
-        console.error("Failed to send init telegram notification", e);
-      }
+      // 3. Send Telegram Notification in background (using keepalive to survive redirect)
+      fetch("/api/send-telegram-notification", {
+        method: "POST",
+        keepalive: true,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "initiated",
+          orderId,
+          orderData: {
+            items: cart.items.map(i => ({ ...i, name: i.title })),
+            subtotal: cart.subtotal,
+            totalAmount: pricing.amountAfterDiscount,
+            discount: pricing.discount,
+            amountToPay: pricing.amountToPay,
+            amountRemaining: pricing.amountRemaining,
+            shippingAddress: shipping,
+            contactInfo: { email, phone },
+            paymentMethod,
+            paymentStatus: "pending"
+          }
+        })
+      }).catch(e => console.error("Failed to send init telegram notification", e));
       
-      // 3. Create payment session URL directly
-      toast.info("Setting up secure payment...");
+      // 4. Create payment session URL directly
       const amountInINR = pricing.amountToPay / 100;
       const proxyParams = new URLSearchParams();
       proxyParams.set("txnid", orderId);
@@ -248,12 +245,12 @@ export default function CheckoutPage() {
       
       const checkoutUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
       
-      // 4. Clear Cart and Abandoned Cart
+      // 5. Clear Cart and Abandoned Cart
       clearCart();
-      fetch(`/api/abandoned-cart?email=${encodeURIComponent(email)}`, { method: "DELETE" }).catch(e => console.error(e));
+      fetch(`/api/abandoned-cart?email=${encodeURIComponent(email)}`, { method: "DELETE", keepalive: true }).catch(e => console.error(e));
       
-      // 5. Redirect to potter-world payment page
-      toast.success("Redirecting to payment gateway...");
+      // 6. Redirect to payment page immediately
+      toast.success("Redirecting to secure payment...", { id: loadingToastId });
       window.location.href = checkoutUrl;
       
     } catch (error) {

@@ -131,13 +131,15 @@ export async function createOrder(
   pricing: ReturnType<typeof calculateCheckoutPricing>
 ) {
   const { db } = await import("./firebase");
-  const { doc, setDoc, serverTimestamp, collection, addDoc } = await import("firebase/firestore/lite");
+  const { doc, setDoc, serverTimestamp, collection } = await import("firebase/firestore/lite");
   const ordersRef = collection(db, "orders");
+  const orderDoc = doc(ordersRef);
   
   const shippingCost = 0; 
   const tax = 0;
 
-  const orderDoc = await addDoc(ordersRef, {
+  await setDoc(orderDoc, {
+    orderId: orderDoc.id,
     userId: uid,
     items: cartItems.map(item => ({
       productId: item.productId,
@@ -172,9 +174,6 @@ export async function createOrder(
     status: "pending",
     createdAt: serverTimestamp(),
   });
-
-  // Store the orderId back in the document
-  await setDoc(orderDoc, { orderId: orderDoc.id }, { merge: true });
 
   return orderDoc.id;
 }
