@@ -61,6 +61,14 @@ export default function CheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [tempCoupon, setTempCoupon] = useState("");
 
+  const handlePaymentMethodChange = (method: string) => {
+    setPaymentMethod(method);
+    if (method === "cod" && couponCode) {
+      setCouponCode("");
+      toast.error("Coupon removed. Valid for prepaid orders only.");
+    }
+  };
+
   // Load from localStorage on mount
   useEffect(() => {
     try {
@@ -389,7 +397,7 @@ export default function CheckoutPage() {
                   <div className="space-y-3">
                     {/* Prepaid Option */}
                     <label className={`flex items-start gap-4 p-5 border-2 rounded-xl cursor-pointer transition ${paymentMethod === "prepaid" ? "border-[#C38936] bg-[#FDFBF7]" : "border-[#E9E5D9] hover:border-[#C38936]/50"}`}>
-                      <input type="radio" name="payment" value="prepaid" checked={paymentMethod === "prepaid"} onChange={(e) => setPaymentMethod(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
+                      <input type="radio" name="payment" value="prepaid" checked={paymentMethod === "prepaid"} onChange={(e) => handlePaymentMethodChange(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
                           <CreditCard className="w-5 h-5 text-[#C38936]" />
@@ -404,7 +412,7 @@ export default function CheckoutPage() {
 
                     {/* COD Option */}
                     <label className={`flex items-start gap-4 p-5 border-2 rounded-xl cursor-pointer transition ${paymentMethod === "cod" ? "border-[#C38936] bg-[#FDFBF7]" : "border-[#E9E5D9] hover:border-[#C38936]/50"}`}>
-                      <input type="radio" name="payment" value="cod" checked={paymentMethod === "cod"} onChange={(e) => setPaymentMethod(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
+                      <input type="radio" name="payment" value="cod" checked={paymentMethod === "cod"} onChange={(e) => handlePaymentMethodChange(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
                           <Banknote className="w-5 h-5 text-[#1E3A24]" />
@@ -611,9 +619,13 @@ export default function CheckoutPage() {
                     <button
                       onClick={() => {
                         if (tempCoupon.trim() === "ELVISH10") {
-                          setCouponCode("ELVISH10");
-                          toast.success("Coupon ELVISH10 applied!");
-                          setTempCoupon("");
+                          if (paymentMethod === "cod") {
+                            toast.error("Coupon valid for Prepaid orders only");
+                          } else {
+                            setCouponCode("ELVISH10");
+                            toast.success("Coupon ELVISH10 applied!");
+                            setTempCoupon("");
+                          }
                         } else {
                           toast.error("Invalid coupon code");
                         }
