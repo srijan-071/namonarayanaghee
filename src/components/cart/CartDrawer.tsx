@@ -1,16 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { useCart, useCartDrawer, removeFromCart, updateQuantity, addToCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function CartDrawer() {
   const cart = useCart();
   const { isOpen, close } = useCartDrawer();
   const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleRemove = (variantId: number) => {
     removeFromCart(variantId);
@@ -143,12 +146,19 @@ export default function CartDrawer() {
             </div>
             <button 
               onClick={() => {
-                close();
-                setTimeout(() => router.push("/checkout"), 150);
+                setIsNavigating(true);
+                router.push("/checkout");
+                // We'll close the drawer slightly later or let the navigation handle it
+                setTimeout(() => {
+                  close();
+                  setIsNavigating(false);
+                }, 500); // Reset state after navigation happens
               }} 
-              className="nn-btn nn-btn-primary w-full text-center py-3"
+              disabled={isNavigating}
+              className="nn-btn nn-btn-primary w-full text-center py-3 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Proceed to Checkout
+              {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+              {isNavigating ? "Redirecting..." : "Proceed to Checkout"}
             </button>
             <p className="text-center text-[11px] text-nn-bark">Secure Payments • COD Available</p>
           </div>
