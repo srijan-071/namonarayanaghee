@@ -31,7 +31,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const GHEE_SLUGS = ["pure-desi-cow-ghee-1-litre", "pure-desi-cow-ghee-2-5-litre", "pure-desi-cow-ghee-5-litre"];
   let gheePacks = null;
   if (GHEE_SLUGS.includes(slug)) {
-    gheePacks = GHEE_SLUGS.map((s) => getProduct(s)).filter(Boolean);
+    gheePacks = GHEE_SLUGS.map((s) => getProduct(s)).filter((p): p is import("@/lib/types").Product => p !== null);
   }
 
   return (

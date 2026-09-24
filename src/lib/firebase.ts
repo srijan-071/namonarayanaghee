@@ -21,7 +21,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Analytics is only available in browser environments
-let analytics = null;
+let analytics: import("firebase/analytics").Analytics | null = null;
 if (typeof window !== "undefined") {
   isSupported().then((supported) => {
     if (supported) {
