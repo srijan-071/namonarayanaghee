@@ -86,9 +86,9 @@ export function calculateCheckoutPricing(
     };
   }
 
-  // COD: 20% advance, 80% on delivery
+  // COD: 50% advance, 50% on delivery
   if (paymentMethod === "cod") {
-    const advanceAmount = Math.round(amountAfterDiscount * 0.20);
+    const advanceAmount = Math.round(amountAfterDiscount * 0.50);
     const remaining = amountAfterDiscount - advanceAmount;
     return {
       subtotal,

@@ -415,7 +415,7 @@ export default function CheckoutPage() {
                           <Banknote className="w-5 h-5 text-[#1E3A24]" />
                           <span className="font-bold text-[#1E3A24] text-base">Cash on Delivery (COD)</span>
                         </div>
-                        <p className="text-sm text-[#576B55]">Pay 20% advance online now, rest on delivery. Cash or UPI accepted at door.</p>
+                        <p className="text-sm text-[#576B55]">Pay 50% advance online now, rest on delivery. Cash or UPI accepted at door.</p>
                       </div>
                     </label>
                   </div>
@@ -661,7 +661,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-end">
                   <div>
                     <span className="block text-sm text-[#576B55] mb-1">
-                      {paymentMethod === "cod" ? "Pay Now (20% Advance)" : "Total to Pay"}
+                      {paymentMethod === "cod" ? "Pay Now (50% Advance)" : "Total to Pay"}
                     </span>
                     <span className="text-xs text-[#576B55]">Inclusive of all taxes</span>
                   </div>
