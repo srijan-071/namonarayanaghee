@@ -27,8 +27,14 @@ export async function POST(req: Request) {
     const { emails } = await req.json();
     if (!emails || !emails.length) return NextResponse.json({ error: "No emails provided" }, { status: 400 });
 
-    // Send emails via Brevo
-    for (const email of emails) {
+    // Send emails via Brevo in batches of 100 to avoid Cloudflare worker subrequest/timeout limits
+    const CHUNK_SIZE = 100;
+    for (let i = 0; i < emails.length; i += CHUNK_SIZE) {
+      const chunk = emails.slice(i, i + CHUNK_SIZE);
+      const messageVersions = chunk.map((email: string) => ({
+        to: [{ email }]
+      }));
+
       await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
@@ -38,7 +44,6 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           sender: { name: "Namo Narayana", email: "hello@namonarayanaghee.store" },
-          to: [{ email }],
           subject: "A small gift from Elvish Yadav 🎁",
           htmlContent: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1E3A24; padding: 20px;">
@@ -63,7 +68,8 @@ export async function POST(req: Request) {
                 You received this email because you subscribed to our exclusive offers.
               </div>
             </div>
-          `
+          `,
+          messageVersions
         })
       });
     }
