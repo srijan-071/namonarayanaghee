@@ -7,7 +7,9 @@ import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { Loader2, Flame, Timer, TrendingUp } from "lucide-react";
+import { Loader2, Flame, Timer, TrendingUp, Star } from "lucide-react";
+import ProductReviews from "./ProductReviews";
+import { SAMPLE_REVIEWS, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 
 import { useRouter } from "next/navigation";
 
@@ -41,6 +43,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const leftInStock = React.useMemo(() => {
     return Math.floor(product.id % 7) + 3; // Returns between 3 and 9
   }, [product.id]);
+
+  const reviewStats = PRODUCT_REVIEW_STATS[product.slug];
 
   function handleAddToCart() {
     setIsAdding(true);
@@ -138,7 +142,25 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
       {/* Details */}
       <div className="flex flex-col">
-        <h1 className="nn-title mb-3">{product.title}</h1>
+        <h1 className="nn-title mb-2">{product.title}</h1>
+
+        {reviewStats && (
+          <button 
+            onClick={() => {
+              const el = document.getElementById("product-reviews-section");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="flex items-center gap-2 w-fit mb-4 hover:opacity-80 transition-opacity"
+          >
+            <div className="flex text-[#F5B301]">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-4 h-4 ${i < Math.floor(reviewStats.average) ? "fill-current" : "text-gray-300"}`} />
+              ))}
+            </div>
+            <span className="text-sm font-medium text-[#1E3A24]">{reviewStats.average.toFixed(1)}</span>
+            <span className="text-sm text-[#576B55] underline decoration-dashed underline-offset-2">({reviewStats.total} reviews)</span>
+          </button>
+        )}
 
         {/* Price */}
         <div className="flex items-center gap-3 mb-6">
@@ -267,6 +289,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             ))}
           </div>
         )}
+      </div>
+
+      <div className="col-span-1 md:col-span-2">
+        <ProductReviews 
+          reviews={SAMPLE_REVIEWS} 
+          totalReviews={reviewStats?.total || 0} 
+          averageRating={reviewStats?.average || 5.0} 
+        />
       </div>
     </div>
   );
