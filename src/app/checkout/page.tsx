@@ -69,10 +69,6 @@ export default function CheckoutPage() {
 
   const handlePaymentMethodChange = (method: string) => {
     setPaymentMethod(method);
-    if (method === "cod" && couponCode) {
-      setCouponCode("");
-      toast.error("Coupon removed. Valid for prepaid orders only.");
-    }
   };
 
   // Load from localStorage on mount
@@ -95,6 +91,16 @@ export default function CheckoutPage() {
       console.error("Failed to load checkout data from local storage", e);
     }
   }, []);
+
+  // Sync cart discount code
+  useEffect(() => {
+    if (cart.discountCode && cart.discountCode !== couponCode) {
+      setCouponCode(cart.discountCode);
+    } else if (!cart.discountCode && couponCode) {
+      // If removed from cart drawer, clear here
+      setCouponCode("");
+    }
+  }, [cart.discountCode]);
 
   // Track begin_checkout
   useEffect(() => {
@@ -629,17 +635,17 @@ export default function CheckoutPage() {
                     />
                     <button
                       onClick={() => {
-                        if (tempCoupon.trim() === "ELVISH10") {
-                          if (paymentMethod === "cod") {
-                            toast.error("Coupon valid for Prepaid orders only");
-                          } else {
-                            setCouponCode("ELVISH10");
-                            toast.success("Coupon ELVISH10 applied!");
+                        const val = tempCoupon.trim().toUpperCase();
+                        import("@/lib/cart").then((cartLib) => {
+                          if (cartLib.VALID_COUPONS[val]) {
+                            setCouponCode(val);
+                            toast.success(`Coupon ${val} applied!`);
                             setTempCoupon("");
+                            cartLib.applyCoupon(val); // Sync to cart drawer state
+                          } else {
+                            toast.error("Invalid or expired coupon code");
                           }
-                        } else {
-                          toast.error("Invalid coupon code");
-                        }
+                        });
                       }}
                       disabled={!tempCoupon.trim()}
                       className="bg-[#1E3A24] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#152919] disabled:opacity-50 transition-colors"
@@ -650,7 +656,10 @@ export default function CheckoutPage() {
                   {couponCode && (
                     <div className="flex items-center justify-between bg-green-50 border border-green-200 text-green-800 text-xs px-3 py-2 rounded-lg mt-2">
                       <span className="font-bold flex items-center gap-1"><Tag className="w-3 h-3"/> {couponCode} APPLIED</span>
-                      <button onClick={() => setCouponCode("")} className="text-green-800 hover:text-green-900 underline">Remove</button>
+                      <button onClick={() => {
+                        setCouponCode("");
+                        import("@/lib/cart").then((cartLib) => cartLib.removeCoupon());
+                      }} className="text-green-800 hover:text-green-900 underline">Remove</button>
                     </div>
                   )}
                 </div>

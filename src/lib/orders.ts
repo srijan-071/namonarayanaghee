@@ -46,6 +46,8 @@ export async function saveUserCheckoutProfile(uid: string, data: CheckoutData) {
 /**
  * Calculates pricing based on payment method and admin bypass.
  */
+import { VALID_COUPONS } from "./cart";
+
 export function calculateCheckoutPricing(
   cartItems: CartItem[],
   subtotal: number,
@@ -59,16 +61,24 @@ export function calculateCheckoutPricing(
   let discountPercent = 0;
   
   if (paymentMethod === "prepaid") {
-    discountPercent = 10;
+    discountPercent += 10;
     discount += Math.round(subtotal * 0.10);
   }
 
-  if (couponCode?.toUpperCase().trim() === "ELVISH10") {
-    if (paymentMethod === "prepaid") {
-      // Add an extra 10% discount on the entire subtotal
-      discount += Math.round(subtotal * 0.10);
-      discountPercent += 10;
+  const normalizedCode = couponCode?.toUpperCase().trim();
+  if (normalizedCode && VALID_COUPONS[normalizedCode]) {
+    const coupon = VALID_COUPONS[normalizedCode];
+    if (coupon.type === 'percentage') {
+      discount += Math.round(subtotal * (coupon.value / 100));
+      discountPercent += coupon.value;
+    } else if (coupon.type === 'fixed') {
+      discount += coupon.value;
     }
+  }
+
+  // Cap discount at subtotal
+  if (discount > subtotal) {
+    discount = subtotal;
   }
 
   let amountAfterDiscount = subtotal - discount;

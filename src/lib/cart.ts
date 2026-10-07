@@ -33,11 +33,39 @@ function writeCart(cart: Cart) {
   window.dispatchEvent(new Event("nn-cart-change"));
 }
 
-function recalculate(items: CartItem[]): Cart {
+export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
+  "ELVISH10": { type: 'percentage', value: 10 },
+  "NAMO50": { type: 'fixed', value: 50 },
+  "WELCOME": { type: 'percentage', value: 5 },
+  "GHEE100": { type: 'fixed', value: 100 }
+};
+
+function recalculate(items: CartItem[], discountCode?: string): Cart {
+  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  let discountAmount = 0;
+  let validCode: string | undefined = undefined;
+
+  if (discountCode && VALID_COUPONS[discountCode]) {
+    const coupon = VALID_COUPONS[discountCode];
+    validCode = discountCode;
+    if (coupon.type === 'percentage') {
+      discountAmount = Math.round(subtotal * (coupon.value / 100));
+    } else if (coupon.type === 'fixed') {
+      discountAmount = coupon.value;
+    }
+    // ensure discount doesn't exceed subtotal
+    if (discountAmount > subtotal) {
+      discountAmount = subtotal;
+    }
+  }
+
   return {
     items,
     totalItems: items.reduce((s, i) => s + i.quantity, 0),
-    subtotal: items.reduce((s, i) => s + i.price * i.quantity, 0),
+    subtotal,
+    discountCode: validCode,
+    discountAmount,
+    total: subtotal - discountAmount,
   };
 }
 
@@ -63,12 +91,12 @@ export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
       }, 0);
     }
   }
-  writeCart(recalculate(cart.items));
+  writeCart(recalculate(cart.items, cart.discountCode));
 }
 
 export function removeFromCart(variantId: number) {
   const cart = readCart();
-  writeCart(recalculate(cart.items.filter((i) => i.variantId !== variantId)));
+  writeCart(recalculate(cart.items.filter((i) => i.variantId !== variantId), cart.discountCode));
 }
 
 export function updateQuantity(variantId: number, qty: number) {
@@ -81,11 +109,26 @@ export function updateQuantity(variantId: number, qty: number) {
       cart.items[idx].quantity = qty;
     }
   }
-  writeCart(recalculate(cart.items));
+  writeCart(recalculate(cart.items, cart.discountCode));
 }
 
 export function clearCart() {
   writeCart({ items: [], totalItems: 0, subtotal: 0 });
+}
+
+export function applyCoupon(code: string): boolean {
+  const cart = readCart();
+  const normalized = code.trim().toUpperCase();
+  if (VALID_COUPONS[normalized]) {
+    writeCart(recalculate(cart.items, normalized));
+    return true;
+  }
+  return false;
+}
+
+export function removeCoupon() {
+  const cart = readCart();
+  writeCart(recalculate(cart.items, undefined));
 }
 
 // ─── React hook ─────────────────────────────────────────

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCart, useCartDrawer, removeFromCart, updateQuantity, addToCart } from "@/lib/cart";
+import { useCart, useCartDrawer, removeFromCart, updateQuantity, addToCart, applyCoupon, removeCoupon } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -128,18 +128,67 @@ export default function CartDrawer() {
 
         {/* Footer */}
         {cart.items.length > 0 && (
-          <div className="border-t border-nn-hairline p-5 space-y-3">
-            <div className="flex justify-between text-sm">
+          <div className="border-t border-nn-hairline p-5 space-y-3 bg-gray-50">
+            <div className="flex gap-2">
+              {cart.discountCode ? (
+                <div className="flex-1 flex items-center justify-between bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-md text-sm">
+                  <span className="font-semibold">{cart.discountCode} applied!</span>
+                  <button onClick={() => removeCoupon()} className="text-xs hover:text-green-900 underline">Remove</button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Coupon code"
+                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm uppercase outline-none focus:border-nn-forest"
+                    id="coupon-input"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = e.currentTarget.value;
+                        if (val) {
+                          const ok = applyCoupon(val);
+                          if (ok) toast.success("Coupon applied!");
+                          else toast.error("Invalid or expired coupon");
+                          e.currentTarget.value = "";
+                        }
+                      }
+                    }}
+                  />
+                  <button 
+                    onClick={() => {
+                      const input = document.getElementById('coupon-input') as HTMLInputElement;
+                      if (input && input.value) {
+                        const ok = applyCoupon(input.value);
+                        if (ok) toast.success("Coupon applied!");
+                        else toast.error("Invalid or expired coupon");
+                        input.value = "";
+                      }
+                    }}
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-900 transition"
+                  >
+                    Apply
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="flex justify-between text-sm pt-2">
               <span className="text-nn-bark">Subtotal</span>
               <span className="font-bold text-nn-ink">{formatPrice(cart.subtotal)}</span>
             </div>
+            {cart.discountAmount ? (
+              <div className="flex justify-between text-sm text-green-600">
+                <span>Discount ({cart.discountCode})</span>
+                <span className="font-semibold">- {formatPrice(cart.discountAmount)}</span>
+              </div>
+            ) : null}
             <div className="flex justify-between text-sm">
               <span className="text-nn-bark">Shipping</span>
               <span className="font-semibold text-nn-forest">FREE</span>
             </div>
             <div className="flex justify-between font-bold text-base border-t border-nn-hairline pt-3">
               <span>Total</span>
-              <span className="text-nn-leaf">{formatPrice(cart.subtotal)}</span>
+              <span className="text-nn-leaf">{formatPrice(cart.total ?? cart.subtotal)}</span>
             </div>
             <button 
               onClick={() => {

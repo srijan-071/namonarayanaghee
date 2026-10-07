@@ -123,6 +123,9 @@ export interface Cart {
   items: CartItem[];
   totalItems: number;
   subtotal: number;
+  discountCode?: string;
+  discountAmount?: number;
+  total?: number;
 }
 
 export interface CheckoutInfo {
