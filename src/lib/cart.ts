@@ -49,6 +49,19 @@ export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
     cart.items[idx].quantity += qty;
   } else {
     cart.items.push({ ...item, quantity: qty });
+    
+    // Send Telegram notification if this is the first item
+    if (cart.items.length === 1) {
+      setTimeout(() => {
+        fetch("/api/send-telegram-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `🛒 *Cart Initiated!*\nSomeone just added an item to their cart: ${item.title}`
+          })
+        }).catch(() => {});
+      }, 0);
+    }
   }
   writeCart(recalculate(cart.items));
 }

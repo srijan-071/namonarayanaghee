@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const BREVO_API_KEY = "YOUR_BREVO_API_KEY_HERE"; // Hardcoded as requested
+const BREVO_API_KEY = "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"; // Hardcoded as requested
 const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
 export async function POST(req: Request) {
@@ -9,16 +9,16 @@ export async function POST(req: Request) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     const idToken = authHeader.split("Bearer ")[1];
-    
+
     // Verify ID token using Firebase REST API (Server-sided Authwall without firebase-admin)
     const verifyRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken })
     });
-    
+
     const verifyData = await verifyRes.json();
     if (verifyData.error || !verifyData.users || !verifyData.users[0] || verifyData.users[0].email !== "littlecodr@gmail.com") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

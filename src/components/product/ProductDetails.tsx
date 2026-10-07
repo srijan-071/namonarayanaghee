@@ -173,7 +173,9 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               {gheePacks.map((pack) => {
                 let ml = 1000;
                 let badge = null;
-                if (pack.slug.includes("1-litre")) {
+                if (pack.slug.includes("500-ml")) {
+                  ml = 500;
+                } else if (pack.slug.includes("1-litre")) {
                   ml = 1000;
                 } else if (pack.slug.includes("2-5-litre")) {
                   ml = 2500;

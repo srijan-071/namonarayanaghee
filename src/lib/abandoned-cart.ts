@@ -1,4 +1,4 @@
-import type { CartItem } from "./cart";
+import type { CartItem } from "@/lib/types";
 
 export async function logAbandonedCart(data: { email: string; phone?: string; cartItems: CartItem[]; subtotal: number }) {
   if (!data.email) return;
