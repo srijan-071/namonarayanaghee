@@ -102,7 +102,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-28 md:pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -269,19 +269,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         ) : null}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white p-3 border-t border-gray-200 flex flex-row gap-2 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-8 md:z-auto pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:pb-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-none">
           {/* Quantity Selector */}
-          <div className="flex items-center bg-[#E8F2EF] rounded-lg border border-[#CCE3DB] h-[52px]">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-lg transition text-xl">−</button>
-            <span className="w-10 text-center font-bold text-[#1E3A24]">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-lg transition text-xl">+</button>
+          <div className="flex items-center bg-[#E8F2EF] rounded-lg border border-[#CCE3DB] h-[48px] sm:h-[52px] shrink-0">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-10 sm:w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-lg transition text-xl">−</button>
+            <span className="w-8 sm:w-10 text-center font-bold text-[#1E3A24]">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="w-10 sm:w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-lg transition text-xl">+</button>
           </div>
 
-          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="flex-1 bg-[#1E3A24] text-white font-bold h-[52px] rounded-lg hover:bg-[#162A1A] transition disabled:opacity-70 flex items-center justify-center gap-2">
-            {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : "Add to cart"}
+          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="flex-1 bg-[#1E3A24] text-white font-bold h-[48px] sm:h-[52px] rounded-lg hover:bg-[#162A1A] transition disabled:opacity-70 flex items-center justify-center gap-2 text-[13px] sm:text-base leading-tight">
+            {isAdding ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : "Add to cart"}
           </button>
           
-          <button onClick={handleBuyNow} disabled={!variant?.available} className="flex-1 bg-[#F5B301] text-black font-bold h-[52px] rounded-lg hover:bg-[#E0A401] transition disabled:opacity-70">
+          <button onClick={handleBuyNow} disabled={!variant?.available} className="flex-1 bg-[#F5B301] text-black font-bold h-[48px] sm:h-[52px] rounded-lg hover:bg-[#E0A401] transition disabled:opacity-70 text-[13px] sm:text-base leading-tight">
             Buy Now
           </button>
         </div>
