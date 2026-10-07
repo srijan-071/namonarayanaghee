@@ -248,36 +248,43 @@ export default function AdminPage() {
             </div>
             
             <div className="p-6 overflow-y-auto bg-gray-50 flex-1">
-              <div className="bg-[#FAF9F5] p-0 rounded-xl overflow-hidden border border-gray-200 mx-auto max-w-lg shadow-sm">
+              <div className="bg-[#ffffff] p-0 rounded-xl overflow-hidden border border-gray-200 mx-auto max-w-lg shadow-sm">
                 <div className="text-center bg-[#1E3A24] p-4">
                   <img src="https://namonarayanaghee.store/assets/logo.png" alt="Logo" className="h-10 mx-auto filter brightness-0 invert" />
                 </div>
                 
-                <img src="https://namonarayanaghee.store/assets/hero-new-cows.jpg" alt="Hero" className="w-full h-48 object-cover block" />
+                <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav" className="w-full h-48 object-cover block" />
 
                 <div className="bg-white p-8 text-center border-b border-[#E9E5D9]">
-                  <h2 className="text-[#1E3A24] text-xl font-serif font-bold mt-0 mb-4">As requested, your exclusive access</h2>
-                  <p className="text-[#364935] text-sm leading-relaxed text-left mb-6">
+                  <h2 className="text-[#1E3A24] text-xl font-serif font-bold mt-0 mb-4 font-black">Get 10% OFF – Elvish Yadav's Choice!</h2>
+                  <p className="text-[#364935] text-sm leading-relaxed text-center mb-6">
                     Namaste,<br/><br/>
-                    Thank you for choosing Namo Narayana. You requested a coupon code for our Pure A2 Gir Cow Ghee, and we are delighted to share it with you.<br/><br/>
-                    Experience the rich aroma, grainy texture, and authentic taste of ghee made the traditional Bilona way.
+                    We are thrilled to offer you an exclusive 10% discount on Namo Narayana's Pure A2 Gir Cow Ghee! Experience the authentic taste, rich aroma, and grainy texture of traditional Bilona ghee, trusted by Elvish Yadav.
                   </p>
                   
+                  <div className="inline-block bg-[#C38936] text-white py-3 px-8 rounded-lg font-bold uppercase mb-6">
+                    Shop 1 Litre Ghee Now
+                  </div>
+                  
                   <div className="bg-[#FAF9F5] border-2 border-dashed border-[#C38936] p-4 rounded-lg my-6 mx-auto max-w-xs">
-                    <p className="text-xs text-[#576B55] m-0 mb-2 uppercase tracking-widest font-bold">Your Personal Code</p>
+                    <p className="text-xs text-[#576B55] m-0 mb-2 uppercase tracking-widest font-bold">Use Code at Checkout</p>
                     <p className="text-2xl font-bold text-[#1E3A24] m-0 tracking-widest">ELVISH10</p>
                   </div>
                   
-                  <p className="text-[#1E3A24] font-bold text-sm mb-6">⏳ Please note: This code expires in exactly 24 hours.</p>
+                  <p className="text-[#D32F2F] font-bold text-sm mb-6">⏳ Hurry! This exclusive offer expires in exactly 24 hours. Don't miss out!</p>
                   
-                  <div className="inline-block bg-[#1E3A24] text-white py-3 px-8 rounded-lg font-bold tracking-wide">
-                    Claim Your Ghee Now
+                  <div className="inline-block bg-[#1E3A24] text-white py-4 px-8 rounded-lg font-bold tracking-wide mb-4">
+                    Claim Your 10% Discount
                   </div>
+
+                  <p className="text-xs text-[#576B55] mb-6">Stock is extremely limited and selling fast!</p>
+
+                  <a href="#" className="inline-block text-[#1E3A24] font-bold text-sm underline">Or click here to secure your order now</a>
                 </div>
                 
-                <div className="text-center p-6 text-[#888888] text-xs">
+                <div className="text-center p-6 text-[#888888] text-xs bg-[#f9f9f9]">
                   <p>Namo Narayana • Pure by Promise. Traditional by Heart.</p>
-                  <p className="mt-1">If you didn't request this, you can safely ignore this email.</p>
+                  <p className="mt-1">You received this email because you subscribed to our exclusive offers.</p>
                 </div>
               </div>
             </div>

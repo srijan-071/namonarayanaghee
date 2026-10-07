@@ -39,38 +39,47 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           sender: { name: "Namo Narayana", email: "hello@namonarayanaghee.store" },
           to: [{ email }],
-          subject: "As requested: Your exclusive access",
+          subject: "Exclusive 10% Discount from Elvish Yadav! 🚀",
           htmlContent: `
             <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0;">
               <div style="text-align: center; background-color: #1E3A24; padding: 20px 0;">
                 <img src="https://namonarayanaghee.store/assets/logo.png" alt="Namo Narayana Logo" style="max-height: 50px; filter: brightness(0) invert(1);" />
               </div>
               
-              <img src="https://namonarayanaghee.store/assets/hero-new-cows.jpg" alt="Pure A2 Gir Cow Ghee" style="width: 100%; max-height: 250px; object-fit: cover; display: block;" />
+              <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: block;">
+                <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav Namo Narayana Ghee" style="width: 100%; max-height: 400px; object-fit: cover; display: block;" />
+              </a>
 
-              <div style="padding: 40px 30px; text-align: center; border: 1px solid #E9E5D9; border-top: none; border-radius: 0 0 12px 12px;">
-                <h1 style="color: #1E3A24; font-size: 26px; margin-top: 0; font-family: Georgia, serif;">As requested, your exclusive access</h1>
-                <p style="color: #364935; font-size: 16px; line-height: 1.6; text-align: left; margin-bottom: 24px;">
+              <div style="padding: 40px 30px; text-align: center; border: 1px solid #E9E5D9; border-top: none;">
+                <h1 style="color: #1E3A24; font-size: 28px; margin-top: 0; font-family: Georgia, serif; font-weight: 800;">Get 10% OFF – Elvish Yadav's Choice!</h1>
+                <p style="color: #364935; font-size: 16px; line-height: 1.6; text-align: center; margin-bottom: 24px;">
                   Namaste,<br><br>
-                  Thank you for choosing Namo Narayana. You requested a coupon code for our Pure A2 Gir Cow Ghee, and we are delighted to share it with you.<br><br>
-                  Experience the rich aroma, grainy texture, and authentic taste of ghee made the traditional Bilona way.
+                  We are thrilled to offer you an exclusive 10% discount on Namo Narayana's Pure A2 Gir Cow Ghee! Experience the authentic taste, rich aroma, and grainy texture of traditional Bilona ghee, trusted by Elvish Yadav.
                 </p>
                 
+                <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #C38936; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin-bottom: 30px; text-transform: uppercase;">Shop 1 Litre Ghee Now</a>
+                
                 <div style="background-color: #FAF9F5; border: 2px dashed #C38936; padding: 20px; border-radius: 8px; margin: 0 auto 24px; max-width: 300px;">
-                  <p style="font-size: 12px; color: #576B55; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;">Your Personal Code</p>
+                  <p style="font-size: 12px; color: #576B55; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold;">Use Code at Checkout</p>
                   <p style="font-size: 28px; font-weight: bold; color: #1E3A24; margin: 0; letter-spacing: 2px;">ELVISH10</p>
                 </div>
                 
-                <p style="color: #1E3A24; font-weight: bold; font-size: 15px; margin-bottom: 30px;">
-                  ⏳ Please note: This code expires in exactly 24 hours.
+                <p style="color: #D32F2F; font-weight: bold; font-size: 16px; margin-bottom: 20px;">
+                  ⏳ Hurry! This exclusive offer expires in exactly 24 hours. Don't miss out!
                 </p>
                 
-                <a href="https://namonarayanaghee.store/" style="display: inline-block; background-color: #1E3A24; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px;">Claim Your Ghee Now</a>
+                <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #1E3A24; color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; letter-spacing: 0.5px; margin-bottom: 20px;">Claim Your 10% Discount</a>
+                
+                <p style="font-size: 14px; color: #576B55; margin-bottom: 30px;">
+                  Stock is extremely limited and selling fast!
+                </p>
+
+                <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; color: #1E3A24; font-weight: bold; font-size: 16px; text-decoration: underline;">Or click here to secure your order now</a>
               </div>
               
-              <div style="text-align: center; padding: 30px 20px; color: #888888; font-size: 12px;">
+              <div style="text-align: center; padding: 30px 20px; color: #888888; font-size: 12px; background-color: #f9f9f9;">
                 <p>Namo Narayana • Pure by Promise. Traditional by Heart.</p>
-                <p>If you didn't request this, you can safely ignore this email.</p>
+                <p>You received this email because you subscribed to our exclusive offers.</p>
               </div>
             </div>
           `
