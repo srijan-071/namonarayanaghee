@@ -7,14 +7,16 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, MessageCircle, Star } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { RAW_PRODUCTS } from "@/lib/data-store";
 
 export default function CartDrawer() {
   const cart = useCart();
   const { isOpen, close } = useCartDrawer();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [tempCoupon, setTempCoupon] = useState("");
 
   const handleRemove = (variantId: number) => {
     const item = cart.items.find((i) => i.variantId === variantId);
@@ -35,178 +37,287 @@ export default function CartDrawer() {
   };
 
   const handleUpdate = (variantId: number, newQty: number) => {
+    if (newQty < 1) return;
     updateQuantity(variantId, newQty);
   };
 
-  const hasHoney = cart.items.some(i => i.slug === "honey");
-
-  const handleAddHoney = () => {
+  const handleAddCrossSell = (slug: string) => {
+    const p = RAW_PRODUCTS[slug];
+    if (!p) return;
+    const v = p.variants[0];
     addToCart({
-      productId: 9545045147816,
-      variantId: 55811350495400,
-      slug: "honey",
-      title: "Honey",
-      variantTitle: "Default Title",
-      price: 31500,
-      image: "/assets/product_honey.webp"
+      productId: p.id,
+      variantId: v.id,
+      slug: p.handle,
+      title: p.title,
+      variantTitle: v.title,
+      price: v.price,
+      image: p.images[0] ?? ""
     }, 1);
-    toast.success("Honey added to cart!");
+    toast.success(`${p.title} added to cart`);
   };
+
+  const crossSells = [
+    { slug: "pure-a2-gir-cow-ghee-500-ml", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> 1st</> },
+    { slug: "pure-desi-cow-ghee-1-litre", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> 2nd</> }
+  ].filter(cs => !cart.items.some(i => i.slug === cs.slug));
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        onClick={close}
-        aria-hidden="true"
+      <div 
+        className={`fixed inset-0 z-[100] bg-black/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`} 
+        onClick={close} 
       />
-
-      {/* Drawer */}
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-label="Your cart"
-        className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
+      
+      <aside className={`fixed top-0 right-0 z-[101] h-full w-full sm:w-[420px] bg-[#F7F8FA] flex flex-col transition-transform duration-300 shadow-2xl ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+        
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-nn-hairline">
-          <h2 className="text-lg font-bold font-serif text-nn-ink">Your Cart</h2>
-          <button onClick={close} aria-label="Close cart" className="p-1 rounded-md hover:bg-gray-100 transition">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="bg-nn-forest text-white text-center text-xs py-2 font-semibold tracking-wide">
-          Free COD - Cash On Delivery Pan India
+        <div className="bg-white shrink-0">
+          <div className="flex items-center justify-between p-4 relative border-b border-gray-100">
+            <button onClick={close} className="p-1.5 -ml-1 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-[#0B483B] font-bold text-[17px] font-serif absolute left-1/2 -translate-x-1/2">Your Cart</h2>
+            <div className="w-8"></div>
+          </div>
+          <div className="bg-[#0B483B] text-white text-center py-2.5 text-[12px] font-bold tracking-wide shadow-sm">
+            Free COD - Cash On Delivery Pan India
+          </div>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-auto pb-40 custom-scrollbar">
           {cart.items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
-              <svg className="w-16 h-16 text-nn-hairline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
-                <circle cx="9" cy="20" r="1.5" />
-                <circle cx="18" cy="20" r="1.5" />
-                <path d="M1.5 2h3l2.7 12.4a2 2 0 002 1.6h8.6a2 2 0 002-1.6L21.5 6H6" />
-              </svg>
-              <h3 className="font-serif text-lg font-bold text-nn-ink">Your cart is empty</h3>
-              <p className="nn-sub text-sm">Pure, farm-fresh essentials are waiting for you.</p>
-              <Link href="/collections/all-products" onClick={close} className="nn-btn nn-btn-primary mt-2">
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
+              <ShoppingCart className="w-16 h-16 text-gray-300" />
+              <h3 className="font-serif text-lg font-bold text-gray-900">Your cart is empty</h3>
+              <p className="text-gray-500 text-sm">Pure, farm-fresh essentials are waiting for you.</p>
+              <Link href="/collections/all-products" onClick={close} className="bg-[#0B483B] text-white font-bold px-6 py-3 rounded-xl mt-4 hover:bg-[#073329] transition">
                 Continue Shopping
               </Link>
             </div>
           ) : (
-            <ul className="divide-y divide-nn-hairline">
-              {cart.items.map((item) => (
-                <li key={item.variantId} className="flex gap-4 py-4">
-                  <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-nn-hairline shrink-0 bg-gray-50">
-                    {item.image && (
-                      <Image src={item.image} alt={item.title} fill className="object-cover" sizes="80px" />
-                    )}
+            <div className="flex flex-col bg-white">
+              <div className="p-4 space-y-6">
+                
+                {/* Cart Details */}
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2 text-[#0B483B] font-bold font-serif text-[15px]">
+                      <ShoppingCart className="w-[18px] h-[18px]" />
+                      <span>Cart details</span>
+                    </div>
+                    <span className="text-[13px] font-bold text-gray-800">Total items: {cart.items.length}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <Link href={`/products/${item.slug}`} className="font-semibold text-sm text-nn-ink hover:text-nn-forest line-clamp-2" onClick={close}>
-                      {item.title}
-                    </Link>
-                    {item.variantTitle && <p className="text-xs text-nn-bark mt-0.5">{item.variantTitle}</p>}
-                    <p className="text-sm font-bold text-nn-leaf mt-1">{formatPrice(item.price)}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button onClick={() => handleUpdate(item.variantId, item.quantity - 1)} className="w-7 h-7 rounded-md border border-nn-hairline text-sm flex items-center justify-center hover:bg-gray-50" aria-label="Decrease quantity">−</button>
-                      <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                      <button onClick={() => handleUpdate(item.variantId, item.quantity + 1)} className="w-7 h-7 rounded-md border border-nn-hairline text-sm flex items-center justify-center hover:bg-gray-50" aria-label="Increase quantity">+</button>
-                      <button onClick={() => handleRemove(item.variantId)} className="ml-auto text-xs text-red-500 hover:text-red-700" aria-label="Remove item">Remove</button>
+
+                  <div className="space-y-4">
+                    {cart.items.map(item => (
+                      <div key={item.variantId} className="border border-gray-200 rounded-2xl p-3.5 flex gap-4 bg-white relative">
+                        <div className="w-[84px] h-[84px] rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 relative">
+                          {item.image ? (
+                            <Image src={item.image} alt={item.title} fill className="object-cover" sizes="84px" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">No Img</div>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                          <Link href={`/products/${item.slug}`} onClick={close} className="text-[13px] font-bold text-gray-900 leading-tight pr-6">
+                            {item.title}
+                          </Link>
+                          {item.variantTitle && (
+                            <div className="mt-1.5">
+                              <span className="bg-[#EEF4F0] text-[#0B483B] text-[11px] font-bold px-2 py-0.5 rounded-md">
+                                {item.variantTitle}
+                              </span>
+                            </div>
+                          )}
+                          <p className="text-[13px] font-bold text-gray-900 mt-2">{formatPrice(item.price)}</p>
+                          
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center border border-gray-200 rounded-full h-[32px] bg-white overflow-hidden">
+                              <button onClick={() => handleUpdate(item.variantId, item.quantity - 1)} className="w-[32px] h-full flex items-center justify-center text-green-700 text-lg hover:bg-green-50 transition-colors">−</button>
+                              <span className="w-6 text-center text-[13px] font-bold text-gray-800">{item.quantity}</span>
+                              <button onClick={() => handleUpdate(item.variantId, item.quantity + 1)} className="w-[32px] h-full flex items-center justify-center text-green-700 text-lg hover:bg-green-50 transition-colors">+</button>
+                            </div>
+                            
+                            <button onClick={() => handleRemove(item.variantId)} className="text-gray-400 hover:text-red-500 p-2 transition-colors">
+                              <Trash2 className="w-[18px] h-[18px]" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cross-Sells */}
+                {crossSells.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-3 text-[#0B483B] font-bold font-serif text-[15px]">
+                      Highly Selling Products <TrendingUp className="w-[14px] h-[14px] text-red-500" />
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+                      {crossSells.map((cs) => {
+                        const p = RAW_PRODUCTS[cs.slug];
+                        if (!p) return null;
+                        const variant = p.variants[0];
+                        const img = p.images[0];
+                        return (
+                          <div key={cs.slug} className="border border-gray-200 rounded-2xl p-2.5 bg-white w-[260px] flex gap-3 relative shrink-0">
+                            <div className="absolute top-0 left-0 bg-[#0B483B] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg rounded-tl-xl z-10 flex items-center gap-0.5 shadow-sm">
+                              {cs.badge}
+                            </div>
+                            <div className="w-[72px] h-[72px] rounded-lg overflow-hidden relative shrink-0 bg-gray-50 border border-gray-100">
+                              {img && <Image src={img} alt={p.title} fill className="object-cover" sizes="72px" />}
+                            </div>
+                            <div className="flex-1 flex flex-col justify-center">
+                              <p className="text-[12px] font-bold text-gray-900 leading-snug line-clamp-2">{p.title}</p>
+                              <div className="flex items-center justify-between mt-2">
+                                <p className="text-[12px] font-bold text-gray-900">{formatPrice(variant.price)}</p>
+                                <button onClick={() => handleAddCrossSell(cs.slug)} className="bg-[#215E4C] text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:bg-[#164235] transition-colors">
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-                </li>
-              ))}
-            </ul>
+                )}
+
+                {/* Add more items */}
+                <button onClick={close} className="border border-[#0B483B] text-[#0B483B] bg-white rounded-full px-5 py-2 text-[13px] font-bold flex items-center gap-1.5 hover:bg-gray-50 transition-colors w-fit">
+                  Add more items <ChevronLeft className="w-[14px] h-[14px] rotate-180 stroke-[3]" />
+                </button>
+
+                {/* Coupon */}
+                <div className="pt-2">
+                  <div className="flex items-center gap-2 text-[#0B483B] font-bold text-[13px] mb-3">
+                    <Ticket className="w-[18px] h-[18px] -rotate-45" /> Have a coupon code?
+                  </div>
+                  {cart.discountCode ? (
+                    <div className="flex items-center justify-between bg-[#EEF4F0] border border-[#0B483B] text-[#0B483B] px-4 py-3 rounded-xl text-sm font-bold">
+                      <span>{cart.discountCode} applied!</span>
+                      <button onClick={() => removeCoupon()} className="text-xs hover:underline">Remove</button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2 relative">
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        value={tempCoupon}
+                        onChange={(e) => setTempCoupon(e.target.value.toUpperCase())}
+                        className="w-full border-2 border-dashed border-gray-300 rounded-xl pl-4 pr-[88px] py-3 text-[13px] focus:outline-none focus:border-[#0B483B] bg-white uppercase font-bold placeholder:font-normal placeholder:normal-case"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && tempCoupon) {
+                            if (!applyCoupon(tempCoupon)) {
+                              toast.error("This code isn't valid for the items in your cart.");
+                            } else {
+                              toast.success("Coupon applied!");
+                            }
+                          }
+                        }}
+                      />
+                      <button 
+                        onClick={() => {
+                          if (tempCoupon) {
+                            if (!applyCoupon(tempCoupon)) {
+                              toast.error("This code isn't valid for the items in your cart.");
+                            } else {
+                              toast.success("Coupon applied!");
+                            }
+                          }
+                        }}
+                        className="absolute right-1.5 top-1.5 bottom-1.5 bg-[#215E4C] text-white px-5 rounded-lg text-[13px] font-bold hover:bg-[#164235] transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {cart.items.length > 0 && (
+            <>
+              {/* Unlock banner */}
+              <div className="bg-[#FCF5E3] text-[#A66D25] text-center py-3 text-[13px] font-bold border-y border-[#F0E0B6]">
+                Unlock your best offer at checkout!
+              </div>
+
+              {/* Price Summary */}
+              <div className="p-4 bg-[#F7F8FA] space-y-3 mt-2">
+                <h3 className="font-bold font-serif text-[15px] text-gray-900 mb-2">Price Summary</h3>
+                <div className="flex justify-between text-[13px] text-gray-600">
+                  <span>Order Total</span>
+                  <span className="font-bold text-gray-900">{formatPrice(cart.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-[13px] text-gray-600">
+                  <span>Items Discount</span>
+                  <span className="font-bold text-gray-900">{cart.discountAmount ? `- ${formatPrice(cart.discountAmount)}` : "Rs. 0.00"}</span>
+                </div>
+                <div className="flex justify-between text-[13px] text-gray-600">
+                  <span>Shipping</span>
+                  <span className="font-bold text-[#25D366]">FREE</span>
+                </div>
+                <div className="flex justify-between text-[14px] font-bold text-gray-900 pt-2 pb-2">
+                  <span>To Pay</span>
+                  <span></span> {/* Total is shown in the sticky footer instead, per the image */}
+                </div>
+              </div>
+            </>
           )}
         </div>
 
-        {/* Footer */}
+        {/* Sticky Footer */}
         {cart.items.length > 0 && (
-          <div className="border-t border-nn-hairline p-5 space-y-3 bg-gray-50">
-            <div className="flex gap-2">
-              {cart.discountCode ? (
-                <div className="flex-1 flex items-center justify-between bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-md text-sm">
-                  <span className="font-semibold">{cart.discountCode} applied!</span>
-                  <button onClick={() => removeCoupon()} className="text-xs hover:text-green-900 underline">Remove</button>
-                </div>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Coupon code"
-                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm uppercase outline-none focus:border-nn-forest"
-                    id="coupon-input"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const val = e.currentTarget.value;
-                        if (val) {
-                          const ok = applyCoupon(val);
-                          if (ok) toast.success("Coupon applied!");
-                          else toast.error("Invalid or expired coupon");
-                          e.currentTarget.value = "";
-                        }
-                      }
-                    }}
-                  />
-                  <button 
-                    onClick={() => {
-                      const input = document.getElementById('coupon-input') as HTMLInputElement;
-                      if (input && input.value) {
-                        const ok = applyCoupon(input.value);
-                        if (ok) toast.success("Coupon applied!");
-                        else toast.error("Invalid or expired coupon");
-                        input.value = "";
-                      }
-                    }}
-                    className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-900 transition"
-                  >
-                    Apply
-                  </button>
-                </>
-              )}
-            </div>
+          <div className="absolute bottom-0 left-0 w-full bg-[#F7F8FA] border-t border-gray-200 z-[102] rounded-t-xl shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.05)]">
+             {/* WhatsApp Chat Overlay */}
+             <div 
+               className="absolute -top-[52px] right-4 bg-[#25D366] text-white rounded-full pl-3 pr-4 py-2.5 flex items-center gap-1.5 font-bold text-[13px] shadow-lg shadow-green-500/20 cursor-pointer hover:bg-[#1EBE5D] transition transform hover:scale-105 z-10" 
+               onClick={() => window.open('https://wa.me/919999999999', '_blank')}
+             >
+               <MessageCircle className="w-[18px] h-[18px] fill-current" />
+               Chat with us
+             </div>
 
-            <div className="flex justify-between text-sm pt-2">
-              <span className="text-nn-bark">Subtotal</span>
-              <span className="font-bold text-nn-ink">{formatPrice(cart.subtotal)}</span>
-            </div>
-            {cart.discountAmount ? (
-              <div className="flex justify-between text-sm text-green-600">
-                <span>Discount ({cart.discountCode})</span>
-                <span className="font-semibold">- {formatPrice(cart.discountAmount)}</span>
-              </div>
-            ) : null}
-            <div className="flex justify-between text-sm">
-              <span className="text-nn-bark">Shipping</span>
-              <span className="font-semibold text-nn-forest">FREE</span>
-            </div>
-            <div className="flex justify-between font-bold text-base border-t border-nn-hairline pt-3">
-              <span>Total</span>
-              <span className="text-nn-leaf">{formatPrice(cart.total ?? cart.subtotal)}</span>
-            </div>
-            <button 
-              onClick={() => {
-                setIsNavigating(true);
-                router.push("/checkout");
-                // We'll close the drawer slightly later or let the navigation handle it
-                setTimeout(() => {
-                  close();
-                  setIsNavigating(false);
-                }, 500); // Reset state after navigation happens
-              }} 
-              disabled={isNavigating}
-              className="nn-btn nn-btn-primary w-full text-center py-3 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-              {isNavigating ? "Redirecting..." : "Proceed to Checkout"}
-            </button>
-            <p className="text-center text-[11px] text-nn-bark">Secure Payments • COD Available</p>
+             <div className="p-4 flex flex-col gap-3">
+               <div className="flex items-center justify-between gap-4">
+                 <div className="flex flex-col shrink-0">
+                   <div className="flex items-center gap-1 cursor-pointer">
+                     <span className="text-[17px] font-extrabold text-gray-900">{formatPrice(cart.total ?? cart.subtotal)}</span>
+                     <ChevronLeft className="w-4 h-4 rotate-90 text-gray-700 stroke-[3]" />
+                   </div>
+                 </div>
+                 
+                 <button 
+                  onClick={() => {
+                    setIsNavigating(true);
+                    router.push("/checkout");
+                    setTimeout(() => {
+                      close();
+                      setIsNavigating(false);
+                    }, 500);
+                  }}
+                  disabled={isNavigating}
+                  className="bg-[#084131] text-white font-bold text-[15px] flex-1 h-[48px] rounded-full shadow-md hover:bg-[#062f23] transition disabled:opacity-70 flex items-center justify-center gap-2"
+                 >
+                   {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                   Continue
+                 </button>
+               </div>
+               
+               <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-500 pt-1">
+                 Secure Payments: 
+                 <div className="flex gap-1 items-center ml-1">
+                   <span className="bg-white border border-gray-200 text-gray-400 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider">UPI</span>
+                   <span className="bg-white border border-gray-200 text-blue-800 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider italic">VISA</span>
+                   <span className="bg-white border border-gray-200 text-orange-500 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider">MC</span>
+                 </div>
+               </div>
+             </div>
           </div>
         )}
       </aside>

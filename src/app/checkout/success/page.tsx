@@ -162,7 +162,7 @@ function SuccessContent() {
         </h1>
         
         <p className="text-red-600/80 text-lg mb-8 max-w-lg mx-auto">
-          Your payment could not be processed. Don&apos;t worry — no amount has been deducted. Please try again.
+          Your payment could not be processed. Don&apos;t worry - no amount has been deducted. Please try again.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

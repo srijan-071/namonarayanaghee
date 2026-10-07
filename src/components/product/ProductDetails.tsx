@@ -7,7 +7,7 @@ import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { Loader2, Share2, Star, Truck, ShieldCheck, HeadphonesIcon, Factory } from "lucide-react";
+import { Loader2, Share2, Star, Truck, ShieldCheck, HeadphonesIcon, Factory, Eye, Flame, Zap } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
@@ -21,6 +21,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [qty, setQty] = useState(1);
   const { open } = useCartDrawer();
   const [isAdding, setIsAdding] = useState(false);
+  const [viewers] = useState(() => (typeof window !== 'undefined' ? Math.floor(Math.random() * 20) + 15 : 22));
+  const [sold] = useState(() => (typeof window !== 'undefined' ? Math.floor(Math.random() * 50) + 100 : 134));
 
   const variant = product.variants[selectedVariantIdx];
   const price = variant?.price ?? product.price;
@@ -75,10 +77,24 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   }
 
   function handleBuyNow() {
-    handleAddToCart();
-    setTimeout(() => {
-      router.push("/checkout");
-    }, 500);
+    setIsAdding(true);
+    addToCart(
+      {
+        productId: product.id,
+        variantId: variant.id,
+        slug: product.slug,
+        title: product.title,
+        variantTitle: variant.title,
+        price,
+        image: product.images[0] ?? "",
+      },
+      qty
+    );
+    trackEvent("begin_checkout", {
+      currency: "INR",
+      value: price * qty,
+    });
+    router.push("/checkout");
   }
 
   const jsonLd = {
@@ -183,12 +199,32 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </button>
         )}
 
-        {/* Price */}
-        <div className="mb-6">
-          <div className="flex items-end gap-3 mb-1">
-            <span className="text-4xl font-bold text-[#1E3A24]">Rs. {(price / 100).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+        {/* Urgency / CRO elements */}
+        <div className="flex flex-col gap-2.5 mb-4 mt-2">
+          <div className="flex items-center gap-1.5 text-red-700 text-sm font-bold bg-red-50 w-fit px-3 py-1.5 rounded-lg border border-red-200 shadow-sm">
+            <Flame className="w-4 h-4 animate-pulse text-orange-500" />
+            <span>High Demand - {sold} sold in last 24 hours!</span>
           </div>
-          <span className="text-sm text-gray-500">MRP (Incl. of all taxes)</span>
+          <div className="flex items-center gap-1.5 text-gray-600 text-sm">
+            <Eye className="w-4 h-4 text-blue-500" />
+            <span><strong className="text-gray-900">{viewers} people</strong> are looking at this right now</span>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="mb-6 bg-gradient-to-r from-green-50 to-transparent p-4 rounded-xl border border-green-100/50">
+          <div className="flex items-end gap-3 mb-1">
+            <span className="text-4xl font-bold text-[#1E3A24]">Rs. {(price / 100).toLocaleString('en-IN')}</span>
+            {compareAt && compareAt > price && (
+               <span className="text-xl text-gray-400 line-through mb-1">Rs. {(compareAt / 100).toLocaleString('en-IN')}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+             <span className="text-sm text-gray-500">MRP (Incl. of all taxes)</span>
+             {discount > 0 && (
+               <span className="bg-red-600 text-white text-[11px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full animate-bounce">Save {discount}%</span>
+             )}
+          </div>
         </div>
 
         {/* Variants & Packs */}
@@ -278,11 +314,12 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             <button onClick={() => setQty(qty + 1)} className="w-10 sm:w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-lg transition text-xl">+</button>
           </div>
 
-          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="flex-1 bg-[#1E3A24] text-white font-bold h-[48px] sm:h-[52px] rounded-lg hover:bg-[#162A1A] transition disabled:opacity-70 flex items-center justify-center gap-2 text-[13px] sm:text-base leading-tight">
+          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="flex-1 bg-white text-[#1E3A24] border-2 border-[#1E3A24] font-bold h-[48px] sm:h-[54px] rounded-xl hover:bg-[#F4F9F6] transition disabled:opacity-70 flex items-center justify-center gap-2 text-[14px] sm:text-base leading-tight">
             {isAdding ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : "Add to cart"}
           </button>
           
-          <button onClick={handleBuyNow} disabled={!variant?.available} className="flex-1 bg-[#F5B301] text-black font-bold h-[48px] sm:h-[52px] rounded-lg hover:bg-[#E0A401] transition disabled:opacity-70 text-[13px] sm:text-base leading-tight">
+          <button onClick={handleBuyNow} disabled={!variant?.available} className="flex-1 bg-gradient-to-r from-[#FFB800] to-[#F59E0B] text-black font-extrabold h-[48px] sm:h-[54px] rounded-xl hover:from-[#F59E0B] hover:to-[#D97706] transition-all transform active:scale-[0.98] disabled:opacity-70 text-[15px] sm:text-[17px] leading-tight shadow-[0_4px_14px_0_rgba(245,158,11,0.39)] flex items-center justify-center gap-1.5 uppercase tracking-wide">
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
             Buy Now
           </button>
         </div>

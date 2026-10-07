@@ -3,8 +3,8 @@
 
 /* ─── Tailwind v4 @theme tokens ──────────────────────── */
 @theme {
-  --font-sans: var(--font-figtree), system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-serif: var(--font-serif), Georgia, serif;
 
   /* Forest */
   --color-nn-forest:       #075B4F;

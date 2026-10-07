@@ -46,13 +46,13 @@ export default function Header() {
             onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
           >
             <span>FREE COD PAN INDIA</span>
-            <span className="text-yellow-300 font-bold">🎉 Click here to get 10% discount coupon code</span>
+            <span className="text-yellow-300 font-bold">� Click here to get 10% discount coupon code</span>
           </div>
           <div 
             className="hidden md:flex items-center gap-2 text-yellow-300 font-bold cursor-pointer hover:text-yellow-100 transition"
             onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
           >
-            <span>🎉 Click here to get 10% discount coupon code</span>
+            <span>� Click here to get 10% discount coupon code</span>
           </div>
         </div>
       </div>

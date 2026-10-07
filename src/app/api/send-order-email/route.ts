@@ -61,7 +61,7 @@ export async function POST(req: Request) {
           </div>
           <div class="footer">
             <p>If you have any questions, reply to this email or contact us at <a href="mailto:namonarayana.contact@gmail.com" style="color: #1E3A24;">namonarayana.contact@gmail.com</a></p>
-            <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. 🙏</p>
+            <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. �</p>
           </div>
         </div>
       </body>

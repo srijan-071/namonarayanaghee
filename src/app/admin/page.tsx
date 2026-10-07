@@ -258,7 +258,7 @@ export default function AdminPage() {
                 <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav Namo Narayana Ghee" className="w-full max-w-[400px] rounded-lg block my-5" />
                 <p className="mb-4 text-[16px] leading-relaxed">
                   Use the code <strong>ELVISH10</strong> at checkout.<br/><br/>
-                  This ghee is made using the authentic Bilona method—trusted by Elvish himself—ensuring you get maximum health benefits and that perfect grainy texture.<br/><br/>
+                  This ghee is made using the authentic Bilona method-trusted by Elvish himself-ensuring you get maximum health benefits and that perfect grainy texture.<br/><br/>
                   <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Shop the 1 Litre Ghee here</a><br/><br/>
                   <em className="text-gray-600">Please note: This code expires in exactly 24 hours, and our stock is selling out fast!</em><br/><br/>
                   <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Secure your order before the offer expires</a><br/><br/>

@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           sender: { name: "Namo Narayana", email: "hello@namonarayanaghee.store" },
-          subject: "A small gift from Elvish Yadav 🎁",
+          subject: "A small gift from Elvish Yadav �",
           htmlContent: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1E3A24; padding: 20px;">
               <p style="font-size: 16px; line-height: 1.6;">
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
                   <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav Namo Narayana Ghee" style="max-width: 400px; width: 100%; border-radius: 8px; display: block;" />
                 </a>
                 Use the code <strong>ELVISH10</strong> at checkout.<br><br>
-                This ghee is made using the authentic Bilona method—trusted by Elvish himself—ensuring you get maximum health benefits and that perfect grainy texture.<br><br>
+                This ghee is made using the authentic Bilona method-trusted by Elvish himself-ensuring you get maximum health benefits and that perfect grainy texture.<br><br>
                 <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="color: #C38936; font-weight: bold; text-decoration: underline; font-size: 16px;">&gt;&gt; Shop the 1 Litre Ghee here</a><br><br>
                 <em>Please note: This code expires in exactly 24 hours, and our stock is selling out fast!</em><br><br>
                 <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="color: #C38936; font-weight: bold; text-decoration: underline; font-size: 16px;">&gt;&gt; Secure your order before the offer expires</a><br><br>

@@ -106,7 +106,7 @@ export async function GET(req: Request) {
                   <a href="https://namonarayanaghee.store/checkout" class="btn">Complete My Order</a>
                 </div>
                 <div class="footer">
-                  <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. 🙏</p>
+                  <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. �</p>
                 </div>
               </div>
             </body>
@@ -122,7 +122,7 @@ export async function GET(req: Request) {
             body: JSON.stringify({
               sender: { name: "Namo Narayana", email: "noreply@namonarayanaghee.store" },
               to: [{ email: cartData.email }],
-              subject: `Did you forget something? 🛒`,
+              subject: `Did you forget something? �`,
               htmlContent: emailHtml
             })
           }).catch(console.error);
@@ -131,7 +131,7 @@ export async function GET(req: Request) {
         // 2. Send Telegram Notification to admin for manual WhatsApp
         if (cartData.phone) {
           const telegramMessage = `
-🔴 ABANDONED CART ALERT 🔴
+� ABANDONED CART ALERT �
 ------------------------------
 Email: ${cartData.email}
 Phone: ${cartData.phone}

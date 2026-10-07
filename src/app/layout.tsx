@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Fraunces } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/config";
 import Header from "@/components/layout/Header";
@@ -12,8 +12,8 @@ import ExitIntentPopup from "@/components/home/ExitIntentPopup";
 import GoogleTranslate from "@/components/providers/GoogleTranslate";
 import LanguagePopup from "@/components/layout/LanguagePopup";
 
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -50,7 +50,7 @@ import { Toaster } from 'sonner';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${figtree.variable} ${fraunces.variable}`}>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <AnalyticsProvider>
           <FirebaseProvider>

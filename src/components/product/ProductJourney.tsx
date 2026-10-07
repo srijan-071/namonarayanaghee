@@ -8,7 +8,7 @@ export default function ProductJourney() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-20 md:mb-32">
           <p className="text-[#00584b] font-bold tracking-widest uppercase text-sm mb-4">
-            — Our Journey —
+            - Our Journey -
           </p>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1c2b26] mb-6">
             Farm to Home, One Honest Step at a Time

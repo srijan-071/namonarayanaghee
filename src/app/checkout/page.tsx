@@ -677,7 +677,7 @@ export default function CheckoutPage() {
               <div className="border-t border-[#D5D8D0] mt-4 pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-6 md:pb-8 -mb-6 md:-mb-8 rounded-b-2xl space-y-3">
                 {pricing.isAdmin && (
                   <div className="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-2 rounded-lg text-center">
-                    <Key className="w-4 h-4 inline mr-1" /> Admin Test Mode — Checkout for ₹1
+                    <Key className="w-4 h-4 inline mr-1" /> Admin Test Mode - Checkout for ₹1
                   </div>
                 )}
                 

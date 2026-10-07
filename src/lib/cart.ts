@@ -72,26 +72,27 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
 // ─── Public API ─────────────────────────────────────────
 export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
   const cart = readCart();
-  const idx = cart.items.findIndex((i) => i.variantId === item.variantId);
+  const items = [...cart.items];
+  const idx = items.findIndex((i) => i.variantId === item.variantId);
   if (idx >= 0) {
-    cart.items[idx].quantity += qty;
+    items[idx] = { ...items[idx], quantity: items[idx].quantity + qty };
   } else {
-    cart.items.push({ ...item, quantity: qty });
+    items.push({ ...item, quantity: qty });
     
     // Send Telegram notification if this is the first item
-    if (cart.items.length === 1) {
+    if (items.length === 1) {
       setTimeout(() => {
         fetch("/api/send-telegram-notification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: `🛒 *Cart Initiated!*\nSomeone just added an item to their cart: ${item.title}`
+            message: `� *Cart Initiated!*\nSomeone just added an item to their cart: ${item.title}`
           })
         }).catch(() => {});
       }, 0);
     }
   }
-  writeCart(recalculate(cart.items, cart.discountCode));
+  writeCart(recalculate(items, cart.discountCode));
 }
 
 export function removeFromCart(variantId: number) {
@@ -101,15 +102,16 @@ export function removeFromCart(variantId: number) {
 
 export function updateQuantity(variantId: number, qty: number) {
   const cart = readCart();
-  const idx = cart.items.findIndex((i) => i.variantId === variantId);
+  const items = [...cart.items];
+  const idx = items.findIndex((i) => i.variantId === variantId);
   if (idx >= 0) {
     if (qty <= 0) {
-      cart.items.splice(idx, 1);
+      items.splice(idx, 1);
     } else {
-      cart.items[idx].quantity = qty;
+      items[idx] = { ...items[idx], quantity: qty };
     }
   }
-  writeCart(recalculate(cart.items, cart.discountCode));
+  writeCart(recalculate(items, cart.discountCode));
 }
 
 export function clearCart() {

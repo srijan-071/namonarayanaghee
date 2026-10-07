@@ -62,7 +62,7 @@ export default function LanguagePopup() {
                   onClick={() => handleLanguageSelect('en')}
                   className="flex flex-col items-center justify-center p-6 border-2 border-[#E9E5D9] bg-white rounded-xl hover:border-[#B58231] hover:bg-[#E9E5D9]/50 transition-all group"
                 >
-                  <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">🇬🇧</span>
+                  <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">��</span>
                   <span className="font-semibold text-[#364935] text-lg">English</span>
                 </button>
                 
@@ -70,7 +70,7 @@ export default function LanguagePopup() {
                   onClick={() => handleLanguageSelect('hi')}
                   className="flex flex-col items-center justify-center p-6 border-2 border-[#E9E5D9] bg-white rounded-xl hover:border-[#B58231] hover:bg-[#E9E5D9]/50 transition-all group"
                 >
-                  <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">🇮🇳</span>
+                  <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">��</span>
                   <span className="font-semibold text-[#364935] text-lg">हिंदी</span>
                   <span className="text-sm text-[#364935]/60 mt-1">Hindi</span>
                 </button>

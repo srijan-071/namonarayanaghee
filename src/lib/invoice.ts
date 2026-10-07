@@ -125,7 +125,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <!-- Print Button -->
   <div class="no-print" style="text-align: center; margin-bottom: 24px;">
     <button onclick="window.print()" style="background: #1E3A24; color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif;">
-      📄 Download / Print Invoice
+      � Download / Print Invoice
     </button>
   </div>
 
@@ -135,9 +135,9 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #1E3A24; margin-bottom: 4px;">Namo Narayana</h1>
       <p style="font-size: 12px; color: #C38936; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Pure A2 Gir Cow Ghee & Traditional Foods</p>
       <div style="margin-top: 12px; font-size: 12px; color: #576B55; line-height: 1.8;">
-        <div>📧 namonarayana.contact@gmail.com</div>
-        <div>📞 +91 99999 93821</div>
-        <div>🌐 namonarayanaghee.store</div>
+        <div>� namonarayana.contact@gmail.com</div>
+        <div>� +91 99999 93821</div>
+        <div>� namonarayanaghee.store</div>
       </div>
     </div>
     <div style="text-align: right;">
@@ -246,14 +246,14 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
     <strong style="color: #1E3A24;">Payment:</strong>
     <span style="color: #576B55; margin-left: 8px;">
       ${order.paymentMethod === "cod" ? "Cash on Delivery (50% Advance Paid)" : "Prepaid (Online Payment)"}
-      — Status: <strong style="color: ${order.paymentStatus === "paid" ? "#16a34a" : "#C38936"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
+      - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#16a34a" : "#C38936"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
     </span>
   </div>
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 24px; border-top: 1px solid #E9E5D9;">
     <p style="font-family: 'Playfair Display', serif; font-size: 16px; color: #1E3A24; margin-bottom: 4px;">Thank you for shopping with Namo Narayana!</p>
-    <p style="font-size: 12px; color: #576B55;">Pure Food. Stronger Bharat. 🙏</p>
+    <p style="font-size: 12px; color: #576B55;">Pure Food. Stronger Bharat. �</p>
     <p style="font-size: 11px; color: #8C988B; margin-top: 12px;">This is a computer-generated invoice and does not require a signature.</p>
   </div>
 

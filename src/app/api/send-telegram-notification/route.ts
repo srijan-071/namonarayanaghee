@@ -24,8 +24,8 @@ export async function POST(req: Request) {
 
       // Branding based on event
       const brandingHeader = event === "initiated" 
-        ? "🟡 ORDER INITIATED (Payment Pending) 🟡" 
-        : "🟢 ORDER SUCCESS (Payment Verified) 🟢";
+        ? "� ORDER INITIATED (Payment Pending) �" 
+        : "� ORDER SUCCESS (Payment Verified) �";
 
       finalMessage = `
 Namo Narayana Ghee
