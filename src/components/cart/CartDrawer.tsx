@@ -78,11 +78,11 @@ export default function CartDrawer() {
             <button onClick={close} className="p-1.5 -ml-1 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-[#0B483B] font-bold text-[17px] font-serif absolute left-1/2 -translate-x-1/2">Your Cart</h2>
+            <h2 className="text-[#0B483B] font-bold text-[17px] font-serif absolute left-1/2 -translate-x-1/2">Your <span className="notranslate">Cart</span></h2>
             <div className="w-8"></div>
           </div>
           <div className="bg-[#0B483B] text-white text-center py-2.5 text-[12px] font-bold tracking-wide shadow-sm">
-            Free COD - Cash On Delivery Pan India
+            <span className="notranslate">Free COD</span> - Cash On Delivery Pan India
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function CartDrawer() {
           {cart.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
               <ShoppingCart className="w-16 h-16 text-gray-300" />
-              <h3 className="font-serif text-lg font-bold text-gray-900">Your cart is empty</h3>
+              <h3 className="font-serif text-lg font-bold text-gray-900">Your <span className="notranslate">cart</span> is empty</h3>
               <p className="text-gray-500 text-sm">Pure, farm-fresh essentials are waiting for you.</p>
               <Link href="/collections/all-products" onClick={close} className="bg-[#0B483B] text-white font-bold px-6 py-3 rounded-xl mt-4 hover:bg-[#073329] transition">
                 Continue Shopping
@@ -106,7 +106,7 @@ export default function CartDrawer() {
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-2 text-[#0B483B] font-bold font-serif text-[15px]">
                       <ShoppingCart className="w-[18px] h-[18px]" />
-                      <span>Cart details</span>
+                      <span><span className="notranslate">Cart</span> details</span>
                     </div>
                     <span className="text-[13px] font-bold text-gray-800">Total items: {cart.items.length}</span>
                   </div>
@@ -195,7 +195,7 @@ export default function CartDrawer() {
                 {/* Coupon */}
                 <div className="pt-2">
                   <div className="flex items-center gap-2 text-[#0B483B] font-bold text-[13px] mb-3">
-                    <Ticket className="w-[18px] h-[18px] -rotate-45" /> Have a coupon code?
+                    <Ticket className="w-[18px] h-[18px] -rotate-45" /> Have a <span className="notranslate">coupon</span> code?
                   </div>
                   {cart.discountCode ? (
                     <div className="flex items-center justify-between bg-[#EEF4F0] border border-[#0B483B] text-[#0B483B] px-4 py-3 rounded-xl text-sm font-bold">
@@ -209,7 +209,7 @@ export default function CartDrawer() {
                         placeholder="Enter coupon code"
                         value={tempCoupon}
                         onChange={(e) => setTempCoupon(e.target.value.toUpperCase())}
-                        className="w-full border-2 border-dashed border-gray-300 rounded-xl pl-4 pr-[88px] py-3 text-[13px] focus:outline-none focus:border-[#0B483B] bg-white uppercase font-bold placeholder:font-normal placeholder:normal-case"
+                        className="w-full border-2 border-dashed border-gray-300 rounded-xl pl-4 pr-[88px] py-3 text-[13px] focus:outline-none focus:border-[#0B483B] bg-white uppercase font-bold placeholder:font-normal placeholder:normal-case notranslate"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && tempCoupon) {
                             if (!applyCoupon(tempCoupon)) {
@@ -245,7 +245,7 @@ export default function CartDrawer() {
             <>
               {/* Unlock banner */}
               <div className="bg-[#FCF5E3] text-[#A66D25] text-center py-3 text-[13px] font-bold border-y border-[#F0E0B6]">
-                Unlock your best offer at checkout!
+                Unlock your best offer at <span className="notranslate">checkout</span>!
               </div>
 
             </>
@@ -268,26 +268,26 @@ export default function CartDrawer() {
              {showBreakdown && (
                <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-100 rounded-t-xl animate-in slide-in-from-bottom-2">
                  <div className="flex justify-between items-center mb-3">
-                   <h3 className="font-bold font-serif text-[15px] text-gray-900">Price Summary</h3>
+                   <h3 className="font-bold font-serif text-[15px] text-gray-900"><span className="notranslate">Price Summary</span></h3>
                    <button onClick={() => setShowBreakdown(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-md">
                      <ChevronLeft className="w-5 h-5 -rotate-90" />
                    </button>
                  </div>
                  <div className="space-y-2.5 mb-2">
                    <div className="flex justify-between text-[13px] text-gray-600">
-                     <span>Order Total</span>
+                     <span><span className="notranslate">Order Total</span></span>
                      <span className="font-bold text-gray-900">{formatPrice(cart.subtotal)}</span>
                    </div>
                    <div className="flex justify-between text-[13px] text-gray-600">
-                     <span>Items Discount</span>
+                     <span>Items <span className="notranslate">Discount</span></span>
                      <span className="font-bold text-gray-900">{cart.discountAmount ? `- ${formatPrice(cart.discountAmount)}` : "Rs. 0.00"}</span>
                    </div>
                    <div className="flex justify-between text-[13px] text-gray-600">
-                     <span>Shipping</span>
+                     <span><span className="notranslate">Shipping</span></span>
                      <span className="font-bold text-[#25D366]">FREE</span>
                    </div>
                    <div className="flex justify-between text-[14px] font-bold text-gray-900 pt-2 pb-1 border-t border-dashed border-gray-200 mt-2">
-                     <span>To Pay</span>
+                     <span><span className="notranslate">To Pay</span></span>
                      <span>{formatPrice(cart.total ?? cart.subtotal)}</span>
                    </div>
                  </div>
@@ -316,7 +316,7 @@ export default function CartDrawer() {
                   className="bg-[#084131] text-white font-bold text-[15px] flex-1 h-[48px] rounded-full shadow-md hover:bg-[#062f23] transition disabled:opacity-70 flex items-center justify-center gap-2"
                  >
                    {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-                   Continue
+                   <span className="notranslate">Continue</span>
                  </button>
                </div>
                

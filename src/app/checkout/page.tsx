@@ -174,7 +174,7 @@ export default function CheckoutPage() {
     return (
       <section className="nn-section bg-white min-h-[60vh]">
         <div className="nn-container max-w-lg mx-auto text-center py-16 space-y-4">
-          <h1 className="nn-title">Checkout</h1>
+          <h1 className="nn-title"><span className="notranslate">Checkout</span></h1>
           <p className="nn-sub">Your cart is empty. Add items before checking out.</p>
           <Link href="/collections/all-products" className="nn-btn nn-btn-primary mt-4">Shop Now</Link>
         </div>
@@ -283,7 +283,7 @@ export default function CheckoutPage() {
   return (
     <section className="nn-section bg-[#FAF9F5] min-h-[80vh]">
       <div className="nn-container max-w-6xl mx-auto py-8">
-        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure Checkout</h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto pb-4">
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
 
                   <div className="pt-4 flex justify-end">
                     <button onClick={() => handleNextStep("shipping")} disabled={!email || !phone || (hasGst && (!gstDetails.companyName || !gstDetails.gstin))} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Continue to Shipping"}
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : <span className="notranslate">Continue to Shipping</span>}
                     </button>
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export default function CheckoutPage() {
               {/* 2. SHIPPING STEP */}
               {step === "shipping" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Shipping & Billing Address</h2>
+                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]"><span className="notranslate">Shipping & Billing</span> Address</h2>
                   <div className="space-y-4">
                     <input type="text" placeholder="Full Name *" value={shipping.name} onChange={(e) => setShipping({...shipping, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
                     <input type="text" placeholder="Street Address / Apartment / Suite *" value={shipping.address} onChange={(e) => setShipping({...shipping, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
@@ -399,7 +399,7 @@ export default function CheckoutPage() {
                   <div className="pt-6 flex items-center justify-between border-t border-[#E9E5D9] mt-6">
                     <button onClick={() => handleNextStep("info")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Info</button>
                     <button onClick={() => handleNextStep("payment")} disabled={isTransitioning || !shipping.name || !shipping.address || !shipping.city || !shipping.state || !shipping.pincode || (!billingSameAsShipping && (!billing.name || !billing.address || !billing.city || !billing.state || !billing.pincode))} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Continue to Payment"}
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : <span className="notranslate">Continue to Payment</span>}
                     </button>
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export default function CheckoutPage() {
 
               {step === "payment" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Payment Method</h2>
+                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]"><span className="notranslate">Payment Method</span></h2>
                   
                   <div className="space-y-3">
                     {/* Prepaid Option */}
@@ -447,14 +447,14 @@ export default function CheckoutPage() {
                     </h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between text-[#576B55]">
-                        <span>Cart Subtotal</span>
+                        <span><span className="notranslate">Cart</span> Subtotal</span>
                         <span className="font-semibold text-[#1E3A24]">{formatPrice(cart.subtotal)}</span>
                       </div>
                       
                       {pricing.discount > 0 && (
                         <div className="flex justify-between text-green-700">
                           <span className="flex items-center gap-1">
-                            <Percent className="w-3 h-3" /> Discount ({pricing.discountPercent}%)
+                            <Percent className="w-3 h-3" /> <span className="notranslate">Discount</span> ({pricing.discountPercent}%)
                           </span>
                           <span className="font-semibold">-{formatPrice(pricing.discount)}</span>
                         </div>
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
                   <div className="pt-6 flex items-center justify-between">
                     <button onClick={() => handleNextStep("shipping")} className="text-[#364935] font-medium hover:text-[#1E3A24] px-4 py-2">Back to Shipping</button>
                     <button onClick={() => handleNextStep("review")} className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Review Order"}
+                      {isTransitioning ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : <span className="notranslate">Review Order</span>}
                     </button>
                   </div>
                 </div>
@@ -495,7 +495,7 @@ export default function CheckoutPage() {
               {/* 5. REVIEW STEP */}
               {step === "review" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Review Your Order</h2>
+                  <h2 className="font-serif text-xl font-bold text-[#1E3A24]">Review Your <span className="notranslate">Order</span></h2>
                   
                   <div className="space-y-4">
                     <div className="p-5 bg-[#FAF9F5] rounded-xl border border-[#E9E5D9]">
@@ -562,7 +562,7 @@ export default function CheckoutPage() {
                           Processing...
                         </>
                       ) : (
-                        `Pay ${formatPrice(pricing.amountToPay)} & Place Order`
+                        <><span className="notranslate">Pay</span> {formatPrice(pricing.amountToPay)} & Place <span className="notranslate">Order</span></>
                       )}
                     </button>
                   </div>
@@ -590,7 +590,7 @@ export default function CheckoutPage() {
           {/* Order Summary Sidebar */}
           <div className="w-full lg:w-[40%] lg:sticky lg:top-24 h-fit">
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#E9E5D9]">
-              <h3 className="font-serif text-2xl font-bold text-[#1E3A24] mb-6">Order Summary</h3>
+              <h3 className="font-serif text-2xl font-bold text-[#1E3A24] mb-6"><span className="notranslate">Order Summary</span></h3>
               
               <ul className="divide-y divide-[#E9E5D9] mb-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.items.map((item) => (
@@ -612,13 +612,13 @@ export default function CheckoutPage() {
               
               <div className="space-y-4 text-base border-t-2 border-dashed border-[#E9E5D9] pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-2">
                 <div className="flex justify-between items-center text-[#576B55]">
-                  <span>Subtotal</span>
+                  <span><span className="notranslate">Subtotal</span></span>
                   <span className="font-semibold text-[#1E3A24]">{formatPrice(cart.subtotal)}</span>
                 </div>
                 
                 {pricing.discount > 0 && (
                   <div className="flex justify-between items-center text-green-700">
-                    <span>Discount ({pricing.discountPercent}%)</span>
+                    <span><span className="notranslate">Discount</span> ({pricing.discountPercent}%)</span>
                     <span className="font-semibold">-{formatPrice(pricing.discount)}</span>
                   </div>
                 )}
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
                       disabled={!tempCoupon.trim()}
                       className="bg-[#1E3A24] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#152919] disabled:opacity-50 transition-colors"
                     >
-                      Apply
+                      <span className="notranslate">Apply</span>
                     </button>
                   </div>
                   {couponCode && (
@@ -665,7 +665,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex justify-between items-center text-[#576B55]">
-                  <span>Shipping</span>
+                  <span><span className="notranslate">Shipping</span></span>
                   <span className="font-bold text-[#C38936]">FREE</span>
                 </div>
                 <div className="flex justify-between items-center text-[#576B55]">
