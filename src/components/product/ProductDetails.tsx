@@ -9,7 +9,7 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { Loader2, Share2, Star, Truck, ShieldCheck, HeadphonesIcon, Factory } from "lucide-react";
 import ProductReviews from "./ProductReviews";
-import { SAMPLE_REVIEWS, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
+import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 
 import { useRouter } from "next/navigation";
 
@@ -324,7 +324,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
       <div className="col-span-1 md:col-span-2 mt-12 pt-8 border-t border-gray-200">
         <ProductReviews 
-          reviews={SAMPLE_REVIEWS} 
+          reviews={PRODUCT_REVIEWS_MAP[product.slug] || PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"]} 
           totalReviews={reviewStats?.total || 0} 
           averageRating={reviewStats?.average || 5.0} 
         />
