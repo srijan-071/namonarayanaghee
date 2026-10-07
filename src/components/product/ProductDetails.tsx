@@ -7,7 +7,7 @@ import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { Loader2, Flame, Timer, TrendingUp, Star } from "lucide-react";
+import { Loader2, Share2, Star, Truck, ShieldCheck, HeadphonesIcon, Factory } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import { SAMPLE_REVIEWS, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 
@@ -26,7 +26,6 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const compareAt = variant?.compareAtPrice ?? product.compareAtPrice;
   const discount = compareAt ? discountPercent(price, compareAt) : 0;
 
-  // Track view_item once on mount or when product changes
   React.useEffect(() => {
     trackEvent("view_item", {
       currency: "INR",
@@ -38,11 +37,6 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
       }]
     });
   }, [product.id, product.title, price]);
-
-  // Scarcity state (pseudo-random based on product ID to remain consistent per product)
-  const leftInStock = React.useMemo(() => {
-    return Math.floor(product.id % 7) + 3; // Returns between 3 and 9
-  }, [product.id]);
 
   const reviewStats = PRODUCT_REVIEW_STATS[product.slug];
 
@@ -79,13 +73,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     }, 400);
   }
 
-  // JSON-LD Schema
+  function handleBuyNow() {
+    handleAddToCart();
+    setTimeout(() => {
+      router.push("/checkout");
+    }, 500);
+  }
+
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": product.title,
     "image": product.images,
-    "description": product.description.replace(/<[^>]*>?/gm, ''), // strip html
+    "description": product.description.replace(/<[^>]*>?/gm, ''),
     "sku": product.id.toString(),
     "brand": {
       "@type": "Brand",
@@ -93,7 +93,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     },
     "offers": {
       "@type": "Offer",
-      "url": `https://namonarayanaghee.com/products/${product.slug}`,
+      "url": `https://namonarayanaghee.store/products/${product.slug}`,
       "priceCurrency": "INR",
       "price": (price / 100).toFixed(2),
       "availability": variant?.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
@@ -102,14 +102,15 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Gallery */}
+
+      {/* Gallery (Left Side) */}
       <div className="space-y-4">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-nn-cream border border-nn-hairline">
+        <div className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5]">
           {product.images[selectedImage] ? (
             <Image
               src={product.images[selectedImage]}
@@ -122,15 +123,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           ) : (
             <div className="w-full h-full flex items-center justify-center text-nn-bark/30 text-lg">No Image</div>
           )}
-          {discount > 0 && <span className="nn-badge-sale absolute top-4 left-4 text-sm">{discount}% OFF</span>}
         </div>
         {product.images.length > 1 && (
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {product.images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
-                className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 shrink-0 transition ${i === selectedImage ? "border-nn-forest" : "border-nn-hairline hover:border-nn-bark"}`}
+                className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 shrink-0 transition ${i === selectedImage ? "border-[#1E3A24]" : "border-transparent hover:border-gray-300"}`}
                 aria-label={`View image ${i + 1}`}
               >
                 <Image src={img} alt="" fill className="object-cover" sizes="80px" />
@@ -140,10 +140,31 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         )}
       </div>
 
-      {/* Details */}
+      {/* Details (Right Side) */}
       <div className="flex flex-col">
-        <h1 className="nn-title mb-2">{product.title}</h1>
+        {/* Title & Share */}
+        <div className="flex justify-between items-start gap-4 mb-2">
+          <h1 className="text-3xl lg:text-[32px] leading-tight font-serif font-bold text-[#1E3A24]">{product.title}</h1>
+          <button 
+            className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition shrink-0" 
+            aria-label="Share"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: product.title,
+                  url: window.location.href
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard!");
+              }
+            }}
+          >
+            <Share2 className="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
 
+        {/* Reviews */}
         {reviewStats && (
           <button 
             onClick={() => {
@@ -152,62 +173,54 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             }}
             className="flex items-center gap-2 w-fit mb-4 hover:opacity-80 transition-opacity"
           >
-            <div className="flex text-[#F5B301]">
+            <div className="flex text-[#066A46]">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`w-4 h-4 ${i < Math.floor(reviewStats.average) ? "fill-current" : "text-gray-300"}`} />
               ))}
             </div>
-            <span className="text-sm font-medium text-[#1E3A24]">{reviewStats.average.toFixed(1)}</span>
-            <span className="text-sm text-[#576B55] underline decoration-dashed underline-offset-2">({reviewStats.total} reviews)</span>
+            <span className="text-sm font-medium text-[#1E3A24]">{reviewStats.total} reviews</span>
           </button>
         )}
 
         {/* Price */}
-        <div className="flex items-center gap-3 mb-6">
-          <span className="text-2xl font-bold text-nn-leaf">{formatPrice(price)}</span>
-          {compareAt && compareAt > price && (
-            <>
-              <span className="text-lg text-nn-bark line-through">{formatPrice(compareAt)}</span>
-              <span className="nn-badge-sale">{discount}% OFF</span>
-            </>
-          )}
-        </div>
-
-        {/* Urgency & Scarcity Badges */}
-        <div className="mb-6 space-y-2">
-          <div className="flex items-center gap-2 text-[#C38936] bg-[#C38936]/10 px-3 py-2 rounded-lg text-sm font-bold w-fit">
-            <Flame className="w-4 h-4 animate-pulse" />
-            <span>High Demand! Only {leftInStock} jars left in this batch.</span>
+        <div className="mb-6">
+          <div className="flex items-end gap-3 mb-1">
+            <span className="text-4xl font-bold text-[#1E3A24]">Rs. {(price / 100).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
           </div>
-          <div className="flex items-center gap-2 text-[#1E3A24] bg-[#1E3A24]/5 px-3 py-2 rounded-lg text-sm font-medium w-fit">
-            <Timer className="w-4 h-4" />
-            <span>Order within 2 hours for dispatch today.</span>
-          </div>
+          <span className="text-sm text-gray-500">MRP (Incl. of all taxes)</span>
         </div>
 
         {/* Variants & Packs */}
         {gheePacks && gheePacks.length > 0 ? (
-          <div className="mb-6">
-            <label className="text-sm font-semibold text-nn-ink mb-3 block">
-              Choose your pack
-            </label>
-            <div className="flex flex-col gap-3">
+          <div className="mb-8">
+            <div className="flex justify-between items-end mb-3">
+              <label className="text-sm font-bold text-[#1E3A24]">Choose Pack</label>
+              <span className="text-xs font-bold text-[#066A46]">Save up to 15% per litre &rarr;</span>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {gheePacks.map((pack) => {
                 let ml = 1000;
                 let badge = null;
+                let savePercent = null;
+                
                 if (pack.slug.includes("500-ml")) {
                   ml = 500;
                 } else if (pack.slug.includes("1-litre")) {
                   ml = 1000;
+                  savePercent = "5%";
                 } else if (pack.slug.includes("2-5-litre")) {
                   ml = 2500;
-                  badge = "Better value";
+                  savePercent = "11%";
                 } else if (pack.slug.includes("5-litre")) {
                   ml = 5000;
-                  badge = "Best value";
+                  savePercent = "15%";
+                  badge = "BEST VALUE";
                 }
+                
                 const perLitre = Math.round((pack.price / 100) / (ml / 1000));
                 const isSelected = product.slug === pack.slug;
+                const packDiscount = pack.compareAtPrice ? discountPercent(pack.price, pack.compareAtPrice) : 0;
 
                 return (
                   <button
@@ -215,83 +228,101 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                     onClick={() => {
                       if (!isSelected) router.push(`/products/${pack.slug}`);
                     }}
-                    className={`relative w-full text-left p-4 rounded-xl border-2 transition flex items-center justify-between ${
+                    className={`relative text-left rounded-xl border flex flex-col overflow-hidden transition ${
                       isSelected 
-                        ? "border-nn-forest bg-nn-forest/5 shadow-sm" 
-                        : "border-nn-hairline hover:border-nn-forest/50"
+                        ? "border-[#1E3A24] ring-1 ring-[#1E3A24]" 
+                        : "border-gray-200 hover:border-[#1E3A24]"
                     }`}
                   >
-                    <div className="flex flex-col">
-                      <span className={`font-semibold text-lg ${isSelected ? "text-nn-forest" : "text-nn-ink"}`}>
-                        {pack.variants[0]?.title ?? pack.title}
-                      </span>
-                      <span className="text-sm text-nn-bark mt-1">
-                        {formatPrice(pack.price)} • ₹{perLitre.toLocaleString("en-IN")}/Litre
-                      </span>
+                    {/* Top Header */}
+                    <div className={`px-3 py-2 flex justify-between items-center ${isSelected ? "bg-[#1E3A24] text-white" : "bg-[#F9F9F9] text-[#1E3A24]"}`}>
+                      <span className="text-sm font-bold">{pack.variants[0]?.title ?? pack.title.split(' ').slice(-2).join(' ')}</span>
+                      {badge && (
+                        <span className="text-[10px] bg-[#F5B301] text-black px-1.5 py-0.5 rounded-sm font-bold whitespace-nowrap ml-1">{badge}</span>
+                      )}
                     </div>
-                    {badge && (
-                      <div className={`text-xs font-bold px-3 py-1 rounded-full ${isSelected ? "bg-nn-forest text-white" : "bg-nn-leaf/10 text-nn-leaf"}`}>
-                        {badge}
+                    
+                    {/* Bottom Details */}
+                    <div className="p-3 bg-white flex flex-col gap-1 flex-1">
+                      <div className="flex flex-wrap items-baseline gap-1">
+                        <span className="text-sm font-bold text-[#1E3A24]">Rs. {pack.price / 100}</span>
+                        {pack.compareAtPrice && (
+                          <span className="text-xs text-gray-400 line-through">Rs. {pack.compareAtPrice / 100}</span>
+                        )}
                       </div>
-                    )}
+                      
+                      {packDiscount > 0 && (
+                        <span className="text-xs font-bold text-red-600">{packDiscount}% off</span>
+                      )}
+                      
+                      <div className="mt-auto pt-2">
+                        <span className="text-xs font-bold text-[#066A46]">
+                          Rs. {perLitre.toLocaleString("en-IN")}/L {savePercent && <span className="text-gray-500 font-normal">- save {savePercent}</span>}
+                        </span>
+                      </div>
+                    </div>
                   </button>
                 );
               })}
             </div>
           </div>
-        ) : product.variants.length > 1 ? (
-          <div className="mb-6">
-            <label className="text-sm font-semibold text-nn-ink mb-2 block">
-              {product.options[0]?.name ?? "Size"}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {product.variants.map((v, i) => (
-                <button
-                  key={v.id}
-                  onClick={() => { setSelectedVariantIdx(i); setQty(1); }}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium transition ${i === selectedVariantIdx ? "border-nn-forest bg-nn-forest text-white" : "border-nn-hairline text-nn-ink hover:border-nn-forest"}`}
-                >
-                  {v.title}
-                </button>
-              ))}
-            </div>
-          </div>
         ) : null}
 
-        {/* Quantity */}
-        <div className="mb-6">
-          <label className="text-sm font-semibold text-nn-ink mb-2 block">Quantity</label>
-          <div className="inline-flex items-center border border-nn-hairline rounded-lg">
-            <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-2 text-lg hover:bg-gray-50 transition" aria-label="Decrease">−</button>
-            <span className="px-4 py-2 text-sm font-medium min-w-[40px] text-center">{qty}</span>
-            <button onClick={() => setQty(qty + 1)} className="px-3 py-2 text-lg hover:bg-gray-50 transition" aria-label="Increase">+</button>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          {/* Quantity Selector */}
+          <div className="flex items-center bg-[#E8F2EF] rounded-lg border border-[#CCE3DB] h-[52px]">
+            <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-lg transition text-xl">−</button>
+            <span className="w-10 text-center font-bold text-[#1E3A24]">{qty}</span>
+            <button onClick={() => setQty(qty + 1)} className="w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-lg transition text-xl">+</button>
           </div>
-        </div>
 
-        {/* Add to cart */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-nn-hairline z-50 md:relative md:bottom-auto md:left-auto md:right-auto md:p-0 md:bg-transparent md:border-t-0 md:z-auto mb-4">
-          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="nn-btn nn-btn-primary w-full py-4 text-base disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl md:shadow-none">
-            {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-            {isAdding ? "Adding..." : (variant?.available ? "Add to Cart" : "Sold Out")}
+          <button onClick={handleAddToCart} disabled={!variant?.available || isAdding} className="flex-1 bg-[#1E3A24] text-white font-bold h-[52px] rounded-lg hover:bg-[#162A1A] transition disabled:opacity-70 flex items-center justify-center gap-2">
+            {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : "Add to cart"}
+          </button>
+          
+          <button onClick={handleBuyNow} disabled={!variant?.available} className="flex-1 bg-[#F5B301] text-black font-bold h-[52px] rounded-lg hover:bg-[#E0A401] transition disabled:opacity-70">
+            Buy Now
           </button>
         </div>
+
         {/* Description */}
-        <div className="mt-6 border-t border-nn-hairline pt-6">
-          <h2 className="font-serif text-lg font-bold text-nn-ink mb-3">Product Details</h2>
-          <div className="nn-sub prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
+        <div className="mb-8">
+          <h2 className="text-sm font-bold text-[#1E3A24] uppercase tracking-wider mb-4">Product Description</h2>
+          <div className="prose prose-sm max-w-none text-gray-800 marker:text-[#1E3A24]" dangerouslySetInnerHTML={{ __html: product.description }} />
         </div>
 
-        {/* Tags */}
-        {product.tags.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-2">
-            {product.tags.map((tag) => (
-              <span key={tag} className="text-xs bg-nn-cream text-nn-bark px-2.5 py-1 rounded-full capitalize">{tag}</span>
-            ))}
+        {/* Trust Badges */}
+        <div className="grid grid-cols-4 gap-2 pt-6 border-t border-gray-200">
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46]">
+              <Truck className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-[#1E3A24] leading-tight">Free Shipping<br/>Above ₹499</span>
           </div>
-        )}
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46]">
+              <Factory className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-[#1E3A24] leading-tight">Bilona<br/>Method</span>
+          </div>
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46]">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-[#1E3A24] leading-tight">90+ Quality<br/>Checks</span>
+          </div>
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46]">
+              <HeadphonesIcon className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-[#1E3A24] leading-tight">360° Customer<br/>Support</span>
+          </div>
+        </div>
+
       </div>
 
-      <div className="col-span-1 md:col-span-2">
+      <div className="col-span-1 md:col-span-2 mt-12 pt-8 border-t border-gray-200">
         <ProductReviews 
           reviews={SAMPLE_REVIEWS} 
           totalReviews={reviewStats?.total || 0} 
