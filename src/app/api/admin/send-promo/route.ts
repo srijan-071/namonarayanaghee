@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const BREVO_API_KEY = "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"; // Hardcoded as requested
-const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const FIREBASE_API_KEY = "AIzaSyC5-gVyFeo-WLlI8RU4Tlhftci_1f5gOfc";
 
 export async function POST(req: Request) {
   try {
