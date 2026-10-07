@@ -9,6 +9,7 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { Loader2, Share2, Star, Truck, ShieldCheck, HeadphonesIcon, Factory } from "lucide-react";
 import ProductReviews from "./ProductReviews";
+import ProductJourney from "./ProductJourney";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 
 import { useRouter } from "next/navigation";
@@ -320,6 +321,10 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
+      </div>
+
+      <div className="col-span-1 md:col-span-2 w-[100vw] relative left-1/2 -translate-x-1/2 mt-12 md:mt-24">
+        <ProductJourney />
       </div>
 
       <div className="col-span-1 md:col-span-2 mt-12 pt-8 border-t border-gray-200">
