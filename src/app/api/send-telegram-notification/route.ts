@@ -5,26 +5,29 @@ const TELEGRAM_CHAT_ID = "5804733110";
 
 export async function POST(req: Request) {
   try {
-    const { orderId, orderData, event = "success" } = await req.json();
+    const { orderId, orderData, event = "success", message: rawMessage } = await req.json();
 
-    if (!orderId || !orderData) {
-      return NextResponse.json({ error: "Missing orderId or orderData" }, { status: 400 });
-    }
+    let finalMessage = rawMessage;
 
-    // Construct the message without emojis, simple branding
-    const itemsText = orderData.items?.map((item: any) => 
-      `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - Rs. ${item.price * item.quantity}`
-    ).join('\n') || 'No items found';
+    if (!finalMessage) {
+      if (!orderId || !orderData) {
+        return NextResponse.json({ error: "Missing orderId or orderData" }, { status: 400 });
+      }
 
-    const shipping = orderData.shippingAddress || {};
-    const contact = orderData.contactInfo || {};
+      // Construct the message without emojis, simple branding
+      const itemsText = orderData.items?.map((item: any) => 
+        `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - Rs. ${item.price * item.quantity}`
+      ).join('\n') || 'No items found';
 
-    // Branding based on event
-    const brandingHeader = event === "initiated" 
-      ? "🟡 ORDER INITIATED (Payment Pending) 🟡" 
-      : "🟢 ORDER SUCCESS (Payment Verified) 🟢";
+      const shipping = orderData.shippingAddress || {};
+      const contact = orderData.contactInfo || {};
 
-    const message = `
+      // Branding based on event
+      const brandingHeader = event === "initiated" 
+        ? "🟡 ORDER INITIATED (Payment Pending) 🟡" 
+        : "🟢 ORDER SUCCESS (Payment Verified) 🟢";
+
+      finalMessage = `
 Namo Narayana Ghee
 ${brandingHeader}
 ------------------------------
@@ -52,7 +55,8 @@ Total Amount: Rs. ${orderData.totalAmount || 0}
 Amount Paid: Rs. ${orderData.amountToPay || 0}
 Amount Remaining (COD): Rs. ${orderData.amountRemaining || 0}
 ------------------------------
-    `.trim();
+      `.trim();
+    }
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     
@@ -63,7 +67,7 @@ Amount Remaining (COD): Rs. ${orderData.amountRemaining || 0}
       },
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
-        text: message,
+        text: finalMessage,
       }),
     });
 
