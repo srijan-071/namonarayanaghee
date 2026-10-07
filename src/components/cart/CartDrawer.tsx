@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function CartDrawer() {
   const cart = useCart();
@@ -16,6 +17,19 @@ export default function CartDrawer() {
   const [isNavigating, setIsNavigating] = useState(false);
 
   const handleRemove = (variantId: number) => {
+    const item = cart.items.find((i) => i.variantId === variantId);
+    if (item) {
+      trackEvent("remove_from_cart", {
+        currency: "INR",
+        value: item.price * item.quantity,
+        items: [{
+          item_id: item.productId,
+          item_name: item.title,
+          quantity: item.quantity,
+          price: item.price
+        }]
+      });
+    }
     removeFromCart(variantId);
     toast.success("Item removed from cart");
   };

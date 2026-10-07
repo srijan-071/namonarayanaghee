@@ -117,6 +117,7 @@ function SuccessContent() {
               // Track Purchase Event
               trackEvent("purchase", {
                 transaction_id: orderId,
+                payment_type: data.paymentMethod || "unknown",
                 currency: "INR",
                 value: data.amountToPay || data.totalAmount,
                 tax: data.tax || 0,

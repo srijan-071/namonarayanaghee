@@ -46,6 +46,14 @@ export default function CheckoutPage() {
       });
     }
 
+    if (nextStep === "payment") {
+      trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
+    }
+
+    if (nextStep === "review") {
+      trackEvent("add_payment_info", { payment_type: paymentMethod, value: cart.subtotal, currency: "INR" });
+    }
+
     setIsTransitioning(true);
     setTimeout(() => {
       setStep(nextStep);
@@ -211,6 +219,12 @@ export default function CheckoutPage() {
       // 1. Show single loading toast
       const loadingToastId = toast.loading("Securely preparing your order...", { duration: 10000 });
       
+      trackEvent("order_created", {
+        value: pricing.amountToPay,
+        currency: "INR",
+        payment_type: paymentMethod
+      });
+
       // 2. Fire Firestore requests concurrently
       const orderIdPromise = createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
       const profilePromise = saveUserCheckoutProfile(user.uid, checkoutData);

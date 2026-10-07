@@ -43,9 +43,23 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
           currency: eventParams?.currency || 'INR',
         };
         break;
+      case "remove_from_cart":
+        metaEvent = "RemoveFromCart";
+        break;
       case "begin_checkout":
         metaEvent = "InitiateCheckout";
         metaParams = {
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+        };
+        break;
+      case "add_shipping_info":
+        metaEvent = "AddShippingInfo";
+        break;
+      case "add_payment_info":
+        metaEvent = "AddPaymentInfo";
+        metaParams = {
+          payment_type: eventParams?.payment_type,
           value: eventParams?.value,
           currency: eventParams?.currency || 'INR',
         };
@@ -55,7 +69,23 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
         metaParams = {
           value: eventParams?.value,
           currency: eventParams?.currency || 'INR',
+          transaction_id: eventParams?.transaction_id,
+          payment_type: eventParams?.payment_type, // "cod" or "prepaid"
         };
+        break;
+      case "order_created":
+        metaEvent = "OrderCreated"; // Pending order placed, before payment redirect
+        metaParams = {
+          value: eventParams?.value,
+          currency: eventParams?.currency || 'INR',
+          payment_type: eventParams?.payment_type,
+        };
+        break;
+      case "sign_up":
+        metaEvent = "CompleteRegistration";
+        break;
+      case "login":
+        metaEvent = "Login"; // Will map to custom if not standard
         break;
       default:
         metaEvent = eventName; // Custom event
@@ -63,7 +93,7 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
 
     if (metaEvent === "PageView") {
       fbq("track", "PageView");
-    } else if (["ViewContent", "AddToCart", "InitiateCheckout", "Purchase"].includes(metaEvent)) {
+    } else if (["ViewContent", "AddToCart", "InitiateCheckout", "Purchase", "AddPaymentInfo", "CompleteRegistration"].includes(metaEvent)) {
       fbq("track", metaEvent, metaParams);
     } else {
       fbq("trackCustom", metaEvent, metaParams);
