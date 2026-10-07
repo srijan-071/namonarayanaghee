@@ -17,6 +17,7 @@ export default function CartDrawer() {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
   const [tempCoupon, setTempCoupon] = useState("");
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   const handleRemove = (variantId: number) => {
     const item = cart.items.find((i) => i.variantId === variantId);
@@ -247,48 +248,58 @@ export default function CartDrawer() {
                 Unlock your best offer at checkout!
               </div>
 
-              {/* Price Summary */}
-              <div className="p-4 bg-[#F7F8FA] space-y-3 mt-2">
-                <h3 className="font-bold font-serif text-[15px] text-gray-900 mb-2">Price Summary</h3>
-                <div className="flex justify-between text-[13px] text-gray-600">
-                  <span>Order Total</span>
-                  <span className="font-bold text-gray-900">{formatPrice(cart.subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-[13px] text-gray-600">
-                  <span>Items Discount</span>
-                  <span className="font-bold text-gray-900">{cart.discountAmount ? `- ${formatPrice(cart.discountAmount)}` : "Rs. 0.00"}</span>
-                </div>
-                <div className="flex justify-between text-[13px] text-gray-600">
-                  <span>Shipping</span>
-                  <span className="font-bold text-[#25D366]">FREE</span>
-                </div>
-                <div className="flex justify-between text-[14px] font-bold text-gray-900 pt-2 pb-2">
-                  <span>To Pay</span>
-                  <span></span> {/* Total is shown in the sticky footer instead, per the image */}
-                </div>
-              </div>
             </>
           )}
         </div>
 
         {/* Sticky Footer */}
         {cart.items.length > 0 && (
-          <div className="absolute bottom-0 left-0 w-full bg-[#F7F8FA] border-t border-gray-200 z-[102] rounded-t-xl shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.05)]">
+          <div className="absolute bottom-0 left-0 w-full bg-[#F7F8FA] border-t border-gray-200 z-[102] rounded-t-xl shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.05)] transition-all duration-300">
              {/* WhatsApp Chat Overlay */}
              <div 
-               className="absolute -top-[52px] right-4 bg-[#25D366] text-white rounded-full pl-3 pr-4 py-2.5 flex items-center gap-1.5 font-bold text-[13px] shadow-lg shadow-green-500/20 cursor-pointer hover:bg-[#1EBE5D] transition transform hover:scale-105 z-10" 
+               className={`absolute right-4 bg-[#25D366] text-white rounded-full pl-3 pr-4 py-2.5 flex items-center gap-1.5 font-bold text-[13px] shadow-lg shadow-green-500/20 cursor-pointer hover:bg-[#1EBE5D] transition-all duration-300 transform hover:scale-105 z-10 ${showBreakdown ? '-top-[52px] opacity-0 pointer-events-none' : '-top-[52px]'}`} 
                onClick={() => window.open('https://wa.me/919999999999', '_blank')}
              >
                <MessageCircle className="w-[18px] h-[18px] fill-current" />
                Chat with us
              </div>
 
+             {/* Expandable Price Breakdown */}
+             {showBreakdown && (
+               <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-100 rounded-t-xl animate-in slide-in-from-bottom-2">
+                 <div className="flex justify-between items-center mb-3">
+                   <h3 className="font-bold font-serif text-[15px] text-gray-900">Price Summary</h3>
+                   <button onClick={() => setShowBreakdown(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-md">
+                     <ChevronLeft className="w-5 h-5 -rotate-90" />
+                   </button>
+                 </div>
+                 <div className="space-y-2.5 mb-2">
+                   <div className="flex justify-between text-[13px] text-gray-600">
+                     <span>Order Total</span>
+                     <span className="font-bold text-gray-900">{formatPrice(cart.subtotal)}</span>
+                   </div>
+                   <div className="flex justify-between text-[13px] text-gray-600">
+                     <span>Items Discount</span>
+                     <span className="font-bold text-gray-900">{cart.discountAmount ? `- ${formatPrice(cart.discountAmount)}` : "Rs. 0.00"}</span>
+                   </div>
+                   <div className="flex justify-between text-[13px] text-gray-600">
+                     <span>Shipping</span>
+                     <span className="font-bold text-[#25D366]">FREE</span>
+                   </div>
+                   <div className="flex justify-between text-[14px] font-bold text-gray-900 pt-2 pb-1 border-t border-dashed border-gray-200 mt-2">
+                     <span>To Pay</span>
+                     <span>{formatPrice(cart.total ?? cart.subtotal)}</span>
+                   </div>
+                 </div>
+               </div>
+             )}
+
              <div className="p-4 flex flex-col gap-3">
                <div className="flex items-center justify-between gap-4">
                  <div className="flex flex-col shrink-0">
-                   <div className="flex items-center gap-1 cursor-pointer">
+                   <div className="flex items-center gap-1 cursor-pointer" onClick={() => setShowBreakdown(!showBreakdown)}>
                      <span className="text-[17px] font-extrabold text-gray-900">{formatPrice(cart.total ?? cart.subtotal)}</span>
-                     <ChevronLeft className="w-4 h-4 rotate-90 text-gray-700 stroke-[3]" />
+                     <ChevronLeft className={`w-4 h-4 text-gray-700 stroke-[3] transition-transform ${showBreakdown ? '-rotate-90' : 'rotate-90'}`} />
                    </div>
                  </div>
                  
