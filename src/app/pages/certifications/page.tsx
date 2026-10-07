@@ -43,7 +43,7 @@ export default function CertificationsPage() {
                   Licensed by India&apos;s Food Safety and Standards Authority. Our facilities meet all hygiene and safety requirements for food production.
                 </p>
                 <a 
-                  href="https://cdn.shopify.com/s/files/1/0758/0490/1544/files/o_f20260715-011-015_2.pdf?v=1785484275"
+                  href="/media/o_f20260715-011-015_2_25449c.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-[#C99A3D] font-semibold hover:text-[#A87845] transition-colors"
@@ -64,7 +64,7 @@ export default function CertificationsPage() {
                   Batch-wise lab reports are available on request - write to us anytime. You can download the sample report below.
                 </p>
                 <a 
-                  href="https://cdn.shopify.com/s/files/1/0758/0490/1544/files/o_f20260715-011-015_2.pdf?v=1785484275"
+                  href="/media/o_f20260715-011-015_2_25449c.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-[#075B4F] text-white px-5 py-2.5 rounded-lg hover:bg-[#03483F] transition-colors text-sm font-semibold shadow-md"
@@ -82,7 +82,7 @@ export default function CertificationsPage() {
           className="mt-16 text-center"
         >
           <img 
-            src="https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b.webp?v=1785769477" 
+            src="/media/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b_7f6e93.webp" 
             alt="Namo Narayana Certificate" 
             className="max-w-full md:max-w-2xl mx-auto rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
           />

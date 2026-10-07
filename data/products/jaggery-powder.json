@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/jaggery.webp?v=1785769722"
+    "/media/jaggery_07e67b.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/jaggery.webp?v=1785769722",
+  "featured_image": "/media/jaggery_07e67b.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/jaggery.webp?v=1785769722"
+        "src": "/media/jaggery_28d368.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/jaggery.webp?v=1785769722",
+      "src": "/media/jaggery_28d368.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Jaggery Powder\n – Namo Narayana",
     "description": "Natural Jaggery Powder is made from sugarcane juice without refining, offering a wholesome alternative to refined sugar with its rich, caramel-like sweetness. 🍯 Natural sweetener 🌾 Unrefined and chemical-free ☕ Easily dissolves in beverages 🍰 Great for cooking and baking 🌿 Traditional taste",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/jaggery.webp?v=1785769722"
+    "ogImage": "/media/jaggery_80b19a.webp"
   }
 }

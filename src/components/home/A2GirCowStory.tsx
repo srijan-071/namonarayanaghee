@@ -13,7 +13,7 @@ export default function A2GirCowStory() {
           <Image 
             src="https://namonarayana.com/cdn/shop/files/A2_Desi_Ghee.jpg?v=1712217621" // Ideally a cow image, fallback to ghee jar in nature if needed, but the original site has farm images. Let's use the main hero image or a farm image if available. 
             // The user allowed using recovered assets. From the extraction, I saw WhatsApp_Image_2026... Let's use a solid nature image URL we know exists or just the beautifully styled Ghee in nature.
-            // Wait, we have this cow image from the old site in the hero: 'https://namonarayana.com/cdn/shop/files/WhatsApp_Image_2026-07-28_at_7.54.54_PM.jpg?v=1785248791' 
+            // Wait, we have this cow image from the old site in the hero: '/media/WhatsApp_Image_2026-07-28_at_7.54.54_PM_8f3b7c.jpg' 
             // We'll use the A2 Desi Ghee in nature as a safe beautiful fallback, or the specific cow image if we had the exact URL. Let's use the aesthetic one.
             alt="Gir Cows at Namo Narayana Farm"
             fill

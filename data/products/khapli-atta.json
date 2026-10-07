@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Khapliatta.webp?v=1785769805"
+    "/media/Khapliatta_d31e53.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Khapliatta.webp?v=1785769805",
+  "featured_image": "/media/Khapliatta_d31e53.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Khapliatta.webp?v=1785769805"
+        "src": "/media/Khapliatta_a1695a.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Khapliatta.webp?v=1785769805",
+      "src": "/media/Khapliatta_a1695a.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Khapli Atta\n – Namo Narayana",
     "description": "Khapli Atta is stone-ground from premium Khapli wheat, preserving its natural goodness and delivering wholesome nutrition, rich flavor, and soft rotis for healthy everyday meals. 🌾 Stone-ground flour 🌿 Made from Khapli wheat 🫓 Soft and fluffy rotis 💪 Naturally nutritious 🚫 No preservatives",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/Khapliatta.webp?v=1785769805"
+    "ogImage": "/media/Khapliatta_e22485.webp"
   }
 }

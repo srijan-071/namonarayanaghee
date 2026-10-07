@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/coconutoil.webp?v=1785769694"
+    "/media/coconutoil_e6151c.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/coconutoil.webp?v=1785769694",
+  "featured_image": "/media/coconutoil_e6151c.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/coconutoil.webp?v=1785769694"
+        "src": "/media/coconutoil_2a37ea.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/coconutoil.webp?v=1785769694",
+      "src": "/media/coconutoil_2a37ea.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Coconut Oil\n – Namo Narayana",
     "description": "Pure Coconut Oil is carefully extracted from fresh coconuts, offering a naturally rich aroma and versatile use for cooking, hair care, and skin nourishment. 🥥 Made from fresh coconuts 🌿 Multi-purpose use 💯 No preservatives or chemicals 💆 Suitable for hair and skin 🍽️ Ideal for cooking",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/coconutoil.webp?v=1785769694"
+    "ogImage": "/media/coconutoil_9e53f9.webp"
   }
 }

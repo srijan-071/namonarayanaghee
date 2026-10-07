@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Multigrainatta.webp?v=1785769735"
+    "/media/Multigrainatta_086a0e.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Multigrainatta.webp?v=1785769735",
+  "featured_image": "/media/Multigrainatta_086a0e.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Multigrainatta.webp?v=1785769735"
+        "src": "/media/Multigrainatta_3d6111.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Multigrainatta.webp?v=1785769735",
+      "src": "/media/Multigrainatta_3d6111.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Multi Grain Atta\n – Namo Narayana",
     "description": "Multi Grain Atta combines carefully selected grains to provide wholesome nutrition, soft rotis, and a delicious taste, making it a balanced choice for everyday meals. 🌾 Blend of nutritious grains 🫓 Makes soft rotis 💪 Rich in dietary fiber 🌱 No artificial additives 🍽️ Suitable for daily use",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/Multigrainatta.webp?v=1785769735"
+    "ogImage": "/media/Multigrainatta_ecb9fa.webp"
   }
 }

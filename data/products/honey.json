@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/honey.webp?v=1785769777"
+    "/media/honey_d1b77d.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/honey.webp?v=1785769777",
+  "featured_image": "/media/honey_d1b77d.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/honey.webp?v=1785769777"
+        "src": "/media/honey_d01acc.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/honey.webp?v=1785769777",
+      "src": "/media/honey_d01acc.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Honey\n – Namo Narayana",
     "description": "Pure Honey is collected with care to preserve its natural sweetness, smooth texture, and rich flavor, making it a delicious addition to your daily diet. 🍯 100% pure honey 🌼 Naturally sweet ☕ Perfect for drinks and desserts 🚫 No added sugar 🌿 Rich natural flavor",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/honey.webp?v=1785769777"
+    "ogImage": "/media/honey_6153d9.webp"
   }
 }

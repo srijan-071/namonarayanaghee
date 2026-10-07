@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/blackmusterd.webp?v=1785769708"
+    "/media/blackmusterd_b50828.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/blackmusterd.webp?v=1785769708",
+  "featured_image": "/media/blackmusterd_b50828.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/blackmusterd.webp?v=1785769708"
+        "src": "/media/blackmusterd_4b0de3.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/blackmusterd.webp?v=1785769708",
+      "src": "/media/blackmusterd_4b0de3.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Black Mustard Oil\n – Namo Narayana",
     "description": "Traditional cold-pressed Black Mustard Oil delivers a strong aroma and bold flavor while preserving the natural nutrients, making it ideal for authentic Indian cooking. 🌱 Cold-pressed extraction 🌾 Strong natural aroma 🍛 Perfect for Indian cuisine 🚫 No artificial additives ✅ Rich traditional taste",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/blackmusterd.webp?v=1785769708"
+    "ogImage": "/media/blackmusterd_310e09.webp"
   }
 }

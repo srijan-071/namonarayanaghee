@@ -8,7 +8,7 @@ export const JOURNEY_STEPS = [
       "\ud83d\udc04 Ethical Animal Care",
       "\ud83c\udf3f Natural Farm Environment"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/0a3e1bdeb525422aada6668eccdbf270/0a3e1bdeb525422aada6668eccdbf270.HD-1080p-7.2Mbps-90001098.mp4?v=0",
+    "media": "/media/0a3e1bdeb525422aada6668eccdbf270.HD-1080p-7.2Mbps-90001098_93cbee.mp4",
     "isVideo": true
   },
   {
@@ -20,7 +20,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\udd32 Collected Daily",
       "\u2728 Naturally Pure"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/e4c552f4dca94ea5b1bc50e1e85bf5ea/e4c552f4dca94ea5b1bc50e1e85bf5ea.HD-1080p-7.2Mbps-90001099.mp4?v=0",
+    "media": "/media/e4c552f4dca94ea5b1bc50e1e85bf5ea.HD-1080p-7.2Mbps-90001099_47f331.mp4",
     "isVideo": true
   },
   {
@@ -32,7 +32,7 @@ export const JOURNEY_STEPS = [
       "\ud83c\udffa Fresh Curd Preparation",
       "\ud83c\udf3f No Direct Cream Separation"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/6a63a3f8f4634836a55f65d46cf4c340/6a63a3f8f4634836a55f65d46cf4c340.HD-1080p-7.2Mbps-90001097.mp4?v=0",
+    "media": "/media/6a63a3f8f4634836a55f65d46cf4c340.HD-1080p-7.2Mbps-90001097_8be579.mp4",
     "isVideo": true
   },
   {
@@ -44,7 +44,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\uddc8 Fresh Makkhan Separation",
       "Wooden Bilona Process"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/6833e2996ada44949fc45e2f9e31e885/6833e2996ada44949fc45e2f9e31e885.HD-1080p-7.2Mbps-90001096.mp4?v=0",
+    "media": "/media/6833e2996ada44949fc45e2f9e31e885.HD-1080p-7.2Mbps-90001096_996daa.mp4",
     "isVideo": true
   },
   {
@@ -56,7 +56,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\uddc8 Rich Aroma & Flavour",
       "\u2728 Pure Golden Ghee"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/9baa4d26fa9445f7bac1d6242859c7db/9baa4d26fa9445f7bac1d6242859c7db.HD-1080p-7.2Mbps-90019775.mp4?v=0",
+    "media": "/media/9baa4d26fa9445f7bac1d6242859c7db.HD-1080p-7.2Mbps-90019775_5dabcb.mp4",
     "isVideo": true
   },
   {
@@ -68,7 +68,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\udd32 Purity Verified",
       "\ud83d\udc9b Batch Teste"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/40d18be94ca14235a0f533a3d5101dd7/40d18be94ca14235a0f533a3d5101dd7.HD-1080p-7.2Mbps-90019610.mp4?v=0",
+    "media": "/media/40d18be94ca14235a0f533a3d5101dd7.HD-1080p-7.2Mbps-90019610_2a6cd0.mp4",
     "isVideo": true
   },
   {
@@ -80,7 +80,7 @@ export const JOURNEY_STEPS = [
       "\ud83d\udc04 Freshness Sealed",
       "\ud83c\udfc6 Premium Food-Grade Jars"
     ],
-    "media": "https://namonarayana.com/cdn/shop/files/WhatsApp_Image_2026-07-28_at_11.01.20_PM.jpg?v=1785265436&width=800",
+    "media": "/media/WhatsApp_Image_2026-07-28_at_11.01.20_PM_8bc862.jpg",
     "isVideo": false
   },
   {
@@ -92,7 +92,7 @@ export const JOURNEY_STEPS = [
       "Pan-India Delivery",
       "Delivered with Care"
     ],
-    "media": "https://namonarayana.com/cdn/shop/videos/c/vp/a8f6b141f4234fad853747e8a7b3a14a/a8f6b141f4234fad853747e8a7b3a14a.HD-1080p-7.2Mbps-90019745.mp4?v=0",
+    "media": "/media/a8f6b141f4234fad853747e8a7b3a14a.HD-1080p-7.2Mbps-90019745_a948d7.mp4",
     "isVideo": true
   }
 ];

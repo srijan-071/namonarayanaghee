@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/pickle.webp?v=1785769791"
+    "/media/pickle_86c433.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/pickle.webp?v=1785769791",
+  "featured_image": "/media/pickle_86c433.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/pickle.webp?v=1785769791"
+        "src": "/media/pickle_7ba407.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/pickle.webp?v=1785769791",
+      "src": "/media/pickle_7ba407.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Pickle\n – Namo Narayana",
     "description": "Traditional Pickle is prepared using carefully selected ingredients, aromatic spices, and authentic recipes to deliver rich flavor that complements every Indian meal. 🥭 Traditional recipe 🌶️ Rich blend of spices 🍽️ Perfect meal accompaniment 🌿 Made with quality ingredients 😋 Authentic homemade taste",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/pickle.webp?v=1785769791"
+    "ogImage": "/media/pickle_0d3e55.webp"
   }
 }

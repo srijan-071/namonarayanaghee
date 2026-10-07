@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/musturdoil.webp?v=1785769680"
+    "/media/musturdoil_b67182.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/musturdoil.webp?v=1785769680",
+  "featured_image": "/media/musturdoil_b67182.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/musturdoil.webp?v=1785769680"
+        "src": "/media/musturdoil_b67182.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/musturdoil.webp?v=1785769680",
+      "src": "/media/musturdoil_b67182.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Yellow Mustard oil\n – Namo Narayana",
     "description": "Cold-pressed Yellow Mustard Oil is extracted from premium mustard seeds to retain its natural aroma, nutrients, and authentic taste, making it perfect for everyday cooking. 🌱 Cold-pressed for natural goodness 💛 Rich in healthy fats 🍛 Ideal for cooking and tempering 🌾 Free from artificial additives ✅ Authentic flavor an",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/musturdoil.webp?v=1785769680"
+    "ogImage": "/media/musturdoil_0baa39.webp"
   }
 }

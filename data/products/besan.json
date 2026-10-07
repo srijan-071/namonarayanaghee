@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Besan.webp?v=1785769763"
+    "/media/Besan_8ee569.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Besan.webp?v=1785769763",
+  "featured_image": "/media/Besan_8ee569.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Besan.webp?v=1785769763"
+        "src": "/media/Besan_8b130e.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Besan.webp?v=1785769763",
+      "src": "/media/Besan_8b130e.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Besan\n – Namo Narayana",
     "description": "Fresh Besan is finely ground from premium chickpeas, offering excellent texture and authentic flavor for snacks, sweets, and everyday cooking. 🌾 Made from quality chickpeas 🍽️ Fine texture 🥘 Ideal for multiple recipes 🚫 No artificial additives 🏠 Freshly packed",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/Besan.webp?v=1785769763"
+    "ogImage": "/media/Besan_9d6b33.webp"
   }
 }

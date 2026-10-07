@@ -50,9 +50,9 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Badamrogan.webp?v=1785769749"
+    "/media/Badamrogan_468b5c.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Badamrogan.webp?v=1785769749",
+  "featured_image": "/media/Badamrogan_468b5c.webp",
   "options": [
     {
       "name": "Title",
@@ -72,12 +72,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Badamrogan.webp?v=1785769749"
+        "src": "/media/Badamrogan_468b5c.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Badamrogan.webp?v=1785769749",
+      "src": "/media/Badamrogan_468b5c.webp",
       "width": 1254
     }
   ],
@@ -89,6 +89,6 @@
   "seo": {
     "title": "Rogan Badam Oil\n – Namo Narayana",
     "description": "Premium Rogan Badam oil is extracted from quality almonds to deliver a rich, nourishing oil suitable for wellness, massage, hair care, and traditional daily use. 🌰 Made from quality almonds 💆 Suitable for hair massage 🌿 Multipurpose oil 💯 Pure and natural 🏡 Traditional wellness choice",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/Badamrogan.webp?v=1785769749"
+    "ogImage": "/media/Badamrogan_098c36.webp"
   }
 }

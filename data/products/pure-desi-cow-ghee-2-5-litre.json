@@ -57,14 +57,14 @@
     }
   ],
   "images": [
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896",
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489",
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464",
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909",
-    "//cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922"
+    "/media/6-2p5_jpg_988c76.webp",
+    "/media/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d_25e690.webp",
+    "/media/1-2p5_3fc4d8.webp",
+    "/media/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32_6b2c15.webp",
+    "/media/2-2p5_jpg_dfa0c2.webp",
+    "/media/3-2p5_jpg_cfa3d7.webp"
   ],
-  "featured_image": "//cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
+  "featured_image": "/media/6-2p5_jpg_988c76.webp",
   "options": [
     {
       "name": "Size",
@@ -84,12 +84,12 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883"
+        "src": "/media/6-2p5_jpg_86618c.webp"
       },
       "aspect_ratio": 1,
       "height": 1080,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/6-2p5_jpg.webp?v=1785769883",
+      "src": "/media/6-2p5_jpg_86618c.webp",
       "width": 1080
     },
     {
@@ -100,12 +100,12 @@
         "aspect_ratio": 1,
         "height": 1254,
         "width": 1254,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896"
+        "src": "/media/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d_138bef.webp"
       },
       "aspect_ratio": 1,
       "height": 1254,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp?v=1785769896",
+      "src": "/media/Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d_138bef.webp",
       "width": 1254
     },
     {
@@ -116,12 +116,12 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489"
+        "src": "/media/1-2p5_3fc4d8.webp"
       },
       "aspect_ratio": 1,
       "height": 1080,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/1-2p5.webp?v=1785769489",
+      "src": "/media/1-2p5_3fc4d8.webp",
       "width": 1080
     },
     {
@@ -132,12 +132,12 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464"
+        "src": "/media/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32_1374d5.webp"
       },
       "aspect_ratio": 1,
       "height": 1080,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32.webp?v=1785769464",
+      "src": "/media/IMG-20260728-WA0131_jpg_546457d9-6203-43ba-9d53-f78262775e32_1374d5.webp",
       "width": 1080
     },
     {
@@ -148,12 +148,12 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909"
+        "src": "/media/2-2p5_jpg_fc1398.webp"
       },
       "aspect_ratio": 1,
       "height": 1080,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/2-2p5_jpg.webp?v=1785769909",
+      "src": "/media/2-2p5_jpg_fc1398.webp",
       "width": 1080
     },
     {
@@ -164,12 +164,12 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922"
+        "src": "/media/3-2p5_jpg_343d3f.webp"
       },
       "aspect_ratio": 1,
       "height": 1080,
       "media_type": "image",
-      "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/3-2p5_jpg.webp?v=1785769922",
+      "src": "/media/3-2p5_jpg_343d3f.webp",
       "width": 1080
     },
     {
@@ -180,7 +180,7 @@
         "aspect_ratio": 1,
         "height": 1080,
         "width": 1080,
-        "src": "https://cdn.shopify.com/s/files/1/0758/0490/1544/files/preview_images/e60e9e9216384286ad7445ea474c6420.thumbnail.0000000000.jpg?v=1785253682"
+        "src": "/media/e60e9e9216384286ad7445ea474c6420.thumbnail.0000000000_6e9a72.jpg"
       },
       "aspect_ratio": 1,
       "duration": 53000,
@@ -190,28 +190,28 @@
           "format": "mp4",
           "height": 480,
           "mime_type": "video/mp4",
-          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.SD-480p-1.5Mbps-90130411.mp4",
+          "url": "/media/e60e9e9216384286ad7445ea474c6420.SD-480p-1.5Mbps-90130411_ee5ca8.mp4",
           "width": 480
         },
         {
           "format": "mp4",
           "height": 1080,
           "mime_type": "video/mp4",
-          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-1080p-7.2Mbps-90130411.mp4",
+          "url": "/media/e60e9e9216384286ad7445ea474c6420.HD-1080p-7.2Mbps-90130411_228e3b.mp4",
           "width": 1080
         },
         {
           "format": "mp4",
           "height": 720,
           "mime_type": "video/mp4",
-          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.HD-720p-4.5Mbps-90130411.mp4",
+          "url": "/media/e60e9e9216384286ad7445ea474c6420.HD-720p-4.5Mbps-90130411_0d7d2a.mp4",
           "width": 720
         },
         {
           "format": "m3u8",
           "height": 1080,
           "mime_type": "application/x-mpegURL",
-          "url": "https://cdn.shopify.com/videos/c/vp/e60e9e9216384286ad7445ea474c6420/e60e9e9216384286ad7445ea474c6420.m3u8",
+          "url": "/media/e60e9e9216384286ad7445ea474c6420_791399.m3u8",
           "width": 1080
         }
       ]
@@ -230,6 +230,6 @@
   "seo": {
     "title": "Pure A2 Gir Cow Ghee 2.5 Litre\n – Namo Narayana",
     "description": "100% Pure Desi Cow Ghee — made using traditional bilona method. No additives, no preservatives. Rich in nutrients, perfect for pooja, cooking and health. Made from A2 desi cow milk Traditional churned bilona method No artificial colour or preservatives Ideal for daily cooking &amp; pooja rituals",
-    "ogImage": "http://namonarayana.com/cdn/shop/files/6-2p5_jpg.webp?v=1785769883"
+    "ogImage": "/media/6-2p5_jpg_dd615e.webp"
   }
 }
