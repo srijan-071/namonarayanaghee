@@ -25,6 +25,15 @@ export default function ExitIntentPopup() {
       setHasShown(true);
     }
 
+    // Timer for 10 seconds auto-show
+    const timerId = setTimeout(() => {
+      if (!shown && !hasShown) {
+        setIsVisible(true);
+        setHasShown(true);
+        sessionStorage.setItem("nn_exit_intent_shown", "true");
+      }
+    }, 10000);
+
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShown) {
         setIsVisible(true);
@@ -38,6 +47,7 @@ export default function ExitIntentPopup() {
     return () => {
       window.removeEventListener("open-promo-popup", handleManualOpen);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      clearTimeout(timerId);
     };
   }, [hasShown]);
 

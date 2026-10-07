@@ -248,43 +248,26 @@ export default function AdminPage() {
             </div>
             
             <div className="p-6 overflow-y-auto bg-gray-50 flex-1">
-              <div className="bg-[#ffffff] p-0 rounded-xl overflow-hidden border border-gray-200 mx-auto max-w-lg shadow-sm">
-                <div className="text-center bg-[#1E3A24] p-4">
-                  <img src="https://namonarayanaghee.store/assets/logo.png" alt="Logo" className="h-10 mx-auto filter brightness-0 invert" />
-                </div>
-                
-                <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav" className="w-full h-48 object-cover block" />
-
-                <div className="bg-white p-8 text-center border-b border-[#E9E5D9]">
-                  <h2 className="text-[#1E3A24] text-xl font-serif font-bold mt-0 mb-4 font-black">Get 10% OFF – Elvish Yadav's Choice!</h2>
-                  <p className="text-[#364935] text-sm leading-relaxed text-center mb-6">
-                    Namaste,<br/><br/>
-                    We are thrilled to offer you an exclusive 10% discount on Namo Narayana's Pure A2 Gir Cow Ghee! Experience the authentic taste, rich aroma, and grainy texture of traditional Bilona ghee, trusted by Elvish Yadav.
-                  </p>
-                  
-                  <div className="inline-block bg-[#C38936] text-white py-3 px-8 rounded-lg font-bold uppercase mb-6">
-                    Shop 1 Litre Ghee Now
-                  </div>
-                  
-                  <div className="bg-[#FAF9F5] border-2 border-dashed border-[#C38936] p-4 rounded-lg my-6 mx-auto max-w-xs">
-                    <p className="text-xs text-[#576B55] m-0 mb-2 uppercase tracking-widest font-bold">Use Code at Checkout</p>
-                    <p className="text-2xl font-bold text-[#1E3A24] m-0 tracking-widest">ELVISH10</p>
-                  </div>
-                  
-                  <p className="text-[#D32F2F] font-bold text-sm mb-6">⏳ Hurry! This exclusive offer expires in exactly 24 hours. Don't miss out!</p>
-                  
-                  <div className="inline-block bg-[#1E3A24] text-white py-4 px-8 rounded-lg font-bold tracking-wide mb-4">
-                    Claim Your 10% Discount
-                  </div>
-
-                  <p className="text-xs text-[#576B55] mb-6">Stock is extremely limited and selling fast!</p>
-
-                  <a href="#" className="inline-block text-[#1E3A24] font-bold text-sm underline">Or click here to secure your order now</a>
-                </div>
-                
-                <div className="text-center p-6 text-[#888888] text-xs bg-[#f9f9f9]">
-                  <p>Namo Narayana • Pure by Promise. Traditional by Heart.</p>
-                  <p className="mt-1">You received this email because you subscribed to our exclusive offers.</p>
+              <div className="bg-[#ffffff] p-6 rounded-xl overflow-hidden border border-gray-200 mx-auto max-w-lg shadow-sm text-left text-[#1E3A24] font-sans">
+                <p className="mb-4 text-[16px] leading-relaxed">
+                  Namaste,<br/><br/>
+                  I noticed you were checking out our ghee recently, and I wanted to personally reach out with something special.<br/><br/>
+                  As a thank you, Elvish Yadav and the team at Namo Narayana are giving you an exclusive <strong>10% discount</strong> on our Pure A2 Gir Cow Ghee.<br/><br/>
+                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Click here to claim your 10% discount now</a>
+                </p>
+                <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav Namo Narayana Ghee" className="w-full max-w-[400px] rounded-lg block my-5" />
+                <p className="mb-4 text-[16px] leading-relaxed">
+                  Use the code <strong>ELVISH10</strong> at checkout.<br/><br/>
+                  This ghee is made using the authentic Bilona method—trusted by Elvish himself—ensuring you get maximum health benefits and that perfect grainy texture.<br/><br/>
+                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Shop the 1 Litre Ghee here</a><br/><br/>
+                  <em className="text-gray-600">Please note: This code expires in exactly 24 hours, and our stock is selling out fast!</em><br/><br/>
+                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Secure your order before the offer expires</a><br/><br/>
+                  Best regards,<br/>
+                  <strong>Team Namo Narayana</strong>
+                </p>
+                <div className="mt-10 pt-5 border-t border-[#eee] text-[#888] text-[12px] text-center">
+                  Namo Narayana • Pure by Promise. Traditional by Heart.<br/>
+                  You received this email because you subscribed to our exclusive offers.
                 </div>
               </div>
             </div>
