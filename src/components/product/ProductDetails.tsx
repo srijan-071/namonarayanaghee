@@ -182,7 +182,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                   ml = 5000;
                   badge = "Best value";
                 }
-                const per100ml = Math.round((pack.price / 100) / (ml / 100));
+                const perLitre = Math.round((pack.price / 100) / (ml / 1000));
                 const isSelected = product.slug === pack.slug;
 
                 return (
@@ -202,7 +202,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                         {pack.variants[0]?.title ?? pack.title}
                       </span>
                       <span className="text-sm text-nn-bark mt-1">
-                        {formatPrice(pack.price)} • ₹{per100ml}/100ml
+                        {formatPrice(pack.price)} • ₹{perLitre.toLocaleString("en-IN")}/Litre
                       </span>
                     </div>
                     {badge && (

@@ -5,6 +5,9 @@ import { generateProductMetadata } from "@/lib/seo";
 import { generateProductSchema, generateBreadcrumbSchema } from "@/lib/schema";
 import ProductDetails from "@/components/product/ProductDetails";
 
+export const dynamicParams = false;
+export const dynamic = "force-static";
+
 export function generateStaticParams() {
   return getAllProductSlugs().map((slug) => ({ slug }));
 }

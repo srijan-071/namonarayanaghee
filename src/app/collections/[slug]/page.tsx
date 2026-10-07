@@ -5,6 +5,9 @@ import { generateCollectionMetadata } from "@/lib/seo";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 import ProductCard from "@/components/product/ProductCard";
 
+export const dynamicParams = false;
+export const dynamic = "force-static";
+
 export function generateStaticParams() {
   return getAllCollectionSlugs().map((slug) => ({ slug }));
 }

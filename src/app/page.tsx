@@ -10,6 +10,8 @@ import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/schema"
 import { siteConfig } from "@/lib/config";
 import { absoluteUrl } from "@/lib/seo";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
