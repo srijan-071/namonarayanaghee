@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/lib/config";
 import { absoluteUrl } from "@/lib/seo";
+import Bestsellers from "@/components/home/Bestsellers";
 
 export const metadata: Metadata = {
   title: `Elvish Yadav Ghee - Namo Narayana Association`,
@@ -76,6 +77,8 @@ export default function ElvishYadavPage() {
             </div>
           </div>
         </div>
+
+        <Bestsellers />
       </main>
     </>
   );

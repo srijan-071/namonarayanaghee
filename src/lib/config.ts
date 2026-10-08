@@ -1,8 +1,8 @@
 // Site configuration - single source of truth
 export const siteConfig = {
-  name: "Namo Narayana",
+  name: "Namo Narayana Ghee by Elvish Yadav",
   tagline: "Pure A2 Gir Cow Ghee & Traditional Indian Foods",
-  description: "Namo Narayana is an Indian food brand focused on traditional food products, including A2 Gir Cow Ghee prepared using the traditional Bilona process. Pure, authentic, and delivered to your doorstep.",
+  description: "Namo Narayana Ghee, proudly launched by Elvish Yadav. We focus on traditional food products, including A2 Gir Cow Ghee prepared using the traditional Bilona process. Pure, authentic, and delivered to your doorstep.",
   url: "https://namonarayanaghee.store",
   locale: "en_IN",
   currency: "INR",
