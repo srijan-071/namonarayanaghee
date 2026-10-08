@@ -68,11 +68,11 @@ export function getProduct(slug: string): Product | null {
 export function getAllProducts(): Product[] {
   return Object.keys(RAW_PRODUCTS)
     .map(getProduct)
-    .filter((p): p is Product => p !== null);
+    .filter((p): p is Product => p !== null && p.slug.includes("ghee"));
 }
 
 export function getAllProductSlugs(): string[] {
-  return Object.keys(RAW_PRODUCTS);
+  return Object.keys(RAW_PRODUCTS).filter(slug => slug.includes("ghee"));
 }
 
 // ─── Collections ────────────────────────────────────────

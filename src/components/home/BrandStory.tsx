@@ -99,11 +99,11 @@ export default function BrandStory() {
           >
             <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4">Our Story</span>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-[#1E3A24] mb-6 leading-tight">
-              Rooted in pure tradition
+              Rooted in pure tradition.<br/>The Official Store.
             </h2>
             <div className="space-y-5 text-[#364935] leading-relaxed mb-10 text-sm md:text-base">
               <p>
-                At Namo Narayana, we believe that true nourishment begins at the source. Our journey started with a simple vision: to bring back the authentic, unadulterated goodness of traditional Indian foods to modern homes.
+                At Namo Narayana, we believe that true nourishment begins at the source. Our journey started with a simple vision: to bring back the authentic, unadulterated goodness of traditional Indian foods to modern homes. This is the <strong>only official Namo Narayana store</strong>, proudly launched by Elvish Yadav.
               </p>
               <p>
                 Every jar of our A2 Gir Cow Ghee is crafted using the ancient Vedic Bilona method, ensuring that the vital nutrients, natural aroma, and healing properties are preserved &mdash; just as nature intended.
