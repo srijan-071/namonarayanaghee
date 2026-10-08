@@ -233,7 +233,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       ${
         order.amountRemaining && order.amountRemaining > 0
           ? `<div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #FFF7ED; border-radius: 8px; margin-top: 4px;">
-              <span>Due on Delivery (COD)</span>
+              <span>Due on Delivery</span>
               <span style="font-weight: 600; color: #C38936;">${formatInvoicePrice(order.amountRemaining)}</span>
             </div>`
           : ""
@@ -245,7 +245,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <div style="background: #FAF9F5; padding: 16px 20px; border-radius: 12px; border: 1px solid #E9E5D9; margin-bottom: 32px; font-size: 13px;">
     <strong style="color: #1E3A24;">Payment:</strong>
     <span style="color: #576B55; margin-left: 8px;">
-      ${order.paymentMethod === "cod" ? "Cash on Delivery (50% Advance Paid)" : "Prepaid (Online Payment)"}
+      ${order.paymentMethod === "cod" ? "Cash on Delivery" : "Prepaid (Online Payment)"}
       - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#16a34a" : "#C38936"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
     </span>
   </div>

@@ -82,7 +82,7 @@ export default function CartDrawer() {
             <div className="w-8"></div>
           </div>
           <div className="bg-[#0B483B] text-white text-center py-2.5 text-[12px] font-bold tracking-wide shadow-sm">
-            <span className="notranslate">Free COD</span> - Cash On Delivery Pan India
+            <span className="notranslate">Free Shipping</span> - Pan India
           </div>
         </div>
 

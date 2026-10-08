@@ -62,7 +62,7 @@ export default function CheckoutPage() {
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
   const [billing, setBilling] = useState<Address>({ name: "", address: "", city: "", state: "", pincode: "", country: "India" });
   
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("prepaid");
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [tempCoupon, setTempCoupon] = useState("");
@@ -411,34 +411,17 @@ export default function CheckoutPage() {
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <h2 className="font-serif text-xl font-bold text-[#1E3A24]"><span className="notranslate">Payment Method</span></h2>
                   
-                  <div className="space-y-3">
                     {/* Prepaid Option */}
-                    <label className={`flex items-start gap-4 p-5 border-2 rounded-xl cursor-pointer transition ${paymentMethod === "prepaid" ? "border-[#C38936] bg-[#FDFBF7]" : "border-[#E9E5D9] hover:border-[#C38936]/50"}`}>
+                    <label className={`flex items-start gap-4 p-5 border-2 rounded-xl cursor-pointer transition border-[#C38936] bg-[#FDFBF7]`}>
                       <input type="radio" name="payment" value="prepaid" checked={paymentMethod === "prepaid"} onChange={(e) => handlePaymentMethodChange(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
                           <CreditCard className="w-5 h-5 text-[#C38936]" />
                           <span className="font-bold text-[#1E3A24] text-base">Pay Online (Prepaid)</span>
-                          <span className="text-[10px] bg-[#C38936]/10 text-[#C38936] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
-                            <Percent className="w-3 h-3" /> 10% OFF
-                          </span>
                         </div>
-                        <p className="text-sm text-[#576B55]">Pay via UPI, Credit/Debit Card, or NetBanking. Get 10% instant discount!</p>
+                        <p className="text-sm text-[#576B55]">Pay via UPI, Credit/Debit Card, or NetBanking.</p>
                       </div>
                     </label>
-
-                    {/* COD Option */}
-                    <label className={`flex items-start gap-4 p-5 border-2 rounded-xl cursor-pointer transition ${paymentMethod === "cod" ? "border-[#C38936] bg-[#FDFBF7]" : "border-[#E9E5D9] hover:border-[#C38936]/50"}`}>
-                      <input type="radio" name="payment" value="cod" checked={paymentMethod === "cod"} onChange={(e) => handlePaymentMethodChange(e.target.value)} className="mt-1 w-5 h-5 accent-[#C38936]" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <Banknote className="w-5 h-5 text-[#1E3A24]" />
-                          <span className="font-bold text-[#1E3A24] text-base">Cash on Delivery (COD)</span>
-                        </div>
-                        <p className="text-sm text-[#576B55]">Pay 50% advance online now, rest on delivery. Cash or UPI accepted at door.</p>
-                      </div>
-                    </label>
-                  </div>
 
                   {/* Pricing breakdown for selected method */}
                   <div className="bg-[#F7F4EB] rounded-xl p-5 border border-[#E9DFD1] space-y-3">
@@ -473,13 +456,6 @@ export default function CheckoutPage() {
                           <span className="text-lg">{formatPrice(pricing.amountToPay)}</span>
                         </div>
                       </div>
-                      
-                      {pricing.amountRemaining > 0 && (
-                        <div className="flex justify-between text-[#576B55] bg-white px-3 py-2 rounded-lg">
-                          <span><Truck className="w-4 h-4 inline mr-1" /> Pay on Delivery</span>
-                          <span className="font-semibold text-[#1E3A24]">{formatPrice(pricing.amountRemaining)}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -546,9 +522,8 @@ export default function CheckoutPage() {
                         <button onClick={() => setStep("payment")} className="text-xs text-[#C38936] font-bold hover:underline">EDIT</button>
                       </div>
                       <div className="text-sm text-[#364935] space-y-1">
-                        <p className="font-semibold">{paymentMethod === "prepaid" ? <><CreditCard className="w-4 h-4 inline mr-1" /> Prepaid (10% Discount)</> : <><Banknote className="w-4 h-4 inline mr-1" /> Cash on Delivery</>}</p>
+                        <p className="font-semibold"><CreditCard className="w-4 h-4 inline mr-1" /> Prepaid</p>
                         <p>Pay now: <strong>{formatPrice(pricing.amountToPay)}</strong></p>
-                        {pricing.amountRemaining > 0 && <p>Pay on delivery: <strong>{formatPrice(pricing.amountRemaining)}</strong></p>}
                       </div>
                     </div>
                   </div>
@@ -683,20 +658,11 @@ export default function CheckoutPage() {
                 
                 <div className="flex justify-between items-end">
                   <div>
-                    <span className="block text-sm text-[#576B55] mb-1">
-                      {paymentMethod === "cod" ? "Pay Now (50% Advance)" : "Total to Pay"}
-                    </span>
+                    <span className="block text-sm text-[#576B55] mb-1">Total to Pay</span>
                     <span className="text-xs text-[#576B55]">Inclusive of all taxes</span>
                   </div>
                   <span className="text-3xl font-bold text-[#1E3A24]">{formatPrice(pricing.amountToPay)}</span>
                 </div>
-
-                {pricing.amountRemaining > 0 && (
-                  <div className="flex justify-between items-center bg-white px-4 py-3 rounded-xl border border-[#E9E5D9]">
-                    <span className="text-sm text-[#576B55] flex items-center"><Truck className="w-4 h-4 inline mr-1" /> Pay on Delivery</span>
-                    <span className="font-bold text-[#1E3A24]">{formatPrice(pricing.amountRemaining)}</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

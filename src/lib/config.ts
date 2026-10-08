@@ -13,7 +13,7 @@ export const siteConfig = {
     instagram: "https://instagram.com/namonarayanaghee",
     facebook: "https://facebook.com/namonarayanaghee",
   },
-  announcement: "Free COD - Cash On Delivery Pan India | Trusted by 10 Lakh+ Customers",
+  announcement: "Free Shipping Pan India | Trusted by 10 Lakh+ Customers",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

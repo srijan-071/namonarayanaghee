@@ -59,11 +59,6 @@ export function calculateCheckoutPricing(
 
   let discount = 0;
   let discountPercent = 0;
-  
-  if (paymentMethod === "prepaid") {
-    discountPercent += 10;
-    discount += Math.round(subtotal * 0.10);
-  }
 
   const normalizedCode = couponCode?.toUpperCase().trim();
   if (normalizedCode && VALID_COUPONS[normalizedCode]) {
@@ -93,21 +88,6 @@ export function calculateCheckoutPricing(
       amountToPay: 100, // ₹1
       amountRemaining: 0,
       isAdmin: true,
-    };
-  }
-
-  // COD: 50% advance, 50% on delivery
-  if (paymentMethod === "cod") {
-    const advanceAmount = Math.round(amountAfterDiscount * 0.50);
-    const remaining = amountAfterDiscount - advanceAmount;
-    return {
-      subtotal,
-      discount,
-      discountPercent,
-      amountAfterDiscount,
-      amountToPay: advanceAmount,
-      amountRemaining: remaining,
-      isAdmin: false,
     };
   }
 

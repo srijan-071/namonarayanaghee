@@ -53,7 +53,7 @@ Subtotal: Rs. ${orderData.subtotal || 0}
 Discount: Rs. ${orderData.discount || 0}
 Total Amount: Rs. ${orderData.totalAmount || 0}
 Amount Paid: Rs. ${orderData.amountToPay || 0}
-Amount Remaining (COD): Rs. ${orderData.amountRemaining || 0}
+Amount Remaining: Rs. ${orderData.amountRemaining || 0}
 ------------------------------
       `.trim();
     }

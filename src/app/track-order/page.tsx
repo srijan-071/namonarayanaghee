@@ -187,7 +187,7 @@ export default function TrackOrderPage() {
                   )}
                   {order.amountRemaining > 0 && (
                     <div className="flex justify-between items-center text-sm text-[#C38936]">
-                      <span className="font-semibold">Remaining Balance (COD)</span>
+                      <span className="font-semibold">Remaining Balance</span>
                       <span className="font-bold">₹{order.amountRemaining}</span>
                     </div>
                   )}
