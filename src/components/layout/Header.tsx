@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCartDrawer, useCart } from "@/lib/cart";
 import { cn } from "@/lib/utils";
-import { Search, User, ShoppingBag } from "lucide-react";
+import { Search, User, ShoppingBag, Gift } from "lucide-react";
 
 import Image from "next/image";
 
@@ -46,13 +46,16 @@ export default function Header() {
             onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
           >
             <span>FREE SHIPPING PAN INDIA</span>
-            <span className="text-yellow-300 font-bold">� Click here to get 10% discount coupon code</span>
+            <span className="text-yellow-300 font-bold flex items-center justify-center gap-1">
+              <Gift className="w-4 h-4" /> Click here to get 10% discount coupon code
+            </span>
           </div>
           <div 
             className="hidden md:flex items-center gap-2 text-yellow-300 font-bold cursor-pointer hover:text-yellow-100 transition"
             onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
           >
-            <span>� Click here to get 10% discount coupon code</span>
+            <Gift className="w-4 h-4" />
+            <span>Click here to get 10% discount coupon code</span>
           </div>
         </div>
       </div>
