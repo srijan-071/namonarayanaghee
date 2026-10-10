@@ -192,11 +192,6 @@ export default function CheckoutPage() {
   const currentIdx = steps.findIndex((s) => s.key === step);
 
   const handlePlaceOrder = async () => {
-    if (!user) {
-      toast.error("Authenticating... Please try again in a moment.");
-      return;
-    }
-    
     setIsSubmitting(true);
     
     try {
@@ -222,8 +217,9 @@ export default function CheckoutPage() {
       });
 
       // 2. Fire Firestore requests concurrently
-      const orderIdPromise = createOrder(user.uid, cart.items, cart.subtotal, checkoutData, pricing);
-      const profilePromise = saveUserCheckoutProfile(user.uid, checkoutData);
+      const uid = user ? user.uid : `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const orderIdPromise = createOrder(uid, cart.items, cart.subtotal, checkoutData, pricing);
+      const profilePromise = user ? saveUserCheckoutProfile(uid, checkoutData) : Promise.resolve();
       
       const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
 

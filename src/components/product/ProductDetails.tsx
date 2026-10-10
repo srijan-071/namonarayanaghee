@@ -21,8 +21,13 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [qty, setQty] = useState(1);
   const { open } = useCartDrawer();
   const [isAdding, setIsAdding] = useState(false);
-  const [viewers] = useState(() => (typeof window !== 'undefined' ? Math.floor(Math.random() * 20) + 15 : 22));
-  const [sold] = useState(() => (typeof window !== 'undefined' ? Math.floor(Math.random() * 50) + 100 : 134));
+  const [viewers, setViewers] = useState(22);
+  const [sold, setSold] = useState(134);
+
+  React.useEffect(() => {
+    setViewers(Math.floor(Math.random() * 20) + 15);
+    setSold(Math.floor(Math.random() * 50) + 100);
+  }, []);
 
   const variant = product.variants[selectedVariantIdx];
   const price = variant?.price ?? product.price;
