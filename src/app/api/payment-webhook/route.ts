@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { importPKCS8, SignJWT } from "jose";
-
-
+import { getAdminDb } from "@/lib/firebase-admin";
+import { sendOrderEmail } from "@/lib/email";
+import { sendTelegramNotification } from "@/lib/telegram";
 const PAYMENT_HUB_SECRET = process.env.PAYMENT_HUB_SECRET || "INTERNAL_HUB_SECRET_2026";
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || "namonarayanaghee";
 
@@ -117,6 +118,22 @@ export async function POST(req: Request) {
     if (status === "SUCCESS") {
       await updateOrderPaid(orderId, sessionId, amount, currency, metadata);
       console.log(`Order ${orderId} payment confirmed via webhook (Edge REST)`);
+      
+      try {
+        const adminDb = getAdminDb();
+        const orderSnap = await adminDb.collection("orders").doc(orderId).get();
+        if (orderSnap.exists) {
+          const data = orderSnap.data();
+          if (data && data.contactInfo && data.contactInfo.email) {
+            await sendOrderEmail(orderId, data.contactInfo.email, data.shippingAddress?.name || "Customer", data.amountToPay || data.totalAmount);
+          }
+          if (data) {
+            await sendTelegramNotification(orderId, data, "success");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to send post-payment notifications", err);
+      }
     }
 
     return NextResponse.json({ success: true });

@@ -77,10 +77,15 @@ function SuccessContent() {
   const [checkVisible, setCheckVisible] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
   const [orderLoading, setOrderLoading] = useState(false);
+  const [paymentVerified, setPaymentVerified] = useState(false);
 
   useEffect(() => {
     if (orderId && isSuccess) {
       setOrderLoading(true);
+      let attempts = 0;
+      const maxAttempts = 10;
+      let intervalId: any;
+
       const fetchOrder = async () => {
         try {
           const { db } = await import("@/lib/firebase");
@@ -90,57 +95,53 @@ function SuccessContent() {
             const data = docSnap.data();
             setOrderData(data);
             
-            // Trigger email and telegram if not already sent on this device
-            const emailSentKey = `emailSent_${orderId}`;
-            if (!localStorage.getItem(emailSentKey)) {
-              // Send Email
-              fetch("/api/send-order-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                  orderId,
-                  email: data.contactInfo?.email,
-                  name: data.shippingAddress?.name,
-                  amount: data.amountToPay || data.totalAmount
-                }),
-              }).then(res => {
-                if (res.ok) localStorage.setItem(emailSentKey, "true");
-              }).catch(console.error);
-
-              // Send Telegram Notification
-              fetch("/api/send-telegram-notification", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderId, orderData: data }),
-              }).catch(console.error);
+            if (data.paymentStatus === "paid") {
+              setPaymentVerified(true);
+              setOrderLoading(false);
+              clearInterval(intervalId);
               
-              // Track Purchase Event
-              trackEvent("purchase", {
-                transaction_id: orderId,
-                payment_type: data.paymentMethod || "unknown",
-                currency: "INR",
-                value: data.amountToPay || data.totalAmount,
-                tax: data.tax || 0,
-                shipping: data.shippingCost || 0,
-                items: data.items?.map((i: any) => ({
-                  item_id: i.productId,
-                  item_name: i.name,
-                  quantity: i.quantity,
-                  price: i.price
-                })) || []
-              });
+              const eventSentKey = `purchaseEventSent_${orderId}`;
+              if (!localStorage.getItem(eventSentKey)) {
+                localStorage.setItem(eventSentKey, "true");
+                trackEvent("purchase", {
+                  transaction_id: orderId,
+                  payment_type: data.paymentMethod || "unknown",
+                  currency: "INR",
+                  value: data.amountToPay || data.totalAmount,
+                  tax: data.tax || 0,
+                  shipping: data.shippingCost || 0,
+                  items: data.items?.map((i: any) => ({
+                    item_id: i.productId,
+                    item_name: i.name,
+                    quantity: i.quantity,
+                    price: i.price
+                  })) || []
+                });
+                
+                import("@/lib/cart").then((cartLib) => cartLib.clearCart());
+              }
+            } else {
+              attempts++;
+              if (attempts >= maxAttempts) {
+                 clearInterval(intervalId);
+                 setOrderLoading(false);
+              }
             }
+          } else {
+            clearInterval(intervalId);
+            setOrderLoading(false);
           }
         } catch (error) {
           console.error(error);
-        } finally {
+          clearInterval(intervalId);
           setOrderLoading(false);
         }
       };
-      fetchOrder();
       
-      // Clear cart locally since payment was successful
-      import("@/lib/cart").then((cartLib) => cartLib.clearCart());
+      fetchOrder();
+      intervalId = setInterval(fetchOrder, 3000);
+      
+      return () => clearInterval(intervalId);
     }
   }, [orderId, isSuccess]);
 
@@ -176,6 +177,30 @@ function SuccessContent() {
             Back to Home <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+      </div>
+    );
+  }
+
+
+  if (isSuccess && !paymentVerified) {
+    return (
+      <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-[#E9E5D9] text-center max-w-3xl mx-auto">
+        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-[#F4F6F0]">
+          <div className="w-10 h-10 border-4 border-[#E9E5D9] border-t-[#1E3A24] rounded-full animate-spin" />
+        </div>
+        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] mb-4">
+          {orderLoading ? "Verifying Payment..." : "Payment Pending"}
+        </h1>
+        <p className="text-[#576B55] text-lg mb-8 max-w-lg mx-auto">
+          {orderLoading 
+            ? "Please wait while we verify your payment with the gateway. Do not refresh this page." 
+            : "Your payment verification is delayed. If the amount was deducted, your order will be confirmed automatically once we receive the webhook."}
+        </p>
+        {!orderLoading && (
+          <Link href="/track-order" className="bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#152919] transition-all inline-block">
+            Track Order Status
+          </Link>
+        )}
       </div>
     );
   }

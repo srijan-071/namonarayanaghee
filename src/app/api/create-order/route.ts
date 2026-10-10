@@ -45,7 +45,12 @@ export async function POST(req: Request) {
         }
       }
 
-      serverSubtotal += variantPrice * item.quantity;
+      let qty = Number(item.quantity);
+      if (!Number.isInteger(qty) || qty <= 0) {
+        return NextResponse.json({ error: `Invalid quantity for product: ${item.title}` }, { status: 400 });
+      }
+
+      serverSubtotal += variantPrice * qty;
       
       validatedItems.push({
         productId: item.productId,
@@ -56,7 +61,7 @@ export async function POST(req: Request) {
         variantTitle: item.variantTitle,
         price: variantPrice,
         image: item.image,
-        quantity: item.quantity,
+        quantity: qty,
       });
     }
 
