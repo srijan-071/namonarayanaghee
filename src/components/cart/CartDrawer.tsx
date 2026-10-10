@@ -255,15 +255,6 @@ export default function CartDrawer() {
         {/* Sticky Footer */}
         {cart.items.length > 0 && (
           <div className="absolute bottom-0 left-0 w-full bg-[#F7F8FA] border-t border-gray-200 z-[102] rounded-t-xl shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.05)] transition-all duration-300">
-             {/* WhatsApp Chat Overlay */}
-             <div 
-               className={`absolute right-4 bg-[#25D366] text-white rounded-full pl-3 pr-4 py-2.5 flex items-center gap-1.5 font-bold text-[13px] shadow-lg shadow-green-500/20 cursor-pointer hover:bg-[#1EBE5D] transition-all duration-300 transform hover:scale-105 z-10 ${showBreakdown ? '-top-[52px] opacity-0 pointer-events-none' : '-top-[52px]'}`} 
-               onClick={() => window.open('https://wa.me/919999999999', '_blank')}
-             >
-               <MessageCircle className="w-[18px] h-[18px] fill-current" />
-               Chat with us
-             </div>
-
              {/* Expandable Price Breakdown */}
              {showBreakdown && (
                <div className="px-4 pt-4 pb-2 bg-white border-b border-gray-100 rounded-t-xl animate-in slide-in-from-bottom-2">
