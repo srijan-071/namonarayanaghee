@@ -35,6 +35,11 @@ export default function CheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [tempCoupon, setTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
+  const summaryRef = useRef<HTMLDivElement>(null);
+
+  const scrollToSummary = () => {
+    summaryRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -299,23 +304,31 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              {/* Trust Badges */}
+              <div className="flex items-center justify-center gap-8 py-2 text-[#576B55]">
+                <div className="flex flex-col items-center text-center gap-2">
+                  <Lock className="w-5 h-5 text-[#C38936]" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">100% Secure<br/>Payments</span>
+                </div>
+                <div className="flex flex-col items-center text-center gap-2">
+                  <Truck className="w-5 h-5 text-[#C38936]" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Fast & Reliable<br/>Shipping</span>
+                </div>
+              </div>
             </div>
             
-            {/* Trust Badges */}
-            <div className="flex items-center justify-center gap-8 py-2 text-[#576B55]">
-              <div className="flex flex-col items-center text-center gap-2">
-                <Lock className="w-5 h-5 text-[#C38936]" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">100% Secure<br/>Payments</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <Truck className="w-5 h-5 text-[#C38936]" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Fast & Reliable<br/>Shipping</span>
-              </div>
-            </div>
+            {/* Scroll to Payment Button (Visible mainly on mobile where summary is below) */}
+            <button 
+              onClick={scrollToSummary}
+              type="button"
+              className="w-full lg:hidden bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#152919] shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              Continue to Payment
+            </button>
           </div>
 
           {/* Order Summary Sidebar */}
-          <div className="w-full lg:w-[45%] lg:sticky lg:top-24 h-fit">
+          <div ref={summaryRef} className="w-full lg:w-[45%] lg:sticky lg:top-24 h-fit">
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#E9E5D9]">
               <h3 className="font-serif text-2xl font-bold text-[#1E3A24] mb-6"><span className="notranslate">Order Summary</span></h3>
               
@@ -420,7 +433,7 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <Lock className="w-5 h-5" />
-                      Continue to secure payment
+                      Proceed to Pay
                     </>
                   )}
                 </button>
