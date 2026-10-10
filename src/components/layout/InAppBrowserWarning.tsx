@@ -5,7 +5,6 @@ import { X, ExternalLink } from 'lucide-react';
 
 export default function InAppBrowserWarning() {
   const [isInAppBrowser, setIsInAppBrowser] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     // Detect Instagram or Facebook in-app browser
@@ -15,29 +14,33 @@ export default function InAppBrowserWarning() {
     
     if (isInstagram || isFacebook) {
       setIsInAppBrowser(true);
+      
+      // Auto-redirect for Android users to force Chrome
+      if (userAgent.includes('Android')) {
+        const url = window.location.href.replace(/^https?:\/\//, '');
+        window.location.href = `intent://${url}#Intent;scheme=https;package=com.android.chrome;end;`;
+      }
     }
   }, []);
 
-  if (!isInAppBrowser || dismissed) return null;
+  if (!isInAppBrowser) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#1E3A24] text-white p-4 shadow-md flex items-center justify-between gap-4 animate-in slide-in-from-top">
-      <div className="flex flex-col gap-1 flex-1">
-        <p className="text-sm font-bold flex items-center gap-2">
-          <ExternalLink className="w-4 h-4 text-[#F5B301]" />
-          Open in System Browser
-        </p>
-        <p className="text-xs text-white/80 leading-snug">
-          For a smooth and secure checkout experience, please click the 3 dots (•••) at the top right and select &quot;Open in Chrome&quot; or &quot;Open in System Browser&quot;.
-        </p>
+    <div className="fixed inset-0 z-[99999] bg-[#1E3A24] text-white p-8 flex flex-col items-center justify-center text-center animate-in fade-in">
+      <ExternalLink className="w-16 h-16 text-[#F5B301] mb-6" />
+      <h2 className="text-2xl font-bold font-serif mb-4">Please Open in Browser</h2>
+      <p className="text-white/80 text-lg mb-8 leading-relaxed max-w-sm">
+        To complete your purchase securely and without errors, please click the <strong className="text-white">3 dots (•••)</strong> at the top right corner and select <strong className="text-[#F5B301]">&quot;Open in Chrome&quot;</strong> or <strong className="text-[#F5B301]">&quot;Open in System Browser&quot;</strong>.
+      </p>
+      
+      <div className="bg-white/10 rounded-xl p-4 border border-white/20">
+        <p className="text-sm font-bold uppercase tracking-widest text-[#F5B301] mb-2">Step-by-step</p>
+        <ol className="text-left text-sm text-white/90 space-y-2">
+          <li>1. Look at the top right of this screen.</li>
+          <li>2. Tap the three dots icon.</li>
+          <li>3. Select &quot;Open in Chrome&quot; or &quot;Open in Safari&quot;.</li>
+        </ol>
       </div>
-      <button 
-        onClick={() => setDismissed(true)}
-        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition shrink-0"
-        aria-label="Dismiss warning"
-      >
-        <X className="w-4 h-4" />
-      </button>
     </div>
   );
 }
