@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebase-admin";
+import { firestoreGetDoc, firestoreUpdateDoc, firestoreDeleteDoc } from "@/lib/firestore-rest";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
 
@@ -13,17 +13,10 @@ export async function POST(req: Request) {
     }
 
     if (status === "SUCCESS") {
-      const adminDb = getAdminDb();
-      const orderRef = adminDb.collection("orders").doc(orderId);
-      const orderSnap = await orderRef.get();
+      const data = await firestoreGetDoc("orders", orderId);
 
-      if (!orderSnap.exists) {
-        return NextResponse.json({ error: "Order not found" }, { status: 404 });
-      }
-
-      const data = orderSnap.data();
       if (!data) {
-        return NextResponse.json({ error: "Invalid order data" }, { status: 500 });
+        return NextResponse.json({ error: "Order not found" }, { status: 404 });
       }
 
       // Local verification: verify amount matches (amountToPay is in paise, payload amount is in INR)
@@ -37,7 +30,7 @@ export async function POST(req: Request) {
       }
 
       // Update the order locally
-      await orderRef.update({
+      await firestoreUpdateDoc("orders", orderId, {
         paymentStatus: "paid",
         paymentSessionId: sessionId || null,
         paymentDetails: {
@@ -71,7 +64,7 @@ export async function POST(req: Request) {
       if (metadata?.email || data.contactInfo?.email) {
         const emailToClear = metadata?.email || data.contactInfo?.email;
         try {
-          await adminDb.collection("abandoned_carts").doc(emailToClear).delete();
+          await firestoreDeleteDoc("abandoned_carts", emailToClear);
         } catch (e) {
           console.error("Failed to delete abandoned cart on webhook", e);
         }

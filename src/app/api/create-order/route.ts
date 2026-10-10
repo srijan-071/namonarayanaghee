@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebase-admin";
+import { firestoreSetDoc } from "@/lib/firestore-rest";
 import { RAW_PRODUCTS } from "@/lib/data-store";
 
 // We copy the coupons here since it's an API route or we could import it if it's available server-side.
@@ -87,12 +87,9 @@ export async function POST(req: Request) {
     const amountAfterDiscount = serverSubtotal - discount;
     const amountToPay = amountAfterDiscount;
 
-    const adminDb = getAdminDb();
-    const ordersRef = adminDb.collection("orders");
-    const orderDoc = ordersRef.doc();
-    const orderId = orderDoc.id;
+    const orderId = crypto.randomUUID().replace(/-/g, "").slice(0, 20);
 
-    await orderDoc.set({
+    await firestoreSetDoc("orders", orderId, {
       orderId,
       userId: uid || `guest_${Date.now()}`,
       items: validatedItems,
@@ -122,8 +119,7 @@ export async function POST(req: Request) {
 
     // Save profile details
     if (uid && !uid.startsWith("guest_")) {
-       const userRef = adminDb.collection("users").doc(uid);
-       await userRef.set({
+       await firestoreSetDoc("users", uid, {
            uid,
            email: checkoutData.email,
            phone: checkoutData.phone,
@@ -131,7 +127,7 @@ export async function POST(req: Request) {
            defaultBillingAddress: checkoutData.billingAddress || null,
            gstDetails: checkoutData.gstDetails || null,
            updatedAt: new Date()
-       }, { merge: true });
+       }, true);
     }
 
     // Construct proxy checkout url
