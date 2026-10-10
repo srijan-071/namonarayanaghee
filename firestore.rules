@@ -9,9 +9,8 @@ service cloud.firestore {
     
     // Users can only read and create their own orders
     match /orders/{orderId} {
-      allow create: if false; // Server only
-      allow get: if true; // Allows success page to load via unguessable ID
-      allow list: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read: if true;
       // Note: Updating or deleting orders is restricted. Admins should do this from backend/console.
       allow update, delete: if false; 
     }

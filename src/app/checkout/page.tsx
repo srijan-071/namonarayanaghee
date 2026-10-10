@@ -166,6 +166,13 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     
     try {
+      // Ensure user is signed in anonymously if not already signed in
+      const { initializeAnonymousAuth } = await import("@/lib/firebase");
+      const currentUser = await initializeAnonymousAuth();
+      if (!currentUser) {
+         throw new Error("Could not initialize authentication");
+      }
+
       const address = {
         name: form.name,
         address: form.address,
@@ -196,26 +203,13 @@ export default function CheckoutPage() {
         payment_type: "prepaid"
       });
 
-      const uid = user ? user.uid : `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const { createOrder, saveUserCheckoutProfile } = await import("@/lib/orders");
       
-      const response = await fetch("/api/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid,
-          cartItems: cart.items,
-          checkoutData
-        })
-      });
+      const orderIdPromise = createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, pricing);
+      const profilePromise = saveUserCheckoutProfile(currentUser.uid, checkoutData);
+      
+      const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
 
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Failed to create order securely");
-      }
-
-      const { orderId, checkoutUrl } = data;
-
-      // Abandoned cart logging occurs behind the scenes, we can also dispatch the Telegram notification here.
       fetch("/api/send-telegram-notification", {
         method: "POST",
         keepalive: true,
@@ -234,6 +228,24 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
       
+      // Clear Cart and Abandoned Cart
+      clearCart();
+      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
+        if (form.email) clearAbandonedCart(form.email);
+      });
+      
+      const amountInINR = pricing.amountToPay / 100;
+      const proxyParams = new URLSearchParams();
+      proxyParams.set("txnid", orderId);
+      proxyParams.set("amount", amountInINR.toString());
+      proxyParams.set("productinfo", `Order ${orderId}`);
+      proxyParams.set("firstname", address.name || "Customer");
+      proxyParams.set("email", form.email || "");
+      proxyParams.set("phone", form.phone || "");
+      proxyParams.set("udf1", "namonarayanaghee");
+      
+      const checkoutUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
+
       toast.success("Redirecting to secure payment...", { id: loadingToastId });
       window.location.href = checkoutUrl;
       

@@ -90,3 +90,57 @@ export function calculateCheckoutPricing(
 /**
  * Creates an order in the 'orders' collection.
  */
+export async function createOrder(
+  uid: string,
+  cartItems: CartItem[],
+  subtotal: number,
+  data: CheckoutData,
+  pricing: ReturnType<typeof calculateCheckoutPricing>
+) {
+  const { db } = await import("./firebase");
+  const { doc, setDoc, serverTimestamp, collection } = await import("firebase/firestore/lite");
+  const ordersRef = collection(db, "orders");
+  const orderDoc = doc(ordersRef);
+  
+  const shippingCost = 0; 
+  const tax = 0;
+
+  await setDoc(orderDoc, {
+    orderId: orderDoc.id,
+    userId: uid,
+    items: cartItems.map(item => ({
+      productId: item.productId,
+      variantId: item.variantId,
+      slug: item.slug,
+      name: item.title,
+      title: item.title,
+      variantTitle: item.variantTitle,
+      price: item.price,
+      image: item.image,
+      quantity: item.quantity,
+    })),
+    subtotal,
+    shippingCost,
+    tax,
+    totalAmount: pricing.amountAfterDiscount,
+    discount: pricing.discount,
+    discountPercent: pricing.discountPercent,
+    couponCode: data.couponCode || null,
+    amountToPay: pricing.amountToPay,
+    amountRemaining: pricing.amountRemaining,
+    shippingAddress: data.shippingAddress,
+    billingAddress: data.billingAddress,
+    gstDetails: data.gstDetails || null,
+    contactInfo: {
+      email: data.email,
+      phone: data.phone
+    },
+    paymentMethod: data.paymentMethod,
+    paymentStatus: "pending",
+    paymentSessionId: null,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+
+  return orderDoc.id;
+}
