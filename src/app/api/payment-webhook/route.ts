@@ -1,113 +1,10 @@
 import { NextResponse } from "next/server";
-import { importPKCS8, SignJWT } from "jose";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
-const PAYMENT_HUB_SECRET = process.env.PAYMENT_HUB_SECRET || "INTERNAL_HUB_SECRET_2026";
-const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || "namonarayanaghee";
-
-// Generates an OAuth2 token for Firestore REST API using the Service Account JSON
-async function getFirestoreAccessToken(): Promise<string> {
-  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY || "{}");
-  if (!serviceAccount.client_email || !serviceAccount.private_key) {
-    throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY or invalid format");
-  }
-
-  const privateKey = await importPKCS8(serviceAccount.private_key, "RS256");
-
-  const jwt = await new SignJWT({
-    iss: serviceAccount.client_email,
-    scope: "https://www.googleapis.com/auth/datastore",
-    aud: "https://oauth2.googleapis.com/token"
-  })
-    .setProtectedHeader({ alg: "RS256", typ: "JWT" })
-    .setIssuedAt()
-    .setExpirationTime("1h")
-    .sign(privateKey);
-
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion: jwt,
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to authenticate with Google OAuth2");
-  }
-
-  const data = await res.json();
-  return data.access_token;
-}
-
-// Update the Firestore document using the REST API
-async function updateOrderPaid(orderId: string, sessionId: string, amount: number, currency: string, metadata: any) {
-  const token = await getFirestoreAccessToken();
-  const documentPath = `projects/${PROJECT_ID}/databases/(default)/documents/orders/${orderId}`;
-
-  // We construct the update payload (updateMask ensures we only update these fields)
-  // Firestore REST requires values in strongly typed format (e.g. stringValue, integerValue)
-  const payload = {
-    fields: {
-      paymentStatus: { stringValue: "paid" },
-      paymentSessionId: { stringValue: sessionId },
-      paymentDetails: {
-        mapValue: {
-          fields: {
-            sessionId: { stringValue: sessionId },
-            amount: { doubleValue: amount },
-            currency: { stringValue: currency },
-            paidAt: { stringValue: new Date().toISOString() },
-            metadata: { stringValue: JSON.stringify(metadata) } // Storing as string to avoid complex deep mapping
-          }
-        }
-      },
-      updatedAt: { stringValue: new Date().toISOString() }
-    }
-  };
-
-  const updateMask = [
-    "paymentStatus", 
-    "paymentSessionId", 
-    "paymentDetails", 
-    "updatedAt"
-  ].map(field => `updateMask.fieldPaths=${field}`).join("&");
-
-  const res = await fetch(`https://firestore.googleapis.com/v1/${documentPath}?${updateMask}`, {
-    method: "PATCH",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Firestore REST update error:", errorText);
-    throw new Error("Failed to update Firestore document");
-  }
-
-  // Clear abandoned cart
-  if (metadata?.email) {
-    const deleteCartPath = `projects/${PROJECT_ID}/databases/(default)/documents/abandoned_carts/${metadata.email}`;
-    await fetch(`https://firestore.googleapis.com/v1/${deleteCartPath}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` }
-    }).catch(e => console.error("Failed to delete abandoned cart on webhook", e));
-  }
-}
 
 export async function POST(req: Request) {
   try {
-    // Verify authorization
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${PAYMENT_HUB_SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await req.json();
     const { sessionId, orderId, status, amount, currency, metadata } = body;
 
@@ -116,23 +13,68 @@ export async function POST(req: Request) {
     }
 
     if (status === "SUCCESS") {
-      await updateOrderPaid(orderId, sessionId, amount, currency, metadata);
-      console.log(`Order ${orderId} payment confirmed via webhook (Edge REST)`);
+      const adminDb = getAdminDb();
+      const orderRef = adminDb.collection("orders").doc(orderId);
+      const orderSnap = await orderRef.get();
+
+      if (!orderSnap.exists) {
+        return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      }
+
+      const data = orderSnap.data();
+      if (!data) {
+        return NextResponse.json({ error: "Invalid order data" }, { status: 500 });
+      }
+
+      // Local verification: verify amount matches (amountToPay is in paise, payload amount is in INR)
+      const amountReceived = Number(amount);
+      const expectedAmountINR = (data.amountToPay || data.totalAmount || 0) / 100;
       
+      // Allow minor float differences (e.g. 500.00 vs 500)
+      if (Math.abs(amountReceived - expectedAmountINR) > 1) {
+        console.error(`Amount mismatch for order ${orderId}: Expected ${expectedAmountINR}, got ${amountReceived}`);
+        return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
+      }
+
+      // Update the order locally
+      await orderRef.update({
+        paymentStatus: "paid",
+        paymentSessionId: sessionId || null,
+        paymentDetails: {
+          sessionId: sessionId || null,
+          amount: amountReceived,
+          currency: currency || "INR",
+          paidAt: new Date().toISOString(),
+          metadata: metadata ? JSON.stringify(metadata) : null
+        },
+        updatedAt: new Date()
+      });
+
+      console.log(`Order ${orderId} payment confirmed via local verification`);
+      
+      // Send notifications
       try {
-        const adminDb = getAdminDb();
-        const orderSnap = await adminDb.collection("orders").doc(orderId).get();
-        if (orderSnap.exists) {
-          const data = orderSnap.data();
-          if (data && data.contactInfo && data.contactInfo.email) {
-            await sendOrderEmail(orderId, data.contactInfo.email, data.shippingAddress?.name || "Customer", data.amountToPay || data.totalAmount);
-          }
-          if (data) {
-            await sendTelegramNotification(orderId, data, "success");
-          }
+        if (data.contactInfo && data.contactInfo.email) {
+          await sendOrderEmail(
+            orderId, 
+            data.contactInfo.email, 
+            data.shippingAddress?.name || "Customer", 
+            data.amountToPay || data.totalAmount
+          );
         }
+        await sendTelegramNotification(orderId, data, "success");
       } catch (err) {
         console.error("Failed to send post-payment notifications", err);
+      }
+
+      // Clear abandoned cart
+      if (metadata?.email || data.contactInfo?.email) {
+        const emailToClear = metadata?.email || data.contactInfo?.email;
+        try {
+          await adminDb.collection("abandoned_carts").doc(emailToClear).delete();
+        } catch (e) {
+          console.error("Failed to delete abandoned cart on webhook", e);
+        }
       }
     }
 
