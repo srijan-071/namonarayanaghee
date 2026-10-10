@@ -138,6 +138,9 @@ function SuccessContent() {
         }
       };
       fetchOrder();
+      
+      // Clear cart locally since payment was successful
+      import("@/lib/cart").then((cartLib) => cartLib.clearCart());
     }
   }, [orderId, isSuccess]);
 

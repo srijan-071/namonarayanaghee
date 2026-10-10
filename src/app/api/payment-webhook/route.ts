@@ -88,6 +88,15 @@ async function updateOrderPaid(orderId: string, sessionId: string, amount: numbe
     console.error("Firestore REST update error:", errorText);
     throw new Error("Failed to update Firestore document");
   }
+
+  // Clear abandoned cart
+  if (metadata?.email) {
+    const deleteCartPath = `projects/${PROJECT_ID}/databases/(default)/documents/abandoned_carts/${metadata.email}`;
+    await fetch(`https://firestore.googleapis.com/v1/${deleteCartPath}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    }).catch(e => console.error("Failed to delete abandoned cart on webhook", e));
+  }
 }
 
 export async function POST(req: Request) {

@@ -10,7 +10,7 @@ import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
-import { saveUserCheckoutProfile, createOrder, calculateCheckoutPricing, CheckoutData, Address, GstDetails } from "@/lib/orders";
+import { saveUserCheckoutProfile, calculateCheckoutPricing, CheckoutData, Address, GstDetails } from "@/lib/orders";
 
 type Step = "info" | "shipping" | "payment" | "review";
 
@@ -216,12 +216,25 @@ export default function CheckoutPage() {
         payment_type: paymentMethod
       });
 
-      // 2. Fire Firestore requests concurrently
+      // 2. Call server to securely create order and proxy URL
       const uid = user ? user.uid : `guest_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      const orderIdPromise = createOrder(uid, cart.items, cart.subtotal, checkoutData, pricing);
-      const profilePromise = user ? saveUserCheckoutProfile(uid, checkoutData) : Promise.resolve();
       
-      const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
+      const response = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid,
+          cartItems: cart.items,
+          checkoutData
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to create order securely");
+      }
+
+      const { orderId, checkoutUrl } = data;
 
       // 3. Send Telegram Notification in background (using keepalive to survive redirect)
       fetch("/api/send-telegram-notification", {
@@ -234,10 +247,6 @@ export default function CheckoutPage() {
           orderData: {
             items: cart.items.map(i => ({ ...i, name: i.title })),
             subtotal: cart.subtotal,
-            totalAmount: pricing.amountAfterDiscount,
-            discount: pricing.discount,
-            amountToPay: pricing.amountToPay,
-            amountRemaining: pricing.amountRemaining,
             shippingAddress: shipping,
             contactInfo: { email, phone },
             paymentMethod,
@@ -246,26 +255,7 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
       
-      // 4. Create payment session URL directly
-      const amountInINR = pricing.amountToPay / 100;
-      const proxyParams = new URLSearchParams();
-      proxyParams.set("txnid", orderId);
-      proxyParams.set("amount", amountInINR.toString());
-      proxyParams.set("productinfo", `Order ${orderId}`);
-      proxyParams.set("firstname", shipping.name || "Customer");
-      proxyParams.set("email", email || "");
-      proxyParams.set("phone", phone || "");
-      proxyParams.set("udf1", "namonarayanaghee");
-      
-      const checkoutUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
-      
-      // 5. Clear Cart and Abandoned Cart
-      clearCart();
-      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
-        if (email) clearAbandonedCart(email);
-      });
-      
-      // 6. Redirect to payment page immediately
+      // 4. Redirect to payment page immediately
       toast.success("Redirecting to secure payment...", { id: loadingToastId });
       window.location.href = checkoutUrl;
       
@@ -439,12 +429,7 @@ export default function CheckoutPage() {
                         </div>
                       )}
 
-                      {pricing.isAdmin && (
-                        <div className="flex justify-between text-purple-700">
-                          <span className="flex items-center gap-1"><Key className="w-4 h-4 inline mr-1" /> Admin Test Mode</span>
-                          <span className="font-semibold">₹1</span>
-                        </div>
-                      )}
+
 
                       <div className="border-t border-[#E9DFD1] pt-2">
                         <div className="flex justify-between font-bold text-[#1E3A24]">
@@ -646,11 +631,7 @@ export default function CheckoutPage() {
               </div>
               
               <div className="border-t border-[#D5D8D0] mt-4 pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-6 md:pb-8 -mb-6 md:-mb-8 rounded-b-2xl space-y-3">
-                {pricing.isAdmin && (
-                  <div className="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-2 rounded-lg text-center">
-                    <Key className="w-4 h-4 inline mr-1" /> Admin Test Mode - Checkout for ₹1
-                  </div>
-                )}
+
                 
                 <div className="flex justify-between items-end">
                   <div>
