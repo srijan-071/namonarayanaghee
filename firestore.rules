@@ -19,6 +19,13 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
+    // Promo emails for exit intent popup
+    match /promo_emails/{emailId} {
+      allow create: if true;
+      allow read: if request.auth != null && request.auth.token.email == "littlecodr@gmail.com";
+      allow update, delete: if false;
+    }
+    
     // Default deny for all other collections
     match /{document=**} {
       allow read, write: if false;
