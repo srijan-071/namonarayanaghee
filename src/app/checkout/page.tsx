@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock } from "lucide-react";
-import { useCart } from "@/lib/cart";
+import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
