@@ -5,12 +5,16 @@ import Script from 'next/script';
 
 export default function GoogleTranslate() {
   useEffect(() => {
+    // Force Hindi translation for all users automatically
+    document.cookie = `googtrans=/en/hi; path=/; domain=${window.location.hostname}`;
+    document.cookie = `googtrans=/en/hi; path=/;`;
+
     // We define the callback function globally so Google Translate script can call it
     (window as any).googleTranslateElementInit = () => {
       new (window as any).google.translate.TranslateElement(
         {
           pageLanguage: 'en',
-          includedLanguages: 'hi,en',
+          includedLanguages: 'hi',
           autoDisplay: false,
         },
         'google_translate_element'

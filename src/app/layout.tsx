@@ -10,7 +10,7 @@ import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import ExitIntentPopup from "@/components/home/ExitIntentPopup";
 import GoogleTranslate from "@/components/providers/GoogleTranslate";
-import LanguagePopup from "@/components/layout/LanguagePopup";
+import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
               <CartDrawer />
               <ExitIntentPopup />
-              <LanguagePopup />
+              <InAppBrowserWarning />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>
