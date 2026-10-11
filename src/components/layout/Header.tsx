@@ -25,8 +25,6 @@ export default function Header() {
   const navLinks = [
     { href: "/collections/all-products", label: <span className="notranslate">Shop All</span> },
     { href: "/collections/ghee", label: "A2 Ghee" },
-    { href: "/collections/oils", label: "Oils" },
-    { href: "/collections/honey", label: "Honey" },
     { href: "/pages/about-us", label: "Our Story" },
     { href: "/blog", label: "Blog" },
     { href: "/pages/contact", label: "Contact" },

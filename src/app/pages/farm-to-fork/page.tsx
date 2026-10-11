@@ -14,7 +14,7 @@ const steps = [
   {
     icon: <Hammer className="w-10 h-10 text-[#C99A3D]" />,
     title: "2. Traditional Processing",
-    desc: "Bilona churning for ghee, wooden cold-pressing for oils, stone grinding for flours. Slow methods that preserve nutrition.",
+    desc: "Bilona churning for ghee hand-crafted from A2 curd. Slow, ancient methods that preserve nutrition.",
     image: "/assets/about-ghee.png"
   },
   {

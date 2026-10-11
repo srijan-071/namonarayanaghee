@@ -46,7 +46,7 @@ export default function OurStoryPage() {
             </h2>
             <div className="space-y-6 text-lg text-[#4A5450] leading-relaxed">
               <p>
-                We work directly with 5000+ farmer families across India&apos;s native regions to bring you ghee, oils, honey and more - made the traditional way, tested in certified labs, and delivered with zero preservatives.
+                We work directly with 5000+ farmer families across India&apos;s native regions to bring you pure A2 Gir Cow Ghee - made the traditional way, tested in certified labs, and delivered with zero preservatives.
               </p>
               <p>
                 Our journey is rooted in the ancient Vedic sciences of food preparation. Every product we create is a testament to the purity of nature and the wisdom of our ancestors.

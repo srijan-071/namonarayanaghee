@@ -56,9 +56,9 @@ export default function Footer() {
             <h4 className="font-bold text-sm tracking-widest mb-6 text-[#C38936] uppercase drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">Shop</h4>
             <ul className="space-y-4 text-sm text-white/90 font-medium drop-shadow-md [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
               <li><Link href="/collections/ghee" className="hover:text-white hover:underline underline-offset-4 transition-all">A2 Gir Cow Ghee</Link></li>
-              <li><Link href="/collections/oils" className="hover:text-white hover:underline underline-offset-4 transition-all">Wood Pressed Oils</Link></li>
-              <li><Link href="/collections/honey" className="hover:text-white hover:underline underline-offset-4 transition-all">Raw Forest Honey</Link></li>
-              <li><Link href="/collections/flours" className="hover:text-white hover:underline underline-offset-4 transition-all">Atta & Flours</Link></li>
+              <li><Link href="/products/pure-desi-cow-ghee-1-litre" className="hover:text-white hover:underline underline-offset-4 transition-all">1 Litre Ghee</Link></li>
+              <li><Link href="/products/pure-desi-cow-ghee-2-5-litre" className="hover:text-white hover:underline underline-offset-4 transition-all">2.5 Litre Ghee</Link></li>
+              <li><Link href="/products/pure-desi-cow-ghee-5-litre" className="hover:text-white hover:underline underline-offset-4 transition-all">5 Litre Family Pack</Link></li>
               <li><Link href="/collections/all-products" className="hover:text-white hover:underline underline-offset-4 transition-all">All Products</Link></li>
             </ul>
           </div>

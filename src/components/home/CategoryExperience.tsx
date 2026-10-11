@@ -6,36 +6,36 @@ import { ArrowRight } from "lucide-react";
 
 const categories = [
   {
-    title: "A2 Gir Cow Ghee",
-    subtitle: "Tradition in every spoon",
-    href: "/collections/ghee",
+    title: "1 Litre Bestseller",
+    subtitle: "Bilona Churned • Pure & Traditional",
+    href: "/products/pure-desi-cow-ghee-1-litre",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
-    badge: "OUR HERO",
+    badge: "MOST POPULAR",
+    badgeColor: "bg-[#C38936] text-white",
+  },
+  {
+    title: "2.5 Litre Value Pack",
+    subtitle: "Bilona Churned • Great for Families",
+    href: "/products/pure-desi-cow-ghee-2-5-litre",
+    image: "/assets/product_6-2p5_jpg.webp",
+    badge: "VALUE PACK",
     badgeColor: "bg-[#1E3A24] text-white",
   },
   {
-    title: "Cold Pressed Oils",
-    subtitle: "Pure. Potent. Natural.",
-    href: "/collections/oils",
-    image: "/assets/product_musturdoil.webp",
-    badge: "COMING SOON",
+    title: "5 Litre Family Pack",
+    subtitle: "Pure Desi Goodness in Bulk",
+    href: "/products/pure-desi-cow-ghee-5-litre",
+    image: "/assets/product_6-5L_jpg.webp",
+    badge: "BEST VALUE",
     badgeColor: "bg-[#C38936] text-white",
   },
   {
-    title: "Natural Honey",
-    subtitle: "Nature's Sweetness",
-    href: "/collections/honey",
-    image: "/assets/product_honey.webp",
-    badge: "COMING SOON",
-    badgeColor: "bg-[#C38936] text-white",
-  },
-  {
-    title: "Attas & Flours",
-    subtitle: "Wholesome Goodness",
-    href: "/collections/flours",
-    image: "/assets/product_Khapliatta.webp",
-    badge: "COMING SOON",
-    badgeColor: "bg-[#C38936] text-white",
+    title: "500 ml Starter Pack",
+    subtitle: "Perfect to begin your journey",
+    href: "/products/pure-desi-cow-ghee-500-ml",
+    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
+    badge: "STARTER PACK",
+    badgeColor: "bg-[#1E3A24] text-white",
   }
 ];
 
@@ -56,10 +56,10 @@ export default function CategoryExperience() {
           className="flex flex-col md:flex-row md:items-end justify-between mb-12"
         >
           <div className="max-w-2xl">
-            <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4 block">Explore Our Range</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E3A24] mb-4">Shop by Category</h2>
+            <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4 block">Choose Your Pack</span>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E3A24] mb-4">Shop by Size</h2>
             <p className="text-[#364935] text-base md:text-lg">
-              Pure essentials from our farms to your home. Choose what nourishes you.
+              Pure A2 Gir Cow Ghee crafted for every kitchen. Choose what fits your home.
             </p>
           </div>
           <div className="hidden lg:block text-[#576B55] text-3xl md:text-4xl font-serif italic font-light leading-tight drop-shadow-sm text-right mt-6 md:mt-0 opacity-70">

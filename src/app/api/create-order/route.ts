@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         }
       }
 
-      let qty = Number(item.quantity);
+      const qty = Number(item.quantity);
       if (!Number.isInteger(qty) || qty <= 0) {
         return NextResponse.json({ error: `Invalid quantity for product: ${item.title}` }, { status: 400 });
       }

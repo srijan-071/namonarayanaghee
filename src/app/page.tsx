@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import Bestsellers from "@/components/home/Bestsellers";
 import Hero from "@/components/home/Hero";
-import CategoryExperience from "@/components/home/CategoryExperience";
 import BrandStory from "@/components/home/BrandStory";
 import BilonaProcess from "@/components/home/BilonaProcess";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
@@ -39,7 +38,6 @@ export default function HomePage() {
       <main className="flex flex-col w-full overflow-hidden bg-nn-cream">
         <Hero />
         <Bestsellers />
-        <CategoryExperience />
         <BrandStory />
         <BilonaProcess />
         <CinematicCTA />
