@@ -11,7 +11,7 @@ const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: numbe
   "GHEE100": { type: 'fixed', value: 100 }
 };
 
-const PAYU_PROXY_URL = "https://octopusperfume.in/payu-proxy/namonarayanaghee";
+const PAYU_PROXY_URL = "/payu-proxy/namonarayanaghee";
 
 export async function POST(req: Request) {
   try {
