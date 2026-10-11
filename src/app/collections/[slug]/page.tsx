@@ -25,7 +25,13 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
 
   const products = collection.productSlugs
     .map((s) => getProduct(s))
-    .filter((p) => p !== null);
+    .filter((p): p is NonNullable<typeof p> => 
+      p !== null && 
+      p.available === true && 
+      p.price > 0 &&
+      !p.title.toLowerCase().includes("coming soon") &&
+      !p.title.toLowerCase().includes("sold out")
+    );
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },

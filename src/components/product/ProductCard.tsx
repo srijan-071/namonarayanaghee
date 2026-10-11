@@ -38,11 +38,7 @@ export default function ProductCard({ slug, title, price, compareAtPrice, image,
           </span>
         )}
         
-        {!available && (
-          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10">
-            <span className="font-bold text-sm text-nn-bark px-3 py-1 bg-white rounded shadow-sm">Sold Out</span>
-          </div>
-        )}
+
       </div>
 
       <div className="p-4 flex flex-col flex-1 justify-between bg-white text-center">
