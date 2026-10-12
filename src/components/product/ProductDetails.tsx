@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { 
   Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
   Leaf, Zap, CheckCircle2, Gift, ShoppingCart,
-  Sparkles, Tag, ShieldAlert, Award, MessageCircle, Copy, Check
+  Sparkles, Tag, ShieldAlert, Award, Copy, Check
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
@@ -27,6 +27,11 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [codeCopied, setCodeCopied] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
+  const [navigatingSlug, setNavigatingSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNavigatingSlug(null);
+  }, [product.slug]);
 
   // Dynamic delivery date calculation
   const [deliveryDateStr, setDeliveryDateStr] = useState("3 - 4 Days");
@@ -296,102 +301,20 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <span className="text-xs text-gray-500 font-medium">• 100% Verified Buyers</span>
         </div>
 
-        {/* Legitimate Trust & Verification Cards (Mobile First) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
-            <div className="w-8 h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
-              <Leaf className="w-4 h-4 text-[#1E3A24]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-bold text-[#1E3A24] block leading-tight">
-                Small-Batch Handcrafted
-              </span>
-              <span className="text-[11px] text-[#3e5f48] leading-tight block mt-0.5">
-                From Indigenous Gir Cows
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#FBF8EF] border border-[#EEDBBA] shadow-2xs">
-            <div className="w-8 h-8 rounded-full bg-[#F8EFD8] flex items-center justify-center text-[#8C601E] shrink-0">
-              <ShieldCheck className="w-4 h-4 text-[#8C601E]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-bold text-[#6D4911] block leading-tight">
-                NABL Lab Certified Purity
-              </span>
-              <span className="text-[11px] text-[#8C601E] leading-tight block mt-0.5">
-                0% Adulteration • No Foreign Fat
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
-            <div className="w-8 h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
-              <Award className="w-4 h-4 text-[#1E3A24]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-bold text-[#1E3A24] block leading-tight">
-                FSSAI Central License
-              </span>
-              <span className="text-[11px] text-[#1E3A24] font-mono font-bold tracking-tight block mt-0.5">
-                Lic No. 10823999000412
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Pricing Box with High-Contrast Mobile Clean Layout */}
-        <div className="mb-5 bg-gradient-to-br from-[#F5F8F6] via-[#FAFBF9] to-white p-4 sm:p-5 rounded-2xl border border-emerald-200/80 shadow-xs">
-          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
-            <span className="text-3xl sm:text-4xl font-extrabold text-[#1E3A24] tracking-tight">
-              Rs. {(price / 100).toLocaleString('en-IN')}
-            </span>
-            {compareAt && compareAt > price && (
-              <span className="text-xl sm:text-2xl text-gray-400 line-through font-medium">
-                Rs. {(compareAt / 100).toLocaleString('en-IN')}
-              </span>
-            )}
-            {discount > 0 && (
-              <span className="bg-[#1E3A24] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                Save {discount}% (₹{savingsRupees.toLocaleString('en-IN')} OFF)
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-2.5">
-            <span className="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-              FREE Express Shipping Pan-India
-            </span>
-            <span className="text-gray-500">MRP (Inclusive of all taxes)</span>
-          </div>
-
-          <div className="mt-3.5 pt-3 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#1E3A24]">
-            <span className="flex items-center gap-1.5 font-bold">
-              <Factory className="w-4 h-4 text-[#C38936]" />
-              Authentic Wooden Bilona Churned from Curd
-            </span>
-            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
-              Farm Fresh
-            </span>
-          </div>
-        </div>
-
-        {/* Variants & Packs Selector (500ml, 1L, 2.5L, 5L) */}
+        {/* Variants & Packs Selector (500ml, 1L, 2.5L, 5L) - Positioned High for Instant Mobile Access */}
         {gheePacks && gheePacks.length > 0 && (
-          <div className="mb-6">
-            <div className="flex justify-between items-end mb-2.5">
-              <label className="text-sm font-bold text-[#1E3A24] flex items-center gap-1.5">
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs sm:text-sm font-extrabold text-[#1E3A24] flex items-center gap-1.5">
                 <span>Select Pack Size:</span>
-                <span className="text-xs font-normal text-gray-500">(Bigger Pack = Bigger Savings)</span>
+                <span className="text-[11px] font-normal text-gray-500 hidden sm:inline">(Bigger Pack = Bigger Savings)</span>
               </label>
-              <span className="text-xs font-bold text-[#066A46] bg-emerald-50 px-2 py-0.5 rounded">
-                Save up to 42% per litre &rarr;
+              <span className="text-[11px] sm:text-xs font-bold text-[#066A46] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+                Save up to 42%/L &rarr;
               </span>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
               {gheePacks.map((pack) => {
                 let ml = 1000;
                 let badge = null;
@@ -406,7 +329,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                   packRole = "Trial Pack";
                 } else if (pack.slug.includes("1-litre")) {
                   ml = 1000;
-                  badge = "BESTSELLER";
+                  badge = "★ BESTSELLER";
                   badgeBg = "bg-[#C38936] text-white";
                   saveLabel = "Save 21%/L";
                   packRole = "Most Popular";
@@ -427,55 +350,63 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                 const perLitre = Math.round((pack.price / 100) / (ml / 1000));
                 const isSelected = product.slug === pack.slug || (product.slug.includes("500-ml") && pack.slug.includes("500-ml"));
                 const packDiscount = pack.compareAtPrice ? discountPercent(pack.price, pack.compareAtPrice) : 0;
+                const isNavigatingThis = navigatingSlug === pack.slug;
 
                 return (
                   <button
                     key={pack.id}
                     onClick={() => {
-                      if (!isSelected) router.push(`/products/${pack.slug}`);
+                      if (!isSelected) {
+                        setNavigatingSlug(pack.slug);
+                        router.push(`/products/${pack.slug}`);
+                      }
                     }}
-                    className={`relative text-left rounded-xl border-2 flex flex-col overflow-hidden transition-all duration-200 transform ${
+                    className={`relative text-left rounded-xl border-2 flex flex-col overflow-hidden transition-all duration-150 transform active:scale-95 ${
                       isSelected 
-                        ? "border-[#1E3A24] bg-white ring-2 ring-[#1E3A24]/30 shadow-md scale-[1.02]" 
-                        : "border-gray-200 bg-gray-50/60 hover:border-[#1E3A24]/50 hover:bg-white"
+                        ? "border-[#1E3A24] bg-emerald-50/20 ring-2 ring-[#1E3A24]/30 shadow-md scale-[1.01]" 
+                        : "border-gray-200 bg-white hover:border-[#1E3A24]/50 hover:bg-gray-50/60 shadow-2xs"
                     }`}
                   >
                     {/* Top Header */}
-                    <div className={`px-2.5 py-1.5 flex justify-between items-center text-xs ${
-                      isSelected ? "bg-[#1E3A24] text-white" : "bg-gray-100/90 text-gray-800"
+                    <div className={`px-2 py-1 sm:px-2.5 sm:py-1.5 flex justify-between items-center text-[11px] sm:text-xs ${
+                      isSelected ? "bg-[#1E3A24] text-white" : "bg-gray-100 text-gray-800"
                     }`}>
-                      <span className="font-extrabold">{pack.variants[0]?.title ?? pack.title.split(' ').slice(-2).join(' ')}</span>
-                      {badge && (
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase tracking-wider ${badgeBg}`}>
+                      <span className="font-extrabold truncate">
+                        {pack.variants[0]?.title ?? pack.title.split(' ').slice(-2).join(' ')}
+                      </span>
+                      {isNavigatingThis ? (
+                        <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+                      ) : badge ? (
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${badgeBg}`}>
                           {badge}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                     
                     {/* Bottom Details */}
-                    <div className="p-2.5 flex flex-col gap-1 flex-1">
+                    <div className="p-2 sm:p-2.5 flex flex-col gap-1 flex-1">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-base font-extrabold text-[#1E3A24]">
+                        <span className="text-sm sm:text-base font-extrabold text-[#1E3A24]">
                           Rs. {Math.round(pack.price / 100).toLocaleString('en-IN')}
                         </span>
                         {pack.compareAtPrice && (
-                          <span className="text-[11px] text-gray-400 line-through">
+                          <span className="text-[10px] sm:text-[11px] text-gray-400 line-through">
                             Rs. {Math.round(pack.compareAtPrice / 100).toLocaleString('en-IN')}
                           </span>
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between text-[11px]">
+                      <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
                         <span className="font-bold text-red-600">{packDiscount}% off</span>
-                        <span className="text-gray-500 text-[10px]">{packRole}</span>
+                        <span className="text-gray-500 text-[9px] sm:text-[10px]">{packRole}</span>
                       </div>
                       
-                      <div className="mt-auto pt-1.5 border-t border-gray-100 flex flex-col">
-                        <span className="text-[11px] font-bold text-[#066A46]">
+                      <div className="mt-auto pt-1 sm:pt-1.5 border-t border-gray-100 flex items-center justify-between">
+                        <span className="text-[10px] sm:text-[11px] font-bold text-[#066A46]">
                           ₹{perLitre.toLocaleString("en-IN")}/L
                         </span>
                         {saveLabel && (
-                          <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 px-1 py-0.2 rounded w-fit">
+                          <span className="text-[9px] sm:text-[10px] font-extrabold text-amber-800 bg-amber-50 px-1 py-0.5 rounded border border-amber-200/50">
                             {saveLabel}
                           </span>
                         )}
@@ -488,10 +419,92 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         )}
 
+        {/* Pricing Box with High-Contrast Mobile Clean Layout */}
+        <div className="mb-4 bg-gradient-to-br from-[#F5F8F6] via-[#FAFBF9] to-white p-3.5 sm:p-5 rounded-2xl border border-emerald-200/80 shadow-xs">
+          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
+            <span className="text-3xl sm:text-4xl font-extrabold text-[#1E3A24] tracking-tight">
+              Rs. {(price / 100).toLocaleString('en-IN')}
+            </span>
+            {compareAt && compareAt > price && (
+              <span className="text-xl sm:text-2xl text-gray-400 line-through font-medium">
+                Rs. {(compareAt / 100).toLocaleString('en-IN')}
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="bg-[#1E3A24] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                Save {discount}% (₹{savingsRupees.toLocaleString('en-IN')} OFF)
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-2">
+            <span className="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+              FREE Express Shipping Pan-India
+            </span>
+            <span className="text-gray-500">MRP (Inclusive of all taxes)</span>
+          </div>
+
+          <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#1E3A24]">
+            <span className="flex items-center gap-1.5 font-bold">
+              <Factory className="w-4 h-4 text-[#C38936]" />
+              Authentic Wooden Bilona Churned from Curd
+            </span>
+            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+              Farm Fresh
+            </span>
+          </div>
+        </div>
+
+        {/* Legitimate Trust & Verification Cards (Compact Mobile Micro-Grid) */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
+              <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1E3A24]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] sm:text-xs font-bold text-[#1E3A24] block leading-tight">
+                Small-Batch Gir Cows
+              </span>
+              <span className="text-[10px] sm:text-[11px] text-[#3e5f48] leading-tight block mt-0.5 hidden sm:block">
+                Indigenous Gir Breed
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FBF8EF] border border-[#EEDBBA] shadow-2xs">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F8EFD8] flex items-center justify-center text-[#8C601E] shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8C601E]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] sm:text-xs font-bold text-[#6D4911] block leading-tight">
+                NABL Lab Certified
+              </span>
+              <span className="text-[10px] sm:text-[11px] text-[#8C601E] leading-tight block mt-0.5 hidden sm:block">
+                0% Adulteration Purity
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
+              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1E3A24]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] sm:text-xs font-bold text-[#1E3A24] block leading-tight">
+                FSSAI Central Lic
+              </span>
+              <span className="text-[10px] sm:text-[11px] text-[#1E3A24] font-mono font-bold tracking-tight block mt-0.5 hidden sm:block">
+                10823999000412
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Free Gift Unlock Announcement */}
-        <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-50 to-emerald-50 rounded-xl border border-amber-200 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
-            <Gift className="w-5 h-5" />
+        <div className="mb-4 p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-emerald-50 rounded-xl border border-amber-200 flex items-center gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
+            <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="flex-1 text-xs">
             <span className="font-bold text-gray-900 block">🎁 Free Gift Included With This Order!</span>
@@ -503,7 +516,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
         {/* Quick Coupon Code - Unlocked only after 45 seconds on site */}
         {showCoupon && (
-          <div className="mb-6 p-3 bg-gradient-to-r from-emerald-50 via-white to-amber-50 rounded-xl border border-dashed border-emerald-600/70 flex items-center justify-between gap-3 shadow-xs animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="mb-5 p-3 bg-gradient-to-r from-emerald-50 via-white to-amber-50 rounded-xl border border-dashed border-emerald-600/70 flex items-center justify-between gap-3 shadow-xs animate-in fade-in slide-in-from-top-2 duration-500">
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-emerald-700 shrink-0" />
               <div className="text-xs">
@@ -523,60 +536,85 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         )}
 
-        {/* Action Buttons: Sticky Mobile Buy Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-row items-center gap-2.5 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] md:shadow-none">
-          {/* Quantity Selector */}
-          <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[50px] sm:h-[54px] shrink-0">
-            <button 
-              onClick={() => setQty(Math.max(1, qty - 1))} 
-              className="w-10 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-l-xl transition text-xl font-bold"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="w-8 sm:w-10 text-center font-extrabold text-[#1E3A24] text-base">{qty}</span>
-            <button 
-              onClick={() => setQty(qty + 1)} 
-              className="w-10 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-r-xl transition text-xl font-bold"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-          
-          {/* Buy Now button - High Converting Full-Width Primary CTA */}
-          <button 
-            onClick={handleBuyNow} 
-            disabled={!variant?.available || isAdding} 
-            className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[50px] sm:h-[54px] rounded-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-70 text-base sm:text-lg tracking-wide shadow-[0_6px_20px_0_rgba(245,158,11,0.45)] flex items-center justify-center gap-2.5 uppercase border border-amber-300"
-          >
-            {isAdding ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
-                <span>Buy Now</span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* Action Buttons: Sticky Mobile Buy Bar with 1-Tap Quick Pack Switcher */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.6rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] md:shadow-none">
+          {/* Mobile Sticky Quick Pack Strip - Instant pack change from anywhere on the page */}
+          {gheePacks && gheePacks.length > 0 && (
+            <div className="flex md:hidden items-center justify-between gap-1.5 pb-1.5 border-b border-gray-100/90">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider shrink-0">Pack:</span>
+              <div className="flex items-center gap-1.5 flex-1 justify-end overflow-x-auto scrollbar-hide py-0.5">
+                {gheePacks.map((pack) => {
+                  const isSelected = product.slug === pack.slug || (product.slug.includes("500-ml") && pack.slug.includes("500-ml"));
+                  const shortName = pack.slug.includes("500-ml") ? "500ml" : pack.slug.includes("1-litre") ? "1L" : pack.slug.includes("2-5-litre") ? "2.5L" : "5L";
+                  const shortPrice = `₹${Math.round(pack.price / 100).toLocaleString('en-IN')}`;
+                  const isNavigatingThis = navigatingSlug === pack.slug;
+                  return (
+                    <button
+                      key={pack.id}
+                      onClick={() => {
+                        if (!isSelected) {
+                          setNavigatingSlug(pack.slug);
+                          router.push(`/products/${pack.slug}`);
+                        }
+                      }}
+                      className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 ${
+                        isSelected
+                          ? "bg-[#1E3A24] text-white shadow-xs ring-1 ring-[#1E3A24]"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95"
+                      }`}
+                    >
+                      {isNavigatingThis ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <>
+                          <span>{shortName}</span>
+                          <span className={`text-[10px] ${isSelected ? "text-amber-300 font-semibold" : "text-gray-500"}`}>{shortPrice}</span>
+                        </>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-        {/* WhatsApp 1-Click Order Link */}
-        <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-2.5 p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-xl">
-          <div className="flex items-center gap-2 text-xs text-gray-700">
-            <span className="font-semibold">Questions or prefer WhatsApp?</span>
+          {/* Stepper + Buy Now Row */}
+          <div className="flex items-center gap-2.5 sm:gap-3 w-full">
+            {/* Quantity Selector */}
+            <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[48px] sm:h-[54px] shrink-0">
+              <button 
+                onClick={() => setQty(Math.max(1, qty - 1))} 
+                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-l-xl transition text-lg sm:text-xl font-bold"
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <span className="w-7 sm:w-10 text-center font-extrabold text-[#1E3A24] text-sm sm:text-base">{qty}</span>
+              <button 
+                onClick={() => setQty(qty + 1)} 
+                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-r-xl transition text-lg sm:text-xl font-bold"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+            
+            {/* Buy Now button - High Converting Full-Width Primary CTA */}
+            <button 
+              onClick={handleBuyNow} 
+              disabled={!variant?.available || isAdding} 
+              className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[48px] sm:h-[54px] rounded-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-70 text-sm sm:text-lg tracking-wide shadow-[0_6px_20px_0_rgba(245,158,11,0.45)] flex items-center justify-center gap-2 uppercase border border-amber-300"
+            >
+              {isAdding ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
+                  <span>Buy Now — ₹{((price * qty) / 100).toLocaleString('en-IN')}</span>
+                </>
+              )}
+            </button>
           </div>
-          <a
-            href={`https://wa.me/919999999999?text=${encodeURIComponent(
-              `Hi Namo Narayana Team! I would like to place an order for ${product.title} (Rs. ${price / 100}). Please assist me with my order.`
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-white px-3 py-1.5 rounded-lg border border-emerald-300 shadow-2xs hover:bg-emerald-50 transition-colors"
-          >
-            <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-            <span>Order on WhatsApp (30s) &rarr;</span>
-          </a>
         </div>
 
         {/* Delivery & Pincode Reassurance */}
