@@ -33,10 +33,13 @@ export default function ProductCard({ slug, title, price, compareAtPrice, image,
         )}
         
         {discount > 0 && (
-          <span className="absolute top-3 left-3 bg-nn-mustard text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
+          <span className="absolute top-3 left-3 bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded shadow-sm">
             {discount}% OFF
           </span>
         )}
+        <span className="absolute bottom-2.5 right-2.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+          Cash on Delivery
+        </span>
         
 
       </div>

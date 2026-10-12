@@ -60,7 +60,7 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
 }
 
 export function getProduct(slug: string): Product | null {
-  const raw = RAW_PRODUCTS[slug];
+  const raw = RAW_PRODUCTS[slug] || (slug === "pure-a2-gir-cow-ghee-500-ml" ? RAW_PRODUCTS["pure-desi-cow-ghee-500-ml"] : null);
   if (!raw) return null;
   return normaliseProduct(raw);
 }

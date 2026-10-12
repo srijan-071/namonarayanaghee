@@ -13,6 +13,19 @@ import { trackEvent } from "@/lib/analytics";
 // Actual Ghee products data matching the live store
 const gheeProducts = [
   {
+    id: 9545153446055,
+    variantId: 55812012572839,
+    slug: "pure-desi-cow-ghee-500-ml",
+    badge: "STARTER PACK",
+    badgeColor: "bg-[#1E3A24]",
+    title: "Pure A2 Gir Cow Ghee 500 ml",
+    variantTitle: "500 ml",
+    subtitle: "Bilona Churned • Perfect to Try",
+    size: "500 ml",
+    price: 59900,
+    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
+  },
+  {
     id: 9545153446056,
     variantId: 55812012572840,
     slug: "pure-desi-cow-ghee-1-litre",
@@ -22,7 +35,7 @@ const gheeProducts = [
     variantTitle: "1 Litre",
     subtitle: "Bilona Churned • Pure & Traditional",
     size: "1 Litre",
-    price: 115150,
+    price: 94900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
   },
   {
@@ -35,7 +48,7 @@ const gheeProducts = [
     variantTitle: "2.5 Litre",
     subtitle: "Bilona Churned • Great for Families",
     size: "2.5 Litre",
-    price: 271950,
+    price: 209900,
     image: "/assets/product_6-2p5_jpg.webp"
   },
   {
@@ -46,9 +59,9 @@ const gheeProducts = [
     badgeColor: "bg-[#C38936]",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     variantTitle: "5 Litre",
-    subtitle: "Perfect to Begin Your Journey",
+    subtitle: "Best Value • Bulk Savings",
     size: "5 Litre",
-    price: 514500,
+    price: 349900,
     image: "/assets/product_6-5L_jpg.webp"
   }
 ];
@@ -178,7 +191,7 @@ export default function Bestsellers() {
               </div>
               
               <div
-                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               >
                 {gheeProducts.map((p) => (
                   <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-white/60 flex flex-col h-full group">

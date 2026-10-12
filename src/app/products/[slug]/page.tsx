@@ -30,9 +30,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     { name: product.title, url: `/products/${slug}` },
   ]);
 
-  const GHEE_SLUGS = ["pure-a2-gir-cow-ghee-500-ml", "pure-desi-cow-ghee-1-litre", "pure-desi-cow-ghee-2-5-litre", "pure-desi-cow-ghee-5-litre"];
+  const GHEE_SLUGS = ["pure-desi-cow-ghee-500-ml", "pure-desi-cow-ghee-1-litre", "pure-desi-cow-ghee-2-5-litre", "pure-desi-cow-ghee-5-litre"];
   let gheePacks = null;
-  if (GHEE_SLUGS.includes(slug)) {
+  if (GHEE_SLUGS.includes(slug) || slug === "pure-a2-gir-cow-ghee-500-ml") {
     gheePacks = GHEE_SLUGS.map((s) => getProduct(s)).filter((p): p is import("@/lib/types").Product => p !== null);
   }
 

@@ -59,8 +59,8 @@ export default function CartDrawer() {
   };
 
   const crossSells = [
-    { slug: "pure-a2-gir-cow-ghee-500-ml", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> 1st</> },
-    { slug: "pure-desi-cow-ghee-1-litre", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> 2nd</> }
+    { slug: "pure-desi-cow-ghee-500-ml", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> Trial Pack</> },
+    { slug: "pure-desi-cow-ghee-1-litre", badge: <><Star className="w-2.5 h-2.5 fill-current inline"/> Most Popular</> }
   ].filter(cs => !cart.items.some(i => i.slug === cs.slug));
 
   return (

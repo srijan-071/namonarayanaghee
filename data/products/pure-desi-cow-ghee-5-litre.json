@@ -15,14 +15,14 @@
     "organic",
     "pure"
   ],
-  "price": 735000,
-  "price_min": 1050000,
-  "price_max": 1050000,
+  "price": 349900,
+  "price_min": 349900,
+  "price_max": 349900,
   "available": true,
   "price_varies": false,
-  "compare_at_price": 1224930,
-  "compare_at_price_min": 1749900,
-  "compare_at_price_max": 1749900,
+  "compare_at_price": 599900,
+  "compare_at_price_min": 599900,
+  "compare_at_price_max": 599900,
   "compare_at_price_varies": false,
   "variants": [
     {
@@ -41,9 +41,9 @@
       "options": [
         "5 Litre"
       ],
-      "price": 735000,
+      "price": 349900,
       "weight": 0,
-      "compare_at_price": 1224930,
+      "compare_at_price": 599900,
       "inventory_management": "shopify",
       "barcode": null,
       "quantity_rule": {

@@ -51,7 +51,7 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
     if (coupon.type === 'percentage') {
       discountAmount = Math.round(subtotal * (coupon.value / 100));
     } else if (coupon.type === 'fixed') {
-      discountAmount = coupon.value;
+      discountAmount = coupon.value * 100;
     }
     // ensure discount doesn't exceed subtotal
     if (discountAmount > subtotal) {
