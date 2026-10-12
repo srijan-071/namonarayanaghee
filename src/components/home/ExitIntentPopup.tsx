@@ -25,14 +25,14 @@ export default function ExitIntentPopup() {
       setHasShown(true);
     }
 
-    // Timer for 30 seconds auto-show
+    // Timer for 45 seconds auto-show
     const timerId = setTimeout(() => {
       if (!shown && !hasShown) {
         setIsVisible(true);
         setHasShown(true);
         sessionStorage.setItem("nn_exit_intent_shown", "true");
       }
-    }, 30000);
+    }, 45000);
 
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShown) {

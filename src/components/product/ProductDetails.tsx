@@ -26,6 +26,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [isAdding, setIsAdding] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(false);
 
   // Dynamic delivery date calculation
   const [deliveryDateStr, setDeliveryDateStr] = useState("3 - 4 Days");
@@ -41,6 +42,26 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     d2.setDate(now.getDate() + 5);
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     setDeliveryDateStr(`${d1.toLocaleDateString('en-IN', options)} - ${d2.toLocaleDateString('en-IN', options)}`);
+
+    // Load 10% discount code only after 45 seconds on site
+    let sessionStart = sessionStorage.getItem("nn_session_start");
+    if (!sessionStart) {
+      sessionStart = Date.now().toString();
+      sessionStorage.setItem("nn_session_start", sessionStart);
+    }
+
+    const elapsed = Date.now() - parseInt(sessionStart, 10);
+    const remainingTime = Math.max(0, 45000 - elapsed);
+
+    if (remainingTime === 0) {
+      setShowCoupon(true);
+    } else {
+      const timer = setTimeout(() => {
+        setShowCoupon(true);
+      }, remainingTime);
+
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const variant = product.variants[selectedVariantIdx];
@@ -480,25 +501,27 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Quick Coupon Code Applied */}
-        <div className="mb-6 p-3 bg-white rounded-xl border border-dashed border-emerald-600/70 flex items-center justify-between gap-3 shadow-xs">
-          <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-emerald-700 shrink-0" />
-            <div className="text-xs">
-              <span className="font-bold text-gray-900">Extra 10% Discount: </span>
-              <span className="font-mono font-extrabold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded ml-1">
-                ELVISH10
-              </span>
+        {/* Quick Coupon Code - Unlocked only after 45 seconds on site */}
+        {showCoupon && (
+          <div className="mb-6 p-3 bg-gradient-to-r from-emerald-50 via-white to-amber-50 rounded-xl border border-dashed border-emerald-600/70 flex items-center justify-between gap-3 shadow-xs animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="flex items-center gap-2">
+              <Tag className="w-4 h-4 text-emerald-700 shrink-0" />
+              <div className="text-xs">
+                <span className="font-bold text-gray-900">Special 10% Discount: </span>
+                <span className="font-mono font-extrabold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded ml-1">
+                  ELVISH10
+                </span>
+              </div>
             </div>
+            <button
+              onClick={() => handleCopyCoupon("ELVISH10")}
+              className="text-xs font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 bg-white hover:bg-emerald-100 px-2.5 py-1 rounded border border-emerald-200 transition-colors shadow-2xs"
+            >
+              {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
+            </button>
           </div>
-          <button
-            onClick={() => handleCopyCoupon("ELVISH10")}
-            className="text-xs font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded transition-colors"
-          >
-            {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
-          </button>
-        </div>
+        )}
 
         {/* Action Buttons: Sticky Mobile Buy Bar */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-row items-center gap-2.5 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] md:shadow-none">
