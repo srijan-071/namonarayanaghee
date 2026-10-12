@@ -9,12 +9,11 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { 
   Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
-  Eye, Flame, Zap, Clock, CheckCircle2, Gift, 
+  Leaf, Zap, CheckCircle2, Gift, 
   Sparkles, Tag, ShieldAlert, Award, MessageCircle, Copy, Check
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
-import LivePurchaseToast from "./LivePurchaseToast";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 import { useRouter } from "next/navigation";
 
@@ -25,23 +24,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [qty, setQty] = useState(1);
   const { open } = useCartDrawer();
   const [isAdding, setIsAdding] = useState(false);
-  const [viewers, setViewers] = useState(26);
-  const [sold, setSold] = useState(168);
   const [codeCopied, setCodeCopied] = useState(false);
-  const [remainingStock, setRemainingStock] = useState(7);
   const [isMounted, setIsMounted] = useState(false);
-
-  // Live countdown timer state (hours, minutes, seconds)
-  const [timeLeft, setTimeLeft] = useState({ hours: 11, minutes: 42, seconds: 18 });
 
   // Dynamic delivery date calculation
   const [deliveryDateStr, setDeliveryDateStr] = useState("3 - 4 Days");
 
   useEffect(() => {
     setIsMounted(true);
-    setViewers(Math.floor(Math.random() * 15) + 22);
-    setSold(Math.floor(Math.random() * 40) + 145);
-    setRemainingStock(Math.floor(Math.random() * 4) + 5);
 
     // Calculate dynamic delivery range (3 to 5 days ahead)
     const now = new Date();
@@ -51,22 +41,6 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     d2.setDate(now.getDate() + 5);
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     setDeliveryDateStr(`${d1.toLocaleDateString('en-IN', options)} - ${d2.toLocaleDateString('en-IN', options)}`);
-
-    // Ticking countdown timer
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return { hours: 12, minutes: 0, seconds: 0 };
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
   }, []);
 
   const variant = product.variants[selectedVariantIdx];
@@ -174,17 +148,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-28 md:pb-16 relative">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 pb-24 md:pb-16 relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Social Proof Live Purchase Toast */}
-      <LivePurchaseToast />
-
       {/* Gallery (Left Side) */}
-      <div className="space-y-4 md:sticky md:top-24 md:self-start">
+      <div className="space-y-3.5 md:sticky md:top-24 md:self-start">
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5] border border-gray-100 shadow-sm">
           {product.images[selectedImage] ? (
             <Image
@@ -199,22 +170,22 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             <div className="w-full h-full flex items-center justify-center text-nn-bark/30 text-lg">No Image</div>
           )}
 
-          {/* Psychological Badges on Image */}
+          {/* Quality & Trust Badges on Image */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             <span className="bg-[#1E3A24] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
               <Award className="w-3.5 h-3.5 text-amber-300" />
               100% Traditional Bilona
             </span>
             {discount > 0 && (
-              <span className="bg-red-600 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-md w-fit">
-                {discount}% OFF TODAY
+              <span className="bg-[#C38936] text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-md w-fit">
+                {discount}% OFF
               </span>
             )}
           </div>
 
-          <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5">
+          <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>FSSAI Certified</span>
+            <span>FSSAI Lic: 10823999000412</span>
           </div>
         </div>
 
@@ -304,85 +275,85 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <span className="text-xs text-gray-500 font-medium">• 100% Verified Buyers</span>
         </div>
 
-        {/* Urgency / Social Proof Banner */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          <div className="flex items-center gap-1.5 text-red-700 text-xs font-bold bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 shadow-sm">
-            <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500 animate-pulse" />
-            <span>High Demand — {sold} orders in last 24h</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-emerald-800 text-xs font-semibold bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-            <Eye className="w-3.5 h-3.5 text-emerald-600" />
-            <span><strong className="text-gray-900">{viewers} people</strong> viewing right now</span>
-          </div>
-        </div>
-
-        {/* Vedic Batch Freshness & Stock Scarcity Progress Bar */}
-        <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-50 via-orange-50/50 to-white rounded-xl border border-amber-200/70 shadow-sm">
-          <div className="flex justify-between items-center mb-1.5 text-xs font-bold">
-            <span className="flex items-center gap-1.5 text-amber-900">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+        {/* Legitimate Trust & Verification Cards (Mobile First) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-5">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
+              <Leaf className="w-4 h-4 text-[#1E3A24]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-bold text-[#1E3A24] block leading-tight">
+                Small-Batch Handcrafted
               </span>
-              Handcrafted Bilona Batch #142 (Fresh Cured)
-            </span>
-            <span className="text-red-700 font-extrabold">Only {remainingStock} jars left!</span>
+              <span className="text-[11px] text-[#3e5f48] leading-tight block mt-0.5">
+                From Indigenous Gir Cows
+              </span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden mb-1.5">
-            <div 
-              className="bg-gradient-to-r from-amber-500 to-red-600 h-2 rounded-full transition-all duration-1000"
-              style={{ width: "87%" }}
-            />
+
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#FBF8EF] border border-[#EEDBBA] shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#F8EFD8] flex items-center justify-center text-[#8C601E] shrink-0">
+              <ShieldCheck className="w-4 h-4 text-[#8C601E]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-bold text-[#6D4911] block leading-tight">
+                NABL Lab Certified Purity
+              </span>
+              <span className="text-[11px] text-[#8C601E] leading-tight block mt-0.5">
+                0% Adulteration • No Foreign Fat
+              </span>
+            </div>
           </div>
-          <p className="text-[11px] text-gray-600 font-medium">
-            🔥 87% of this batch already claimed. Next traditional bilona batch takes 7 days to churn.
-          </p>
+
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
+              <Award className="w-4 h-4 text-[#1E3A24]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-bold text-[#1E3A24] block leading-tight">
+                FSSAI Central License
+              </span>
+              <span className="text-[11px] text-[#1E3A24] font-mono font-bold tracking-tight block mt-0.5">
+                Lic No. 10823999000412
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Pricing Box with Anchor Psychology */}
-        <div className="mb-5 bg-gradient-to-br from-[#F5F8F6] via-[#FAFBF9] to-white p-4 sm:p-5 rounded-2xl border-2 border-emerald-100 shadow-sm">
-          <div className="flex flex-wrap items-baseline gap-3 mb-1.5">
-            <span className="text-4xl sm:text-[40px] font-extrabold text-[#1E3A24] tracking-tight">
+        {/* Pricing Box with High-Contrast Mobile Clean Layout */}
+        <div className="mb-5 bg-gradient-to-br from-[#F5F8F6] via-[#FAFBF9] to-white p-4 sm:p-5 rounded-2xl border border-emerald-200/80 shadow-xs">
+          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
+            <span className="text-3xl sm:text-4xl font-extrabold text-[#1E3A24] tracking-tight">
               Rs. {(price / 100).toLocaleString('en-IN')}
             </span>
             {compareAt && compareAt > price && (
-              <span className="text-2xl text-gray-400 line-through font-medium">
+              <span className="text-xl sm:text-2xl text-gray-400 line-through font-medium">
                 Rs. {(compareAt / 100).toLocaleString('en-IN')}
               </span>
             )}
             {discount > 0 && (
-              <span className="bg-gradient-to-r from-red-600 to-rose-700 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm animate-pulse">
+              <span className="bg-[#1E3A24] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
                 Save {discount}% (₹{savingsRupees.toLocaleString('en-IN')} OFF)
               </span>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-2">
-            <span className="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded">
-              ✓ FREE Express Shipping Pan-India
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-2.5">
+            <span className="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+              FREE Express Shipping Pan-India
             </span>
             <span className="text-gray-500">MRP (Inclusive of all taxes)</span>
           </div>
 
-          {/* Live Flash Deal Countdown Timer */}
-          <div className="mt-3.5 pt-3 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-1.5 text-gray-800 font-bold">
-              <Clock className="w-4 h-4 text-orange-600" />
-              <span>Special Offer Ends In:</span>
-            </div>
-            <div className="flex items-center gap-1 font-mono font-bold text-gray-900">
-              <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-xs shadow-inner">
-                {String(timeLeft.hours).padStart(2, '0')}h
-              </span>
-              <span>:</span>
-              <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-xs shadow-inner">
-                {String(timeLeft.minutes).padStart(2, '0')}m
-              </span>
-              <span>:</span>
-              <span className="bg-gray-900 text-white px-2 py-0.5 rounded text-xs shadow-inner">
-                {String(timeLeft.seconds).padStart(2, '0')}s
-              </span>
-            </div>
+          <div className="mt-3.5 pt-3 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#1E3A24]">
+            <span className="flex items-center gap-1.5 font-bold">
+              <Factory className="w-4 h-4 text-[#C38936]" />
+              Authentic Wooden Bilona Churned from Curd
+            </span>
+            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+              Farm Fresh
+            </span>
           </div>
         </div>
 
@@ -529,21 +500,21 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </button>
         </div>
 
-        {/* Action Buttons: Quantity, Add to Cart, Buy Now */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white p-3 border-t border-gray-200 flex flex-row gap-2 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:pb-0 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] md:shadow-none">
+        {/* Action Buttons: Mobile-First Sticky Bar */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-row items-center gap-2 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_20px_rgba(0,0,0,0.09)] md:shadow-none">
           {/* Quantity Selector */}
-          <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[50px] sm:h-[54px] shrink-0">
+          <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[48px] sm:h-[52px] shrink-0">
             <button 
               onClick={() => setQty(Math.max(1, qty - 1))} 
-              className="w-10 sm:w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-xl transition text-xl font-bold"
+              className="w-8 sm:w-10 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-xl transition text-lg font-bold"
               aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="w-8 sm:w-10 text-center font-extrabold text-[#1E3A24]">{qty}</span>
+            <span className="w-7 sm:w-8 text-center font-extrabold text-[#1E3A24] text-sm">{qty}</span>
             <button 
               onClick={() => setQty(qty + 1)} 
-              className="w-10 sm:w-12 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-xl transition text-xl font-bold"
+              className="w-8 sm:w-10 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-xl transition text-lg font-bold"
               aria-label="Increase quantity"
             >
               +
@@ -554,24 +525,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <button 
             onClick={handleAddToCart} 
             disabled={!variant?.available || isAdding} 
-            className="flex-1 bg-white text-[#1E3A24] border-2 border-[#1E3A24] font-bold h-[50px] sm:h-[54px] rounded-xl hover:bg-[#F4F9F6] transition disabled:opacity-70 flex items-center justify-center gap-2 text-[14px] sm:text-base leading-tight shadow-sm"
+            className="flex-1 bg-white text-[#1E3A24] border-2 border-[#1E3A24] font-bold h-[48px] sm:h-[52px] rounded-xl hover:bg-[#F4F9F6] active:scale-[0.98] transition-all disabled:opacity-70 flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow-2xs"
           >
-            {isAdding ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : "Add to Cart"}
+            {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add to Cart"}
           </button>
           
           {/* Buy Now button - High Converting Primary CTA */}
           <button 
             onClick={handleBuyNow} 
             disabled={!variant?.available} 
-            className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[50px] sm:h-[54px] rounded-xl hover:brightness-105 transition-all transform active:scale-[0.98] disabled:opacity-70 text-[14px] sm:text-[16px] leading-tight shadow-[0_6px_20px_0_rgba(245,158,11,0.45)] flex flex-col items-center justify-center gap-0.5 uppercase tracking-wide border border-amber-300"
+            className="flex-[1.3] bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[48px] sm:h-[52px] rounded-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-70 text-xs sm:text-sm tracking-wide shadow-[0_4px_16px_0_rgba(245,158,11,0.4)] flex items-center justify-center gap-1.5 uppercase border border-amber-300"
           >
-            <div className="flex items-center gap-1.5">
-              <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
-              <span>Buy Now</span>
-            </div>
-            <span className="text-[10px] font-bold tracking-normal normal-case text-amber-950 opacity-90 hidden sm:inline">
-              Instant 100% Secure Checkout
-            </span>
+            <Zap className="w-4 h-4 fill-black shrink-0" />
+            <span>Buy Now</span>
           </button>
         </div>
 
@@ -603,7 +569,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             Dispatches from our farm within <strong>24 hours</strong>. Free Express Delivery across 19,000+ Indian pincodes.
           </p>
           <div className="flex items-center gap-2 text-gray-800 font-semibold pt-1 border-t border-gray-200 pl-6">
-            <span>💵 Pay on Delivery (Cash / UPI / GPay) at your doorstep.</span>
+            <span>🔒 100% Safe & Secure Checkout via UPI, Google Pay, PhonePe, Cards & NetBanking</span>
           </div>
         </div>
 
@@ -637,7 +603,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             <div className="w-10 h-10 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46] mb-1.5">
               <Award className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-[#1E3A24] leading-tight">Lab Tested Quality</span>
+            <span className="text-xs font-bold text-[#1E3A24] leading-tight">NABL Lab Certified</span>
             <span className="text-[10px] text-gray-500 mt-0.5">0% Adulteration</span>
           </div>
         </div>
