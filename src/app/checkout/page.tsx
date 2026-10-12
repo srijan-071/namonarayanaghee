@@ -257,7 +257,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <section className="nn-section bg-[#FAF9F5] min-h-[80vh]">
+    <section className="nn-section bg-[#FAF9F5] min-h-[80vh] pb-28 lg:pb-12">
       <div className="nn-container max-w-6xl mx-auto py-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
 
@@ -328,15 +328,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-            
-            {/* Scroll to Payment Button (Visible mainly on mobile where summary is below) */}
-            <button 
-              onClick={scrollToSummary}
-              type="button"
-              className="w-full lg:hidden bg-[#1E3A24] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#152919] shadow-md transition-all flex items-center justify-center gap-2"
-            >
-              Continue to Payment
-            </button>
           </div>
 
           {/* Order Summary Sidebar */}
@@ -431,11 +422,15 @@ export default function CheckoutPage() {
                   <span className="text-3xl font-bold text-[#1E3A24]">{formatPrice(pricing.amountToPay)}</span>
                 </div>
 
-                {/* Primary CTA */}
+                {/* Primary CTA (Desktop & Order Summary) */}
                 <button 
                   onClick={handlePlaceOrder} 
                   disabled={isSubmitting || !isFormValid} 
-                  className="w-full bg-[#C38936] text-white px-8 py-5 rounded-xl font-bold text-lg hover:bg-[#b0782b] shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className={`w-full px-8 py-4 sm:py-5 rounded-xl font-bold text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${
+                    isFormValid && !isSubmitting
+                      ? "bg-[#C38936] text-white hover:bg-[#b0782b] hover:shadow-xl cursor-pointer"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300/80"
+                  }`}
                 >
                   {isSubmitting ? (
                     <>
@@ -445,7 +440,7 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <Lock className="w-5 h-5" />
-                      Proceed to Pay
+                      {isFormValid ? "Proceed to Pay" : "Fill Details to Pay"}
                     </>
                   )}
                 </button>
@@ -456,6 +451,40 @@ export default function CheckoutPage() {
             </div>
           </div>
           
+        </div>
+      </div>
+
+      {/* Sticky Bottom "Proceed to Pay" Bar on Mobile */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-gray-200 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+          <div className="flex flex-col shrink-0">
+            <span className="text-[11px] text-gray-500 font-medium">Total to Pay</span>
+            <span className="text-xl font-extrabold text-[#1E3A24] leading-tight">
+              {formatPrice(pricing.amountToPay)}
+            </span>
+          </div>
+
+          <button
+            onClick={handlePlaceOrder}
+            disabled={isSubmitting || !isFormValid}
+            className={`flex-1 flex items-center justify-center gap-2 px-5 h-[48px] rounded-xl font-bold text-sm sm:text-base transition-all ${
+              isFormValid && !isSubmitting
+                ? "bg-[#C38936] text-white shadow-lg hover:bg-[#b0782b] active:scale-[0.98] cursor-pointer"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300/80"
+            }`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                <span>{isFormValid ? "Proceed to Pay" : "Fill Details to Pay"}</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </section>
