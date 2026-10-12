@@ -70,7 +70,7 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
           value: eventParams?.value,
           currency: eventParams?.currency || 'INR',
           transaction_id: eventParams?.transaction_id,
-          payment_type: eventParams?.payment_type, // "cod" or "prepaid"
+          payment_type: eventParams?.payment_type || "prepaid",
         };
         break;
       case "order_created":

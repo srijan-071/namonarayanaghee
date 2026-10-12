@@ -5,7 +5,7 @@ const reasons = [
   { icon: Clock, title: "Bilona Churned", desc: "Vedic Process" },
   { icon: Leaf, title: "100% Natural", desc: "No Preservatives" },
   { icon: ShieldCheck, title: "Lab Tested", desc: "Certified Purity" },
-  { icon: Truck, title: "COD Available", desc: "Across India" },
+  { icon: Truck, title: "Free Shipping", desc: "Across India" },
   { icon: Sparkles, title: "Premium Quality", desc: "Farm to Fork" },
 ];
 

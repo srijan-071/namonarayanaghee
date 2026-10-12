@@ -35,7 +35,7 @@ const features = [
   { title: "Bilona Churned", desc: "Traditional Method", icon: "bilona" },
   { title: "100% Natural", desc: "No Additives", icon: "leaf" },
   { title: "Lab Tested", desc: "For Your Safety", icon: "shield" },
-  { title: "COD Available", desc: "Across India", icon: "truck" },
+  { title: "Free Shipping", desc: "Across India", icon: "truck" },
   { title: "Premium Quality", desc: "You Can Trust", icon: "badge" },
 ];
 

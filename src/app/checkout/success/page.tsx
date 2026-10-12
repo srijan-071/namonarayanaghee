@@ -278,7 +278,7 @@ function SuccessContent() {
                   )}
                   {orderData.amountRemaining > 0 && (
                     <div className="flex justify-between text-[#C38936]">
-                      <span>Remaining Balance (COD)</span>
+                      <span>Remaining Balance</span>
                       <span className="font-semibold">{formatPrice(orderData.amountRemaining)}</span>
                     </div>
                   )}

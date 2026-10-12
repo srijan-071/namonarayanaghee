@@ -567,10 +567,10 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           >
             <div className="flex items-center gap-1.5">
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-black" />
-              <span>Buy Now (COD)</span>
+              <span>Buy Now</span>
             </div>
             <span className="text-[10px] font-bold tracking-normal normal-case text-amber-950 opacity-90 hidden sm:inline">
-              Cash on Delivery Available
+              Instant 100% Secure Checkout
             </span>
           </button>
         </div>
@@ -582,7 +582,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
           <a
             href={`https://wa.me/919999999999?text=${encodeURIComponent(
-              `Hi Namo Narayana Team! I would like to place an order for ${product.title} (Rs. ${price / 100}). Please assist me with Cash on Delivery.`
+              `Hi Namo Narayana Team! I would like to place an order for ${product.title} (Rs. ${price / 100}). Please assist me with my order.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

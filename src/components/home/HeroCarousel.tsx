@@ -195,7 +195,7 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
             {[
               { icon: Leaf, title: "Farm Fresh", desc: "Sourced directly from our farms" },
               { icon: ShieldCheck, title: "Lab Tested", desc: "For purity & safety" },
-              { icon: Heart, title: "Free COD", desc: "Across India" },
+              { icon: Heart, title: "Free Shipping", desc: "Across India" },
               { icon: Droplets, title: "10 Lakh+ Homes", desc: "Trust Namo Narayana" }
             ].map((item, idx) => (
               <div key={idx} className={cn("flex flex-col items-center text-center px-4", idx % 2 === 0 ? "border-l-0" : "", idx === 0 ? "md:border-l-0" : "")}>

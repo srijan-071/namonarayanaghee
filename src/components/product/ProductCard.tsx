@@ -38,7 +38,7 @@ export default function ProductCard({ slug, title, price, compareAtPrice, image,
           </span>
         )}
         <span className="absolute bottom-2.5 right-2.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
-          Cash on Delivery
+          Free Shipping
         </span>
         
 

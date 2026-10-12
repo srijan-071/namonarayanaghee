@@ -4,7 +4,7 @@ export function getDynamicOrderStatus(
   paymentStatus?: string,
   paymentMethod?: string
 ): string {
-  if (paymentMethod !== "cod" && paymentStatus === "pending") {
+  if (paymentStatus === "pending") {
     return "Payment Pending";
   }
 
