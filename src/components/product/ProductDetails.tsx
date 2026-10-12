@@ -9,7 +9,7 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { 
   Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
-  Leaf, Zap, CheckCircle2, Gift, 
+  Leaf, Zap, CheckCircle2, Gift, ShoppingCart,
   Sparkles, Tag, ShieldAlert, Award, MessageCircle, Copy, Check
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
@@ -500,44 +500,41 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </button>
         </div>
 
-        {/* Action Buttons: Mobile-First Sticky Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-row items-center gap-2 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_20px_rgba(0,0,0,0.09)] md:shadow-none">
+        {/* Action Buttons: Sticky Mobile Buy Bar */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-row items-center gap-2.5 sm:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] md:shadow-none">
           {/* Quantity Selector */}
-          <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[48px] sm:h-[52px] shrink-0">
+          <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[50px] sm:h-[54px] shrink-0">
             <button 
               onClick={() => setQty(Math.max(1, qty - 1))} 
-              className="w-8 sm:w-10 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-l-xl transition text-lg font-bold"
+              className="w-10 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-l-xl transition text-xl font-bold"
               aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="w-7 sm:w-8 text-center font-extrabold text-[#1E3A24] text-sm">{qty}</span>
+            <span className="w-8 sm:w-10 text-center font-extrabold text-[#1E3A24] text-base">{qty}</span>
             <button 
               onClick={() => setQty(qty + 1)} 
-              className="w-8 sm:w-10 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] rounded-r-xl transition text-lg font-bold"
+              className="w-10 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-r-xl transition text-xl font-bold"
               aria-label="Increase quantity"
             >
               +
             </button>
           </div>
-
-          {/* Add to Cart button */}
-          <button 
-            onClick={handleAddToCart} 
-            disabled={!variant?.available || isAdding} 
-            className="flex-1 bg-white text-[#1E3A24] border-2 border-[#1E3A24] font-bold h-[48px] sm:h-[52px] rounded-xl hover:bg-[#F4F9F6] active:scale-[0.98] transition-all disabled:opacity-70 flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow-2xs"
-          >
-            {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add to Cart"}
-          </button>
           
-          {/* Buy Now button - High Converting Primary CTA */}
+          {/* Buy Now button - High Converting Full-Width Primary CTA */}
           <button 
             onClick={handleBuyNow} 
-            disabled={!variant?.available} 
-            className="flex-[1.3] bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[48px] sm:h-[52px] rounded-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-70 text-xs sm:text-sm tracking-wide shadow-[0_4px_16px_0_rgba(245,158,11,0.4)] flex items-center justify-center gap-1.5 uppercase border border-amber-300"
+            disabled={!variant?.available || isAdding} 
+            className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] text-black font-extrabold h-[50px] sm:h-[54px] rounded-xl hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-70 text-base sm:text-lg tracking-wide shadow-[0_6px_20px_0_rgba(245,158,11,0.45)] flex items-center justify-center gap-2.5 uppercase border border-amber-300"
           >
-            <Zap className="w-4 h-4 fill-black shrink-0" />
-            <span>Buy Now</span>
+            {isAdding ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+                <span>Buy Now</span>
+              </>
+            )}
           </button>
         </div>
 
