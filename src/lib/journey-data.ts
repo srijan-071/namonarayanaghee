@@ -20,7 +20,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\udd32 Collected Daily",
       "\u2728 Naturally Pure"
     ],
-    "media": "/media/e4c552f4dca94ea5b1bc50e1e85bf5ea.HD-1080p-7.2Mbps-90001099_47f331.mp4",
+    "media": "/media/e4c552f4dca94ea5b1bc50e1e85bf5ea.HD-1080p-7.2Mbps-90001099_18f73e.mp4",
     "isVideo": true
   },
   {
@@ -44,7 +44,7 @@ export const JOURNEY_STEPS = [
       "\ud83e\uddc8 Fresh Makkhan Separation",
       "Wooden Bilona Process"
     ],
-    "media": "/media/6833e2996ada44949fc45e2f9e31e885.HD-1080p-7.2Mbps-90001096_996daa.mp4",
+    "media": "/media/6833e2996ada44949fc45e2f9e31e885.HD-1080p-7.2Mbps-90001096_566344.mp4",
     "isVideo": true
   },
   {
@@ -92,7 +92,7 @@ export const JOURNEY_STEPS = [
       "Pan-India Delivery",
       "Delivered with Care"
     ],
-    "media": "/media/a8f6b141f4234fad853747e8a7b3a14a.HD-1080p-7.2Mbps-90019745_a948d7.mp4",
+    "media": "/media/a8f6b141f4234fad853747e8a7b3a14a.HD-1080p-7.2Mbps-90019745_79275c.mp4",
     "isVideo": true
   }
 ];

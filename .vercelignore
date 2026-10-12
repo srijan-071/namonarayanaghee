@@ -1,0 +1,27 @@
+# Scratch and utility scripts in root
+*.py
+*.html
+add_500ml.js
+check_keys.js
+extract_journey.js
+extract_judge.js
+fix-prices.js
+fix_availability.js
+fix_cart.js
+fix_ghee_prices.js
+fix_products.js
+fix_store.js
+generate-data.js
+place_order_demo.js
+reduce_prices.js
+scrape_reviews.js
+test-firestore.js
+test_puppeteer.js
+
+# Data & scratch folders
+data/
+scratch/
+scripts/
+reconstruction/
+.wrangler/
+.open-next/
