@@ -11,6 +11,7 @@ export default function AdminPage() {
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [subject, setSubject] = useState("A quick note from Namo Narayana");
 
   useEffect(() => {
     const initAuth = async () => {
@@ -95,7 +96,10 @@ export default function AdminPage() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${idToken}`
         },
-        body: JSON.stringify({ emails: selectedEmails })
+        body: JSON.stringify({ 
+          emails: selectedEmails,
+          subject 
+        })
       });
 
       const data = await res.json();
@@ -242,37 +246,77 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowPreview(false)} />
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-nn-hairline flex justify-between items-center bg-[#FAF9F5]">
-              <h3 className="text-xl font-bold text-nn-forest-deep">Preview Promo Email</h3>
-              <button onClick={() => setShowPreview(false)} className="text-nn-bark hover:text-nn-ink font-bold text-xl">&times;</button>
+            <div className="p-5 border-b border-nn-hairline flex justify-between items-center bg-[#FAF9F5]">
+              <div>
+                <h3 className="text-xl font-bold text-nn-forest-deep">Inbox-Optimized Mailer Preview</h3>
+                <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Plain-letter format (Avoids Spam &amp; Promotions tabs)
+                </span>
+              </div>
+              <button onClick={() => setShowPreview(false)} className="text-nn-bark hover:text-nn-ink font-bold text-2xl leading-none">&times;</button>
             </div>
             
-            <div className="p-6 overflow-y-auto bg-gray-50 flex-1">
-              <div className="bg-[#ffffff] p-6 rounded-xl overflow-hidden border border-gray-200 mx-auto max-w-lg shadow-sm text-left text-[#1E3A24] font-sans">
-                <p className="mb-4 text-[16px] leading-relaxed">
-                  Namaste,<br/><br/>
-                  I noticed you were checking out our ghee recently, and I wanted to personally reach out with something special.<br/><br/>
-                  As a thank you, Elvish Yadav and the team at Namo Narayana are giving you an exclusive <strong>10% discount</strong> on our Pure A2 Gir Cow Ghee.<br/><br/>
-                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Click here to claim your 10% discount now</a>
+            <div className="p-5 overflow-y-auto bg-gray-50 flex-1 space-y-4">
+              {/* Subject Editor */}
+              <div className="bg-white p-3.5 rounded-xl border border-gray-200">
+                <label className="text-xs font-bold text-gray-700 block mb-1">
+                  Subject Line:
+                </label>
+                <input 
+                  type="text" 
+                  value={subject} 
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1E3A24]"
+                  placeholder="A quick note from Namo Narayana"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Sender: <strong>Anurag from Namo Narayana &lt;hello@namonarayanaghee.store&gt;</strong>
                 </p>
-                <img src="https://namonarayanaghee.store/assets/product_Elvish_slide_0c3c0634-88ac-4bd7-90a3-da171865234d.webp" alt="Elvish Yadav Namo Narayana Ghee" className="w-full max-w-[400px] rounded-lg block my-5" />
-                <p className="mb-4 text-[16px] leading-relaxed">
-                  Use the code <strong>ELVISH10</strong> at checkout.<br/><br/>
-                  This ghee is made using the authentic Bilona method-trusted by Elvish himself-ensuring you get maximum health benefits and that perfect grainy texture.<br/><br/>
-                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Shop the 1 Litre Ghee here</a><br/><br/>
-                  <em className="text-gray-600">Please note: This code expires in exactly 24 hours, and our stock is selling out fast!</em><br/><br/>
-                  <a href="#" className="text-[#C38936] font-bold underline text-[16px]">&gt;&gt; Secure your order before the offer expires</a><br/><br/>
-                  Best regards,<br/>
-                  <strong>Team Namo Narayana</strong>
+              </div>
+
+              {/* Email Body Preview */}
+              <div className="bg-white p-6 rounded-xl border border-gray-200 mx-auto max-w-lg shadow-2xs text-left text-[#1c2e20] font-sans text-sm leading-relaxed space-y-3.5">
+                <p>Namaste,</p>
+                <p>I noticed you were browsing our A2 Gir Cow Bilona Ghee earlier today.</p>
+                <p>
+                  I wanted to write to you personally from our farm. Unlike commercial market ghee made by directly separating cream with machines, we still make our ghee the ancient Vedic way — converting fresh milk from free-grazing Gir cows into curd first, and then slowly churning it with a wooden bilona to separate fresh makkhan.
                 </p>
-                <div className="mt-10 pt-5 border-t border-[#eee] text-[#888] text-[12px] text-center">
-                  Namo Narayana • Pure by Promise. Traditional by Heart.<br/>
-                  You received this email because you subscribed to our exclusive offers.
+                <p>
+                  It takes nearly 25 to 30 litres of pure Gir cow milk to produce just one single litre of this golden, grainy ghee. Elvish and our whole team wanted you to experience what real, unadulterated ghee actually tastes like.
+                </p>
+
+                <div className="bg-[#f7f9f6] border border-[#dbe6dc] rounded-lg p-3.5 my-3">
+                  <p className="text-xs font-semibold text-[#1e3a24] mb-1">Special 10% Farm Welcome:</p>
+                  <p className="text-sm mb-2 text-[#2a3d2e]">
+                    Use coupon code <strong className="bg-[#e3ede5] px-2 py-0.5 rounded font-mono text-[#0f401b]">ELVISH10</strong> at checkout.
+                  </p>
+                  <span className="inline-block bg-[#1e3a24] text-white text-xs font-bold px-4 py-2 rounded-md">
+                    Order Pure A2 Gir Cow Ghee (1L) &rarr;
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#4a5d4e]">
+                  Every order includes <strong>Free Express Shipping</strong> across India, packed in safe, food-grade glass jars freshly dispatched from our farm.
+                </p>
+
+                <p>
+                  If you have any questions about how our ghee is made, or want to verify our NABL lab certificates, <strong>simply hit reply to this email</strong>. I read and reply to every message personally.
+                </p>
+
+                <div className="border-t border-gray-200 pt-3 text-xs">
+                  <p className="font-bold text-[#1e3a24]">Anurag Sharma</p>
+                  <p className="text-gray-600">Founder &amp; Farm Lead, Namo Narayana</p>
+                  <p className="text-gray-500">Traditional Vedic Bilona Ghee • Rajasthan</p>
+                </div>
+
+                <div className="border-t border-gray-100 pt-3 text-[10px] text-gray-400 text-center">
+                  Namo Narayana Vedic Farm • Pure by Promise. Traditional by Heart.<br />
+                  You received this note because you visited namonarayanaghee.store. Reply with &quot;unsubscribe&quot; to opt out.
                 </div>
               </div>
             </div>
             
-            <div className="p-6 border-t border-nn-hairline bg-white flex justify-between items-center">
+            <div className="p-5 border-t border-nn-hairline bg-white flex justify-between items-center">
               <span className="text-sm font-medium text-nn-bark">
                 Sending to <strong className="text-nn-forest-deep">{selectedEmails.length}</strong> recipient(s)
               </span>
@@ -286,7 +330,7 @@ export default function AdminPage() {
                 <button 
                   onClick={sendPromoEmails}
                   disabled={isSending}
-                  className="bg-[#D32F2F] text-white px-6 py-2 rounded-lg font-bold hover:bg-red-800 transition shadow-md disabled:opacity-50 flex items-center gap-2"
+                  className="bg-[#1E3A24] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#152919] transition shadow-md disabled:opacity-50 flex items-center gap-2"
                 >
                   {isSending ? (
                     <>
@@ -295,7 +339,7 @@ export default function AdminPage() {
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" /> Send Now
+                      <Send className="w-4 h-4" /> Send to Inbox
                     </>
                   )}
                 </button>
