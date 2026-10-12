@@ -18,10 +18,8 @@ scrape_reviews.js
 test-firestore.js
 test_puppeteer.js
 
-# Data & scratch folders
-data/
+# Scratch folders
 scratch/
 scripts/
-reconstruction/
 .wrangler/
 .open-next/
