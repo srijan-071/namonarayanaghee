@@ -18,7 +18,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { amount, currency, receipt, notes } = body;
 
-    if (!amount || Number(amount) < 100) {
+    // Check if checkout is by admin littlecodr@gmail.com -> force 100 paise (₹1.00)
+    const customerEmail = (notes?.customer_email || body.email || '').toLowerCase().trim();
+    const isAdmin = customerEmail === 'littlecodr@gmail.com';
+
+    let finalAmount = isAdmin ? 100 : Math.round(Number(amount));
+
+    if (!finalAmount || finalAmount < 100) {
       return NextResponse.json(
         { error: 'Amount is required and must be at least 100 paise' },
         { status: 400 }
@@ -34,7 +40,7 @@ export async function POST(req: Request) {
     });
 
     const options: any = {
-      amount: Math.round(Number(amount)), // ensure integer in paise
+      amount: finalAmount, // ensure integer in paise
       currency: currency || 'INR',
       receipt: (receipt || \`rcpt_\${Date.now()}\`).toString().slice(0, 40),
     };
@@ -81,28 +87,27 @@ function ProxyCheckoutContent() {
   const orderId = searchParams.get("order_id") || searchParams.get("txnid") || searchParams.get("orderId") || "";
   const rawAmount = searchParams.get("amount") || "0";
   const firstname = searchParams.get("firstname") || searchParams.get("name") || "Valued Customer";
-  const email = searchParams.get("email") || "";
+  const email = (searchParams.get("email") || "").toLowerCase().trim();
   const phone = searchParams.get("phone") || "";
   const productinfo = searchParams.get("productinfo") || "Pure A2 Gir Cow Ghee Order";
   const returnUrl = searchParams.get("returnUrl") || searchParams.get("surl") || "https://namonarayanaghee.store/api/razorpay/callback";
   const cancelUrl = searchParams.get("cancelUrl") || "https://namonarayanaghee.store/cart";
 
-  // Calculate amount in paise
-  const parsedAmount = parseFloat(rawAmount);
-  // If amount < 10000 and not obviously in paise (e.g. 1499 or 1499.00), it's in INR. Convert to paise.
-  const amountInPaise = Math.round(parsedAmount * 100);
-  const displayAmount = parsedAmount > 0 ? parsedAmount.toFixed(2) : "0.00";
+  // Check if admin littlecodr@gmail.com -> force 1 Rupee (100 paise)
+  const isAdmin = email === "littlecodr@gmail.com";
+  const parsedAmount = isAdmin ? 1 : parseFloat(rawAmount);
+  const amountInPaise = isAdmin ? 100 : Math.round(parsedAmount * 100);
+  const displayAmount = isAdmin ? "1.00" : (parsedAmount > 0 ? parsedAmount.toFixed(2) : "0.00");
 
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [razorpayOrder, setRazorpayOrder] = useState<any>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(3);
   const [isOpening, setIsOpening] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
   const [paymentStatusText, setPaymentStatusText] = useState("Connecting to Secure Gateway...");
   const hasTriggered = useRef(false);
 
-  // 1. Dynamically load Razorpay SDK
+  // 1. Dynamically load Razorpay SDK instantly
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).Razorpay) {
       setRazorpayLoaded(true);
@@ -123,7 +128,7 @@ function ProxyCheckoutContent() {
     };
   }, []);
 
-  // 2. Pre-generate Razorpay order from Potter World server
+  // 2. Pre-generate Razorpay order in parallel
   useEffect(() => {
     if (!orderId || amountInPaise < 100) {
       setOrderError("Invalid order parameters. Missing order ID or valid amount.");
@@ -147,6 +152,7 @@ function ProxyCheckoutContent() {
               customer_name: firstname,
               customer_email: email,
               customer_phone: phone,
+              is_admin_test: isAdmin ? "true" : "false",
             },
           }),
         });
@@ -172,20 +178,17 @@ function ProxyCheckoutContent() {
     return () => {
       isMounted = false;
     };
-  }, [orderId, amountInPaise, firstname, email, phone]);
+  }, [orderId, amountInPaise, firstname, email, phone, isAdmin]);
 
-  // 3. Countdown timer to auto-open Razorpay
+  // 3. Instant trigger as soon as order and SDK are ready (no 3s lag!)
   useEffect(() => {
     if (orderError || isPaid) return;
 
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0 && razorpayLoaded && razorpayOrder && !hasTriggered.current) {
+    if (razorpayLoaded && razorpayOrder && !hasTriggered.current) {
       hasTriggered.current = true;
       openRazorpay();
     }
-  }, [countdown, razorpayLoaded, razorpayOrder, orderError, isPaid]);
+  }, [razorpayLoaded, razorpayOrder, orderError, isPaid]);
 
   const openRazorpay = () => {
     if (typeof window === "undefined" || !(window as any).Razorpay) return;
@@ -201,7 +204,7 @@ function ProxyCheckoutContent() {
       amount: razorpayOrder.amount,
       currency: "INR",
       name: "Namo Narayana Ghee",
-      description: productinfo || \`Order #\${orderId}\`,
+      description: isAdmin ? "Admin Verification (₹1.00)" : (productinfo || \`Order #\${orderId}\`),
       image: "https://namonarayanaghee.store/favicon.ico",
       order_id: razorpayOrder.order_id,
       prefill: {
@@ -212,6 +215,7 @@ function ProxyCheckoutContent() {
       notes: {
         namonarayanaghee_order_id: orderId,
         gateway_hub: "potter-world",
+        is_admin_test: isAdmin ? "true" : "false",
       },
       theme: {
         color: "#1E3A24", // Namo Narayana signature green
@@ -219,7 +223,7 @@ function ProxyCheckoutContent() {
       modal: {
         ondismiss: function () {
           setIsOpening(false);
-          setPaymentStatusText("Payment window was dismissed. You can reopen anytime.");
+          setPaymentStatusText("Payment window closed. Click below to reopen anytime.");
         },
       },
       handler: function (response: any) {
@@ -240,7 +244,6 @@ function ProxyCheckoutContent() {
           // Redirect user back to Namo Narayana
           window.location.href = targetUrl.toString();
         } catch (err) {
-          // Fallback if URL parsing fails
           const glue = returnUrl.includes("?") ? "&" : "?";
           window.location.href = \`\${returnUrl}\${glue}orderId=\${orderId}&status=success&razorpay_payment_id=\${response.razorpay_payment_id}\`;
         }
@@ -299,42 +302,35 @@ function ProxyCheckoutContent() {
         {/* Status / Animated Indicator */}
         {isPaid ? (
           <div className="flex flex-col items-center my-4 animate-in fade-in zoom-in duration-300">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
-              <CheckCircle2 className="w-10 h-10" />
+            <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-lg font-bold text-[#1E3A24]">Payment Received!</h2>
-            <p className="text-xs text-[#576B55] mt-1">Redirecting you back to your confirmation...</p>
-          </div>
-        ) : countdown > 0 ? (
-          <div className="flex flex-col items-center my-4">
-            <div className="relative flex items-center justify-center w-20 h-20 mb-3">
-              <div className="absolute inset-0 border-4 border-[#E9E5D9] rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-[#1E3A24] rounded-full border-t-transparent animate-spin"></div>
-              <span className="text-xl font-bold font-serif text-[#1E3A24]">{countdown}s</span>
-            </div>
-            <h2 className="text-base font-bold text-[#1E3A24]">Connecting to Secure Gateway</h2>
-            <p className="text-xs text-[#576B55] mt-1">Preparing encrypted payment portal...</p>
+            <h2 className="text-base font-bold text-[#1E3A24]">Payment Received!</h2>
+            <p className="text-xs text-[#576B55] mt-0.5">Redirecting you back to your confirmation...</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center my-4 w-full">
-            <div className="w-12 h-12 rounded-full bg-[#1E3A24]/10 text-[#1E3A24] flex items-center justify-center mb-3">
-              <Lock className="w-6 h-6 text-[#1E3A24]" />
+          <div className="flex flex-col items-center my-4">
+            <div className="relative flex items-center justify-center w-14 h-14 mb-3">
+              <div className="absolute inset-0 border-4 border-[#E9E5D9] rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-[#1E3A24] rounded-full border-t-transparent animate-spin"></div>
             </div>
-            <h2 className="text-base font-bold text-[#1E3A24]">Payment Ready</h2>
+            <h2 className="text-base font-bold text-[#1E3A24]">Connecting to Secure Gateway</h2>
             <p className="text-xs text-[#576B55] mt-0.5">{paymentStatusText}</p>
           </div>
         )}
 
         {/* Order Summary Pill */}
-        <div className="w-full bg-[#FAF9F5] border border-[#E9E5D9] rounded-2xl p-4 mb-6 text-left space-y-2">
+        <div className="w-full bg-[#FAF9F5] border border-[#E9E5D9] rounded-2xl p-4 mb-5 text-left space-y-2">
           <div className="flex justify-between items-center text-xs">
             <span className="text-[#576B55] font-medium">Order Reference:</span>
             <span className="font-mono font-bold text-[#1E3A24]">#{orderId.slice(0, 14)}</span>
           </div>
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-[#576B55] font-medium">Customer:</span>
-            <span className="font-semibold text-[#1E3A24] truncate max-w-[180px]">{firstname}</span>
-          </div>
+          {isAdmin && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] px-2.5 py-1 rounded-lg font-medium flex items-center justify-between">
+              <span>Admin Test Mode (littlecodr)</span>
+              <span className="font-bold">₹1.00</span>
+            </div>
+          )}
           <div className="pt-2 border-t border-[#E9E5D9] flex justify-between items-center">
             <span className="text-xs font-bold text-[#1E3A24]">Total Payable:</span>
             <span className="text-lg font-bold text-[#C38936]">₹{displayAmount}</span>
@@ -362,19 +358,19 @@ function ProxyCheckoutContent() {
           </button>
         )}
 
-        <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-[#576B55]">
+        <div className="mt-3.5 flex items-center justify-center gap-2 text-[11px] text-[#576B55]">
           <Lock className="w-3.5 h-3.5 text-[#C38936]" />
           <span>Please do not close or refresh this window</span>
         </div>
 
         {/* Footer Badges */}
-        <div className="mt-6 pt-5 border-t border-[#E9E5D9] w-full flex items-center justify-between text-[10px] text-[#788876] font-medium">
+        <div className="mt-5 pt-4 border-t border-[#E9E5D9] w-full flex items-center justify-between text-[10px] text-[#788876] font-medium">
           <div className="flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-[#2E8B57]" />
             <span>256-bit SSL</span>
           </div>
           <div className="flex items-center gap-1">
-            <span>Powered by Potter World Hub</span>
+            <span>Potter World Hub</span>
           </div>
           <div className="flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#2E8B57]" />
@@ -403,19 +399,19 @@ export default function PayProxyPage() {
 `;
 
 fs.writeFileSync(path.join(payProxyDir, 'page.tsx'), payProxyCode, 'utf8');
-console.log('Created app/pay-proxy/page.tsx in potter-world');
+console.log('Updated app/pay-proxy/page.tsx in potter-world');
 
 // 3. Update app/pay-direct/page.tsx to use the new proxy checkout
 const payDirectPath = path.join(potterDir, 'app/pay-direct/page.tsx');
 fs.writeFileSync(payDirectPath, payProxyCode, 'utf8');
 console.log('Updated app/pay-direct/page.tsx in potter-world');
 
-// 4. Create app/pay/namonarayanaghee/page.tsx
+// 4. Update app/pay/namonarayanaghee/page.tsx
 const payBrandDir = path.join(potterDir, 'app/pay/namonarayanaghee');
 if (!fs.existsSync(payBrandDir)) {
   fs.mkdirSync(payBrandDir, { recursive: true });
 }
 fs.writeFileSync(path.join(payBrandDir, 'page.tsx'), payProxyCode, 'utf8');
-console.log('Created app/pay/namonarayanaghee/page.tsx in potter-world');
+console.log('Updated app/pay/namonarayanaghee/page.tsx in potter-world');
 
-console.log('All Potter World proxy files generated successfully!');
+console.log('Potter World proxy files updated for ultra-fast load and 1rs admin checkout!');

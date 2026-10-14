@@ -85,7 +85,8 @@ export async function POST(req: Request) {
     }
 
     const amountAfterDiscount = serverSubtotal - discount;
-    const amountToPay = amountAfterDiscount;
+    const isAdmin = checkoutData.email?.toLowerCase().trim() === 'littlecodr@gmail.com';
+    const amountToPay = isAdmin ? 100 : amountAfterDiscount; // 100 paise = ₹1.00 for admin test
 
     const orderId = crypto.randomUUID().replace(/-/g, "").slice(0, 20);
 
@@ -131,7 +132,7 @@ export async function POST(req: Request) {
     }
 
     // Construct proxy checkout url
-    const amountInINR = amountToPay / 100;
+    const amountInINR = isAdmin ? 1 : amountToPay / 100;
     const proxyParams = new URLSearchParams();
     proxyParams.set("txnid", orderId);
     proxyParams.set("amount", amountInINR.toString());

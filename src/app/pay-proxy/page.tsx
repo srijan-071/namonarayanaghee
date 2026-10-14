@@ -23,6 +23,9 @@ function PayProxyContent() {
       return;
     }
 
+    const isAdmin = (email || "").toLowerCase().trim() === "littlecodr@gmail.com";
+    const effectiveAmount = isAdmin ? "1" : amount;
+
     const origin = typeof window !== "undefined" ? window.location.origin : "https://namonarayanaghee.store";
     const returnUrl = `${origin}/api/razorpay/callback`;
     const cancelUrl = `${origin}/cart`;
@@ -30,7 +33,7 @@ function PayProxyContent() {
     const potterParams = new URLSearchParams();
     potterParams.set("order_id", txnid);
     potterParams.set("txnid", txnid);
-    potterParams.set("amount", amount);
+    potterParams.set("amount", effectiveAmount);
     potterParams.set("firstname", firstname);
     potterParams.set("email", email);
     potterParams.set("phone", phone);
@@ -42,10 +45,10 @@ function PayProxyContent() {
     const target = `https://potter-world.com/pay-proxy?${potterParams.toString()}`;
     setDestinationUrl(target);
 
-    // Aesthetic redirect delay so user sees branded security badge
+    // Ultra-fast 150ms aesthetic redirect delay for seamless combined transition under 1s
     const timer = setTimeout(() => {
       window.location.href = target;
-    }, 600);
+    }, 150);
 
     return () => clearTimeout(timer);
   }, [txnid, amount, productinfo, firstname, email, phone]);
@@ -107,7 +110,9 @@ function PayProxyContent() {
           {amount && (
             <div className="flex justify-between text-xs text-[#576B55] pt-1 border-t border-[#E9E5D9]/50">
               <span>Amount:</span>
-              <span className="font-bold text-[#C38936] text-sm">₹{parseFloat(amount).toFixed(2)}</span>
+              <span className="font-bold text-[#C38936] text-sm">
+                ₹{email?.toLowerCase().trim() === "littlecodr@gmail.com" ? "1.00 (Admin Test)" : parseFloat(amount).toFixed(2)}
+              </span>
             </div>
           )}
           <p className="text-[#364935] text-[11px] leading-relaxed text-center pt-2">
