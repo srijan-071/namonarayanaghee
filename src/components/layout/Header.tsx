@@ -45,7 +45,7 @@ export default function Header() {
           >
             <span>FREE SHIPPING PAN INDIA</span>
             <span className="text-yellow-300 font-bold flex items-center justify-center gap-1">
-              <Gift className="w-4 h-4" /> Click here to get 10% discount coupon code
+              <Gift className="w-4 h-4" /> Festive Offer: Buy Ghee, Get 3 Oils Free! Tap here
             </span>
           </div>
           <div 
@@ -53,7 +53,7 @@ export default function Header() {
             onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
           >
             <Gift className="w-4 h-4" />
-            <span>Click here to get 10% discount coupon code</span>
+            <span>Festive Special: Buy Ghee & Get 3 Cold-Pressed Oils Free! Tap to view</span>
           </div>
         </div>
       </div>
