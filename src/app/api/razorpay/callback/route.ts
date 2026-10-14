@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { firestoreGetDoc, firestoreUpdateDoc, firestoreDeleteDoc } from "@/lib/firestore-rest";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
 
@@ -50,9 +51,11 @@ async function handleCallback(req: Request) {
 
     if (orderId && isSuccess) {
       try {
-        const orderData = await firestoreGetDoc("orders", orderId);
-        if (orderData) {
-          await firestoreUpdateDoc("orders", orderId, {
+        const orderRef = doc(db, "orders", orderId);
+        const snap = await getDoc(orderRef);
+        if (snap.exists()) {
+          const orderData = snap.data();
+          await updateDoc(orderRef, {
             paymentStatus: "paid",
             status: "processing",
             paymentSessionId: razorpayPaymentId || null,
@@ -70,18 +73,18 @@ async function handleCallback(req: Request) {
 
           // Send confirmation notifications
           if (orderData.contactInfo?.email) {
-            await sendOrderEmail(
+            sendOrderEmail(
               orderId,
               orderData.contactInfo.email,
               orderData.shippingAddress?.name || "Customer",
               orderData.amountToPay || orderData.totalAmount
             ).catch(err => console.error("Email notification failed:", err));
 
-            await firestoreDeleteDoc("abandoned_carts", orderData.contactInfo.email)
+            deleteDoc(doc(db, "abandoned_carts", orderData.contactInfo.email))
               .catch(err => console.error("Abandoned cart cleanup failed:", err));
           }
 
-          await sendTelegramNotification(orderId, orderData, "success")
+          sendTelegramNotification(orderId, orderData, "success")
             .catch(err => console.error("Telegram notification failed:", err));
         }
       } catch (firestoreErr) {

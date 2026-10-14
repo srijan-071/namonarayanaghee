@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { firestoreGetDoc, firestoreUpdateDoc, firestoreDeleteDoc } from "@/lib/firestore-rest";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
 
@@ -11,16 +12,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing orderId or payment id" }, { status: 400 });
     }
 
-    const orderData = await firestoreGetDoc("orders", orderId);
-    if (!orderData) {
+    const orderRef = doc(db, "orders", orderId);
+    const snap = await getDoc(orderRef);
+    if (!snap.exists()) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    if (orderData.paymentStatus === "paid") {
-      return NextResponse.json({ success: true, message: "Order already marked as paid" });
-    }
+    const orderData = snap.data();
 
-    await firestoreUpdateDoc("orders", orderId, {
+    // Update order in Firestore
+    await updateDoc(orderRef, {
       paymentStatus: "paid",
       status: "processing",
       paymentSessionId: razorpay_payment_id,
@@ -35,22 +36,24 @@ export async function POST(req: Request) {
       updatedAt: new Date()
     });
 
+    // Proactively send email notification
     if (orderData.contactInfo?.email) {
-      await sendOrderEmail(
+      sendOrderEmail(
         orderId,
         orderData.contactInfo.email,
         orderData.shippingAddress?.name || "Customer",
         orderData.amountToPay || orderData.totalAmount
       ).catch(err => console.error("Email notification failed:", err));
 
-      await firestoreDeleteDoc("abandoned_carts", orderData.contactInfo.email)
+      deleteDoc(doc(db, "abandoned_carts", orderData.contactInfo.email))
         .catch(err => console.error("Abandoned cart cleanup failed:", err));
     }
 
-    await sendTelegramNotification(orderId, orderData, "success")
+    // Proactively send Telegram alert
+    sendTelegramNotification(orderId, orderData, "success")
       .catch(err => console.error("Telegram notification failed:", err));
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, order: { ...orderData, paymentStatus: "paid" } });
   } catch (error: any) {
     console.error("Verify payment error:", error);
     return NextResponse.json({ error: error.message || "Failed to verify order" }, { status: 500 });

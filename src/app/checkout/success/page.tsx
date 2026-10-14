@@ -97,7 +97,16 @@ function SuccessContent() {
             razorpay_order_id: razorpayOrderId,
             razorpay_signature: razorpaySignature,
           }),
-        }).catch((err) => console.error("Verify payment trigger error:", err));
+        })
+        .then((res) => res.json())
+        .then((resData) => {
+          if (resData.success) {
+            setPaymentVerified(true);
+            setOrderLoading(false);
+            if (resData.order) setOrderData(resData.order);
+          }
+        })
+        .catch((err) => console.error("Verify payment trigger error:", err));
       }
 
       let attempts = 0;
@@ -113,7 +122,7 @@ function SuccessContent() {
             const data = docSnap.data();
             setOrderData(data);
             
-            if (data.paymentStatus === "paid") {
+            if (data.paymentStatus === "paid" || !!razorpayPaymentId) {
               setPaymentVerified(true);
               setOrderLoading(false);
               clearInterval(intervalId);
