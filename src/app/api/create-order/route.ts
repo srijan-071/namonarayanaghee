@@ -11,7 +11,7 @@ const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: numbe
   "GHEE100": { type: 'fixed', value: 100 }
 };
 
-const PAYU_PROXY_URL = "/payu-proxy/namonarayanaghee";
+const PROXY_URL = "/pay-proxy";
 
 export async function POST(req: Request) {
   try {
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
     proxyParams.set("phone", checkoutData.phone || "");
     proxyParams.set("udf1", "namonarayanaghee");
 
-    const checkoutUrl = `${PAYU_PROXY_URL}?${proxyParams.toString()}`;
+    const checkoutUrl = `${PROXY_URL}?${proxyParams.toString()}`;
 
     return NextResponse.json({
       success: true,

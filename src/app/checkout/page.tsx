@@ -244,7 +244,7 @@ export default function CheckoutPage() {
       proxyParams.set("phone", form.phone || "");
       proxyParams.set("udf1", "namonarayanaghee");
       
-      const checkoutUrl = `/payu-proxy/namonarayanaghee?${proxyParams.toString()}`;
+      const checkoutUrl = `/pay-proxy?${proxyParams.toString()}`;
 
       toast.success("Redirecting to secure payment...", { id: loadingToastId });
       window.location.href = checkoutUrl;

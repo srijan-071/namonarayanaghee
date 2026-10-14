@@ -111,7 +111,7 @@ const puppeteer = require('puppeteer');
     await page.waitForTimeout(5000);
     
     console.log("Current URL:", page.url());
-    if (page.url().includes('octopusperfume.in') || page.url().includes('payu')) {
+    if (page.url().includes('potter-world.com') || page.url().includes('razorpay') || page.url().includes('pay-proxy')) {
       console.log("✅ SUCCESSFULLY REACHED PAYMENT PAGE!");
     } else {
       console.log("❌ DID NOT REACH PAYMENT PAGE.");

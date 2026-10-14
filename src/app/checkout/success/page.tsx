@@ -69,6 +69,9 @@ function SuccessContent() {
   const orderId = searchParams.get("orderId") || searchParams.get("txnid");
   const status = searchParams.get("status");
   const sessionId = searchParams.get("session_id");
+  const razorpayPaymentId = searchParams.get("razorpay_payment_id");
+  const razorpayOrderId = searchParams.get("razorpay_order_id");
+  const razorpaySignature = searchParams.get("razorpay_signature");
 
   const isSuccess = status === "success" || (!status && orderId);
   const isFailed = status === "failed" || status === "error";
@@ -82,6 +85,21 @@ function SuccessContent() {
   useEffect(() => {
     if (orderId && isSuccess) {
       setOrderLoading(true);
+
+      // Proactively trigger verification if razorpay_payment_id is present
+      if (razorpayPaymentId) {
+        fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId,
+            razorpay_payment_id: razorpayPaymentId,
+            razorpay_order_id: razorpayOrderId,
+            razorpay_signature: razorpaySignature,
+          }),
+        }).catch((err) => console.error("Verify payment trigger error:", err));
+      }
+
       let attempts = 0;
       const maxAttempts = 10;
       let intervalId: any;
