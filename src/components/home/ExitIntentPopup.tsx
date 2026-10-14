@@ -21,7 +21,7 @@ export default function ExitIntentPopup() {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("nn_festive_offer_closed", "true");
     }
-    router.push("/product/pure-desi-cow-ghee-1-litre");
+    router.push("/collections/ghee");
   }, [router]);
 
   useEffect(() => {
