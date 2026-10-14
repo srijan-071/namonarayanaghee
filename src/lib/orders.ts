@@ -87,6 +87,8 @@ export function calculateCheckoutPricing(
   };
 }
 
+import type { FreeGift } from "./gifts";
+
 /**
  * Creates an order in the 'orders' collection.
  */
@@ -95,7 +97,8 @@ export async function createOrder(
   cartItems: CartItem[],
   subtotal: number,
   data: CheckoutData,
-  pricing: ReturnType<typeof calculateCheckoutPricing>
+  pricing: ReturnType<typeof calculateCheckoutPricing>,
+  freeGifts: FreeGift[] = []
 ) {
   const { db } = await import("./firebase");
   const { doc, setDoc, serverTimestamp, collection } = await import("firebase/firestore/lite");
@@ -105,10 +108,9 @@ export async function createOrder(
   const shippingCost = 0; 
   const tax = 0;
 
-  await setDoc(orderDoc, {
-    orderId: orderDoc.id,
-    userId: uid,
-    items: cartItems.map(item => ({
+  // Build full items list including free gift items
+  const fullItems = [
+    ...cartItems.map(item => ({
       productId: item.productId,
       variantId: item.variantId,
       slug: item.slug,
@@ -118,6 +120,32 @@ export async function createOrder(
       price: item.price,
       image: item.image,
       quantity: item.quantity,
+      isGift: false,
+    })),
+    ...freeGifts.map(gift => ({
+      productId: 0,
+      variantId: 0,
+      slug: gift.id,
+      name: gift.name,
+      title: gift.name,
+      variantTitle: `${gift.size} (Free Gift)`,
+      price: 0,
+      image: gift.image,
+      quantity: gift.quantity,
+      isGift: true,
+    }))
+  ];
+
+  await setDoc(orderDoc, {
+    orderId: orderDoc.id,
+    userId: uid,
+    items: fullItems,
+    freeGifts: freeGifts.map(g => ({
+      name: g.name,
+      variant: g.variant,
+      size: g.size,
+      quantity: g.quantity,
+      image: g.image
     })),
     subtotal,
     shippingCost,

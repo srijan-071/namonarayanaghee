@@ -106,6 +106,17 @@ export default function Bestsellers() {
       }]
     });
 
+    const vTitle = (p.variantTitle || p.title || "").toLowerCase();
+    if (vTitle.includes("500")) {
+      toast.success("Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!", { duration: 4000 });
+    } else if (vTitle.includes("2.5")) {
+      toast.success("🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added!", { duration: 4000 });
+    } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
+      toast.success("🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!", { duration: 4000 });
+    } else {
+      toast.success("🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added!", { duration: 4000 });
+    }
+
     open();
   };
 

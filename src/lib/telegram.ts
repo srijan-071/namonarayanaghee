@@ -11,8 +11,12 @@ export async function sendTelegramNotification(orderId: string, orderData: any, 
 
     // Construct the message without emojis, simple branding
     const itemsText = orderData.items?.map((item: any) => 
-      `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - Rs. ${item.price * item.quantity}`
+      `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - ${item.price === 0 || item.isGift ? 'FREE GIFT' : `Rs. ${item.price * item.quantity}`}`
     ).join('\n') || 'No items found';
+
+    const giftsText = orderData.freeGifts && orderData.freeGifts.length > 0
+      ? `\n🎁 Free Gifts Included:\n${orderData.freeGifts.map((g: any) => typeof g === 'string' ? `• ${g}` : `• ${g.name} (${g.size} x${g.quantity})`).join('\n')}\n`
+      : '';
 
     const shipping = orderData.shippingAddress || {};
     const contact = orderData.contactInfo || {};
@@ -42,7 +46,7 @@ ${shipping.country || ''}
 
 Order Items:
 ${itemsText}
-
+${giftsText}
 Pricing:
 Subtotal: Rs. ${orderData.subtotal || 0}
 Discount: Rs. ${orderData.discount || 0}

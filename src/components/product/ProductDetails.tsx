@@ -118,7 +118,17 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
       setIsAdding(false);
       open();
-      toast.success(`Added ${qty} × ${product.title} to cart`);
+      
+      const vTitle = (variant.title || "").toLowerCase();
+      if (vTitle.includes("500")) {
+        toast.success(`Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!`, { duration: 4000 });
+      } else if (vTitle.includes("2.5")) {
+        toast.success(`🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added to your order!`, { duration: 4000 });
+      } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
+        toast.success(`🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!`, { duration: 4000 });
+      } else {
+        toast.success(`🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added to your order!`, { duration: 4000 });
+      }
     }, 350);
   }
 
@@ -507,10 +517,35 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="flex-1 text-xs">
-            <span className="font-bold text-gray-900 block">🎁 Free Gift Included With This Order!</span>
-            <p className="text-gray-600 mt-0.5 leading-snug">
-              Complimentary <strong>Pure Brass Bilona Spoon</strong> + Vedic Immunity E-Book automatically packed.
-            </p>
+            {((variant?.title || "").toLowerCase().includes("500")) ? (
+              <>
+                <span className="font-bold text-amber-900 block">💡 Festive Special Tip:</span>
+                <p className="text-gray-700 mt-0.5 leading-snug">
+                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-emerald-800">FREE 250ml Cold-Pressed Mustard Oil</strong> automatically packed!
+                </p>
+              </>
+            ) : ((variant?.title || "").toLowerCase().includes("2.5")) ? (
+              <>
+                <span className="font-bold text-gray-900 block">🎁 3 Free Gifts Included With 2.5L Pack!</span>
+                <p className="text-gray-700 mt-0.5 leading-snug">
+                  Includes <strong>Groundnut (250ml)</strong> + <strong>Yellow Mustard (250ml)</strong> + <strong>Mustard Oil (250ml)</strong> 100% FREE!
+                </p>
+              </>
+            ) : ((variant?.title || "").toLowerCase().includes("5 litre") || (variant?.title || "").toLowerCase().includes("5l")) ? (
+              <>
+                <span className="font-bold text-gray-900 block">🎁 3 Mega Free Gifts Included With 5L Pack!</span>
+                <p className="text-gray-700 mt-0.5 leading-snug">
+                  Includes <strong>Coconut (250ml)</strong> + <strong>Groundnut (250ml)</strong> + <strong>Mustard Oil (500ml)</strong> 100% FREE!
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="font-bold text-gray-900 block">🎁 Free Gift Included With 1L Pack!</span>
+                <p className="text-gray-700 mt-0.5 leading-snug">
+                  Includes <strong>1x Cold-Pressed Mustard Oil (250 ml)</strong> automatically packed for free!
+                </p>
+              </>
+            )}
           </div>
         </div>
 

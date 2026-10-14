@@ -181,11 +181,22 @@ export default function AccountPage() {
                                 )}
                               </div>
                               <div className="flex-1">
-                                <h4 className="font-bold text-[#1C2B26] text-sm">{item.name}</h4>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {item.isGift && (
+                                    <span className="bg-[#0B3B82] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                      FREE GIFT
+                                    </span>
+                                  )}
+                                  <h4 className="font-bold text-[#1C2B26] text-sm">{item.name}</h4>
+                                </div>
                                 <p className="text-[#8C988B] text-xs">Qty: {item.quantity}</p>
                               </div>
                               <div className="font-semibold text-sm text-[#4A5450]">
-                                {formatPrice(item.price * item.quantity)}
+                                {item.isGift || item.price === 0 ? (
+                                  <span className="text-[#2E8B57] font-bold">FREE</span>
+                                ) : (
+                                  formatPrice(item.price * item.quantity)
+                                )}
                               </div>
                             </div>
                           ))}

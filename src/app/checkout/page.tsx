@@ -4,12 +4,13 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock } from "lucide-react";
+import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
+import { getFreeGiftsForCart } from "@/lib/gifts";
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -135,6 +136,11 @@ export default function CheckoutPage() {
     return calculateCheckoutPricing(cart.items, cart.subtotal, "prepaid", form.email, couponCode);
   }, [cart.items, cart.subtotal, form.email, couponCode]);
 
+  // Compute free gift oils for the ghee items in cart
+  const freeGifts = useMemo(() => {
+    return getFreeGiftsForCart(cart.items);
+  }, [cart.items]);
+
   if (cart.items.length === 0 && !isSubmitting) {
     return (
       <section className="nn-section bg-white min-h-[60vh]">
@@ -210,7 +216,7 @@ export default function CheckoutPage() {
 
       const { createOrder, saveUserCheckoutProfile } = await import("@/lib/orders");
       
-      const orderIdPromise = createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, effectivePricing);
+      const orderIdPromise = createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, effectivePricing, freeGifts);
       const profilePromise = saveUserCheckoutProfile(currentUser.uid, checkoutData);
       
       const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
@@ -223,7 +229,11 @@ export default function CheckoutPage() {
           event: "initiated",
           orderId,
           orderData: {
-            items: cart.items.map(i => ({ ...i, name: i.title })),
+            items: [
+              ...cart.items.map(i => ({ ...i, name: i.title })),
+              ...freeGifts.map(g => ({ name: `${g.name} (${g.size} x${g.quantity})`, price: 0, quantity: g.quantity, isGift: true }))
+            ],
+            freeGifts: freeGifts.map(g => `${g.name} (x${g.quantity})`),
             subtotal: cart.subtotal,
             shippingAddress: address,
             contactInfo: { email: form.email, phone: form.phone },
@@ -356,6 +366,30 @@ export default function CheckoutPage() {
                     </div>
                   </li>
                 ))}
+
+                {/* Free Gift Items in Checkout Summary */}
+                {freeGifts.map((gift, idx) => (
+                  <li key={`checkout-gift-${idx}`} className="flex gap-3.5 py-3 bg-[#EEF4FB] border-2 border-[#1E40AF]/30 rounded-xl p-3 my-2.5 shadow-2xs">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#1E40AF]/20 shrink-0 bg-white p-1 flex items-center justify-center">
+                      <Image src={gift.image} alt={gift.name} fill className="object-contain" sizes="64px" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-center min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="bg-[#0B3B82] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          FREE GIFT
+                        </span>
+                        <span className="text-[10px] font-bold text-[#1E3A8A] bg-white px-1.5 py-0.5 rounded border border-blue-200">
+                          {gift.size} × {gift.quantity}
+                        </span>
+                      </div>
+                      <p className="font-bold text-[#1E3A24] text-xs leading-tight mt-1 line-clamp-1">{gift.name}</p>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-[11px] font-semibold text-[#1F6E43]">Added with ghee offer</span>
+                        <span className="font-extrabold text-[#086642] text-xs">FREE</span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
               </ul>
               
               <div className="space-y-4 text-base border-t-2 border-dashed border-[#E9E5D9] pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-2">
@@ -363,6 +397,15 @@ export default function CheckoutPage() {
                   <span><span className="notranslate">Subtotal</span></span>
                   <span className="font-semibold text-[#1E3A24]">{formatPrice(cart.subtotal)}</span>
                 </div>
+
+                {freeGifts.length > 0 && (
+                  <div className="flex justify-between items-center text-[#1E40AF]">
+                    <span className="flex items-center gap-1.5 text-sm font-semibold">
+                      <Gift className="w-4 h-4" /> Free Gifts ({freeGifts.reduce((s, g) => s + g.quantity, 0)})
+                    </span>
+                    <span className="font-bold text-[#25D366]">FREE</span>
+                  </div>
+                )}
                 
                 {pricing.discount > 0 && (
                   <div className="flex justify-between items-center text-green-700">

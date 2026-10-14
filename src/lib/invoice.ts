@@ -84,10 +84,10 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
         ${item.quantity}
       </td>
       <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: right; font-size: 14px;">
-        ${formatInvoicePrice(item.price)}
+        ${item.price === 0 ? '<span style="color: #2E8B57; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price)}
       </td>
       <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: right; font-weight: 600; font-size: 14px; color: #1E3A24;">
-        ${formatInvoicePrice(item.price * item.quantity)}
+        ${item.price === 0 ? '<span style="color: #2E8B57; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price * item.quantity)}
       </td>
     </tr>`
     )
