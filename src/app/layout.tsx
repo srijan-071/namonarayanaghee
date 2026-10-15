@@ -8,7 +8,6 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
-import ExitIntentPopup from "@/components/home/ExitIntentPopup";
 import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -59,7 +58,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main className="flex-1">{children}</main>
               <Footer />
               <CartDrawer />
-              <ExitIntentPopup />
               <InAppBrowserWarning />
             </CartDrawerProvider>
           </FirebaseProvider>

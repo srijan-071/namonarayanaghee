@@ -39,22 +39,22 @@ export default function Header() {
             <svg className="w-4 h-4 text-[#F39C12]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
             <span>FREE SHIPPING PAN INDIA | TRUSTED BY 10 LAKH+ CUSTOMERS</span>
           </div>
-          <div 
-            className="flex flex-col md:hidden text-center justify-center w-full gap-1 cursor-pointer" 
-            onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
+          <Link 
+            href="/collections/ghee"
+            className="flex flex-col md:hidden text-center justify-center w-full gap-1 cursor-pointer hover:opacity-90 transition" 
           >
             <span>FREE SHIPPING PAN INDIA</span>
             <span className="text-yellow-300 font-bold flex items-center justify-center gap-1">
-              <Gift className="w-4 h-4" /> Festive Offer: Buy Ghee, Get 3 Oils Free! Tap here
+              <Gift className="w-4 h-4" /> Festive Special: Buy Ghee, Get Free Oils! Shop Now
             </span>
-          </div>
-          <div 
-            className="hidden md:flex items-center gap-2 text-yellow-300 font-bold cursor-pointer hover:text-yellow-100 transition"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-promo-popup'))}
+          </Link>
+          <Link 
+            href="/collections/ghee"
+            className="hidden md:flex items-center gap-2 text-yellow-300 font-bold cursor-pointer hover:text-yellow-100 transition" 
           >
             <Gift className="w-4 h-4" />
-            <span>Festive Special: Buy Ghee & Get 3 Cold-Pressed Oils Free! Tap to view</span>
-          </div>
+            <span>Festive Special: Buy Ghee & Get Free Cold-Pressed Oils! Shop Now</span>
+          </Link>
         </div>
       </div>
 
