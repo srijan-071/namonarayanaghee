@@ -4,7 +4,16 @@ export function getDynamicOrderStatus(
   paymentStatus?: string,
   paymentMethod?: string
 ): string {
-  if (paymentStatus === "pending") {
+  // If explicitly marked as shipped, in_transit, delivered, or cancelled in the database
+  const explicitStatuses = ['shipped', 'in_transit', 'delivered', 'cancelled'];
+  if (explicitStatuses.includes(dbStatus?.toLowerCase())) {
+    if (dbStatus?.toLowerCase() === 'shipped' || dbStatus?.toLowerCase() === 'in_transit') {
+      return "Shipped (In Transit)";
+    }
+    return dbStatus.charAt(0).toUpperCase() + dbStatus.slice(1);
+  }
+
+  if (paymentStatus === "pending" && paymentMethod?.toLowerCase() !== "cod") {
     return "Payment Pending";
   }
 
@@ -23,15 +32,6 @@ export function getDynamicOrderStatus(
   const diffMs = now.getTime() - createdDate.getTime();
   const diffHours = diffMs / (1000 * 60 * 60);
   const diffDays = diffHours / 24;
-
-  // If the database has a status other than pending, and we explicitly set it
-  // (e.g., manually overriding to 'delivered' or 'cancelled'), we could return it here.
-  // But per instructions, we follow the time-based logic. 
-  // We'll let 'delivered' or 'cancelled' bypass the logic if it's explicitly set.
-  const overrideStatuses = ['delivered', 'cancelled'];
-  if (overrideStatuses.includes(dbStatus?.toLowerCase())) {
-    return dbStatus.charAt(0).toUpperCase() + dbStatus.slice(1);
-  }
 
   if (diffHours < 10) {
     return "Order Processing";

@@ -1,6 +1,14 @@
 const TELEGRAM_BOT_TOKEN = "8816035157:AAH2fxXvaS8U7DI-HOsqfVKxovz4ojpdQnc";
 const TELEGRAM_CHAT_ID = "5804733110";
 
+function formatTelegramPrice(paise: number | undefined | null): string {
+  const amount = (Number(paise) || 0) / 100;
+  return `Rs. ${amount.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 export async function sendTelegramNotification(orderId: string, orderData: any, event: string = "success", rawMessage?: string) {
   let finalMessage = rawMessage;
 
@@ -11,7 +19,7 @@ export async function sendTelegramNotification(orderId: string, orderData: any, 
 
     // Construct the message without emojis, simple branding
     const itemsText = orderData.items?.map((item: any) => 
-      `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - ${item.price === 0 || item.isGift ? 'FREE GIFT' : `Rs. ${item.price * item.quantity}`}`
+      `${item.quantity}x ${item.name} ${item.variantTitle ? `(${item.variantTitle})` : ''} - ${item.price === 0 || item.isGift ? 'FREE GIFT' : formatTelegramPrice(item.price * item.quantity)}`
     ).join('\n') || 'No items found';
 
     const giftsText = orderData.freeGifts && orderData.freeGifts.length > 0
@@ -48,11 +56,11 @@ Order Items:
 ${itemsText}
 ${giftsText}
 Pricing:
-Subtotal: Rs. ${orderData.subtotal || 0}
-Discount: Rs. ${orderData.discount || 0}
-Total Amount: Rs. ${orderData.totalAmount || 0}
-Amount Paid: Rs. ${orderData.amountToPay || 0}
-Amount Remaining: Rs. ${orderData.amountRemaining || 0}
+Subtotal: ${formatTelegramPrice(orderData.subtotal)}
+Discount: ${formatTelegramPrice(orderData.discount)}
+Total Amount: ${formatTelegramPrice(orderData.totalAmount)}
+Amount Paid: ${formatTelegramPrice(orderData.amountToPay)}
+Amount Remaining: ${formatTelegramPrice(orderData.amountRemaining)}
 ------------------------------
     `.trim();
   }

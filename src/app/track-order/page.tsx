@@ -3,6 +3,7 @@
 import { useState } from "react";
 // Firebase dynamically imported to prevent Cloudflare 1102 errors
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
+import { formatPrice } from "@/lib/utils";
 import { Search, Package, MapPin, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -26,13 +27,15 @@ export default function TrackOrderPage() {
     try {
       const { db } = await import("@/lib/firebase");
       const { doc, getDoc } = await import("firebase/firestore/lite");
-      const orderRef = doc(db, "orders", orderId);
+      const cleanOrderId = orderId.trim().replace(/^#/, "");
+      const cleanEmail = email.trim().toLowerCase();
+      const orderRef = doc(db, "orders", cleanOrderId);
       const orderSnap = await getDoc(orderRef);
 
       if (orderSnap.exists()) {
         const data = orderSnap.data();
         // Verify email to protect privacy
-        if (data.contactInfo?.email?.toLowerCase() === email.toLowerCase()) {
+        if (data.contactInfo?.email?.trim().toLowerCase() === cleanEmail) {
           setOrder({ id: orderSnap.id, ...data });
           toast.success("Order found!");
         } else {
@@ -148,7 +151,7 @@ export default function TrackOrderPage() {
                   </div>
                   <div>
                     <p className="text-xs text-[#8C988B] uppercase tracking-wider mb-1">Total Paid</p>
-                    <p className="font-bold text-[#1C2B26]">₹{order.amountToPay || order.totalAmount}</p>
+                    <p className="font-bold text-[#1C2B26]">{formatPrice(order.amountToPay || order.totalAmount)}</p>
                   </div>
                 </div>
 
@@ -164,11 +167,22 @@ export default function TrackOrderPage() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-[#1C2B26]">{item.name}</h4>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {item.isGift && (
+                            <span className="bg-[#0B3B82] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              FREE GIFT
+                            </span>
+                          )}
+                          <h4 className="font-bold text-[#1C2B26]">{item.name}</h4>
+                        </div>
                         <p className="text-[#8C988B] text-sm mt-1">Quantity: {item.quantity}</p>
                       </div>
                       <div className="font-bold text-[#4A5450]">
-                        ₹{item.price * item.quantity}
+                        {item.isGift || item.price === 0 ? (
+                          <span className="text-[#2E8B57] font-bold">FREE</span>
+                        ) : (
+                          formatPrice(item.price * item.quantity)
+                        )}
                       </div>
                     </div>
                   ))}
@@ -177,23 +191,23 @@ export default function TrackOrderPage() {
                 <div className="pt-6 mt-4 border-t border-[#EAE2D2] space-y-3 text-[#4A5450]">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-semibold">Subtotal</span>
-                    <span className="font-bold text-[#1C2B26]">₹{order.subtotal}</span>
+                    <span className="font-bold text-[#1C2B26]">{formatPrice(order.subtotal)}</span>
                   </div>
                   {order.discount > 0 && (
                     <div className="flex justify-between items-center text-sm text-[#2E8B57]">
                       <span className="font-semibold">Discount ({order.discountPercent}%)</span>
-                      <span className="font-bold">-₹{order.discount}</span>
+                      <span className="font-bold">-{formatPrice(order.discount)}</span>
                     </div>
                   )}
                   {order.amountRemaining > 0 && (
                     <div className="flex justify-between items-center text-sm text-[#C38936]">
                       <span className="font-semibold">Remaining Balance</span>
-                      <span className="font-bold">₹{order.amountRemaining}</span>
+                      <span className="font-bold">{formatPrice(order.amountRemaining)}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-lg mt-4 pt-4 border-t border-[#EAE2D2]">
                     <span className="font-bold text-[#1C2B26]">Total Paid</span>
-                    <span className="font-bold text-[#C99A3D]">₹{order.amountToPay || order.totalAmount}</span>
+                    <span className="font-bold text-[#C99A3D]">{formatPrice(order.amountToPay || order.totalAmount)}</span>
                   </div>
                 </div>
                 

@@ -55,9 +55,9 @@ function formatInvoicePrice(paise: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(paise / 100);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format((paise || 0) / 100);
 }
 
 function formatDate(ts: { seconds: number } | null): string {
