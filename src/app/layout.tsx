@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: siteConfig.url },
+  other: {
+    "google-adsense-account": "ca-pub-3806114019541775",
+  },
 };
 
 import { Toaster } from 'sonner';
@@ -49,6 +52,13 @@ import { Toaster } from 'sonner';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <AnalyticsProvider>
           <FirebaseProvider>
