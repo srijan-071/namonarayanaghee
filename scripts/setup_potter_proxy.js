@@ -98,6 +98,7 @@ function ProxyCheckoutContent() {
   const parsedAmount = isAdmin ? 1 : parseFloat(rawAmount);
   const amountInPaise = isAdmin ? 100 : Math.round(parsedAmount * 100);
   const displayAmount = isAdmin ? "1.00" : (parsedAmount > 0 ? parsedAmount.toFixed(2) : "0.00");
+  const isEmbed = searchParams.get("embed") === "true";
 
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [razorpayOrder, setRazorpayOrder] = useState<any>(null);
@@ -205,7 +206,7 @@ function ProxyCheckoutContent() {
       currency: "INR",
       name: "Namo Narayana Ghee",
       description: isAdmin ? "Admin Verification (₹1.00)" : (productinfo || \`Order #\${orderId}\`),
-      image: "https://namonarayanaghee.store/favicon.ico",
+      image: "https://namonarayanaghee.store/assets/logo.png",
       order_id: razorpayOrder.order_id,
       prefill: {
         name: firstname,
@@ -224,12 +225,30 @@ function ProxyCheckoutContent() {
         ondismiss: function () {
           setIsOpening(false);
           setPaymentStatusText("Payment window closed. Click below to reopen anytime.");
+          try {
+            if (window.parent && window.parent !== window) {
+              window.parent.postMessage({ type: "RAZORPAY_DISMISSED", orderId }, "*");
+            }
+          } catch (e) {}
         },
       },
       handler: function (response: any) {
         setIsPaid(true);
         setIsOpening(false);
         setPaymentStatusText("Payment successful! Returning to Namo Narayana...");
+
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+              type: "RAZORPAY_SUCCESS",
+              orderId,
+              razorpay_payment_id: response.razorpay_payment_id || "",
+              razorpay_order_id: response.razorpay_order_id || "",
+              razorpay_signature: response.razorpay_signature || "",
+              amount: parsedAmount
+            }, "*");
+          }
+        } catch (e) {}
 
         try {
           const targetUrl = new URL(returnUrl);
@@ -256,11 +275,51 @@ function ProxyCheckoutContent() {
     rzp.on("payment.failed", function (response: any) {
       console.error("Payment failed:", response.error);
       setIsOpening(false);
-      setPaymentStatusText(response.error.description || "Payment failed. Please try again.");
+      setPaymentStatusText(response.error?.description || "Payment failed. Please try again.");
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: "RAZORPAY_FAILED",
+            orderId,
+            error: response.error
+          }, "*");
+        }
+      } catch (e) {}
     });
 
     rzp.open();
   };
+
+  if (isEmbed) {
+    return (
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        {orderError ? (
+          <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center border border-[#E9E5D9]">
+            <p className="text-red-600 font-semibold text-sm mb-4">{orderError}</p>
+            <button
+              onClick={() => {
+                try {
+                  if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: "RAZORPAY_DISMISSED", orderId }, "*");
+                  }
+                } catch (e) {}
+              }}
+              className="px-5 py-2.5 bg-[#1E3A24] text-white rounded-xl text-sm font-bold shadow hover:bg-[#152919] transition"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          !isPaid && (
+            <div className="bg-white/95 backdrop-blur-md px-6 py-4 rounded-2xl shadow-2xl border border-[#E9E5D9] flex items-center gap-3 animate-in fade-in zoom-in duration-200">
+              <Loader2 className="w-5 h-5 text-[#1E3A24] animate-spin" />
+              <span className="text-sm font-semibold text-[#1E3A24]">{paymentStatusText || "Opening secure payment..."}</span>
+            </div>
+          )
+        )}
+      </div>
+    );
+  }
 
   if (orderError) {
     return (

@@ -3,34 +3,14 @@ import { toast } from "sonner";
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift } from "lucide-react";
+import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift, X } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
-
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") {
-      resolve(false);
-      return;
-    }
-    if ((window as any).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -57,6 +37,67 @@ export default function CheckoutPage() {
   const [tempCoupon, setTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
   const summaryRef = useRef<HTMLDivElement>(null);
+
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [isIframeOpen, setIsIframeOpen] = useState(false);
+
+  // Listen for message events from secure embedded payment gateway (potter-world.com)
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (!event.origin.includes("potter-world.com")) return;
+
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+
+      if (data.type === "RAZORPAY_SUCCESS") {
+        setIsIframeOpen(false);
+        setIframeUrl(null);
+        setIsSubmitting(true);
+
+        const verifyToastId = toast.loading("Payment received! Confirming your order...");
+        
+        try {
+          clearCart();
+          if (form.email) {
+            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email));
+          }
+
+          await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: data.orderId,
+              razorpay_payment_id: data.razorpay_payment_id,
+              razorpay_order_id: data.razorpay_order_id,
+              razorpay_signature: data.razorpay_signature,
+            }),
+          });
+        } catch (e) {
+          console.error("Verification error:", e);
+        } finally {
+          toast.dismiss(verifyToastId);
+        }
+
+        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
+        window.location.href = successUrl;
+
+      } else if (data.type === "RAZORPAY_DISMISSED") {
+        setIsIframeOpen(false);
+        setIframeUrl(null);
+        setIsSubmitting(false);
+        toast.info("Payment window closed. You can complete your order whenever you're ready.");
+
+      } else if (data.type === "RAZORPAY_FAILED") {
+        setIsIframeOpen(false);
+        setIframeUrl(null);
+        setIsSubmitting(false);
+        toast.error(data.error?.description || "Payment failed. Please try another payment method.");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [form.email]);
 
   const scrollToSummary = () => {
     summaryRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -263,116 +304,26 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
 
-      // 1. Ensure Razorpay script is loaded
-      const scriptReady = await loadRazorpayScript();
-      if (!scriptReady) {
-        toast.dismiss(loadingToastId);
-        toast.error("Could not load payment gateway. Please check your internet connection.");
-        setIsSubmitting(false);
-        return;
-      }
+      // Launch seamless in-page payment modal using approved gateway hub
+      const amountInINR = isAdmin ? 1 : pricing.amountToPay / 100;
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://namonarayanaghee.store";
+      const embedParams = new URLSearchParams();
+      embedParams.set("order_id", orderId);
+      embedParams.set("txnid", orderId);
+      embedParams.set("amount", amountInINR.toString());
+      embedParams.set("firstname", address.name || "Customer");
+      embedParams.set("email", form.email || "");
+      embedParams.set("phone", form.phone || "");
+      embedParams.set("productinfo", `Order ${orderId}`);
+      embedParams.set("embed", "true");
+      embedParams.set("returnUrl", `${origin}/api/razorpay/callback`);
+      embedParams.set("cancelUrl", `${origin}/checkout`);
 
-      // 2. Create Razorpay order session on server
-      const rzpRes = await fetch("/api/razorpay/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          amount: effectivePricing.amountToPay,
-          customerInfo: {
-            name: form.name,
-            email: form.email,
-            phone: form.phone,
-          },
-          notes: {
-            shipping_city: form.city,
-            shipping_state: form.state,
-            shipping_pincode: form.pincode,
-          }
-        }),
-      });
-
-      const rzpData = await rzpRes.json();
-      if (!rzpRes.ok || !rzpData.order_id) {
-        throw new Error(rzpData.error || "Failed to create payment session.");
-      }
-
+      const targetEmbedUrl = `https://potter-world.com/pay-proxy?${embedParams.toString()}`;
+      
       toast.dismiss(loadingToastId);
-
-      const logoUrl = typeof window !== "undefined" ? `${window.location.origin}/assets/logo.png` : "/assets/logo.png";
-
-      // 3. Open Razorpay checkout modal directly on current page
-      const rzpOptions = {
-        key: rzpData.key_id,
-        amount: rzpData.amount,
-        currency: rzpData.currency || "INR",
-        name: "Namo Narayana",
-        description: "Pure A2 Gir Cow Ghee Order",
-        image: logoUrl,
-        order_id: rzpData.order_id,
-        prefill: {
-          name: form.name,
-          email: form.email,
-          contact: form.phone,
-        },
-        notes: {
-          merchant: "namonarayanaghee",
-          origin_order_id: orderId,
-        },
-        theme: {
-          color: "#1E3A24",
-        },
-        modal: {
-          backdropclose: false,
-          escape: true,
-          handleback: true,
-          ondismiss: function () {
-            setIsSubmitting(false);
-            toast.info("Payment cancelled. You can retry whenever ready.");
-          },
-        },
-        handler: async function (response: any) {
-          const verifyToastId = toast.loading("Payment received! Confirming your order...");
-          
-          try {
-            // Clear Cart and Abandoned Cart
-            clearCart();
-            if (form.email) {
-              import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email));
-            }
-
-            // Proactively verify payment on backend
-            await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                orderId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id || rzpData.order_id,
-                razorpay_signature: response.razorpay_signature || "",
-              }),
-            });
-          } catch (verErr) {
-            console.error("Payment verification error:", verErr);
-          } finally {
-            toast.dismiss(verifyToastId);
-          }
-
-          // Navigate cleanly to success page with full order and payment IDs
-          const successUrl = `/checkout/success?orderId=${encodeURIComponent(orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(response.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(response.razorpay_order_id || rzpData.order_id)}&razorpay_signature=${encodeURIComponent(response.razorpay_signature || "")}`;
-          window.location.href = successUrl;
-        },
-      };
-
-      const razorpay = new (window as any).Razorpay(rzpOptions);
-
-      razorpay.on("payment.failed", function (failResp: any) {
-        console.error("Razorpay payment failed:", failResp.error);
-        toast.error(failResp.error?.description || "Payment failed. Please try another payment method.");
-        setIsSubmitting(false);
-      });
-
-      razorpay.open();
+      setIframeUrl(targetEmbedUrl);
+      setIsIframeOpen(true);
       
     } catch (error: any) {
       console.error("Order creation failed:", error);
@@ -383,7 +334,30 @@ export default function CheckoutPage() {
 
   return (
     <section className="nn-section bg-[#FAF9F5] min-h-[80vh] pb-28 lg:pb-12">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      {/* Seamless in-page Razorpay modal overlay via approved gateway hub */}
+      {isIframeOpen && iframeUrl && (
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200">
+          <button
+            onClick={() => {
+              setIsIframeOpen(false);
+              setIframeUrl(null);
+              setIsSubmitting(false);
+              toast.info("Payment window closed. You can retry whenever ready.");
+            }}
+            className="absolute top-4 right-4 z-[100000] p-2.5 bg-white/90 hover:bg-white text-gray-700 rounded-full shadow-xl transition active:scale-95 cursor-pointer"
+            title="Close payment window"
+          >
+            <X className="w-5 h-5 text-gray-700" />
+          </button>
+          <iframe
+            src={iframeUrl}
+            title="Secure Payment Gateway"
+            className="w-full h-full border-0 bg-transparent"
+            allow="payment *"
+          />
+        </div>
+      )}
+
       <div className="nn-container max-w-6xl mx-auto py-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
 
