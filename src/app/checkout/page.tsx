@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
@@ -11,6 +12,25 @@ import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve(false);
+      return;
+    }
+    if ((window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -198,7 +218,7 @@ export default function CheckoutPage() {
         couponCode: couponCode || undefined
       };
 
-      const loadingToastId = toast.loading("Securely preparing your order...", { duration: 10000 });
+      const loadingToastId = toast.loading("Securely preparing your order...");
       
       trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
       trackEvent("add_payment_info", { payment_type: "prepaid", value: cart.subtotal, currency: "INR" });
@@ -242,37 +262,128 @@ export default function CheckoutPage() {
           }
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
-      
-      // Clear Cart and Abandoned Cart
-      clearCart();
-      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
-        if (form.email) clearAbandonedCart(form.email);
-      });
-      
-      const amountInINR = isAdmin ? 1 : pricing.amountToPay / 100;
-      const proxyParams = new URLSearchParams();
-      proxyParams.set("txnid", orderId);
-      proxyParams.set("amount", amountInINR.toString());
-      proxyParams.set("productinfo", `Order ${orderId}`);
-      proxyParams.set("firstname", address.name || "Customer");
-      proxyParams.set("email", form.email || "");
-      proxyParams.set("phone", form.phone || "");
-      proxyParams.set("udf1", "namonarayanaghee");
-      
-      const checkoutUrl = `/pay-proxy?${proxyParams.toString()}`;
 
-      toast.success("Redirecting to secure payment...", { id: loadingToastId });
-      window.location.href = checkoutUrl;
+      // 1. Ensure Razorpay script is loaded
+      const scriptReady = await loadRazorpayScript();
+      if (!scriptReady) {
+        toast.dismiss(loadingToastId);
+        toast.error("Could not load payment gateway. Please check your internet connection.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2. Create Razorpay order session on server
+      const rzpRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          amount: effectivePricing.amountToPay,
+          customerInfo: {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+          },
+          notes: {
+            shipping_city: form.city,
+            shipping_state: form.state,
+            shipping_pincode: form.pincode,
+          }
+        }),
+      });
+
+      const rzpData = await rzpRes.json();
+      if (!rzpRes.ok || !rzpData.order_id) {
+        throw new Error(rzpData.error || "Failed to create payment session.");
+      }
+
+      toast.dismiss(loadingToastId);
+
+      const logoUrl = typeof window !== "undefined" ? `${window.location.origin}/assets/logo.png` : "/assets/logo.png";
+
+      // 3. Open Razorpay checkout modal directly on current page
+      const rzpOptions = {
+        key: rzpData.key_id,
+        amount: rzpData.amount,
+        currency: rzpData.currency || "INR",
+        name: "Namo Narayana",
+        description: "Pure A2 Gir Cow Ghee Order",
+        image: logoUrl,
+        order_id: rzpData.order_id,
+        prefill: {
+          name: form.name,
+          email: form.email,
+          contact: form.phone,
+        },
+        notes: {
+          merchant: "namonarayanaghee",
+          origin_order_id: orderId,
+        },
+        theme: {
+          color: "#1E3A24",
+        },
+        modal: {
+          backdropclose: false,
+          escape: true,
+          handleback: true,
+          ondismiss: function () {
+            setIsSubmitting(false);
+            toast.info("Payment cancelled. You can retry whenever ready.");
+          },
+        },
+        handler: async function (response: any) {
+          const verifyToastId = toast.loading("Payment received! Confirming your order...");
+          
+          try {
+            // Clear Cart and Abandoned Cart
+            clearCart();
+            if (form.email) {
+              import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email));
+            }
+
+            // Proactively verify payment on backend
+            await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id || rzpData.order_id,
+                razorpay_signature: response.razorpay_signature || "",
+              }),
+            });
+          } catch (verErr) {
+            console.error("Payment verification error:", verErr);
+          } finally {
+            toast.dismiss(verifyToastId);
+          }
+
+          // Navigate cleanly to success page with full order and payment IDs
+          const successUrl = `/checkout/success?orderId=${encodeURIComponent(orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(response.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(response.razorpay_order_id || rzpData.order_id)}&razorpay_signature=${encodeURIComponent(response.razorpay_signature || "")}`;
+          window.location.href = successUrl;
+        },
+      };
+
+      const razorpay = new (window as any).Razorpay(rzpOptions);
+
+      razorpay.on("payment.failed", function (failResp: any) {
+        console.error("Razorpay payment failed:", failResp.error);
+        toast.error(failResp.error?.description || "Payment failed. Please try another payment method.");
+        setIsSubmitting(false);
+      });
+
+      razorpay.open();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Order creation failed:", error);
-      toast.error("There was an issue placing your order. Please try again.");
+      toast.error(error?.message || "There was an issue placing your order. Please try again.");
       setIsSubmitting(false);
     }
   };
 
   return (
     <section className="nn-section bg-[#FAF9F5] min-h-[80vh] pb-28 lg:pb-12">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="nn-container max-w-6xl mx-auto py-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
 
