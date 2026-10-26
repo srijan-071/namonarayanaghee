@@ -8,7 +8,7 @@ export default function DiwaliToran({ className = "" }: { className?: string }) 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
-        className="w-full h-8 sm:h-10 md:h-12"
+        className="w-full h-8 sm:h-10 md:h-12 transform-gpu"
       >
         <defs>
           {/* Marigold Orange & Gold Gradients */}

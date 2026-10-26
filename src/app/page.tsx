@@ -38,13 +38,21 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSchema) }} />
       <main className="flex flex-col w-full overflow-hidden bg-nn-cream">
         <Hero />
-        <div id="diwali-specials">
+        <div id="diwali-specials" className="cv-auto">
           <DiwaliSpecials />
         </div>
-        <Bestsellers />
-        <BrandStory />
-        <BilonaProcess />
-        <CinematicCTA />
+        <div className="cv-auto">
+          <Bestsellers />
+        </div>
+        <div className="cv-auto">
+          <BrandStory />
+        </div>
+        <div className="cv-auto">
+          <BilonaProcess />
+        </div>
+        <div className="cv-auto">
+          <CinematicCTA />
+        </div>
       </main>
     </>
   );

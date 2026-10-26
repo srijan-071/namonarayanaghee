@@ -46,7 +46,7 @@ export default function MediaRenderer({ media, isActive, priority = false }: Pro
           playsInline
           muted={media.muted ?? true}
           loop={media.loop ?? true}
-          preload={priority ? "auto" : "none"}
+          preload={priority ? "metadata" : "none"}
           className="w-full h-full object-cover object-center"
         />
       ) : (

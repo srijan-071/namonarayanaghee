@@ -13,10 +13,10 @@ export default function DiwaliDiya({ className = "", size = 32, glow = true }: D
       style={{ width: size, height: size * 0.85 }}
       aria-hidden="true"
     >
-      {/* Radiant ambient glow */}
+      {/* Radiant ambient glow (ultra-lightweight radial gradient, no expensive blur filter) */}
       {glow && (
         <div 
-          className="absolute -top-1 left-1/2 -translate-x-1/2 w-4/5 h-4/5 rounded-full bg-amber-400/30 blur-md pointer-events-none animate-pulse" 
+          className="absolute -top-1 left-1/2 -translate-x-1/2 w-4/5 h-4/5 rounded-full bg-amber-400/25 pointer-events-none" 
         />
       )}
 
@@ -24,7 +24,7 @@ export default function DiwaliDiya({ className = "", size = 32, glow = true }: D
         viewBox="0 0 48 40" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full drop-shadow-sm"
+        className="w-full h-full transform-gpu"
       >
         {/* Diya Base / Clay / Brass Body */}
         <defs>
@@ -47,8 +47,8 @@ export default function DiwaliDiya({ className = "", size = 32, glow = true }: D
           </linearGradient>
           
           <radialGradient id="flameAura" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFC107" stopOpacity="0.8" />
-            <stop offset="60%" stopColor="#FF6F00" stopOpacity="0.4" />
+            <stop offset="0%" stopColor="#FFC107" stopOpacity="0.7" />
+            <stop offset="60%" stopColor="#FF6F00" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#FF6F00" stopOpacity="0" />
           </radialGradient>
         </defs>
@@ -69,23 +69,24 @@ export default function DiwaliDiya({ className = "", size = 32, glow = true }: D
         {/* Cotton Wick / Batti */}
         <path d="M23 25 C23.5 22 24.5 20 24 17" stroke="#3E2723" strokeWidth="1.2" strokeLinecap="round" />
 
-        {/* Flickering Flame Aura */}
-        <ellipse cx="24" cy="13" rx="7" ry="11" fill="url(#flameAura)" className="animate-flame" opacity="0.75" />
+        {/* Single GPU-Composited Flame Group (0 layout repaints, smooth 60fps) */}
+        <g className="animate-flame origin-bottom">
+          {/* Flame Aura */}
+          <ellipse cx="24" cy="13" rx="7" ry="11" fill="url(#flameAura)" opacity="0.75" />
 
-        {/* Animated Sacred Flame */}
-        <path
-          d="M24 3 C27 8 28.5 13 27 16 C25.5 19 22.5 19 21 16 C19.5 13 21 8 24 3 Z"
-          fill="url(#flameInner)"
-          className="animate-flame origin-bottom"
-        />
-        
-        {/* Pure White Core Flame */}
-        <path
-          d="M24 7 C25.5 10 26 13 25 15 C24.2 16.5 23.8 16.5 23 15 C22 13 22.5 10 24 7 Z"
-          fill="#FFFFFF"
-          className="animate-flame origin-bottom"
-          opacity="0.9"
-        />
+          {/* Animated Sacred Flame */}
+          <path
+            d="M24 3 C27 8 28.5 13 27 16 C25.5 19 22.5 19 21 16 C19.5 13 21 8 24 3 Z"
+            fill="url(#flameInner)"
+          />
+          
+          {/* Pure White Core Flame */}
+          <path
+            d="M24 7 C25.5 10 26 13 25 15 C24.2 16.5 23.8 16.5 23 15 C22 13 22.5 10 24 7 Z"
+            fill="#FFFFFF"
+            opacity="0.9"
+          />
+        </g>
       </svg>
     </div>
   );

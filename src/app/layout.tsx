@@ -48,19 +48,23 @@ export const metadata: Metadata = {
   },
 };
 
+import Script from "next/script";
 import { Toaster } from 'sonner';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
-          crossOrigin="anonymous"
-        />
+        <link rel="preconnect" href="https://namonarayana.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://namonarayana.com" />
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
         <AnalyticsProvider>
           <FirebaseProvider>
             <CartDrawerProvider>
