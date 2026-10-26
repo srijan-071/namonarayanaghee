@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift, X } from "lucide-react";
+import { ShieldCheck, Truck, Loader2, CreditCard, Tag, Percent, MapPin, Lock, Gift } from "lucide-react";
 import { useCart, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
@@ -37,67 +37,6 @@ export default function CheckoutPage() {
   const [tempCoupon, setTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
   const summaryRef = useRef<HTMLDivElement>(null);
-
-  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-  const [isIframeOpen, setIsIframeOpen] = useState(false);
-
-  // Listen for message events from secure embedded payment gateway (potter-world.com)
-  useEffect(() => {
-    const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("potter-world.com")) return;
-
-      const data = event.data;
-      if (!data || typeof data !== "object") return;
-
-      if (data.type === "RAZORPAY_SUCCESS") {
-        setIsIframeOpen(false);
-        setIframeUrl(null);
-        setIsSubmitting(true);
-
-        const verifyToastId = toast.loading("Payment received! Confirming your order...");
-        
-        try {
-          clearCart();
-          if (form.email) {
-            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email));
-          }
-
-          await fetch("/api/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: data.orderId,
-              razorpay_payment_id: data.razorpay_payment_id,
-              razorpay_order_id: data.razorpay_order_id,
-              razorpay_signature: data.razorpay_signature,
-            }),
-          });
-        } catch (e) {
-          console.error("Verification error:", e);
-        } finally {
-          toast.dismiss(verifyToastId);
-        }
-
-        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
-        window.location.href = successUrl;
-
-      } else if (data.type === "RAZORPAY_DISMISSED") {
-        setIsIframeOpen(false);
-        setIframeUrl(null);
-        setIsSubmitting(false);
-        toast.info("Payment window closed. You can complete your order whenever you're ready.");
-
-      } else if (data.type === "RAZORPAY_FAILED") {
-        setIsIframeOpen(false);
-        setIframeUrl(null);
-        setIsSubmitting(false);
-        toast.error(data.error?.description || "Payment failed. Please try another payment method.");
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [form.email]);
 
   const scrollToSummary = () => {
     summaryRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -304,26 +243,25 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
 
-      // Launch seamless in-page payment modal using approved gateway hub
+      // Full-page redirect to approved gateway hub on potter-world.com
       const amountInINR = isAdmin ? 1 : pricing.amountToPay / 100;
       const origin = typeof window !== "undefined" ? window.location.origin : "https://namonarayanaghee.store";
-      const embedParams = new URLSearchParams();
-      embedParams.set("order_id", orderId);
-      embedParams.set("txnid", orderId);
-      embedParams.set("amount", amountInINR.toString());
-      embedParams.set("firstname", address.name || "Customer");
-      embedParams.set("email", form.email || "");
-      embedParams.set("phone", form.phone || "");
-      embedParams.set("productinfo", `Order ${orderId}`);
-      embedParams.set("embed", "true");
-      embedParams.set("returnUrl", `${origin}/api/razorpay/callback`);
-      embedParams.set("cancelUrl", `${origin}/checkout`);
+      const payParams = new URLSearchParams();
+      payParams.set("order_id", orderId);
+      payParams.set("txnid", orderId);
+      payParams.set("amount", amountInINR.toString());
+      payParams.set("firstname", address.name || "Customer");
+      payParams.set("email", form.email || "");
+      payParams.set("phone", form.phone || "");
+      payParams.set("productinfo", `Order ${orderId}`);
+      payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
+      payParams.set("cancelUrl", `${origin}/checkout`);
 
-      const targetEmbedUrl = `https://potter-world.com/pay-proxy?${embedParams.toString()}`;
+      const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
       
       toast.dismiss(loadingToastId);
-      setIframeUrl(targetEmbedUrl);
-      setIsIframeOpen(true);
+      toast.loading("Connecting to secure payment gateway...");
+      window.location.href = targetUrl;
       
     } catch (error: any) {
       console.error("Order creation failed:", error);
@@ -334,29 +272,6 @@ export default function CheckoutPage() {
 
   return (
     <section className="nn-section bg-[#FAF9F5] min-h-[80vh] pb-28 lg:pb-12">
-      {/* Seamless in-page Razorpay modal overlay via approved gateway hub */}
-      {isIframeOpen && iframeUrl && (
-        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200">
-          <button
-            onClick={() => {
-              setIsIframeOpen(false);
-              setIframeUrl(null);
-              setIsSubmitting(false);
-              toast.info("Payment window closed. You can retry whenever ready.");
-            }}
-            className="absolute top-4 right-4 z-[100000] p-2.5 bg-white/90 hover:bg-white text-gray-700 rounded-full shadow-xl transition active:scale-95 cursor-pointer"
-            title="Close payment window"
-          >
-            <X className="w-5 h-5 text-gray-700" />
-          </button>
-          <iframe
-            src={iframeUrl}
-            title="Secure Payment Gateway"
-            className="w-full h-full border-0 bg-transparent"
-            allow="payment *"
-          />
-        </div>
-      )}
 
       <div className="nn-container max-w-6xl mx-auto py-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
