@@ -8,7 +8,10 @@ const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: numbe
   "ELVISH10": { type: 'percentage', value: 10 },
   "NAMO50": { type: 'fixed', value: 50 },
   "WELCOME": { type: 'percentage', value: 5 },
-  "GHEE100": { type: 'fixed', value: 100 }
+  "GHEE100": { type: 'fixed', value: 100 },
+  "DIWALI": { type: 'percentage', value: 10 },
+  "DIWALI2026": { type: 'percentage', value: 10 },
+  "SHUBHLAABH": { type: 'fixed', value: 100 }
 };
 
 const PROXY_URL = "/pay-proxy";
