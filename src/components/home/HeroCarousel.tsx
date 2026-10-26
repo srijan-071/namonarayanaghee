@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import MediaRenderer, { HeroMedia } from "./MediaRenderer";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Leaf, Droplets, ShieldCheck, Heart, ArrowRight } from "lucide-react";
+import { Leaf, Droplets, ShieldCheck, Heart, ArrowRight, Sparkles, Gift, Flame, Truck } from "lucide-react";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 interface Props {
   slides: HeroMedia[];
@@ -92,55 +93,63 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
         <div className="absolute inset-0 z-10 w-full h-full flex flex-col justify-center">
           <div className="nn-container w-full h-full relative">
             <div className="flex flex-col items-start justify-center h-full max-w-2xl pt-12 md:pt-0">
-              {/* Eyebrow */}
-              <div
-                className="flex items-center gap-2 mb-6"
-              >
-                <Leaf className="text-white w-5 h-5 drop-shadow-md" />
-                <span className="text-sm font-bold tracking-widest text-white uppercase drop-shadow-md">Pure. Traditional. Natural.</span>
+              {/* Eyebrow with Diya */}
+              <div className="inline-flex items-center gap-2.5 bg-[#5E0B10]/85 border border-amber-400/60 rounded-full px-4 py-1.5 mb-6 backdrop-blur-md shadow-lg">
+                <DiwaliDiya size={20} glow={true} />
+                <span className="text-xs sm:text-sm font-bold tracking-widest text-amber-300 uppercase">
+                  शुभ दीपावली महोत्सव • SPECIAL FESTIVE SALE
+                </span>
               </div>
               
               {/* Headline */}
               <h1
-                className="font-serif text-white text-5xl md:text-[80px] leading-[1.05] tracking-tight font-bold mb-6 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_2px_4px_rgb(0_0_0_/_80%)]"
+                className="font-serif text-white text-4xl sm:text-5xl md:text-[74px] leading-[1.08] tracking-tight font-bold mb-6 drop-shadow-[0_4px_10px_rgba(0,0,0,0.9)]"
               >
-                <span className="italic font-normal">Real</span> Ghee<br/>
-                <span className="italic font-normal">for a</span> Healthier<br/>
-                Tomorrow
+                Light Up Your <br/>
+                <span className="diwali-shimmer italic font-normal">Diwali With Purity</span>
               </h1>
 
               {/* Subtitle */}
               <p
-                className="text-white max-w-[480px] text-base md:text-lg mb-10 leading-relaxed drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)] [text-shadow:_0_1px_2px_rgb(0_0_0_/_100%)] font-semibold"
+                className="text-amber-50 max-w-[500px] text-base md:text-lg mb-8 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] font-medium"
               >
-                Crafted from the milk of indigenous Gir cows using the age-old Bilona method. Just pure, nutrient-rich goodness - the way it was always meant to be.
+                Sacred A2 Gir Cow Bilona Ghee for your Akhand Diya, festive mithai, and auspicious family gifting. Handcrafted using ancient Vedic traditions — 100% pure &amp; unadulterated.
               </p>
 
-              {/* Badges/Icons */}
+              {/* Badges/Icons for Diwali */}
               <div
-                className="flex flex-wrap items-center gap-4 md:gap-8 mb-10"
+                className="flex flex-wrap items-center gap-3 sm:gap-6 mb-8"
               >
                 {[
-                  { icon: Leaf, label: "100%\nNatural" },
-                  { icon: Droplets, label: "A2 Gir\nCow Milk" },
-                  { icon: Heart, label: "Bilona\nChurned" },
-                  { icon: ShieldCheck, label: "No Artificial\nPreservatives" }
+                  { icon: Flame, label: "Akhand Diya\nPurity" },
+                  { icon: Droplets, label: "Vedic Bilona\nChurned" },
+                  { icon: Heart, label: "Pure Festive\nMithai" },
+                  { icon: Gift, label: "Free Festive\nOils & Gifts" }
                 ].map((item, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-3">
-                    <div className="w-14 h-14 rounded-full border border-white/40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-                      <item.icon className="w-6 h-6 text-white" />
+                  <div key={idx} className="flex flex-col items-center gap-2">
+                    <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center bg-black/40 backdrop-blur-sm shadow-md">
+                      <item.icon className="w-5 h-5 text-amber-300" />
                     </div>
-                    <span className="text-xs font-semibold text-white text-center leading-tight drop-shadow-md whitespace-pre-line">{item.label}</span>
+                    <span className="text-[11px] font-bold text-amber-100 text-center leading-tight drop-shadow-md whitespace-pre-line">{item.label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* CTA Button */}
-              <div
-              >
-                <Link href="/collections/ghee" className="bg-[#243E2C] text-white rounded-full px-8 py-4 font-semibold text-lg hover:bg-[#1A2C20] transition-colors flex items-center gap-3 shadow-xl">
-                  Shop A2 Gir Cow Ghee <ArrowRight className="w-5 h-5" />
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center gap-4">
+                <Link 
+                  href="/#diwali-specials" 
+                  className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 rounded-full px-8 py-4 font-extrabold text-base md:text-lg transition-all flex items-center gap-3 shadow-2xl hover:scale-105 active:scale-95"
+                >
+                  <DiwaliDiya size={20} glow={false} />
+                  <span>Shop Diwali Specials</span>
+                  <ArrowRight className="w-5 h-5 text-stone-900" />
                 </Link>
+
+                <div className="bg-black/50 backdrop-blur-md border border-amber-400/40 rounded-full px-5 py-3 text-xs md:text-sm text-amber-200 font-bold flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>Use Code: <span className="text-white underline font-black">DIWALI</span> for 10% OFF</span>
+                </div>
               </div>
               
               {/* Navigation Arrows & Progress */}
@@ -172,35 +181,37 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
               </div>
             </div>
 
-            {/* Right side floating elements (visible on large screens) */}
-            <div className="hidden lg:block absolute right-12 top-1/3 transform -rotate-6 text-white text-5xl font-serif italic font-light drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] [text-shadow:_0_2px_4px_rgb(0_0_0_/_100%)] text-center leading-tight opacity-100">
-              Goodness <br/> from our farms <br/> to your home <Heart className="inline w-8 h-8 text-white ml-2 fill-white/40 drop-shadow-lg"/>
-            </div>
-
-            <div className="hidden lg:flex absolute right-12 bottom-24 w-32 h-32 rounded-full border border-dashed border-white/60 items-center justify-center bg-black/10 backdrop-blur-sm">
-              <div className="w-28 h-28 rounded-full border border-white/80 flex flex-col items-center justify-center text-center p-4 text-white text-[9px] uppercase tracking-[0.2em] font-semibold">
-                Traditionally<br/>Crafted
-                <Leaf className="my-1.5 w-4 h-4 text-white" />
-                Naturally<br/>Yours
+            {/* Right side floating Diwali Seal */}
+            <div className="hidden lg:flex flex-col items-center absolute right-8 xl:right-16 top-1/4 z-20">
+              <div className="bg-[#4E0E12]/90 border-2 border-amber-400/70 rounded-3xl p-7 backdrop-blur-md shadow-2xl text-center max-w-[280px] text-white animate-festive-float">
+                <DiwaliDiya size={48} className="mx-auto mb-3" />
+                <span className="text-amber-300 font-serif text-2xl font-bold block mb-0.5">शुभ दीपावली</span>
+                <span className="text-[11px] text-amber-100/90 font-bold uppercase tracking-widest block mb-3">Festival of Lights</span>
+                <p className="border-t border-amber-400/30 pt-3 text-xs text-amber-100 leading-relaxed">
+                  Bring divine light, health &amp; prosperity into your home with 100% Pure A2 Gir Cow Ghee.
+                </p>
+                <div className="mt-4 bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 text-[11px] font-black py-2 px-3 rounded-xl uppercase tracking-wider shadow-md">
+                  ✨ Extra 10% OFF + Gifts
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust Bar below hero */}
-      <div className="bg-[#F7F4EB] py-8 border-b border-[#E9E5D9]">
+      {/* Trust Bar below hero with Diwali accents */}
+      <div className="bg-[#FCFAF5] py-7 border-b border-[#E9E5D9] shadow-inner">
         <div className="nn-container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-[#E9E5D9]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-amber-200">
             {[
-              { icon: Leaf, title: "Farm Fresh", desc: "Sourced directly from our farms" },
-              { icon: ShieldCheck, title: "Lab Tested", desc: "For purity & safety" },
-              { icon: Heart, title: "Free Shipping", desc: "Across India" },
-              { icon: Droplets, title: "10 Lakh+ Homes", desc: "Trust Namo Narayana" }
+              { icon: Flame, title: "Akhand Diya Purity", desc: "Clean golden flame, zero soot" },
+              { icon: ShieldCheck, title: "Lab Tested 100% Pure", desc: "Free from adulteration & chemicals" },
+              { icon: Gift, title: "Diwali Free Gifts", desc: "Cold-pressed oils with ghee packs" },
+              { icon: Truck, title: "Guaranteed Delivery", desc: "Dispatched fast for Diwali Puja" }
             ].map((item, idx) => (
               <div key={idx} className={cn("flex flex-col items-center text-center px-4", idx % 2 === 0 ? "border-l-0" : "", idx === 0 ? "md:border-l-0" : "")}>
-                <item.icon className="w-8 h-8 text-[#364935] mb-3" strokeWidth={1.5} />
-                <h4 className="text-[#364935] font-bold text-sm mb-1">{item.title}</h4>
+                <item.icon className="w-7 h-7 text-[#8A1B14] mb-2" strokeWidth={1.75} />
+                <h4 className="text-[#1E3A24] font-bold text-sm mb-0.5">{item.title}</h4>
                 <p className="text-[#576B55] text-xs font-medium">{item.desc}</p>
               </div>
             ))}

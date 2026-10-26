@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/config";
-import { Heart, Leaf } from "lucide-react";
+import { Heart, Leaf, Sparkles } from "lucide-react";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 import Image from "next/image";
 
@@ -8,6 +9,17 @@ export default function Footer() {
   return (
     <footer className="bg-[#092B1C] text-white mt-auto relative overflow-hidden">
       
+      {/* Diwali Festive Greeting Banner */}
+      <div className="bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] border-b border-amber-400/40 py-4 text-center text-amber-100 relative z-20 shadow-lg">
+        <div className="nn-container flex flex-col sm:flex-row items-center justify-center gap-2.5">
+          <DiwaliDiya size={22} />
+          <span className="font-serif text-base sm:text-lg font-bold text-amber-300">
+            शुभ दीपावली! May Goddess Lakshmi Bless Your Home with Health, Happiness &amp; Divine Light
+          </span>
+          <DiwaliDiya size={22} />
+        </div>
+      </div>
+
       {/* Background Image with Tint */}
       <div className="absolute inset-0 z-0">
         <Image src="/assets/footer-bg.jpg" alt="Footer Background" fill className="object-cover object-center" />
@@ -55,6 +67,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-bold text-sm tracking-widest mb-6 text-[#C38936] uppercase drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">Shop</h4>
             <ul className="space-y-4 text-sm text-white/90 font-medium drop-shadow-md [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
+              <li><Link href="/#diwali-specials" className="text-amber-300 font-bold hover:text-white hover:underline underline-offset-4 transition-all flex items-center gap-1.5"><DiwaliDiya size={14} glow={false} /> Diwali Hampers</Link></li>
               <li><Link href="/collections/ghee" className="hover:text-white hover:underline underline-offset-4 transition-all">A2 Gir Cow Ghee</Link></li>
               <li><Link href="/products/pure-desi-cow-ghee-1-litre" className="hover:text-white hover:underline underline-offset-4 transition-all">1 Litre Ghee</Link></li>
               <li><Link href="/products/pure-desi-cow-ghee-2-5-litre" className="hover:text-white hover:underline underline-offset-4 transition-all">2.5 Litre Ghee</Link></li>

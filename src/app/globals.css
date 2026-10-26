@@ -40,6 +40,15 @@
   --shadow-card:       0 4px 12px rgba(3, 72, 63, 0.04);
   --shadow-card-hover: 0 16px 32px rgba(3, 72, 63, 0.08);
   --shadow-glow:       0 0 40px rgba(10, 102, 89, 0.15);
+
+  /* Diwali Festive Palette */
+  --color-diwali-gold:      #F5BD47;
+  --color-diwali-amber:     #F39C12;
+  --color-diwali-deepgold:  #C48B28;
+  --color-diwali-red:       #8A1B14;
+  --color-diwali-maroon:    #5E0B10;
+  --color-diwali-flame:     #FFB703;
+  --color-diwali-cream:     #FFFDF7;
 }
 
 /* ─── Base ───────────────────────────────────────────── */
@@ -179,6 +188,82 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
+
+  /* ─── Diwali Festive Enhancements ─────────────────────── */
+  .diwali-gold-glow {
+    text-shadow: 0 0 12px rgba(245, 189, 71, 0.65), 0 0 24px rgba(243, 156, 18, 0.4);
+  }
+
+  .diwali-box-glow {
+    box-shadow: 0 0 25px rgba(245, 189, 71, 0.25), 0 8px 30px rgba(94, 11, 16, 0.15);
+  }
+
+  .diwali-box-glow-lg {
+    box-shadow: 0 0 35px rgba(245, 189, 71, 0.4), 0 12px 40px rgba(94, 11, 16, 0.25);
+  }
+
+  .diwali-shimmer {
+    background: linear-gradient(90deg, #F5BD47 0%, #FFF3B0 50%, #F5BD47 100%);
+    background-size: 200% auto;
+    animation: goldShimmer 3.5s linear infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .diwali-badge {
+    background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%);
+    border: 1px solid rgba(245, 189, 71, 0.5);
+    color: #FFFDF7;
+    box-shadow: 0 2px 8px rgba(138, 27, 20, 0.4);
+  }
+}
+
+/* ─── Keyframe Animations ────────────────────────────── */
+@keyframes flameFlicker {
+  0%, 100% {
+    transform: scale(1) rotate(-1deg);
+    filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.9)) drop-shadow(0 0 16px rgba(243, 156, 18, 0.6));
+  }
+  25% {
+    transform: scale(1.06, 0.96) rotate(1.5deg);
+    filter: drop-shadow(0 0 10px rgba(255, 183, 3, 1)) drop-shadow(0 0 22px rgba(243, 156, 18, 0.75));
+  }
+  50% {
+    transform: scale(0.96, 1.05) rotate(-2deg);
+    filter: drop-shadow(0 0 6px rgba(255, 183, 3, 0.8)) drop-shadow(0 0 14px rgba(243, 156, 18, 0.5));
+  }
+  75% {
+    transform: scale(1.04, 0.98) rotate(1deg);
+    filter: drop-shadow(0 0 11px rgba(255, 183, 3, 0.95)) drop-shadow(0 0 20px rgba(243, 156, 18, 0.7));
+  }
+}
+
+@keyframes goldShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes festiveFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(0.8deg); }
+}
+
+@keyframes festiveSparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.animate-flame {
+  animation: flameFlicker 2.4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-festive-float {
+  animation: festiveFloat 4s ease-in-out infinite;
+}
+
+.animate-festive-sparkle {
+  animation: festiveSparkle 2s ease-in-out infinite;
 }
 
 /* ─── Reduce motion ──────────────────────────────────── */

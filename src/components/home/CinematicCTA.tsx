@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Leaf, Heart } from "lucide-react";
+import { ArrowRight, Leaf, Heart, Sparkles } from "lucide-react";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 export default function CinematicCTA() {
   return (
@@ -38,9 +39,9 @@ export default function CinematicCTA() {
       
       {/* Script Text */}
       <div
-        className="absolute top-16 right-12 hidden lg:block text-[#F2C94C] text-3xl md:text-4xl font-serif italic font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-10deg] z-20"
+        className="absolute top-16 right-12 hidden lg:block text-[#F2C94C] text-3xl md:text-4xl font-serif italic font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-10deg] z-20 text-right"
       >
-        Good Food <br/> Brighter Tomorrows
+        Shubh Deepavali <br/> Pure Blessings ✨
       </div>
 
       {/* Content */}
@@ -48,18 +49,23 @@ export default function CinematicCTA() {
         <div
           className="max-w-xl"
         >
-          <span className="text-[10px] md:text-xs font-bold text-[#F2C94C] uppercase tracking-[0.3em] mb-4 block drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            Pure Tradition. Real Nourishment.
-          </span>
+          <div className="inline-flex items-center gap-2 bg-[#5E0B10]/80 border border-amber-400/50 rounded-full px-3.5 py-1 mb-4 shadow-md">
+            <DiwaliDiya size={16} glow={false} />
+            <span className="text-[10px] md:text-xs font-bold text-amber-300 uppercase tracking-[0.2em]">
+              शुभ दीपावली महोत्सव • SPECIAL OFFERS
+            </span>
+          </div>
+
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] [text-shadow:_0_2px_4px_rgb(0_0_0_/_80%)]">
-            Bring Namo Narayana <br className="hidden md:block"/>
-            <span className="italic text-[#F2C94C] font-light">to your table.</span>
+            Celebrate Diwali with <br className="hidden md:block"/>
+            <span className="italic text-[#F2C94C] font-light">Unmatched Vedic Purity.</span>
           </h2>
-          <p className="text-white text-base md:text-lg mb-8 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-w-lg">
-            Experience the authentic taste of traditionally made A2 Gir Cow Ghee and other natural products, crafted with care and devotion.
+          <p className="text-amber-100 text-base md:text-lg mb-8 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-w-lg">
+            This festive season, illuminate your home and sweeten your gatherings with genuine A2 Gir Cow Bilona Ghee. Use code <strong className="text-amber-300 underline">DIWALI</strong> for an instant 10% discount!
           </p>
-          <Link href="/collections/all-products" className="inline-flex items-center justify-center gap-2 bg-[#F2C94C] text-[#092B1C] rounded-lg px-8 py-3.5 font-bold hover:bg-[#E2B93C] transition-all w-max shadow-xl group">
-            Shop Now
+          <Link href="/#diwali-specials" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#092B1C] rounded-full px-8 py-4 font-black transition-all w-max shadow-2xl group hover:scale-105 active:scale-95">
+            <DiwaliDiya size={18} glow={false} />
+            <span>Order Diwali Hampers</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

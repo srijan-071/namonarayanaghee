@@ -5,6 +5,7 @@ import BrandStory from "@/components/home/BrandStory";
 import BilonaProcess from "@/components/home/BilonaProcess";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
 import CinematicCTA from "@/components/home/CinematicCTA";
+import DiwaliSpecials from "@/components/home/DiwaliSpecials";
 import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/config";
 import { absoluteUrl } from "@/lib/seo";
@@ -37,6 +38,9 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSchema) }} />
       <main className="flex flex-col w-full overflow-hidden bg-nn-cream">
         <Hero />
+        <div id="diwali-specials">
+          <DiwaliSpecials />
+        </div>
         <Bestsellers />
         <BrandStory />
         <BilonaProcess />

@@ -9,6 +9,7 @@ import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
+import DiwaliAmbience from "@/components/ui/DiwaliAmbience";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
               <CartDrawer />
               <InAppBrowserWarning />
+              <DiwaliAmbience />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>

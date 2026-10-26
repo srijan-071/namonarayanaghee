@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Leaf, Heart, Droplets, Ban, Users, Hexagon } from "lucide-react";
+import { ArrowRight, Leaf, Heart, Droplets, Ban, Users, Hexagon, Sparkles, Flame } from "lucide-react";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 export default function BrandStory() {
   return (
@@ -14,31 +15,34 @@ export default function BrandStory() {
           <div
             className="relative bg-[#E9DFD1] rounded-[2rem] overflow-hidden p-8 md:p-12 pb-0 flex flex-col min-h-[500px] z-10"
           >
-            <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4">Our Signature</span>
+            <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em] mb-4 flex items-center gap-1.5">
+              <DiwaliDiya size={16} glow={false} />
+              <span>Shubh Deepavali Purity • Our Signature</span>
+            </span>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E3A24] mb-3">
               100% A2 Gir Cow Ghee
             </h2>
             <p className="text-[#364935] text-lg mb-8">
-              Pure by nature. Powerful for your family.
+              Pure by nature. Sacred for your Diwali puja, sweets &amp; family health.
             </p>
             
-            <div className="space-y-5 relative z-20 w-full sm:w-2/3 mb-10">
+            <div className="space-y-4 relative z-20 w-full sm:w-2/3 mb-10">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 rounded-full border border-[#8A1B14]/40 bg-amber-50 flex items-center justify-center shrink-0">
+                  <Flame className="w-4 h-4 text-[#8A1B14]" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#1E3A24] text-sm">Akhand Diya Purity</h4>
+                  <p className="text-xs text-[#576B55]">Sacred, smokeless sattvic golden flame</p>
+                </div>
+              </div>
               <div className="flex items-start gap-4">
                 <div className="w-8 h-8 rounded-full border border-[#1E3A24]/30 flex items-center justify-center shrink-0">
                   <Leaf className="w-4 h-4 text-[#1E3A24]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#1E3A24] text-sm">No Preservatives</h4>
-                  <p className="text-xs text-[#576B55]">Just pure goodness</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#1E3A24]/30 flex items-center justify-center shrink-0">
-                  <Ban className="w-4 h-4 text-[#1E3A24]" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#1E3A24] text-sm">No Artificial Colours</h4>
-                  <p className="text-xs text-[#576B55]">Truly natural</p>
+                  <h4 className="font-bold text-[#1E3A24] text-sm">No Preservatives &amp; Chemicals</h4>
+                  <p className="text-xs text-[#576B55]">Zero adulteration — just pure goodness</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -46,8 +50,8 @@ export default function BrandStory() {
                   <Heart className="w-4 h-4 text-[#1E3A24]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#1E3A24] text-sm">Rich in Nutrients</h4>
-                  <p className="text-xs text-[#576B55]">Supporting your family&apos;s wellness</p>
+                  <h4 className="font-bold text-[#1E3A24] text-sm">Rich Aroma for Diwali Sweets</h4>
+                  <p className="text-xs text-[#576B55]">Perfect for Besan Laddoos &amp; Gujiyas</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -55,14 +59,15 @@ export default function BrandStory() {
                   <Droplets className="w-4 h-4 text-[#1E3A24]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#1E3A24] text-sm">Traditional Bilona Method</h4>
-                  <p className="text-xs text-[#576B55]">As described in Ayurveda</p>
+                  <h4 className="font-bold text-[#1E3A24] text-sm">Traditional Vedic Bilona</h4>
+                  <p className="text-xs text-[#576B55]">Hand-churned makhana from curd</p>
                 </div>
               </div>
             </div>
 
-            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#1E3A24] text-white rounded-lg px-6 py-3 font-medium text-sm hover:bg-[#152919] transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
-              Explore A2 Ghee
+            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
+              <DiwaliDiya size={16} glow={false} />
+              <span>Explore Diwali A2 Ghee</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 

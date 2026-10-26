@@ -16,6 +16,7 @@ import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 import { useRouter } from "next/navigation";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 export default function ProductDetails({ product, gheePacks }: { product: Product; gheePacks?: Product[] | null }) {
   const router = useRouter();
@@ -208,6 +209,10 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
           {/* Quality & Trust Badges on Image */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            <span className="bg-[#8A1B14] text-amber-200 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5 border border-amber-400/40">
+              <DiwaliDiya size={14} glow={false} />
+              Diwali Festive Special
+            </span>
             <span className="bg-[#1E3A24] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
               <Award className="w-3.5 h-3.5 text-amber-300" />
               100% Traditional Bilona
@@ -268,9 +273,15 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         {/* Title & Share */}
         <div className="flex justify-between items-start gap-4 mb-2">
           <div>
-            <span className="text-xs uppercase tracking-widest font-extrabold text-[#C38936] block mb-1">
-              Pure Desi Vedic Cow Ghee
-            </span>
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span className="bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 border border-amber-400/50 shadow-xs">
+                <DiwaliDiya size={12} glow={false} />
+                <span>शुभ दीपावली स्पेशल</span>
+              </span>
+              <span className="text-xs uppercase tracking-widest font-extrabold text-[#C38936]">
+                Pure Desi Vedic Cow Ghee
+              </span>
+            </div>
             <h1 className="text-3xl lg:text-[34px] leading-tight font-serif font-bold text-[#1E3A24]">{product.title}</h1>
           </div>
           <button 
@@ -549,27 +560,25 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Quick Coupon Code - Unlocked only after 45 seconds on site */}
-        {showCoupon && (
-          <div className="mb-5 p-3 bg-gradient-to-r from-emerald-50 via-white to-amber-50 rounded-xl border border-dashed border-emerald-600/70 flex items-center justify-between gap-3 shadow-xs animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex items-center gap-2">
-              <Tag className="w-4 h-4 text-emerald-700 shrink-0" />
-              <div className="text-xs">
-                <span className="font-bold text-gray-900">Special 10% Discount: </span>
-                <span className="font-mono font-extrabold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded ml-1">
-                  ELVISH10
-                </span>
-              </div>
+        {/* Quick Diwali Festive Coupon Code */}
+        <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 rounded-xl border border-dashed border-amber-500/80 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <DiwaliDiya size={18} glow={false} />
+            <div className="text-xs">
+              <span className="font-extrabold text-[#8A1B14] block">Shubh Deepavali 10% Discount:</span>
+              <span className="font-mono font-black text-stone-900 bg-amber-300 px-2 py-0.5 rounded text-[11px] tracking-wider">
+                DIWALI
+              </span>
             </div>
-            <button
-              onClick={() => handleCopyCoupon("ELVISH10")}
-              className="text-xs font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 bg-white hover:bg-emerald-100 px-2.5 py-1 rounded border border-emerald-200 transition-colors shadow-2xs"
-            >
-              {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
-            </button>
           </div>
-        )}
+          <button
+            onClick={() => handleCopyCoupon("DIWALI")}
+            className="text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer shrink-0"
+          >
+            {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-800" /> : <Copy className="w-3.5 h-3.5 text-stone-900" />}
+            <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
+          </button>
+        </div>
 
         {/* Action Buttons: Sticky Mobile Buy Bar with 1-Tap Quick Pack Switcher */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2 sm:px-4 sm:py-3 border-t border-gray-200 flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3 md:relative md:bg-transparent md:border-none md:p-0 md:mb-5 md:z-auto pb-[max(0.6rem,env(safe-area-inset-bottom))] md:pb-0 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] md:shadow-none">

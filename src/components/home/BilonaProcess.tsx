@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 import { Flame, Snowflake, RotateCcw, Sun, Beaker, Leaf, ShieldCheck, Truck, Shield, BadgeCheck, CheckCircle2 } from "lucide-react";
 
 const steps = [
@@ -61,10 +62,13 @@ export default function BilonaProcess() {
         <div
           className="mb-16 text-center max-w-3xl mx-auto"
         >
-          <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.3em] mb-4 block">The Vedic Method</span>
+          <div className="inline-flex items-center gap-2 bg-[#FCF8EE] border border-amber-300 rounded-full px-4 py-1.5 mb-4 shadow-xs">
+            <DiwaliDiya size={16} glow={false} />
+            <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em]">The Sacred Vedic Method for Deepotsav</span>
+          </div>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#1E3A24] mb-6">The Ancient Art of Bilona</h2>
           <p className="text-[#364935] text-lg leading-relaxed">
-            A time-honoured Vedic process that transforms pure A2 milk into golden ghee &mdash; slowly, naturally, and with unmatched care. This is how tradition preserves purity.
+            A time-honoured Vedic process that transforms pure A2 milk into golden ghee &mdash; slowly, naturally, and with unmatched care. Sacred for lighting Diwali diyas and crafting festive mithai.
           </p>
         </div>
 

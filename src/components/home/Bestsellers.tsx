@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-import { Heart, ShoppingCart, ChevronDown, Leaf, Droplets } from "lucide-react";
+import { Heart, ShoppingCart, ChevronDown, Leaf, Droplets, Sparkles } from "lucide-react";
+import DiwaliDiya from "@/components/ui/DiwaliDiya";
 import { cn, formatPrice } from "@/lib/utils";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
@@ -16,11 +17,11 @@ const gheeProducts = [
     id: 9545153446055,
     variantId: 55812012572839,
     slug: "pure-desi-cow-ghee-500-ml",
-    badge: "STARTER PACK",
-    badgeColor: "bg-[#1E3A24]",
+    badge: "🪔 STARTER PUJA PACK",
+    badgeColor: "bg-[#8A1B14]",
     title: "Pure A2 Gir Cow Ghee 500 ml",
     variantTitle: "500 ml",
-    subtitle: "Bilona Churned • Perfect to Try",
+    subtitle: "Bilona Churned • Perfect for Diwali Puja",
     size: "500 ml",
     price: 59900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
@@ -29,11 +30,11 @@ const gheeProducts = [
     id: 9545153446056,
     variantId: 55812012572840,
     slug: "pure-desi-cow-ghee-1-litre",
-    badge: "BESTSELLER",
+    badge: "✨ LAKSHMI AARTI BESTSELLER",
     badgeColor: "bg-[#C38936]",
     title: "Pure A2 Gir Cow Ghee 1 Litre",
     variantTitle: "1 Litre",
-    subtitle: "Bilona Churned • Pure & Traditional",
+    subtitle: "Bilona Churned • 1 Free Mustard Oil (250ml)",
     size: "1 Litre",
     price: 94900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
@@ -42,11 +43,11 @@ const gheeProducts = [
     id: 9545146237096,
     variantId: 55811997728936,
     slug: "pure-desi-cow-ghee-2-5-litre",
-    badge: "VALUE PACK",
-    badgeColor: "bg-[#1E3A24]",
+    badge: "🎁 SHUBH LABH GIFT PACK",
+    badgeColor: "bg-[#8A1B14]",
     title: "Pure A2 Gir Cow Ghee 2.5 Litre",
     variantTitle: "2.5 Litre",
-    subtitle: "Bilona Churned • Great for Families",
+    subtitle: "Bilona Churned • 3 Free Cold-Pressed Oils",
     size: "2.5 Litre",
     price: 209900,
     image: "/assets/product_6-2p5_jpg.webp"
@@ -55,11 +56,11 @@ const gheeProducts = [
     id: 9545149055144,
     variantId: 55812002971816,
     slug: "pure-desi-cow-ghee-5-litre",
-    badge: "FAMILY PACK",
+    badge: "🪔 MAHA DIWALI FAMILY PACK",
     badgeColor: "bg-[#C38936]",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     variantTitle: "5 Litre",
-    subtitle: "Best Value • Bulk Savings",
+    subtitle: "Bulk Savings • 3 Free Cold-Pressed Oils",
     size: "5 Litre",
     price: 349900,
     image: "/assets/product_6-5L_jpg.webp"
@@ -136,26 +137,28 @@ export default function Bestsellers() {
             <div
               className="w-full lg:w-2/3"
             >
-              <div className="text-sm font-medium text-white/80 mb-6 tracking-wide drop-shadow-sm">
-                Home &nbsp;&gt;&nbsp; <span className="text-white font-bold">Shop</span>
+              <div className="text-sm font-medium text-amber-200 mb-6 tracking-wide drop-shadow-sm flex items-center gap-2">
+                <span>Home &nbsp;&gt;&nbsp; <strong className="text-white">Diwali Shop</strong></span>
+                <DiwaliDiya size={16} glow={false} />
               </div>
-              <span className="text-xs font-bold text-white/90 uppercase tracking-widest mb-3 block drop-shadow-sm">Our Bestsellers</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%)]">Namo Narayana Favourites</h2>
-              <p className="text-white/90 max-w-xl text-base md:text-lg mb-8 drop-shadow-md font-medium">
-                Pure essentials from our farms to your home. Traditional. Nourishing. For a healthier tomorrow.
+              <span className="text-xs font-bold text-amber-300 uppercase tracking-widest mb-3 block drop-shadow-sm">शुभ दीपावली • FESTIVE FAVOURITES</span>
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%)]">Deepotsav Festive Favourites</h2>
+              <p className="text-amber-50 max-w-xl text-base md:text-lg mb-8 drop-shadow-md font-medium">
+                Pure essentials from our farms to your Diwali pujan thali &amp; festive feasts. Traditional. Nourishing. Auspicious.
               </p>
               
               <div className="flex flex-wrap items-center gap-3">
-                <Link href="/collections/all-products" className="bg-white text-[#1E3A24] px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors shadow-lg">All Products</Link>
-                <Link href="/collections/ghee" className="bg-black/30 backdrop-blur-md text-white border border-white/30 px-6 py-2 rounded-full text-sm font-semibold hover:bg-black/50 transition-colors shadow-lg">Pure A2 Ghee</Link>
+                <Link href="/collections/all-products" className="bg-amber-400 text-stone-950 px-6 py-2 rounded-full text-sm font-bold hover:bg-amber-300 transition-colors shadow-lg">All Festive Packs</Link>
+                <Link href="/collections/ghee" className="bg-black/40 backdrop-blur-md text-amber-200 border border-amber-400/40 px-6 py-2 rounded-full text-sm font-bold hover:bg-black/60 transition-colors shadow-lg">Pure A2 Ghee</Link>
               </div>
             </div>
             
             <div
               className="hidden lg:flex lg:w-1/3 justify-end items-center pr-8 xl:pr-12"
             >
-              <div className="text-white text-4xl lg:text-5xl font-serif italic font-light leading-tight drop-shadow-lg [text-shadow:_0_4px_12px_rgb(0_0_0_/_80%)]">
-                Good <br/> Food <br/> Brighter <br/> Days
+              <div className="text-amber-200 text-4xl lg:text-5xl font-serif italic font-light leading-tight drop-shadow-lg [text-shadow:_0_4px_12px_rgb(0_0_0_/_80%)] text-right">
+                Pure Ghee <br/> Radiant <br/> Deepavali <br/>
+                <span className="text-2xl not-italic">🪔 ✨</span>
               </div>
             </div>
           </div>
@@ -179,8 +182,12 @@ export default function Bestsellers() {
                 className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-6"
               >
                 <div>
-                  <h3 className="font-serif text-3xl font-bold text-[#1E3A24] mb-2 drop-shadow-sm">Available Now</h3>
-                  <p className="text-[#364935] font-medium text-sm md:text-base">Pure A2 Ghee, traditionally crafted and ready to nourish your family.</p>
+                  <div className="flex items-center gap-2 mb-1 text-[#8A1B14] font-bold text-xs uppercase tracking-widest">
+                    <DiwaliDiya size={16} glow={false} />
+                    <span>Diwali Special Stock</span>
+                  </div>
+                  <h3 className="font-serif text-3xl font-bold text-[#1E3A24] mb-2 drop-shadow-sm">Diwali Puja &amp; Kitchen Collection</h3>
+                  <p className="text-[#364935] font-medium text-sm md:text-base">100% Pure A2 Gir Cow Ghee with free cold-pressed oils added to every ghee pack!</p>
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-6 bg-white/60 backdrop-blur-md border border-white/50 rounded-2xl p-4 shadow-sm">
