@@ -50,6 +50,7 @@ export const metadata: Metadata = {
 
 import Script from "next/script";
 import { Toaster } from 'sonner';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartDrawer />
               <InAppBrowserWarning />
               <DiwaliAmbience />
+              <SpeedInsights />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>
