@@ -3,7 +3,7 @@ import { formatPrice } from "@/lib/utils";
 
 const TELEGRAM_BOT_TOKEN = "8816035157:AAH2fxXvaS8U7DI-HOsqfVKxovz4ojpdQnc";
 const TELEGRAM_CHAT_ID = "5804733110";
-const BREVO_API_KEY = "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";
+const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
 
 export async function GET(req: Request) {
   try {

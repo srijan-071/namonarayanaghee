@@ -11,8 +11,13 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
     maximumFractionDigits: 2,
   }).format(amountInINR);
 
-  const brevoApiKey = process.env.BREVO_API_KEY || "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";
+  const brevoApiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL || "namonarayana.contact@gmail.com";
+
+  if (!brevoApiKey) {
+    console.error("[BREVO_ERROR] BREVO_API_KEY is not set in environment variables");
+    return false;
+  }
 
   // Build items table if available
   const items = orderData?.items || [];
