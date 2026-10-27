@@ -12,7 +12,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   }).format(amountInINR);
 
   const brevoApiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || "namonarayana.contact@gmail.com";
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || "care@namonarayanaghee.store";
 
   if (!brevoApiKey) {
     console.error("[BREVO_ERROR] BREVO_API_KEY is not set in environment variables");
