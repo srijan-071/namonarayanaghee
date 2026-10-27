@@ -1,6 +1,55 @@
 "use client";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { JOURNEY_STEPS } from "@/lib/journey-data";
 import { motion } from "framer-motion";
+
+function LazyJourneyVideo({ src, title }: { src: string; title: string }) {
+  const [isInView, setIsInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Only load video when user scrolls within 300px of this journey step
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect(); // Once loaded, keep it loaded
+        }
+      },
+      { rootMargin: "300px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="w-full h-full relative bg-amber-50/50 flex items-center justify-center">
+      {isInView ? (
+        <video
+          src={src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          aria-label={title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#FDFBF7] to-[#F5EEDF] text-amber-900/60 p-6 text-center">
+          <div className="w-12 h-12 rounded-full border-2 border-amber-300 border-t-[#8A1B14] animate-spin mb-3" />
+          <span className="text-xs font-semibold tracking-wide uppercase">Traditional Bilona Vidhi</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ProductJourney() {
   return (
@@ -37,19 +86,14 @@ export default function ProductJourney() {
                 <div className="w-full md:w-1/2">
                   <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3] bg-gray-100 group">
                     {step.isVideo ? (
-                      <video
-                        src={step.media}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
+                      <LazyJourneyVideo src={step.media} title={step.title} />
                     ) : (
-                      <img
+                      <Image
                         src={step.media}
                         alt={step.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
                     )}
