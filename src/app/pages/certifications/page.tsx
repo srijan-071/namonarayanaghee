@@ -26,9 +26,9 @@ export default function CertificationsPage() {
 
         {/* Content */}
         <div
-          className="bg-white rounded-2xl shadow-xl border border-[#EAE2D2] p-8 md:p-12"
+          className="bg-white rounded-2xl shadow-xl border border-[#EAD7BC] p-8 md:p-12"
         >
-          <h2 className="text-3xl font-serif text-[#03483F] mb-8 border-b border-[#EAE2D2] pb-6">
+          <h2 className="text-3xl font-serif text-[#5E0B10] mb-8 border-b border-[#EAD7BC] pb-6">
             Regulatory Compliance
           </h2>
           
@@ -38,8 +38,8 @@ export default function CertificationsPage() {
                 <FileCheck className="w-6 h-6 text-[#C99A3D]" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-[#1C2B26] mb-2">FSSAI License</h3>
-                <p className="text-[#4A5450] mb-4 leading-relaxed">
+                <h3 className="text-xl font-bold text-[#2A1612] mb-2">FSSAI License</h3>
+                <p className="text-[#4A352F] mb-4 leading-relaxed">
                   Licensed by India&apos;s Food Safety and Standards Authority. Our facilities meet all hygiene and safety requirements for food production.
                 </p>
                 <a 
@@ -59,15 +59,15 @@ export default function CertificationsPage() {
                 <TestTubeIcon className="w-6 h-6 text-[#C99A3D]" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-[#1C2B26] mb-2">Lab Reports</h3>
-                <p className="text-[#4A5450] mb-4 leading-relaxed">
+                <h3 className="text-xl font-bold text-[#2A1612] mb-2">Lab Reports</h3>
+                <p className="text-[#4A352F] mb-4 leading-relaxed">
                   Batch-wise lab reports are available on request - write to us anytime. You can download the sample report below.
                 </p>
                 <a 
                   href="/media/o_f20260715-011-015_2_25449c.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#075B4F] text-white px-5 py-2.5 rounded-lg hover:bg-[#03483F] transition-colors text-sm font-semibold shadow-md"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity text-sm font-semibold shadow-md"
                 >
                   <Download className="w-4 h-4" />
                   Download Report (NMO-260722-A0)

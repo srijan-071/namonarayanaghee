@@ -211,8 +211,8 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
             ].map((item, idx) => (
               <div key={idx} className={cn("flex flex-col items-center text-center px-4", idx % 2 === 0 ? "border-l-0" : "", idx === 0 ? "md:border-l-0" : "")}>
                 <item.icon className="w-7 h-7 text-[#8A1B14] mb-2" strokeWidth={1.75} />
-                <h4 className="text-[#1E3A24] font-bold text-sm mb-0.5">{item.title}</h4>
-                <p className="text-[#576B55] text-xs font-medium">{item.desc}</p>
+                <h4 className="text-[#5E0B10] font-bold text-sm mb-0.5">{item.title}</h4>
+                <p className="text-[#7A4A3B] text-xs font-medium">{item.desc}</p>
               </div>
             ))}
           </div>

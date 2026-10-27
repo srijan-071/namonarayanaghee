@@ -35,7 +35,7 @@ export default function CinematicCTA() {
 
       {/* Gradients to blend top edge to previous section and bottom edge to footer */}
       <div className="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-[#F2EFE8] to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-48 z-10 bg-gradient-to-t from-[#092B1C] to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-48 z-10 bg-gradient-to-t from-[#2D0609] to-transparent pointer-events-none" />
       
       {/* Script Text */}
       <div
@@ -63,7 +63,7 @@ export default function CinematicCTA() {
           <p className="text-amber-100 text-base md:text-lg mb-8 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-w-lg">
             This festive season, illuminate your home and sweeten your gatherings with genuine A2 Gir Cow Bilona Ghee. Use code <strong className="text-amber-300 underline">DIWALI</strong> for an instant 10% discount!
           </p>
-          <Link href="/#diwali-specials" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#092B1C] rounded-full px-8 py-4 font-black transition-all w-max shadow-2xl group hover:scale-105 active:scale-95">
+          <Link href="/#diwali-specials" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#2D0609] rounded-full px-8 py-4 font-black transition-all w-max shadow-2xl group hover:scale-105 active:scale-95">
             <DiwaliDiya size={18} glow={false} />
             <span>Order Diwali Hampers</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

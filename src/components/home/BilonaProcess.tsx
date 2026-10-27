@@ -66,8 +66,8 @@ export default function BilonaProcess() {
             <DiwaliDiya size={16} glow={false} />
             <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em]">The Sacred Vedic Method for Deepotsav</span>
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#1E3A24] mb-6">The Ancient Art of Bilona</h2>
-          <p className="text-[#364935] text-lg leading-relaxed">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#5E0B10] mb-6">The Ancient Art of Bilona</h2>
+          <p className="text-[#4A352F] text-lg leading-relaxed">
             A time-honoured Vedic process that transforms pure A2 milk into golden ghee &mdash; slowly, naturally, and with unmatched care. Sacred for lighting Diwali diyas and crafting festive mithai.
           </p>
         </div>
@@ -79,22 +79,22 @@ export default function BilonaProcess() {
           <div
             className="lg:col-span-6"
           >
-            <div className="relative bg-[#3D2616] rounded-3xl p-8 md:p-12 overflow-hidden shadow-2xl flex flex-col md:flex-row gap-8 items-center border-b-4 border-[#C38936]">
+            <div className="relative bg-[#3D0A0E] rounded-3xl p-8 md:p-12 overflow-hidden shadow-2xl flex flex-col md:flex-row gap-8 items-center border-b-4 border-[#C38936]">
               {/* Background gradient for depth */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent pointer-events-none" />
               
               <div className="relative z-20 flex-1 w-full flex flex-col items-start">
                 <h3 className="font-serif text-3xl md:text-4xl font-bold text-white mb-2 leading-tight">
                   Pure Ghee. Proven.
                 </h3>
-                <p className="text-[#C38936] text-xs font-bold uppercase tracking-widest mb-10">
+                <p className="text-[#F5BD47] text-xs font-bold uppercase tracking-widest mb-10">
                   Tested for what matters.
                 </p>
                 
                 <div className="space-y-8 w-full">
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-full border border-[#C38936]/50 flex items-center justify-center shrink-0">
-                      <Beaker className="w-5 h-5 text-[#C38936]" />
+                    <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center shrink-0">
+                      <Beaker className="w-5 h-5 text-amber-300" />
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-base">Lab Tested</h4>
@@ -102,8 +102,8 @@ export default function BilonaProcess() {
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-full border border-[#C38936]/50 flex items-center justify-center shrink-0">
-                      <Leaf className="w-5 h-5 text-[#C38936]" />
+                    <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center shrink-0">
+                      <Leaf className="w-5 h-5 text-amber-300" />
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-base">No Preservatives</h4>
@@ -111,8 +111,8 @@ export default function BilonaProcess() {
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-full border border-[#C38936]/50 flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-5 h-5 text-[#C38936]" />
+                    <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-amber-300" />
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-base">100% Pure Ingredients</h4>
@@ -149,16 +149,16 @@ export default function BilonaProcess() {
                     className="flex gap-6 sm:gap-8 items-start relative"
                   >
                     {/* Circle Icon */}
-                    <div className="relative z-10 w-20 h-20 rounded-full bg-[#E9DFD1] border-4 border-[#F2EFE8] flex flex-col items-center justify-center shrink-0 shadow-md">
-                      <Icon className="w-6 h-6 text-[#1E3A24]" />
+                    <div className="relative z-10 w-20 h-20 rounded-full bg-[#FCF8EE] border-4 border-amber-200/80 flex flex-col items-center justify-center shrink-0 shadow-md">
+                      <Icon className="w-6 h-6 text-[#8A1B14]" />
                     </div>
                     
                     <div className="pt-2">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="font-serif text-3xl font-bold text-[#C38936]">{step.number}</span>
-                        <h3 className="font-serif font-bold text-2xl text-[#1E3A24]">{step.title}</h3>
+                        <h3 className="font-serif font-bold text-2xl text-[#5E0B10]">{step.title}</h3>
                       </div>
-                      <p className="text-base text-[#364935] leading-relaxed max-w-md">{step.desc}</p>
+                      <p className="text-base text-[#4A352F] leading-relaxed max-w-md">{step.desc}</p>
                     </div>
                   </div>
                 );
@@ -169,13 +169,13 @@ export default function BilonaProcess() {
         </div>
 
         {/* Bottom Features Strip */}
-        <div className="pt-12 border-t border-[#E9E5D9]">
+        <div className="pt-12 border-t border-[#EAD7BC]">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-4">
             {features.map((feature, i) => (
               <div key={i} className="flex flex-col items-center text-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center text-[#1E3A24]">
+                <div className="w-10 h-10 flex items-center justify-center text-[#8A1B14]">
                   {feature.icon === 'cow' && (
-                    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12h3M6 12v3M9 12v6M12 12v6M15 12v3M18 12h3M2 15h20M4 9h16"/></svg> // Rough placeholder
+                    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12h3M6 12v3M9 12v6M12 12v6M15 12v3M18 12h3M2 15h20M4 9h16"/></svg>
                   )}
                   {feature.icon === 'bilona' && <RotateCcw className="w-8 h-8" />}
                   {feature.icon === 'leaf' && <Leaf className="w-8 h-8" />}
@@ -184,8 +184,8 @@ export default function BilonaProcess() {
                   {feature.icon === 'badge' && <BadgeCheck className="w-8 h-8" />}
                 </div>
                 <div>
-                  <h5 className="font-bold text-[#1E3A24] text-sm leading-tight mb-1">{feature.title}</h5>
-                  <p className="text-xs text-[#576B55]">{feature.desc}</p>
+                  <h5 className="font-bold text-[#5E0B10] text-sm leading-tight mb-1">{feature.title}</h5>
+                  <p className="text-xs text-[#7A4A3B]">{feature.desc}</p>
                 </div>
               </div>
             ))}

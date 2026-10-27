@@ -45,39 +45,39 @@ export default function LanguagePopup() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#364935]/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#2D0609]/60 backdrop-blur-sm"
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="bg-[#F7F4EB] rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-[#E9E5D9]"
+            className="bg-[#FCFAF5] rounded-2xl shadow-2xl overflow-hidden max-w-md w-full border border-[#EAD7BC]"
           >
             <div className="p-8 text-center">
-              <h2 className="text-3xl font-serif text-[#364935] mb-2 font-bold">Welcome!</h2>
-              <p className="text-[#364935]/80 mb-8 font-medium">Please select your preferred language</p>
+              <h2 className="text-3xl font-serif text-[#5E0B10] mb-2 font-bold">Welcome!</h2>
+              <p className="text-[#4A352F] mb-8 font-medium">Please select your preferred language</p>
               
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => handleLanguageSelect('en')}
-                  className="flex flex-col items-center justify-center p-6 border-2 border-[#E9E5D9] bg-white rounded-xl hover:border-[#B58231] hover:bg-[#E9E5D9]/50 transition-all group"
+                  className="flex flex-col items-center justify-center p-6 border-2 border-[#EAD7BC] bg-white rounded-xl hover:border-[#D4A017] hover:bg-[#FDF6E8] transition-all group"
                 >
                   <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">��</span>
-                  <span className="font-semibold text-[#364935] text-lg">English</span>
+                  <span className="font-semibold text-[#5E0B10] text-lg">English</span>
                 </button>
                 
                 <button
                   onClick={() => handleLanguageSelect('hi')}
-                  className="flex flex-col items-center justify-center p-6 border-2 border-[#E9E5D9] bg-white rounded-xl hover:border-[#B58231] hover:bg-[#E9E5D9]/50 transition-all group"
+                  className="flex flex-col items-center justify-center p-6 border-2 border-[#EAD7BC] bg-white rounded-xl hover:border-[#D4A017] hover:bg-[#FDF6E8] transition-all group"
                 >
                   <span className="text-4xl mb-3 group-hover:scale-110 transition-transform">��</span>
-                  <span className="font-semibold text-[#364935] text-lg">हिंदी</span>
-                  <span className="text-sm text-[#364935]/60 mt-1">Hindi</span>
+                  <span className="font-semibold text-[#5E0B10] text-lg">हिंदी</span>
+                  <span className="text-sm text-[#7A4A3B] mt-1">Hindi</span>
                 </button>
               </div>
             </div>
-            <div className="bg-[#E9E5D9]/50 p-4 text-center">
-              <p className="text-xs text-[#364935]/70">You can always change this later from your browser settings.</p>
+            <div className="bg-[#FDF6E8] p-4 text-center border-t border-[#EAD7BC]/60">
+              <p className="text-xs text-[#7A4A3B]">You can always change this later from your browser settings.</p>
             </div>
           </motion.div>
         </motion.div>

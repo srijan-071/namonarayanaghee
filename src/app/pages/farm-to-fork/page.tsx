@@ -68,7 +68,7 @@ export default function FarmToForkPage() {
                     <div className={`inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] mb-8 border border-[#EAE2D2] lg:hidden`}>
                       {step.icon}
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-serif text-[#03483F] mb-6">{step.title}</h2>
+                    <h2 className="text-3xl md:text-4xl font-serif text-[#5E0B10] mb-6">{step.title}</h2>
                     <p className="text-lg text-[#4A5450] leading-relaxed max-w-lg mx-auto lg:mx-0 ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'}">
                       {step.desc}
                     </p>

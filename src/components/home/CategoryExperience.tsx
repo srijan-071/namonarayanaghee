@@ -19,7 +19,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-2-5-litre",
     image: "/assets/product_6-2p5_jpg.webp",
     badge: "VALUE PACK",
-    badgeColor: "bg-[#1E3A24] text-white",
+    badgeColor: "bg-[#8A1B14] text-white",
   },
   {
     title: "5 Litre Family Pack",
@@ -35,7 +35,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-500-ml",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     badge: "STARTER PACK",
-    badgeColor: "bg-[#1E3A24] text-white",
+    badgeColor: "bg-[#8A1B14] text-white",
   }
 ];
 
@@ -57,12 +57,12 @@ export default function CategoryExperience() {
         >
           <div className="max-w-2xl">
             <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4 block">Choose Your Pack</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#1E3A24] mb-4">Shop by Size</h2>
-            <p className="text-[#364935] text-base md:text-lg">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#5E0B10] mb-4">Shop by Size</h2>
+            <p className="text-[#4A352F] text-base md:text-lg">
               Pure A2 Gir Cow Ghee crafted for every kitchen. Choose what fits your home.
             </p>
           </div>
-          <div className="hidden lg:block text-[#576B55] text-3xl md:text-4xl font-serif italic font-light leading-tight drop-shadow-sm text-right mt-6 md:mt-0 opacity-70">
+          <div className="hidden lg:block text-[#7A4A3B] text-3xl md:text-4xl font-serif italic font-light leading-tight drop-shadow-sm text-right mt-6 md:mt-0 opacity-70">
             Good <br/> Food <br/> Brighter <br/> Days
           </div>
         </div>

@@ -6,40 +6,41 @@
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-serif: var(--font-serif), Georgia, serif;
 
-  /* Forest */
-  --color-nn-forest:       #075B4F;
-  --color-nn-forest-deep:  #03483F;
-  --color-nn-forest-dark:  #0A6659;
+  /* Diwali Royal Festive Palette (replaces green) */
+  --color-nn-forest:       #8A1B14;
+  --color-nn-forest-deep:  #5E0B10;
+  --color-nn-forest-dark:  #6E0D14;
   
-  /* Cream / Light */
-  --color-nn-ivory:        #FCFAF5;
-  --color-nn-cream:        #F7F2E8;
-  --color-nn-beige:        #EAE2D2;
+  /* Cream / Festive Ivory */
+  --color-nn-ivory:        #FFFDF7;
+  --color-nn-cream:        #FBF5E8;
+  --color-nn-beige:        #F3E7D3;
   
   /* Earth */
-  --color-nn-earth:        #7A5A3A;
+  --color-nn-earth:        #7A4B2A;
   --color-nn-earth-light:  #A87845;
   
-  /* Gold / Accent */
-  --color-nn-gold:         #C99A3D;
-  --color-nn-saffron:      #D88927;
+  /* Gold / Amber / Flame Accent */
+  --color-nn-gold:         #D4A017;
+  --color-nn-saffron:      #E67E22;
+  --color-nn-leaf:         #C48B28;
   
-  /* Sage / Subtle */
-  --color-nn-sage:         #9DAE8C;
+  /* Warm Subtle Accent */
+  --color-nn-sage:         #D4A017;
 
-  /* Core UI */
-  --color-nn-ink:          #1A2421;
-  --color-nn-bark:         #4A5450;
-  --color-nn-hairline:     #DCD5C5;
+  /* Core UI - Warm Festive */
+  --color-nn-ink:          #231714;
+  --color-nn-bark:         #4A352F;
+  --color-nn-hairline:     #EAD7BC;
   --color-nn-bg:           #FCFAF5;
 
   --radius-card: 16px;
   --radius-btn:  8px;
   --radius-pill: 9999px;
 
-  --shadow-card:       0 4px 12px rgba(3, 72, 63, 0.04);
-  --shadow-card-hover: 0 16px 32px rgba(3, 72, 63, 0.08);
-  --shadow-glow:       0 0 40px rgba(10, 102, 89, 0.15);
+  --shadow-card:       0 4px 14px rgba(94, 11, 16, 0.05);
+  --shadow-card-hover: 0 16px 32px rgba(94, 11, 16, 0.12);
+  --shadow-glow:       0 0 40px rgba(245, 189, 71, 0.3);
 
   /* Diwali Festive Palette */
   --color-diwali-gold:      #F5BD47;
@@ -63,8 +64,8 @@
   }
 
   ::selection {
-    background-color: var(--color-nn-forest);
-    color: var(--color-nn-ivory);
+    background-color: #8A1B14;
+    color: #FFFDF7;
   }
 }
 
@@ -130,25 +131,26 @@
   }
   
   .nn-btn-primary {
-    background: var(--color-nn-forest);
+    background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%);
     color: var(--color-nn-ivory);
-    box-shadow: 0 4px 12px rgba(7, 91, 79, 0.15);
+    box-shadow: 0 4px 14px rgba(138, 27, 20, 0.25);
   }
   .nn-btn-primary:hover {
-    background: var(--color-nn-forest-deep);
+    background: linear-gradient(135deg, #9E1F17 0%, #6E0D14 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(7, 91, 79, 0.25);
+    box-shadow: 0 8px 24px rgba(138, 27, 20, 0.35);
   }
   
   .nn-btn-accent {
-    background: var(--color-nn-gold);
-    color: var(--color-nn-ivory);
-    box-shadow: 0 4px 12px rgba(201, 154, 61, 0.15);
+    background: linear-gradient(135deg, #F5BD47 0%, #C48B28 100%);
+    color: #1F1414;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(245, 189, 71, 0.3);
   }
   .nn-btn-accent:hover {
-    background: var(--color-nn-saffron);
+    background: linear-gradient(135deg, #FFC857 0%, #D88927 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(201, 154, 61, 0.25);
+    box-shadow: 0 8px 24px rgba(245, 189, 71, 0.45);
   }
   
   .nn-btn-ghost {
@@ -174,7 +176,7 @@
   .nn-card:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-card-hover);
-    border-color: rgba(7, 91, 79, 0.1);
+    border-color: rgba(138, 27, 20, 0.12);
   }
 
   /* Sale badge */

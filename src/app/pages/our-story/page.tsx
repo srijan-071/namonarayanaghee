@@ -41,10 +41,10 @@ export default function OurStoryPage() {
           <div
             className="space-y-8"
           >
-            <h2 className="text-4xl font-serif text-[#03483F] leading-tight">
+            <h2 className="text-4xl font-serif text-[#5E0B10] leading-tight">
               A return to our roots.
             </h2>
-            <div className="space-y-6 text-lg text-[#4A5450] leading-relaxed">
+            <div className="space-y-6 text-lg text-[#4A352F] leading-relaxed">
               <p>
                 We work directly with 5000+ farmer families across India&apos;s native regions to bring you pure A2 Gir Cow Ghee - made the traditional way, tested in certified labs, and delivered with zero preservatives.
               </p>
@@ -63,8 +63,8 @@ export default function OurStoryPage() {
           <div
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-serif text-[#03483F] mb-4">Our Promise</h2>
-            <p className="text-[#4A5450] text-lg">The pillars that define every Namo Narayana product.</p>
+            <h2 className="text-4xl font-serif text-[#5E0B10] mb-4">Our Promise</h2>
+            <p className="text-[#4A352F] text-lg">The pillars that define every Namo Narayana product.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -92,13 +92,13 @@ export default function OurStoryPage() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#EAE2D2] hover:border-[#C99A3D]/30 transition-colors group"
+                className="bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#EAD7BC] hover:border-[#C99A3D]/30 transition-colors group"
               >
                 <div className="bg-[#FCFAF5] w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-serif text-[#03483F] mb-3">{item.title}</h3>
-                <p className="text-[#4A5450] leading-relaxed">{item.desc}</p>
+                <h3 className="text-xl font-serif text-[#5E0B10] mb-3">{item.title}</h3>
+                <p className="text-[#4A352F] leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>

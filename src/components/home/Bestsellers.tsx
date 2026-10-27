@@ -182,24 +182,24 @@ export default function Bestsellers() {
                     <DiwaliDiya size={16} glow={false} />
                     <span>Diwali Special Stock</span>
                   </div>
-                  <h3 className="font-serif text-3xl font-bold text-[#1E3A24] mb-2 drop-shadow-sm">Diwali Puja &amp; Kitchen Collection</h3>
-                  <p className="text-[#364935] font-medium text-sm md:text-base">100% Pure A2 Gir Cow Ghee with free cold-pressed oils added to every ghee pack!</p>
+                  <h3 className="font-serif text-3xl font-bold text-[#5E0B10] mb-2 drop-shadow-sm">Diwali Puja &amp; Kitchen Collection</h3>
+                  <p className="text-[#4A352F] font-medium text-sm md:text-base">100% Pure A2 Gir Cow Ghee with free cold-pressed oils added to every ghee pack!</p>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-6 bg-white/60 backdrop-blur-md border border-white/50 rounded-2xl p-4 shadow-sm">
+                <div className="flex flex-wrap items-center gap-6 bg-white/60 backdrop-blur-md border border-amber-200/60 rounded-2xl p-4 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <Leaf className="w-6 h-6 text-[#1E3A24]" />
-                    <span className="text-xs font-bold text-[#1E3A24] leading-tight">A2 Gir Cow<br/>Milk</span>
+                    <Leaf className="w-6 h-6 text-[#8A1B14]" />
+                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">A2 Gir Cow<br/>Milk</span>
                   </div>
-                  <div className="w-px h-8 bg-[#C2C7BB]" />
+                  <div className="w-px h-8 bg-amber-200" />
                   <div className="flex items-center gap-3">
                     <Droplets className="w-6 h-6 text-[#C38936]" />
-                    <span className="text-xs font-bold text-[#1E3A24] leading-tight">Bilona<br/>Churned</span>
+                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">Bilona<br/>Churned</span>
                   </div>
-                  <div className="w-px h-8 bg-[#C2C7BB]" />
+                  <div className="w-px h-8 bg-amber-200" />
                   <div className="flex items-center gap-3">
-                    <Leaf className="w-6 h-6 text-[#1E3A24]" />
-                    <span className="text-xs font-bold text-[#1E3A24] leading-tight">Farm Fresh<br/>& Natural</span>
+                    <Sparkles className="w-6 h-6 text-[#8A1B14]" />
+                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">Farm Fresh<br/>& Natural</span>
                   </div>
                 </div>
               </div>
@@ -208,42 +208,42 @@ export default function Bestsellers() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               >
                 {gheeProducts.map((p) => (
-                  <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-white/60 flex flex-col h-full group">
-                    <Link href={`/products/${p.slug}`} className="relative aspect-square w-full bg-[#F7F4EB] p-6 flex items-center justify-center overflow-hidden block">
+                  <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-amber-200/50 flex flex-col h-full group">
+                    <Link href={`/products/${p.slug}`} className="relative aspect-square w-full bg-[#FCFAF5] p-6 flex items-center justify-center overflow-hidden block">
                       <Image src={p.image} alt={p.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                       <div className="absolute top-4 left-4 z-10">
                         <span className={cn("text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-sm", p.badgeColor)}>
                           {p.badge}
                         </span>
                       </div>
-                      <button onClick={(e) => { e.preventDefault(); handleFavorite(p.id); }} className="absolute top-4 right-4 z-10 p-2 text-white hover:text-[#C38936] transition-colors drop-shadow-md">
+                      <button onClick={(e) => { e.preventDefault(); handleFavorite(p.id); }} className="absolute top-4 right-4 z-10 p-2 text-white hover:text-amber-400 transition-colors drop-shadow-md">
                         <Heart className="w-6 h-6" />
                       </button>
                     </Link>
                     
                     <div className="p-5 flex flex-col flex-1">
                       <Link href={`/products/${p.slug}`}>
-                        <h4 className="font-serif font-bold text-lg text-[#1E3A24] mb-1 group-hover:text-[#C38936] transition-colors">{p.title}</h4>
+                        <h4 className="font-serif font-bold text-lg text-[#5E0B10] mb-1 group-hover:text-[#8A1B14] transition-colors">{p.title}</h4>
                       </Link>
-                      <p className="text-xs text-[#576B55] mb-4">{p.subtitle}</p>
+                      <p className="text-xs text-[#7A4A3B] mb-4">{p.subtitle}</p>
                       
                       <div className="relative mb-4">
-                        <select className="w-full appearance-none bg-white border border-[#D5D8D0] text-[#364935] text-sm rounded-md px-3 py-2 pr-8 focus:outline-none focus:border-[#1E3A24] cursor-pointer" defaultValue={p.size}>
+                        <select className="w-full appearance-none bg-white border border-[#EAD7BC] text-[#2A1612] text-sm rounded-md px-3 py-2 pr-8 focus:outline-none focus:border-[#8A1B14] cursor-pointer" defaultValue={p.size}>
                           <option value={p.size}>{p.size}</option>
                         </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#576B55] pointer-events-none" />
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A4A3B] pointer-events-none" />
                       </div>
                       
-                      <div className="font-bold text-xl text-[#1E3A24] mb-5">{formatPrice(p.price)}</div>
+                      <div className="font-bold text-xl text-[#5E0B10] mb-5">{formatPrice(p.price)}</div>
                       
                       <button 
-    onClick={() => handleAddWithLoading(p)}
-    disabled={loading['add_'+p.id]}
-    className="mt-auto w-full bg-[#1E3A24] text-white rounded-lg py-3 flex items-center justify-center gap-2 hover:bg-[#152919] active:scale-95 transition-all font-medium disabled:opacity-70 disabled:cursor-not-allowed"
-  >
-    {loading['add_'+p.id] ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-    {loading['add_'+p.id] ? "Adding..." : "Add to Cart"}
-  </button>
+                        onClick={() => handleAddWithLoading(p)}
+                        disabled={loading['add_'+p.id]}
+                        className="mt-auto w-full bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white rounded-xl py-3 flex items-center justify-center gap-2 hover:from-[#76150F] hover:to-[#4C080D] active:scale-95 transition-all font-bold shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                      >
+                        {loading['add_'+p.id] ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
+                        {loading['add_'+p.id] ? "Adding..." : "Add to Cart"}
+                      </button>
                     </div>
                   </div>
                 ))}

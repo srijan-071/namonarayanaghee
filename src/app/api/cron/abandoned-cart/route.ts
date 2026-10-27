@@ -81,12 +81,12 @@ export async function GET(req: Request) {
               <style>
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #FAF9F5; margin: 0; padding: 0; }
                 .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-                .header { background-color: #1E3A24; padding: 40px 20px; text-align: center; border-bottom: 4px solid #C38936; }
+                .header { background-color: #5E0B10; padding: 40px 20px; text-align: center; border-bottom: 4px solid #D4A017; }
                 .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
-                .content { padding: 40px 30px; color: #364935; line-height: 1.6; text-align: center; }
-                .btn { background-color: #C38936; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 20px; }
+                .content { padding: 40px 30px; color: #4A352F; line-height: 1.6; text-align: center; }
+                .btn { background-color: #8A1B14; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 20px; }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
-                .footer { background-color: #F4F6F0; padding: 30px; text-align: center; font-size: 13px; color: #576B55; }
+                .footer { background-color: #FCFAF5; padding: 30px; text-align: center; font-size: 13px; color: #7A4A3B; }
               </style>
             </head>
             <body>
@@ -97,7 +97,7 @@ export async function GET(req: Request) {
                 <div class="content">
                   <p>Hi there,</p>
                   <p>We noticed you added some premium A2 Gir Cow Ghee to your cart but didn't complete your purchase.</p>
-                  <p>As a special token of appreciation, use code <strong>ELVISH10</strong> at checkout for <strong>10% off</strong> your entire order!</p>
+                  <p>As a special token of appreciation, use code <strong>DIWALI</strong> at checkout for <strong>10% off</strong> your entire order!</p>
                   
                   <table>
                     ${itemsHtml}
@@ -106,7 +106,7 @@ export async function GET(req: Request) {
                   <a href="https://namonarayanaghee.store/checkout" class="btn">Complete My Order</a>
                 </div>
                 <div class="footer">
-                  <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. �</p>
+                  <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. 🙏</p>
                 </div>
               </div>
             </body>

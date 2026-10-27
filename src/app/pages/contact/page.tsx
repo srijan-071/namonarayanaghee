@@ -33,44 +33,44 @@ export default function ContactPage() {
             className="space-y-10"
           >
             <div>
-              <h2 className="text-3xl font-serif text-[#03483F] mb-8">How can we help?</h2>
+              <h2 className="text-3xl font-serif text-[#5E0B10] mb-8">How can we help?</h2>
             </div>
 
             {/* Info Cards */}
             <div className="space-y-6">
               
               {/* Customer Support */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE2D2] shadow-sm">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
                 <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#C99A3D]">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#1C2B26] mb-1">Customer Support</h3>
-                  <p className="text-[#4A5450] text-sm mb-2">We typically respond within 24 hours (Mon–Sat, 10 AM – 7 PM IST)</p>
-                  <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D] font-semibold hover:text-[#A87845]">support@namonarayanaghee.store</a>
+                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Customer Support</h3>
+                  <p className="text-[#4A352F] text-sm mb-2">We typically respond within 24 hours (Mon–Sat, 10 AM – 7 PM IST)</p>
+                  <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">support@namonarayanaghee.store</a>
                 </div>
               </div>
 
               {/* WhatsApp */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE2D2] shadow-sm">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
                 <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#25D366]">
                   <MessageCircle className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#1C2B26] mb-1">WhatsApp Chat</h3>
-                  <p className="text-[#4A5450] text-sm mb-2">For quick queries regarding your order or our products.</p>
-                  <a href="https://api.whatsapp.com/send/?phone=919999993821&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-[#C99A3D] font-semibold hover:text-[#A87845]">+91 9999993821</a>
+                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">WhatsApp Chat</h3>
+                  <p className="text-[#4A352F] text-sm mb-2">For quick queries regarding your order or our products.</p>
+                  <a href="https://api.whatsapp.com/send/?phone=919999993821&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">+91 9999993821</a>
                 </div>
               </div>
 
               {/* Address */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE2D2] shadow-sm">
-                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#075B4F]">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
+                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#8A1B14]">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#1C2B26] mb-1">Registered Office</h3>
-                  <p className="text-[#4A5450] text-sm leading-relaxed">
+                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Registered Office</h3>
+                  <p className="text-[#4A352F] text-sm leading-relaxed">
                     HIMANI FOODS PRIVATE LIMITED<br />
                     Rohat(215), Sampla Sonipat Road<br />
                     District Sonipat, 131403<br />
@@ -80,13 +80,13 @@ export default function ContactPage() {
               </div>
 
               {/* Grievance */}
-              <div className="flex items-start gap-6 bg-[#FCFAF5] p-6 rounded-2xl border border-[#EAE2D2]">
-                <div className="text-[#4A5450] mt-1">
+              <div className="flex items-start gap-6 bg-[#FCFAF5] p-6 rounded-2xl border border-[#EAD7BC]">
+                <div className="text-[#4A352F] mt-1">
                   <AlertCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-md font-bold text-[#1C2B26] mb-1">Grievance Officer</h3>
-                  <p className="text-[#4A5450] text-sm leading-relaxed">
+                  <h3 className="text-md font-bold text-[#2A1612] mb-1">Grievance Officer</h3>
+                  <p className="text-[#4A352F] text-sm leading-relaxed">
                     All grievances will be acknowledged within 48 hours and resolved within 30 days.<br />
                     <strong>Email:</strong> <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D]">support@namonarayanaghee.store</a>
                   </p>
@@ -99,8 +99,8 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div
           >
-            <div className="bg-white rounded-2xl shadow-xl border border-[#EAE2D2] p-8 md:p-12">
-              <h3 className="text-2xl font-serif text-[#03483F] mb-6">Send us a message</h3>
+            <div className="bg-white rounded-2xl shadow-xl border border-[#EAD7BC] p-8 md:p-12">
+              <h3 className="text-2xl font-serif text-[#5E0B10] mb-6">Send us a message</h3>
               
               <form className="space-y-6" onSubmit={(e) => {
                 e.preventDefault();
@@ -112,30 +112,30 @@ export default function ContactPage() {
               }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-[#4A5450] mb-2">Full Name</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-[#4A352F] mb-2">Full Name</label>
                     <input 
                       type="text" 
                       id="name" 
-                      className="w-full bg-[#FCFAF5] border border-[#EAE2D2] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
+                      className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
                       placeholder="Jane Doe"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-[#4A5450] mb-2">Email Address</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-[#4A352F] mb-2">Email Address</label>
                     <input 
                       type="email" 
                       id="email" 
-                      className="w-full bg-[#FCFAF5] border border-[#EAE2D2] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
+                      className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
                       placeholder="jane@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-[#4A5450] mb-2">Subject</label>
+                  <label htmlFor="subject" className="block text-sm font-medium text-[#4A352F] mb-2">Subject</label>
                   <select 
                     id="subject" 
-                    className="w-full bg-[#FCFAF5] border border-[#EAE2D2] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all text-[#1C2B26]"
+                    className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all text-[#2A1612]"
                   >
                     <option value="order">Order Related Query</option>
                     <option value="product">Product Information</option>
@@ -149,7 +149,7 @@ export default function ContactPage() {
                   <input 
                     type="text" 
                     id="orderId" 
-                    className="w-full bg-[#FCFAF5] border border-[#EAE2D2] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
+                    className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
                     placeholder="#NN-12345"
                   />
                 </div>
@@ -159,7 +159,7 @@ export default function ContactPage() {
                   <textarea 
                     id="message" 
                     rows={5}
-                    className="w-full bg-[#FCFAF5] border border-[#EAE2D2] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all resize-none"
+                    className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all resize-none"
                     placeholder="How can we help you?"
                   ></textarea>
                 </div>

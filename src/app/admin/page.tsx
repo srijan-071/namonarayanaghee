@@ -160,8 +160,8 @@ export default function AdminPage() {
             <p className="text-nn-bark mt-1">Manage email collection and send coupon campaigns</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium bg-green-100 text-green-800 px-3 py-1 rounded-full flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Authenticated
+            <span className="text-sm font-medium bg-[#FDF2E9] text-[#8A1B14] border border-[#F5BD47]/40 px-3 py-1 rounded-full flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-[#8A1B14]" /> Authenticated
             </span>
           </div>
         </div>
@@ -249,8 +249,8 @@ export default function AdminPage() {
             <div className="p-5 border-b border-nn-hairline flex justify-between items-center bg-[#FAF9F5]">
               <div>
                 <h3 className="text-xl font-bold text-nn-forest-deep">Inbox-Optimized Mailer Preview</h3>
-                <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Plain-letter format (Avoids Spam &amp; Promotions tabs)
+                <span className="text-xs text-[#8A1B14] font-semibold flex items-center gap-1 mt-0.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A017]" /> Plain-letter format (Avoids Spam &amp; Promotions tabs)
                 </span>
               </div>
               <button onClick={() => setShowPreview(false)} className="text-nn-bark hover:text-nn-ink font-bold text-2xl leading-none">&times;</button>
@@ -266,7 +266,7 @@ export default function AdminPage() {
                   type="text" 
                   value={subject} 
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1E3A24]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
                   placeholder="A quick note from Namo Narayana"
                 />
                 <p className="text-[11px] text-gray-500 mt-1">
@@ -275,7 +275,7 @@ export default function AdminPage() {
               </div>
 
               {/* Email Body Preview */}
-              <div className="bg-white p-6 rounded-xl border border-gray-200 mx-auto max-w-lg shadow-2xs text-left text-[#1c2e20] font-sans text-sm leading-relaxed space-y-3.5">
+              <div className="bg-white p-6 rounded-xl border border-gray-200 mx-auto max-w-lg shadow-2xs text-left text-[#2A1612] font-sans text-sm leading-relaxed space-y-3.5">
                 <p>Namaste,</p>
                 <p>I noticed you were browsing our A2 Gir Cow Bilona Ghee earlier today.</p>
                 <p>
@@ -285,17 +285,17 @@ export default function AdminPage() {
                   It takes nearly 25 to 30 litres of pure Gir cow milk to produce just one single litre of this golden, grainy ghee. Elvish and our whole team wanted you to experience what real, unadulterated ghee actually tastes like.
                 </p>
 
-                <div className="bg-[#f7f9f6] border border-[#dbe6dc] rounded-lg p-3.5 my-3">
-                  <p className="text-xs font-semibold text-[#1e3a24] mb-1">Special 10% Farm Welcome:</p>
-                  <p className="text-sm mb-2 text-[#2a3d2e]">
-                    Use coupon code <strong className="bg-[#e3ede5] px-2 py-0.5 rounded font-mono text-[#0f401b]">ELVISH10</strong> at checkout.
+                <div className="bg-[#FCFAF5] border border-[#EAD7BC] rounded-lg p-3.5 my-3">
+                  <p className="text-xs font-semibold text-[#5E0B10] mb-1">Special 10% Farm Welcome:</p>
+                  <p className="text-sm mb-2 text-[#4A352F]">
+                    Use coupon code <strong className="bg-[#FDF6E8] border border-[#EAD7BC] px-2 py-0.5 rounded font-mono text-[#8A1B14]">DIWALI</strong> at checkout.
                   </p>
-                  <span className="inline-block bg-[#1e3a24] text-white text-xs font-bold px-4 py-2 rounded-md">
+                  <span className="inline-block bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-xs font-bold px-4 py-2 rounded-md">
                     Order Pure A2 Gir Cow Ghee (1L) &rarr;
                   </span>
                 </div>
 
-                <p className="text-xs text-[#4a5d4e]">
+                <p className="text-xs text-[#7A4A3B]">
                   Every order includes <strong>Free Express Shipping</strong> across India, packed in safe, food-grade glass jars freshly dispatched from our farm.
                 </p>
 
@@ -304,7 +304,7 @@ export default function AdminPage() {
                 </p>
 
                 <div className="border-t border-gray-200 pt-3 text-xs">
-                  <p className="font-bold text-[#1e3a24]">Anurag Sharma</p>
+                  <p className="font-bold text-[#5E0B10]">Anurag Sharma</p>
                   <p className="text-gray-600">Founder &amp; Farm Lead, Namo Narayana</p>
                   <p className="text-gray-500">Traditional Vedic Bilona Ghee • Rajasthan</p>
                 </div>
@@ -330,7 +330,7 @@ export default function AdminPage() {
                 <button 
                   onClick={sendPromoEmails}
                   disabled={isSending}
-                  className="bg-[#1E3A24] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#152919] transition shadow-md disabled:opacity-50 flex items-center gap-2"
+                  className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-6 py-2 rounded-lg font-bold hover:opacity-90 transition shadow-md disabled:opacity-50 flex items-center gap-2"
                 >
                   {isSending ? (
                     <>

@@ -267,7 +267,7 @@ export default function DiwaliSpecials() {
                       <span className="text-xs text-stone-400 line-through">
                         {formatPrice(product.mrp)}
                       </span>
-                      <span className="text-[10px] text-green-400 font-bold ml-auto">
+                      <span className="text-[10px] text-amber-300 font-bold ml-auto">
                         Save {formatPrice(product.mrp - product.price)}
                       </span>
                     </div>

@@ -107,8 +107,8 @@ export default function AccountPage() {
           <>
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h1 className="text-4xl font-serif text-[#03483F] mb-2">My Account</h1>
-            <p className="text-[#4A5450]">
+            <h1 className="text-4xl font-serif text-[#5E0B10] mb-2">My Account</h1>
+            <p className="text-[#4A352F]">
               {user?.isAnonymous
                 ? "Guest User"
                 : `Welcome back, ${user?.email || "User"}`}
@@ -117,7 +117,7 @@ export default function AccountPage() {
           {!user?.isAnonymous && (
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 text-[#4A5450] hover:text-[#C99A3D] transition-colors"
+              className="flex items-center gap-2 text-[#4A352F] hover:text-[#C99A3D] transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -131,13 +131,13 @@ export default function AccountPage() {
 
           {/* Main Orders Column */}
           <div className="lg:col-span-2 space-y-8">
-            <h2 className="text-2xl font-serif text-[#03483F]">Order History</h2>
+            <h2 className="text-2xl font-serif text-[#5E0B10]">Order History</h2>
 
             {orders.length === 0 ? (
-              <div className="bg-white border border-[#EAE2D2] rounded-2xl p-8 text-center shadow-sm">
+              <div className="bg-white border border-[#EAD7BC] rounded-2xl p-8 text-center shadow-sm">
                 <Package className="w-12 h-12 text-[#C99A3D]/50 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-[#1C2B26] mb-2">No orders yet</h3>
-                <p className="text-[#4A5450] mb-6">When you place an order, it will appear here.</p>
+                <h3 className="text-lg font-bold text-[#2A1612] mb-2">No orders yet</h3>
+                <p className="text-[#4A352F] mb-6">When you place an order, it will appear here.</p>
                 <Link href="/collections/all-products" className="nn-btn nn-btn-primary py-2 px-6">
                   Start Shopping
                 </Link>
@@ -153,16 +153,16 @@ export default function AccountPage() {
                   );
 
                   return (
-                    <div key={order.id} className="bg-white border border-[#EAE2D2] rounded-2xl overflow-hidden shadow-sm">
-                      <div className="bg-[#FCFAF5] p-5 border-b border-[#EAE2D2] flex flex-wrap justify-between items-center gap-4">
+                    <div key={order.id} className="bg-white border border-[#EAD7BC] rounded-2xl overflow-hidden shadow-sm">
+                      <div className="bg-[#FCFAF5] p-5 border-b border-[#EAD7BC] flex flex-wrap justify-between items-center gap-4">
                         <div>
-                          <p className="text-sm text-[#4A5450] mb-1">Order #{order.orderId || order.id}</p>
-                          <p className="text-xs text-[#8C988B]">
+                          <p className="text-sm text-[#4A352F] mb-1">Order #{order.orderId || order.id}</p>
+                          <p className="text-xs text-[#7A4A3B]">
                             {order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() : "Recently"}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-bold text-[#1C2B26]">{formatPrice(order.totalAmount)}</p>
+                          <p className="text-sm font-bold text-[#2A1612]">{formatPrice(order.totalAmount)}</p>
                           <div className="inline-flex items-center px-2.5 py-1 mt-1 rounded-full text-xs font-semibold bg-[#C99A3D]/10 text-[#A87845]">
                             {currentStatus}
                           </div>
@@ -173,27 +173,27 @@ export default function AccountPage() {
                         <div className="space-y-4">
                           {order.items?.map((item: any, idx: number) => (
                             <div key={idx} className="flex gap-4 items-center">
-                              <div className="w-16 h-16 bg-[#F7F4EB] rounded-lg overflow-hidden flex-shrink-0 relative">
+                              <div className="w-16 h-16 bg-[#FDF6E8] rounded-lg overflow-hidden flex-shrink-0 relative">
                                 {item.image ? (
                                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                 ) : (
-                                  <Package className="w-6 h-6 text-[#8C988B] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                  <Package className="w-6 h-6 text-[#7A4A3B] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                                 )}
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   {item.isGift && (
-                                    <span className="bg-[#0B3B82] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    <span className="bg-[#8A1B14] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                                       FREE GIFT
                                     </span>
                                   )}
-                                  <h4 className="font-bold text-[#1C2B26] text-sm">{item.name}</h4>
+                                  <h4 className="font-bold text-[#2A1612] text-sm">{item.name}</h4>
                                 </div>
-                                <p className="text-[#8C988B] text-xs">Qty: {item.quantity}</p>
+                                <p className="text-[#7A4A3B] text-xs">Qty: {item.quantity}</p>
                               </div>
-                              <div className="font-semibold text-sm text-[#4A5450]">
+                              <div className="font-semibold text-sm text-[#4A352F]">
                                 {item.isGift || item.price === 0 ? (
-                                  <span className="text-[#2E8B57] font-bold">FREE</span>
+                                  <span className="text-[#D4A017] font-bold">FREE</span>
                                 ) : (
                                   formatPrice(item.price * item.quantity)
                                 )}
@@ -203,13 +203,13 @@ export default function AccountPage() {
                         </div>
 
                         {/* Invoice Download */}
-                        <div className="mt-4 pt-4 border-t border-[#EAE2D2] flex justify-end">
+                        <div className="mt-4 pt-4 border-t border-[#EAD7BC] flex justify-end">
                           <button
                             onClick={() => {
                               downloadInvoice(order);
                               toast.success("Invoice opened! Use Print / Save as PDF.");
                             }}
-                            className="flex items-center gap-2 text-sm font-semibold text-[#C99A3D] hover:text-[#1E3A24] transition-colors"
+                            className="flex items-center gap-2 text-sm font-semibold text-[#C99A3D] hover:text-[#8A1B14] transition-colors"
                           >
                             <FileDown className="w-4 h-4" />
                             Download Invoice
@@ -225,26 +225,26 @@ export default function AccountPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-serif text-[#03483F]">Quick Links</h2>
+            <h2 className="text-2xl font-serif text-[#5E0B10]">Quick Links</h2>
 
-            <Link href="/track-order" className="block bg-white border border-[#EAE2D2] rounded-2xl p-6 shadow-sm hover:border-[#C99A3D]/50 transition-colors group">
+            <Link href="/track-order" className="block bg-white border border-[#EAD7BC] rounded-2xl p-6 shadow-sm hover:border-[#C99A3D]/50 transition-colors group">
               <div className="flex items-center gap-4 mb-2">
                 <div className="bg-[#FCFAF5] p-3 rounded-xl text-[#C99A3D]">
                   <Package className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-[#1C2B26] group-hover:text-[#C99A3D] transition-colors">Track an Order</h3>
+                <h3 className="font-bold text-[#2A1612] group-hover:text-[#C99A3D] transition-colors">Track an Order</h3>
               </div>
-              <p className="text-sm text-[#4A5450] pl-16">Track orders using an Order ID and Email.</p>
+              <p className="text-sm text-[#4A352F] pl-16">Track orders using an Order ID and Email.</p>
             </Link>
 
-            <Link href="/pages/contact" className="block bg-white border border-[#EAE2D2] rounded-2xl p-6 shadow-sm hover:border-[#C99A3D]/50 transition-colors group">
+            <Link href="/pages/contact" className="block bg-white border border-[#EAD7BC] rounded-2xl p-6 shadow-sm hover:border-[#C99A3D]/50 transition-colors group">
               <div className="flex items-center gap-4 mb-2">
-                <div className="bg-[#FCFAF5] p-3 rounded-xl text-[#075B4F]">
+                <div className="bg-[#FCFAF5] p-3 rounded-xl text-[#8A1B14]">
                   <MapPin className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-[#1C2B26] group-hover:text-[#075B4F] transition-colors">Need Help?</h3>
+                <h3 className="font-bold text-[#2A1612] group-hover:text-[#8A1B14] transition-colors">Need Help?</h3>
               </div>
-              <p className="text-sm text-[#4A5450] pl-16">Contact support regarding any issues.</p>
+              <p className="text-sm text-[#4A352F] pl-16">Contact support regarding any issues.</p>
             </Link>
 
           </div>

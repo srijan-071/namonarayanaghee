@@ -209,7 +209,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               <DiwaliDiya size={14} glow={false} />
               Diwali Festive Special
             </span>
-            <span className="bg-[#1E3A24] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+            <span className="bg-[#8A1B14] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
               <Award className="w-3.5 h-3.5 text-amber-300" />
               100% Traditional Bilona
             </span>
@@ -221,7 +221,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
 
           <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
             <span>FSSAI Lic: 10823999000412</span>
           </div>
         </div>
@@ -233,7 +233,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                 key={i}
                 onClick={() => setSelectedImage(i)}
                 className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
-                  i === selectedImage ? "border-[#1E3A24] ring-2 ring-[#1E3A24]/20 scale-105" : "border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100"
+                  i === selectedImage ? "border-[#8A1B14] ring-2 ring-[#8A1B14]/20 scale-105" : "border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100"
                 }`}
                 aria-label={`View image ${i + 1}`}
               >
@@ -244,20 +244,20 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         )}
 
         {/* Mini Trust Highlights Box below Gallery on Desktop */}
-        <div className="hidden md:grid grid-cols-2 gap-3 p-4 bg-[#FBF9F2] rounded-xl border border-amber-200/50">
-          <div className="flex items-center gap-2.5 text-xs text-[#1E3A24] font-medium">
-            <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0 font-bold">✓</div>
+        <div className="hidden md:grid grid-cols-2 gap-3 p-4 bg-[#FCFAF5] rounded-xl border border-amber-200/60">
+          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-[#8A1B14] shrink-0 font-bold">✓</div>
             <span>Curd Churned (Not Cream Separator)</span>
           </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#1E3A24] font-medium">
+          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
             <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0 font-bold">✓</div>
             <span>Slow Cooked in Traditional Vessels</span>
           </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#1E3A24] font-medium">
-            <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0 font-bold">✓</div>
+          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-[#8A1B14] shrink-0 font-bold">✓</div>
             <span>No Palm Oil or Chemical Adulteration</span>
           </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#1E3A24] font-medium">
+          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
             <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0 font-bold">✓</div>
             <span>Aromatic Golden Granular Danedar Texture</span>
           </div>
@@ -278,7 +278,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                 Pure Desi Vedic Cow Ghee
               </span>
             </div>
-            <h1 className="text-3xl lg:text-[34px] leading-tight font-serif font-bold text-[#1E3A24]">{product.title}</h1>
+            <h1 className="text-3xl lg:text-[34px] leading-tight font-serif font-bold text-[#5E0B10]">{product.title}</h1>
           </div>
           <button 
             className="p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition shrink-0 shadow-sm" 
@@ -306,14 +306,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               const el = document.getElementById("product-reviews-section");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-[#FDF6E8] px-3 py-1 rounded-full border border-[#EAD7BC]"
           >
-            <div className="flex text-[#066A46]">
+            <div className="flex text-[#D4A017]">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(reviewStats.average) ? "fill-current" : "text-gray-300"}`} />
               ))}
             </div>
-            <span className="text-xs font-bold text-[#1E3A24]">{reviewStats.average}★ ({reviewStats.total} reviews)</span>
+            <span className="text-xs font-bold text-[#5E0B10]">{reviewStats.average}★ ({reviewStats.total} reviews)</span>
           </button>
           <span className="text-xs text-gray-500 font-medium">• 100% Verified Buyers</span>
         </div>
@@ -322,11 +322,11 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         {gheePacks && gheePacks.length > 0 && (
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <label className="text-xs sm:text-sm font-extrabold text-[#1E3A24] flex items-center gap-1.5">
+              <label className="text-xs sm:text-sm font-extrabold text-[#5E0B10] flex items-center gap-1.5">
                 <span>Select Pack Size:</span>
                 <span className="text-[11px] font-normal text-gray-500 hidden sm:inline">(Bigger Pack = Bigger Savings)</span>
               </label>
-              <span className="text-[11px] sm:text-xs font-bold text-[#066A46] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+              <span className="text-[11px] sm:text-xs font-bold text-[#8A1B14] bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
                 Save up to 42%/L &rarr;
               </span>
             </div>
@@ -342,7 +342,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                 if (pack.slug.includes("500-ml")) {
                   ml = 500;
                   badge = "STARTER";
-                  badgeBg = "bg-gray-700 text-white";
+                  badgeBg = "bg-[#7A4B2A] text-white";
                   packRole = "Trial Pack";
                 } else if (pack.slug.includes("1-litre")) {
                   ml = 1000;
@@ -353,13 +353,13 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                 } else if (pack.slug.includes("2-5-litre")) {
                   ml = 2500;
                   badge = "VALUE PACK";
-                  badgeBg = "bg-[#1E3A24] text-white";
+                  badgeBg = "bg-[#8A1B14] text-white";
                   saveLabel = "Save 30%/L";
                   packRole = "Family Saver";
                 } else if (pack.slug.includes("5-litre")) {
                   ml = 5000;
                   badge = "BEST VALUE";
-                  badgeBg = "bg-red-600 text-white animate-pulse";
+                  badgeBg = "bg-[#5E0B10] text-amber-200 border border-amber-400/50";
                   saveLabel = "Save 42%/L";
                   packRole = "Mega Family";
                 }
@@ -380,13 +380,13 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                     }}
                     className={`relative text-left rounded-xl border-2 flex flex-col overflow-hidden transition-all duration-150 transform active:scale-95 ${
                       isSelected 
-                        ? "border-[#1E3A24] bg-emerald-50/20 ring-2 ring-[#1E3A24]/30 shadow-md scale-[1.01]" 
-                        : "border-gray-200 bg-white hover:border-[#1E3A24]/50 hover:bg-gray-50/60 shadow-2xs"
+                        ? "border-[#8A1B14] bg-amber-50/40 ring-2 ring-[#8A1B14]/30 shadow-md scale-[1.01]" 
+                        : "border-gray-200 bg-white hover:border-[#8A1B14]/50 hover:bg-gray-50/60 shadow-2xs"
                     }`}
                   >
                     {/* Top Header */}
                     <div className={`px-2 py-1 sm:px-2.5 sm:py-1.5 flex justify-between items-center text-[11px] sm:text-xs ${
-                      isSelected ? "bg-[#1E3A24] text-white" : "bg-gray-100 text-gray-800"
+                      isSelected ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white" : "bg-gray-100 text-gray-800"
                     }`}>
                       <span className="font-extrabold truncate">
                         {pack.variants[0]?.title ?? pack.title.split(' ').slice(-2).join(' ')}
@@ -403,7 +403,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                     {/* Bottom Details */}
                     <div className="p-2 sm:p-2.5 flex flex-col gap-1 flex-1">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-sm sm:text-base font-extrabold text-[#1E3A24]">
+                        <span className="text-sm sm:text-base font-extrabold text-[#5E0B10]">
                           Rs. {Math.round(pack.price / 100).toLocaleString('en-IN')}
                         </span>
                         {pack.compareAtPrice && (
@@ -414,12 +414,12 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                       </div>
                       
                       <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
-                        <span className="font-bold text-red-600">{packDiscount}% off</span>
+                        <span className="font-bold text-[#8A1B14]">{packDiscount}% off</span>
                         <span className="text-gray-500 text-[9px] sm:text-[10px]">{packRole}</span>
                       </div>
                       
                       <div className="mt-auto pt-1 sm:pt-1.5 border-t border-gray-100 flex items-center justify-between">
-                        <span className="text-[10px] sm:text-[11px] font-bold text-[#066A46]">
+                        <span className="text-[10px] sm:text-[11px] font-bold text-[#8A1B14]">
                           ₹{perLitre.toLocaleString("en-IN")}/L
                         </span>
                         {saveLabel && (
@@ -437,9 +437,9 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         )}
 
         {/* Pricing Box with High-Contrast Mobile Clean Layout */}
-        <div className="mb-4 bg-gradient-to-br from-[#F5F8F6] via-[#FAFBF9] to-white p-3.5 sm:p-5 rounded-2xl border border-emerald-200/80 shadow-xs">
+        <div className="mb-4 bg-gradient-to-br from-[#FFFDF7] via-[#FCFAF5] to-white p-3.5 sm:p-5 rounded-2xl border border-amber-200/80 shadow-xs">
           <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
-            <span className="text-3xl sm:text-4xl font-extrabold text-[#1E3A24] tracking-tight">
+            <span className="text-3xl sm:text-4xl font-extrabold text-[#5E0B10] tracking-tight">
               Rs. {(price / 100).toLocaleString('en-IN')}
             </span>
             {compareAt && compareAt > price && (
@@ -448,26 +448,26 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               </span>
             )}
             {discount > 0 && (
-              <span className="bg-[#1E3A24] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
+              <span className="bg-[#8A1B14] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
                 Save {discount}% (₹{savingsRupees.toLocaleString('en-IN')} OFF)
               </span>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-2">
-            <span className="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+            <span className="font-semibold text-amber-900 bg-amber-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
               FREE Express Shipping Pan-India
             </span>
             <span className="text-gray-500">MRP (Inclusive of all taxes)</span>
           </div>
 
-          <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#1E3A24]">
+          <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#5E0B10]">
             <span className="flex items-center gap-1.5 font-bold">
               <Factory className="w-4 h-4 text-[#C38936]" />
               Authentic Wooden Bilona Churned from Curd
             </span>
-            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+            <span className="text-[#8A1B14] font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
               Farm Fresh
             </span>
           </div>
@@ -475,15 +475,15 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
         {/* Legitimate Trust & Verification Cards (Compact Mobile Micro-Grid) */}
         <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
-              <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1E3A24]" />
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FCFAF5] border border-amber-200/60 shadow-2xs">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0">
+              <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8A1B14]" />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-[#1E3A24] block leading-tight">
+              <span className="text-[10px] sm:text-xs font-bold text-[#5E0B10] block leading-tight">
                 Small-Batch Gir Cows
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[#3e5f48] leading-tight block mt-0.5 hidden sm:block">
+              <span className="text-[10px] sm:text-[11px] text-[#7A4A3B] leading-tight block mt-0.5 hidden sm:block">
                 Indigenous Gir Breed
               </span>
             </div>
@@ -503,15 +503,15 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#F4F9F5] border border-[#D1E7DD] shadow-2xs">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E3F2E9] flex items-center justify-center text-[#1E3A24] shrink-0">
-              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1E3A24]" />
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FCFAF5] border border-amber-200/60 shadow-2xs">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0">
+              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8A1B14]" />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-[#1E3A24] block leading-tight">
+              <span className="text-[10px] sm:text-xs font-bold text-[#5E0B10] block leading-tight">
                 FSSAI Central Lic
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[#1E3A24] font-mono font-bold tracking-tight block mt-0.5 hidden sm:block">
+              <span className="text-[10px] sm:text-[11px] text-[#5E0B10] font-mono font-bold tracking-tight block mt-0.5 hidden sm:block">
                 10823999000412
               </span>
             </div>
@@ -519,7 +519,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         </div>
 
         {/* Free Gift Unlock Announcement */}
-        <div className="mb-4 p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-emerald-50 rounded-xl border border-amber-200 flex items-center gap-3">
+        <div className="mb-4 p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-xl border border-amber-200/80 flex items-center gap-3">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
             <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
@@ -528,7 +528,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               <>
                 <span className="font-bold text-amber-900 block">💡 Festive Special Tip:</span>
                 <p className="text-gray-700 mt-0.5 leading-snug">
-                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-emerald-800">FREE 250ml Cold-Pressed Mustard Oil</strong> automatically packed!
+                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-[#8A1B14]">FREE 250ml Cold-Pressed Mustard Oil</strong> automatically packed!
                 </p>
               </>
             ) : ((variant?.title || "").toLowerCase().includes("2.5")) ? (
@@ -571,7 +571,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             onClick={() => handleCopyCoupon("DIWALI")}
             className="text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer shrink-0"
           >
-            {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-800" /> : <Copy className="w-3.5 h-3.5 text-stone-900" />}
+            {codeCopied ? <Check className="w-3.5 h-3.5 text-[#8A1B14]" /> : <Copy className="w-3.5 h-3.5 text-stone-900" />}
             <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
           </button>
         </div>
@@ -599,7 +599,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                       }}
                       className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 ${
                         isSelected
-                          ? "bg-[#1E3A24] text-white shadow-xs ring-1 ring-[#1E3A24]"
+                          ? "bg-[#8A1B14] text-white shadow-xs ring-1 ring-[#8A1B14]"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95"
                       }`}
                     >
@@ -621,18 +621,18 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           {/* Stepper + Buy Now Row */}
           <div className="flex items-center gap-2.5 sm:gap-3 w-full">
             {/* Quantity Selector */}
-            <div className="flex items-center bg-[#E8F2EF] rounded-xl border border-[#CCE3DB] h-[48px] sm:h-[54px] shrink-0">
+            <div className="flex items-center bg-[#FDF6E8] rounded-xl border border-[#F0DCB8] h-[48px] sm:h-[54px] shrink-0">
               <button 
                 onClick={() => setQty(Math.max(1, qty - 1))} 
-                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-l-xl transition text-lg sm:text-xl font-bold"
+                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#8A1B14] hover:bg-[#FBE9CE] active:scale-95 rounded-l-xl transition text-lg sm:text-xl font-bold"
                 aria-label="Decrease quantity"
               >
                 −
               </button>
-              <span className="w-7 sm:w-10 text-center font-extrabold text-[#1E3A24] text-sm sm:text-base">{qty}</span>
+              <span className="w-7 sm:w-10 text-center font-extrabold text-[#5E0B10] text-sm sm:text-base">{qty}</span>
               <button 
                 onClick={() => setQty(qty + 1)} 
-                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#1E3A24] hover:bg-[#D5E8E0] active:scale-95 rounded-r-xl transition text-lg sm:text-xl font-bold"
+                className="w-9 sm:w-11 h-full flex items-center justify-center text-[#8A1B14] hover:bg-[#FBE9CE] active:scale-95 rounded-r-xl transition text-lg sm:text-xl font-bold"
                 aria-label="Increase quantity"
               >
                 +
@@ -658,15 +658,15 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         </div>
 
         {/* Delivery & Pincode Reassurance */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200/80 space-y-2 text-xs">
+        <div className="mb-6 p-4 bg-[#FCFAF5] rounded-xl border border-amber-200/60 space-y-2 text-xs">
           <div className="flex items-center gap-2 font-bold text-gray-900">
-            <Truck className="w-4 h-4 text-[#066A46]" />
-            <span>⚡ Expected Delivery: <strong className="text-emerald-800">{deliveryDateStr}</strong></span>
+            <Truck className="w-4 h-4 text-[#8A1B14]" />
+            <span>⚡ Expected Delivery: <strong className="text-amber-900">{deliveryDateStr}</strong></span>
           </div>
           <p className="text-gray-600 pl-6">
             Dispatches from our farm within <strong>24 hours</strong>. Free Express Delivery across 19,000+ Indian pincodes.
           </p>
-          <div className="flex items-center gap-2 text-gray-800 font-semibold pt-1 border-t border-gray-200 pl-6">
+          <div className="flex items-center gap-2 text-gray-800 font-semibold pt-1 border-t border-amber-200/50 pl-6">
             <span>🔒 100% Safe & Secure Checkout via UPI, Google Pay, PhonePe, Cards & NetBanking</span>
           </div>
         </div>
@@ -674,41 +674,41 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         {/* Trust Guarantees Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-6 pb-6 border-t border-gray-200">
           <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46] mb-1.5">
+            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
               <Truck className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-[#1E3A24] leading-tight">Free Express Shipping</span>
+            <span className="text-xs font-bold text-[#5E0B10] leading-tight">Free Express Shipping</span>
             <span className="text-[10px] text-gray-500 mt-0.5">Pan India</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46] mb-1.5">
+            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
               <Factory className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-[#1E3A24] leading-tight">Vedic Bilona Churned</span>
+            <span className="text-xs font-bold text-[#5E0B10] leading-tight">Vedic Bilona Churned</span>
             <span className="text-[10px] text-gray-500 mt-0.5">From Whole Curd</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46] mb-1.5">
+            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-[#1E3A24] leading-tight">100% Purity Guarantee</span>
+            <span className="text-xs font-bold text-[#5E0B10] leading-tight">100% Purity Guarantee</span>
             <span className="text-[10px] text-gray-500 mt-0.5">Or Full Refund</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#E8F2EF] flex items-center justify-center text-[#066A46] mb-1.5">
+            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
               <Award className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-[#1E3A24] leading-tight">NABL Lab Certified</span>
+            <span className="text-xs font-bold text-[#5E0B10] leading-tight">NABL Lab Certified</span>
             <span className="text-[10px] text-gray-500 mt-0.5">0% Adulteration</span>
           </div>
         </div>
 
         {/* Why 24,000+ Families Choose Us Comparison Table */}
         <div className="mb-8 p-4 sm:p-5 bg-[#FAF9F5] rounded-2xl border border-amber-200/60">
-          <h3 className="font-serif font-bold text-lg text-[#1E3A24] mb-3 flex items-center gap-2">
+          <h3 className="font-serif font-bold text-lg text-[#5E0B10] mb-3 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#C38936]" />
             Why Families Choose Namo Narayana vs Commercial Ghee
           </h3>
@@ -717,29 +717,29 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="py-2 pr-2 text-gray-500 font-semibold">Criteria</th>
-                  <th className="py-2 px-2 text-[#066A46] font-extrabold bg-emerald-50/80 rounded-t-lg">Namo Narayana</th>
+                  <th className="py-2 px-2 text-[#8A1B14] font-extrabold bg-amber-100/70 rounded-t-lg">Namo Narayana</th>
                   <th className="py-2 pl-2 text-gray-400 font-semibold">Store-Bought Ghee</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200/60">
                 <tr>
                   <td className="py-2 pr-2 font-medium text-gray-700">Source</td>
-                  <td className="py-2 px-2 text-[#1E3A24] font-bold bg-emerald-50/50">100% Indigenous Gir Cows</td>
+                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">100% Indigenous Gir Cows</td>
                   <td className="py-2 pl-2 text-gray-500">Commercial Buffalo/Jersey Milk</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-2 font-medium text-gray-700">Churning</td>
-                  <td className="py-2 px-2 text-[#1E3A24] font-bold bg-emerald-50/50">Hand-churned Curd (Bilona)</td>
+                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Hand-churned Curd (Bilona)</td>
                   <td className="py-2 pl-2 text-gray-500">Machine cream separator</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-2 font-medium text-gray-700">Digestibility</td>
-                  <td className="py-2 px-2 text-[#1E3A24] font-bold bg-emerald-50/50">Easy on Gut (A2 Protein)</td>
+                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Easy on Gut (A2 Protein)</td>
                   <td className="py-2 pl-2 text-gray-500">Heavy, bloating (A1 Protein)</td>
                 </tr>
                 <tr>
                   <td className="py-2 pr-2 font-medium text-gray-700">Aroma & Texture</td>
-                  <td className="py-2 px-2 text-[#1E3A24] font-bold bg-emerald-50/50">Rich Danedar & Sweet Aroma</td>
+                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Rich Danedar & Sweet Aroma</td>
                   <td className="py-2 pl-2 text-gray-500">Artificial essence added</td>
                 </tr>
               </tbody>
@@ -749,8 +749,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
         {/* Product Description */}
         <div className="mb-8">
-          <h2 className="text-sm font-bold text-[#1E3A24] uppercase tracking-wider mb-3">Product Description & Benefits</h2>
-          <div className="prose prose-sm max-w-none text-gray-800 marker:text-[#1E3A24]" dangerouslySetInnerHTML={{ __html: product.description }} />
+          <h2 className="text-sm font-bold text-[#5E0B10] uppercase tracking-wider mb-3">Product Description & Benefits</h2>
+          <div className="prose prose-sm max-w-none text-gray-800 marker:text-[#8A1B14]" dangerouslySetInnerHTML={{ __html: product.description }} />
         </div>
 
       </div>

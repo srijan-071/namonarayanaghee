@@ -92,7 +92,7 @@ export default function Header() {
       >
         <div className="nn-container flex items-center justify-between">
           {/* Mobile menu button */}
-          <button className="md:hidden p-2 -ml-2 text-nn-forest-deep" onClick={() => setMobileOpen(true)} aria-label="Open menu">
+          <button className="md:hidden p-2 -ml-2 text-[#5E0B10]" onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
@@ -102,7 +102,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
             <Image src="/assets/logo.png" alt="Namo Narayana Logo" width={100} height={100} className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-md transition-transform group-hover:scale-105" />
             <div className="hidden sm:flex flex-col">
-              <span className="font-serif font-bold text-sm md:text-base text-[#1E3A24] leading-tight flex items-center gap-1.5">
+              <span className="font-serif font-bold text-sm md:text-base text-[#5E0B10] leading-tight flex items-center gap-1.5">
                 <span>Namo Narayana</span>
                 <DiwaliDiya size={16} glow={true} />
               </span>
@@ -120,7 +120,7 @@ export default function Header() {
               <Link 
                 key={link.href} 
                 href={link.href} 
-                className="text-sm font-semibold tracking-wide text-[#364935] hover:text-[#B58231] transition-colors py-2"
+                className="text-sm font-semibold tracking-wide text-[#2A1612] hover:text-[#8A1B14] transition-colors py-2"
               >
                 {link.label}
               </Link>
@@ -131,22 +131,22 @@ export default function Header() {
           <div className="flex items-center gap-2 lg:gap-4">
             <div className="hidden lg:flex relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-[#8C988B]" strokeWidth={2} />
+                <Search className="h-4 w-4 text-[#A88878]" strokeWidth={2} />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 bg-[#E9E5D9] border border-transparent rounded-full text-sm placeholder-[#8C988B] focus:outline-none focus:ring-1 focus:ring-[#8C988B] text-[#364935] w-[180px] xl:w-[240px]"
+                className="block w-full pl-10 pr-3 py-2 bg-[#F3EADB] border border-[#E8DAC2] rounded-full text-sm placeholder-[#A88878] focus:outline-none focus:ring-1 focus:ring-amber-500 text-[#2A1612] w-[180px] xl:w-[240px]"
                 placeholder="Search products..."
               />
             </div>
             
-            <Link href="/account" className="p-2 text-[#364935] hover:text-[#B58231] transition-colors hidden sm:block" aria-label="Account">
+            <Link href="/account" className="p-2 text-[#2A1612] hover:text-[#8A1B14] transition-colors hidden sm:block" aria-label="Account">
               <User strokeWidth={1.5} size={22} />
             </Link>
-            <button onClick={open} className="relative p-2 text-[#364935] hover:text-[#B58231] transition-colors group flex items-center" aria-label="Open cart">
+            <button onClick={open} className="relative p-2 text-[#2A1612] hover:text-[#8A1B14] transition-colors group flex items-center" aria-label="Open cart">
               <ShoppingBag strokeWidth={1.5} size={22} />
               {cart.totalItems > 0 && (
-                <span className="absolute top-1 right-0 bg-[#B58231] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/4">
+                <span className="absolute top-1 right-0 bg-[#8A1B14] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/4 shadow-xs">
                   {cart.totalItems}
                 </span>
               )}
@@ -158,11 +158,11 @@ export default function Header() {
       {/* Mobile nav overlay */}
       {mobileOpen && (
         <>
-          <div className="fixed inset-0 bg-[#364935]/60 backdrop-blur-sm z-40 transition-opacity" onClick={() => setMobileOpen(false)} />
-          <nav className="fixed top-0 left-0 z-50 w-4/5 max-w-sm h-full bg-[#F7F4EB] shadow-2xl flex flex-col transform transition-transform">
-            <div className="flex items-center justify-between p-6 border-b border-[#E9E5D9]">
-              <span className="font-serif text-2xl font-bold text-[#364935]">Menu</span>
-              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="p-2 text-gray-500 hover:text-[#364935] transition-colors">
+          <div className="fixed inset-0 bg-[#2D0609]/70 backdrop-blur-sm z-40 transition-opacity" onClick={() => setMobileOpen(false)} />
+          <nav className="fixed top-0 left-0 z-50 w-4/5 max-w-sm h-full bg-[#FCFAF5] shadow-2xl flex flex-col transform transition-transform">
+            <div className="flex items-center justify-between p-6 border-b border-[#EAD7BC]">
+              <span className="font-serif text-2xl font-bold text-[#5E0B10]">Menu</span>
+              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="p-2 text-gray-500 hover:text-[#5E0B10] transition-colors">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -174,7 +174,7 @@ export default function Header() {
                   <Link 
                     href={link.href} 
                     onClick={() => setMobileOpen(false)} 
-                    className="block px-4 py-3 text-lg font-serif text-[#364935] hover:bg-[#E9E5D9] rounded-xl transition-colors"
+                    className="block px-4 py-3 text-lg font-serif text-[#2A1612] hover:bg-[#F3EADB] hover:text-[#8A1B14] rounded-xl transition-colors"
                   >
                     {link.label}
                   </Link>

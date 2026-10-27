@@ -299,71 +299,71 @@ export default function CheckoutPage() {
       <link rel="dns-prefetch" href="https://potter-world.com" />
 
       <div className="nn-container max-w-6xl mx-auto py-8">
-        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#5E0B10] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>
 
         <div className="flex flex-col lg:flex-row gap-10 items-start">
           
           {/* Main Form Area */}
           <div className="w-full lg:w-[55%] space-y-6">
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-[#E9E5D9] space-y-8">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-[#EAD7BC] space-y-8">
               
               {/* Contact Information */}
               <div>
-                <h2 className="font-serif text-xl font-bold text-[#1E3A24] mb-4">Contact Information</h2>
+                <h2 className="font-serif text-xl font-bold text-[#5E0B10] mb-4">Contact Information</h2>
                 <div className="space-y-4">
-                  <input type="text" placeholder="Full Name *" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24] focus:ring-1 focus:ring-[#1E3A24] transition bg-white" />
+                  <input type="text" placeholder="Full Name *" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="tel" placeholder="Mobile Number *" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24] focus:ring-1 focus:ring-[#1E3A24] transition bg-white" />
-                    <input type="email" placeholder="Email Address *" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24] focus:ring-1 focus:ring-[#1E3A24] transition bg-white" />
+                    <input type="tel" placeholder="Mobile Number *" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" />
+                    <input type="email" placeholder="Email Address *" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" />
                   </div>
                 </div>
               </div>
 
               {/* Delivery Address */}
               <div>
-                <h2 className="font-serif text-xl font-bold text-[#1E3A24] mb-4">Delivery Address</h2>
+                <h2 className="font-serif text-xl font-bold text-[#5E0B10] mb-4">Delivery Address</h2>
                 <div className="space-y-4">
                   {/* Step 1: Street Address */}
-                  <input type="text" placeholder="House/Flat No., Street, Locality *" value={form.address} onChange={(e) => setForm({...form, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                  <input type="text" placeholder="House/Flat No., Street, Locality *" value={form.address} onChange={(e) => setForm({...form, address: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14]" />
                   
                   {/* Step 2: PIN Code */}
                   <div className="relative">
-                    <MapPin className="w-5 h-5 absolute left-4 top-[14px] text-[#C38936]" />
-                    <input type="text" maxLength={6} placeholder="6-digit Indian PIN Code *" value={form.pincode} onChange={(e) => handlePincodeChange(e.target.value)} className="w-full border border-[#D5D8D0] rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-[#1E3A24] font-medium" />
-                    {isFetchingPincode && <Loader2 className="w-5 h-5 animate-spin absolute right-4 top-[14px] text-[#576B55]" />}
+                    <MapPin className="w-5 h-5 absolute left-4 top-[14px] text-[#D4A017]" />
+                    <input type="text" maxLength={6} placeholder="6-digit Indian PIN Code *" value={form.pincode} onChange={(e) => handlePincodeChange(e.target.value)} className="w-full border border-[#D5D8D0] rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-[#8A1B14] font-medium" />
+                    {isFetchingPincode && <Loader2 className="w-5 h-5 animate-spin absolute right-4 top-[14px] text-[#7A4A3B]" />}
                   </div>
                   
                   {/* Step 3: City and State (Auto-filled) */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" placeholder="City *" value={form.city} onChange={(e) => setForm({...form, city: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
-                    <input type="text" placeholder="State *" value={form.state} onChange={(e) => setForm({...form, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24]" />
+                    <input type="text" placeholder="City *" value={form.city} onChange={(e) => setForm({...form, city: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14]" />
+                    <input type="text" placeholder="State *" value={form.state} onChange={(e) => setForm({...form, state: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14]" />
                   </div>
                 </div>
               </div>
 
               {/* GST Option (Optional) */}
-              <div className="pt-2 border-t border-[#E9E5D9]">
+              <div className="pt-2 border-t border-[#EAD7BC]">
                 <label className="flex items-center gap-3 cursor-pointer select-none">
-                  <input type="checkbox" checked={hasGst} onChange={(e) => setHasGst(e.target.checked)} className="w-5 h-5 rounded border-[#D5D8D0] text-[#1E3A24] focus:ring-[#1E3A24] accent-[#1E3A24]" />
-                  <span className="font-medium text-[#364935]">I need a GST Invoice for my company (Optional)</span>
+                  <input type="checkbox" checked={hasGst} onChange={(e) => setHasGst(e.target.checked)} className="w-5 h-5 rounded border-[#D5D8D0] text-[#8A1B14] focus:ring-[#8A1B14] accent-[#8A1B14]" />
+                  <span className="font-medium text-[#4A352F]">I need a GST Invoice for my company (Optional)</span>
                 </label>
                 
                 {hasGst && (
-                  <div className="space-y-4 p-5 bg-[#F7F4EB] rounded-xl border border-[#E9DFD1] mt-4 animate-in fade-in slide-in-from-top-2">
-                    <input type="text" placeholder="Company Name *" value={gstDetails.companyName} onChange={(e) => setGstDetails({...gstDetails, companyName: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24] bg-white" />
-                    <input type="text" placeholder="GSTIN *" value={gstDetails.gstin} onChange={(e) => setGstDetails({...gstDetails, gstin: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#1E3A24] bg-white uppercase" />
+                  <div className="space-y-4 p-5 bg-[#FDFBF7] rounded-xl border border-[#EAD7BC] mt-4 animate-in fade-in slide-in-from-top-2">
+                    <input type="text" placeholder="Company Name *" value={gstDetails.companyName} onChange={(e) => setGstDetails({...gstDetails, companyName: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14] bg-white" />
+                    <input type="text" placeholder="GSTIN *" value={gstDetails.gstin} onChange={(e) => setGstDetails({...gstDetails, gstin: e.target.value})} className="w-full border border-[#D5D8D0] rounded-xl px-4 py-3 focus:outline-none focus:border-[#8A1B14] bg-white uppercase" />
                   </div>
                 )}
               </div>
 
               {/* Trust Badges */}
-              <div className="flex items-center justify-center gap-8 py-2 text-[#576B55]">
+              <div className="flex items-center justify-center gap-8 py-2 text-[#7A4A3B]">
                 <div className="flex flex-col items-center text-center gap-2">
-                  <Lock className="w-5 h-5 text-[#C38936]" />
+                  <Lock className="w-5 h-5 text-[#D4A017]" />
                   <span className="text-[10px] font-bold uppercase tracking-wider">100% Secure<br/>Payments</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-2">
-                  <Truck className="w-5 h-5 text-[#C38936]" />
+                  <Truck className="w-5 h-5 text-[#D4A017]" />
                   <span className="text-[10px] font-bold uppercase tracking-wider">Fast & Reliable<br/>Shipping</span>
                 </div>
               </div>
@@ -372,21 +372,21 @@ export default function CheckoutPage() {
 
           {/* Order Summary Sidebar */}
           <div ref={summaryRef} className="w-full lg:w-[45%] lg:sticky lg:top-24 h-fit">
-            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#E9E5D9]">
-              <h3 className="font-serif text-2xl font-bold text-[#1E3A24] mb-6"><span className="notranslate">Order Summary</span></h3>
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#EAD7BC]">
+              <h3 className="font-serif text-2xl font-bold text-[#5E0B10] mb-6"><span className="notranslate">Order Summary</span></h3>
               
-              <ul className="divide-y divide-[#E9E5D9] mb-6 max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
+              <ul className="divide-y divide-[#EAD7BC] mb-6 max-h-[35vh] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.items.map((item) => (
                   <li key={item.variantId} className="flex gap-4 py-4 first:pt-0">
-                    <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-[#E9DFD1] shrink-0 bg-[#F7F4EB]">
+                    <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-[#EAD7BC] shrink-0 bg-[#FDF6E8]">
                       {item.image && <Image src={item.image} alt={item.title} fill className="object-cover" sizes="80px" />}
                     </div>
                     <div className="flex-1 flex flex-col justify-center min-w-0">
-                      <p className="font-bold text-[#1E3A24] leading-tight mb-1">{item.title}</p>
-                      <p className="text-xs text-[#576B55] mb-2">{item.variantTitle}</p>
+                      <p className="font-bold text-[#5E0B10] leading-tight mb-1">{item.title}</p>
+                      <p className="text-xs text-[#7A4A3B] mb-2">{item.variantTitle}</p>
                       <div className="flex justify-between items-end">
-                        <span className="text-xs font-semibold bg-[#E9E5D9] px-2 py-1 rounded text-[#364935]">Qty: {item.quantity}</span>
-                        <span className="font-bold text-[#1E3A24]">{formatPrice(item.price * item.quantity)}</span>
+                        <span className="text-xs font-semibold bg-[#FDF6E8] px-2 py-1 rounded text-[#4A352F] border border-[#EAD7BC]/60">Qty: {item.quantity}</span>
+                        <span className="font-bold text-[#5E0B10]">{formatPrice(item.price * item.quantity)}</span>
                       </div>
                     </div>
                   </li>
@@ -394,48 +394,48 @@ export default function CheckoutPage() {
 
                 {/* Free Gift Items in Checkout Summary */}
                 {freeGifts.map((gift, idx) => (
-                  <li key={`checkout-gift-${idx}`} className="flex gap-3.5 py-3 bg-[#EEF4FB] border-2 border-[#1E40AF]/30 rounded-xl p-3 my-2.5 shadow-2xs">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#1E40AF]/20 shrink-0 bg-white p-1 flex items-center justify-center">
+                  <li key={`checkout-gift-${idx}`} className="flex gap-3.5 py-3 bg-[#FFFDF7] border-2 border-[#EAD7BC] rounded-xl p-3 my-2.5 shadow-2xs">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#EAD7BC] shrink-0 bg-white p-1 flex items-center justify-center">
                       <Image src={gift.image} alt={gift.name} fill className="object-contain" sizes="64px" />
                     </div>
                     <div className="flex-1 flex flex-col justify-center min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="bg-[#0B3B82] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        <span className="bg-[#8A1B14] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                           FREE GIFT
                         </span>
-                        <span className="text-[10px] font-bold text-[#1E3A8A] bg-white px-1.5 py-0.5 rounded border border-blue-200">
+                        <span className="text-[10px] font-bold text-[#5E0B10] bg-[#FDF6E8] px-1.5 py-0.5 rounded border border-[#EAD7BC]">
                           {gift.size} × {gift.quantity}
                         </span>
                       </div>
-                      <p className="font-bold text-[#1E3A24] text-xs leading-tight mt-1 line-clamp-1">{gift.name}</p>
+                      <p className="font-bold text-[#5E0B10] text-xs leading-tight mt-1 line-clamp-1">{gift.name}</p>
                       <div className="flex justify-between items-center mt-1">
-                        <span className="text-[11px] font-semibold text-[#1F6E43]">Added with ghee offer</span>
-                        <span className="font-extrabold text-[#086642] text-xs">FREE</span>
+                        <span className="text-[11px] font-semibold text-[#8A1B14]">Added with ghee offer</span>
+                        <span className="font-extrabold text-[#D4A017] text-xs">FREE</span>
                       </div>
                     </div>
                   </li>
                 ))}
               </ul>
               
-              <div className="space-y-4 text-base border-t-2 border-dashed border-[#E9E5D9] pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-2">
-                <div className="flex justify-between items-center text-[#576B55]">
+              <div className="space-y-4 text-base border-t-2 border-dashed border-[#EAD7BC] pt-6 bg-[#FCFAF5] -mx-6 md:-mx-8 px-6 md:px-8 pb-2">
+                <div className="flex justify-between items-center text-[#7A4A3B]">
                   <span><span className="notranslate">Subtotal</span></span>
-                  <span className="font-semibold text-[#1E3A24]">{formatPrice(cart.subtotal)}</span>
+                  <span className="font-semibold text-[#5E0B10]">{formatPrice(cart.subtotal)}</span>
                 </div>
 
                 {freeGifts.length > 0 && (
-                  <div className="flex justify-between items-center text-[#1E40AF]">
+                  <div className="flex justify-between items-center text-[#8A1B14]">
                     <span className="flex items-center gap-1.5 text-sm font-semibold">
-                      <Gift className="w-4 h-4" /> Free Gifts ({freeGifts.reduce((s, g) => s + g.quantity, 0)})
+                      <Gift className="w-4 h-4 text-[#D4A017]" /> Free Gifts ({freeGifts.reduce((s, g) => s + g.quantity, 0)})
                     </span>
-                    <span className="font-bold text-[#25D366]">FREE</span>
+                    <span className="font-bold text-[#D4A017]">FREE</span>
                   </div>
                 )}
                 
                 {pricing.discount > 0 && (
-                  <div className="flex justify-between items-center text-green-700">
+                  <div className="flex justify-between items-center text-[#8A1B14] font-semibold">
                     <span><span className="notranslate">Discount</span> ({pricing.discountPercent}%)</span>
-                    <span className="font-semibold">-{formatPrice(pricing.discount)}</span>
+                    <span className="font-bold">-{formatPrice(pricing.discount)}</span>
                   </div>
                 )}
                 
@@ -444,10 +444,10 @@ export default function CheckoutPage() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      placeholder="Discount code (e.g., ELVISH10)"
+                      placeholder="Discount code (e.g., DIWALI)"
                       value={tempCoupon}
                       onChange={(e) => setTempCoupon(e.target.value.toUpperCase())}
-                      className="flex-1 border border-[#D5D8D0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A24] bg-white uppercase"
+                      className="flex-1 border border-[#D5D8D0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#8A1B14] bg-white uppercase"
                     />
                     <button
                       onClick={() => {
@@ -464,35 +464,35 @@ export default function CheckoutPage() {
                         });
                       }}
                       disabled={!tempCoupon.trim()}
-                      className="bg-[#1E3A24] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#152919] disabled:opacity-50 transition-colors"
+                      className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
                     >
                       <span className="notranslate">Apply</span>
                     </button>
                   </div>
                   {couponCode && (
-                    <div className="flex items-center justify-between bg-green-50 border border-green-200 text-green-800 text-xs px-3 py-2 rounded-lg mt-2">
-                      <span className="font-bold flex items-center gap-1"><Tag className="w-3 h-3"/> {couponCode} APPLIED</span>
+                    <div className="flex items-center justify-between bg-[#FFF9EE] border border-[#EAD7BC] text-[#8A1B14] text-xs px-3 py-2 rounded-lg mt-2">
+                      <span className="font-bold flex items-center gap-1"><Tag className="w-3 h-3 text-[#D4A017]"/> {couponCode} APPLIED</span>
                       <button onClick={() => {
                         setCouponCode("");
                         import("@/lib/cart").then((cartLib) => cartLib.removeCoupon());
-                      }} className="text-green-800 hover:text-green-900 underline">Remove</button>
+                      }} className="text-[#8A1B14] hover:text-[#5E0B10] underline font-medium">Remove</button>
                     </div>
                   )}
                 </div>
 
-                <div className="flex justify-between items-center text-[#576B55]">
+                <div className="flex justify-between items-center text-[#7A4A3B]">
                   <span><span className="notranslate">Shipping</span></span>
-                  <span className="font-bold text-[#C38936]">FREE</span>
+                  <span className="font-bold text-[#D4A017]">FREE</span>
                 </div>
               </div>
               
-              <div className="border-t border-[#D5D8D0] mt-4 pt-6 bg-[#FAF9F5] -mx-6 md:-mx-8 px-6 md:px-8 pb-6 md:pb-8 -mb-6 md:-mb-8 rounded-b-2xl space-y-6">
+              <div className="border-t border-[#EAD7BC] mt-4 pt-6 bg-[#FCFAF5] -mx-6 md:-mx-8 px-6 md:px-8 pb-6 md:pb-8 -mb-6 md:-mb-8 rounded-b-2xl space-y-6">
                 <div className="flex justify-between items-end">
                   <div>
-                    <span className="block text-sm text-[#576B55] mb-1">Total to Pay</span>
-                    <span className="text-xs text-[#576B55]">Inclusive of all taxes</span>
+                    <span className="block text-sm text-[#7A4A3B] mb-1">Total to Pay</span>
+                    <span className="text-xs text-[#7A4A3B]">Inclusive of all taxes</span>
                   </div>
-                  <span className="text-3xl font-bold text-[#1E3A24]">{formatPrice(pricing.amountToPay)}</span>
+                  <span className="text-3xl font-bold text-[#5E0B10]">{formatPrice(pricing.amountToPay)}</span>
                 </div>
 
                 {/* Primary CTA (Desktop & Order Summary) */}
@@ -501,7 +501,7 @@ export default function CheckoutPage() {
                   disabled={isSubmitting || !isFormValid} 
                   className={`w-full px-8 py-4 sm:py-5 rounded-xl font-bold text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${
                     isFormValid && !isSubmitting
-                      ? "bg-[#C38936] text-white hover:bg-[#b0782b] hover:shadow-xl cursor-pointer"
+                      ? "bg-gradient-to-r from-[#8A1B14] via-[#A8281E] to-[#5E0B10] text-white hover:shadow-xl hover:shadow-[#8A1B14]/25 cursor-pointer"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300/80"
                   }`}
                 >
@@ -512,13 +512,13 @@ export default function CheckoutPage() {
                     </>
                   ) : (
                     <>
-                      <Lock className="w-5 h-5" />
+                      <Lock className="w-5 h-5 text-[#F5BD47]" />
                       {isFormValid ? "Proceed to Pay" : "Fill Details to Pay"}
                     </>
                   )}
                 </button>
-                <p className="text-xs text-center text-[#576B55] mt-3 flex items-center justify-center gap-1">
-                  <CreditCard className="w-4 h-4" /> Cards, UPI, NetBanking accepted
+                <p className="text-xs text-center text-[#7A4A3B] mt-3 flex items-center justify-center gap-1">
+                  <CreditCard className="w-4 h-4 text-[#D4A017]" /> Cards, UPI, NetBanking accepted
                 </p>
               </div>
             </div>
@@ -528,11 +528,11 @@ export default function CheckoutPage() {
       </div>
 
       {/* Sticky Bottom "Proceed to Pay" Bar on Mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-gray-200 shadow-[0_-4px_25px_rgba(0,0,0,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#EAD7BC] shadow-[0_-4px_25px_rgba(94,11,16,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
           <div className="flex flex-col shrink-0">
-            <span className="text-[11px] text-gray-500 font-medium">Total to Pay</span>
-            <span className="text-xl font-extrabold text-[#1E3A24] leading-tight">
+            <span className="text-[11px] text-[#7A4A3B] font-medium">Total to Pay</span>
+            <span className="text-xl font-extrabold text-[#5E0B10] leading-tight">
               {formatPrice(pricing.amountToPay)}
             </span>
           </div>
@@ -542,7 +542,7 @@ export default function CheckoutPage() {
             disabled={isSubmitting || !isFormValid}
             className={`flex-1 flex items-center justify-center gap-2 px-5 h-[48px] rounded-xl font-bold text-sm sm:text-base transition-all ${
               isFormValid && !isSubmitting
-                ? "bg-[#C38936] text-white shadow-lg hover:bg-[#b0782b] active:scale-[0.98] cursor-pointer"
+                ? "bg-gradient-to-r from-[#8A1B14] via-[#A8281E] to-[#5E0B10] text-white shadow-lg hover:shadow-xl hover:shadow-[#8A1B14]/25 active:scale-[0.98] cursor-pointer"
                 : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300/80"
             }`}
           >
@@ -553,7 +553,7 @@ export default function CheckoutPage() {
               </>
             ) : (
               <>
-                <Lock className="w-4 h-4" />
+                <Lock className="w-4 h-4 text-[#F5BD47]" />
                 <span>{isFormValid ? "Proceed to Pay" : "Fill Details to Pay"}</span>
               </>
             )}

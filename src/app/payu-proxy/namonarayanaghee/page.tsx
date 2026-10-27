@@ -12,8 +12,8 @@ function LegacyProxyForwarder() {
   }, [searchParams]);
 
   return (
-    <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#FAF9F5] text-[#1E3A24]">
-      <div className="w-10 h-10 border-4 border-[#E9E5D9] border-t-[#1E3A24] rounded-full animate-spin mb-4" />
+    <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#FCFAF5] text-[#5E0B10]">
+      <div className="w-10 h-10 border-4 border-[#EAD7BC] border-t-[#8A1B14] rounded-full animate-spin mb-4" />
       <p className="text-sm font-medium">Connecting to secure gateway...</p>
     </div>
   );
@@ -22,7 +22,7 @@ function LegacyProxyForwarder() {
 export default function NamoNarayanaLegacyProxyPage() {
   return (
     <Suspense fallback={
-      <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#FAF9F5] text-[#576B55]">
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#FCFAF5] text-[#7A4A3B]">
         Loading secure checkout...
       </div>
     }>

@@ -73,21 +73,21 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
     .map(
       (item, idx) => `
     <tr>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: left; font-size: 14px;">
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: left; font-size: 14px;">
         ${idx + 1}
       </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: left;">
-        <div style="font-weight: 600; color: #1E3A24; font-size: 14px;">${item.name || item.title}</div>
-        ${item.variantTitle ? `<div style="font-size: 12px; color: #576B55; margin-top: 2px;">${item.variantTitle}</div>` : ""}
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: left;">
+        <div style="font-weight: 600; color: #5E0B10; font-size: 14px;">${item.name || item.title}</div>
+        ${item.variantTitle ? `<div style="font-size: 12px; color: #7A4A3B; margin-top: 2px;">${item.variantTitle}</div>` : ""}
       </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: center; font-size: 14px;">
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: center; font-size: 14px;">
         ${item.quantity}
       </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: right; font-size: 14px;">
-        ${item.price === 0 ? '<span style="color: #2E8B57; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price)}
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: right; font-size: 14px;">
+        ${item.price === 0 ? '<span style="color: #D4A017; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price)}
       </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #E9E5D9; text-align: right; font-weight: 600; font-size: 14px; color: #1E3A24;">
-        ${item.price === 0 ? '<span style="color: #2E8B57; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price * item.quantity)}
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: right; font-weight: 600; font-size: 14px; color: #5E0B10;">
+        ${item.price === 0 ? '<span style="color: #D4A017; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price * item.quantity)}
       </td>
     </tr>`
     )
@@ -106,7 +106,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
     
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #364935;
+      color: #4A352F;
       background: #fff;
       padding: 40px;
       max-width: 800px;
@@ -124,49 +124,49 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
 
   <!-- Print Button -->
   <div class="no-print" style="text-align: center; margin-bottom: 24px;">
-    <button onclick="window.print()" style="background: #1E3A24; color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif;">
-      � Download / Print Invoice
+    <button onclick="window.print()" style="background: #8A1B14; color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif;">
+      🖨 Download / Print Invoice
     </button>
   </div>
 
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 3px solid #C38936; padding-bottom: 24px;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 3px solid #D4A017; padding-bottom: 24px;">
     <div>
-      <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #1E3A24; margin-bottom: 4px;">Namo Narayana</h1>
-      <p style="font-size: 12px; color: #C38936; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Pure A2 Gir Cow Ghee & Traditional Foods</p>
-      <div style="margin-top: 12px; font-size: 12px; color: #576B55; line-height: 1.8;">
-        <div>� namonarayana.contact@gmail.com</div>
-        <div>� +91 99999 93821</div>
-        <div>� namonarayanaghee.store</div>
+      <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #5E0B10; margin-bottom: 4px;">Namo Narayana</h1>
+      <p style="font-size: 12px; color: #D4A017; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Pure A2 Gir Cow Ghee & Traditional Foods</p>
+      <div style="margin-top: 12px; font-size: 12px; color: #7A4A3B; line-height: 1.8;">
+        <div>✉ namonarayana.contact@gmail.com</div>
+        <div>📞 +91 99999 93821</div>
+        <div>🌐 namonarayanaghee.store</div>
       </div>
     </div>
     <div style="text-align: right;">
-      <div style="font-size: 32px; font-family: 'Playfair Display', serif; font-weight: 700; color: #1E3A24;">INVOICE</div>
+      <div style="font-size: 32px; font-family: 'Playfair Display', serif; font-weight: 700; color: #5E0B10;">INVOICE</div>
       <div style="margin-top: 8px; font-size: 13px;">
-        <div style="color: #576B55;">Invoice No: <strong style="color: #1E3A24;">${invoiceNumber}</strong></div>
-        <div style="color: #576B55; margin-top: 4px;">Date: <strong style="color: #1E3A24;">${invoiceDate}</strong></div>
-        <div style="color: #576B55; margin-top: 4px;">Order ID: <strong style="color: #1E3A24;">${order.orderId || order.id}</strong></div>
+        <div style="color: #7A4A3B;">Invoice No: <strong style="color: #5E0B10;">${invoiceNumber}</strong></div>
+        <div style="color: #7A4A3B; margin-top: 4px;">Date: <strong style="color: #5E0B10;">${invoiceDate}</strong></div>
+        <div style="color: #7A4A3B; margin-top: 4px;">Order ID: <strong style="color: #5E0B10;">${order.orderId || order.id}</strong></div>
       </div>
     </div>
   </div>
 
   <!-- Customer Details -->
   <div style="display: flex; gap: 32px; margin-bottom: 32px;">
-    <div style="flex: 1; background: #FAF9F5; padding: 20px; border-radius: 12px; border: 1px solid #E9E5D9;">
-      <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #C38936; font-weight: 700; margin-bottom: 10px;">Ship To</h3>
-      <div style="font-size: 13px; line-height: 1.7; color: #1E3A24;">
+    <div style="flex: 1; background: #FCFAF5; padding: 20px; border-radius: 12px; border: 1px solid #EAD7BC;">
+      <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #D4A017; font-weight: 700; margin-bottom: 10px;">Ship To</h3>
+      <div style="font-size: 13px; line-height: 1.7; color: #5E0B10;">
         <strong>${order.shippingAddress.name}</strong><br>
         ${order.shippingAddress.address}<br>
         ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.pincode}<br>
         ${order.shippingAddress.country}
       </div>
-      <div style="margin-top: 8px; font-size: 12px; color: #576B55;">
+      <div style="margin-top: 8px; font-size: 12px; color: #7A4A3B;">
         ${order.contactInfo.email} • ${order.contactInfo.phone}
       </div>
     </div>
-    <div style="flex: 1; background: #FAF9F5; padding: 20px; border-radius: 12px; border: 1px solid #E9E5D9;">
-      <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #C38936; font-weight: 700; margin-bottom: 10px;">Bill To</h3>
-      <div style="font-size: 13px; line-height: 1.7; color: #1E3A24;">
+    <div style="flex: 1; background: #FCFAF5; padding: 20px; border-radius: 12px; border: 1px solid #EAD7BC;">
+      <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #D4A017; font-weight: 700; margin-bottom: 10px;">Bill To</h3>
+      <div style="font-size: 13px; line-height: 1.7; color: #5E0B10;">
         <strong>${order.billingAddress.name}</strong><br>
         ${order.billingAddress.address}<br>
         ${order.billingAddress.city}, ${order.billingAddress.state} ${order.billingAddress.pincode}<br>
@@ -174,7 +174,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       </div>
       ${
         order.gstDetails
-          ? `<div style="margin-top: 8px; font-size: 12px; color: #576B55;">
+          ? `<div style="margin-top: 8px; font-size: 12px; color: #7A4A3B;">
               GSTIN: <strong>${order.gstDetails.gstin}</strong><br>
               ${order.gstDetails.companyName}
             </div>`
@@ -186,7 +186,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <!-- Items Table -->
   <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
     <thead>
-      <tr style="background: #1E3A24;">
+      <tr style="background: #5E0B10;">
         <th style="padding: 12px 16px; text-align: left; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; border-radius: 8px 0 0 0;">#</th>
         <th style="padding: 12px 16px; text-align: left; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Product</th>
         <th style="padding: 12px 16px; text-align: center; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Qty</th>
@@ -208,7 +208,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       </div>
       ${
         order.discount && order.discount > 0
-          ? `<div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #16a34a;">
+          ? `<div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #8A1B14;">
               <span>Discount (${order.discountPercent || 10}%)</span>
               <span style="font-weight: 600;">-${formatInvoicePrice(order.discount)}</span>
             </div>`
@@ -216,25 +216,25 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       }
       <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px;">
         <span>Shipping</span>
-        <span style="font-weight: 600; color: #C38936;">${order.shippingCost === 0 ? "FREE" : formatInvoicePrice(order.shippingCost)}</span>
+        <span style="font-weight: 600; color: #D4A017;">${order.shippingCost === 0 ? "FREE" : formatInvoicePrice(order.shippingCost)}</span>
       </div>
       <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px;">
         <span>Tax (Included)</span>
         <span style="font-weight: 600;">${formatInvoicePrice(order.tax || 0)}</span>
       </div>
-      <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 18px; font-weight: 700; color: #1E3A24; border-top: 2px solid #1E3A24; margin-top: 8px;">
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 18px; font-weight: 700; color: #5E0B10; border-top: 2px solid #5E0B10; margin-top: 8px;">
         <span>Total</span>
         <span>${formatInvoicePrice(order.totalAmount)}</span>
       </div>
-      <div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #F4F6F0; border-radius: 8px; margin-top: 8px;">
+      <div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #FCFAF5; border-radius: 8px; margin-top: 8px; border: 1px solid #EAD7BC;">
         <span>Paid Online</span>
-        <span style="font-weight: 600; color: #1E3A24;">${formatInvoicePrice(order.amountToPay || order.totalAmount)}</span>
+        <span style="font-weight: 600; color: #5E0B10;">${formatInvoicePrice(order.amountToPay || order.totalAmount)}</span>
       </div>
       ${
         order.amountRemaining && order.amountRemaining > 0
-          ? `<div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #FFF7ED; border-radius: 8px; margin-top: 4px;">
+          ? `<div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #FFF9EE; border-radius: 8px; margin-top: 4px; border: 1px solid #EAD7BC;">
               <span>Due on Delivery</span>
-              <span style="font-weight: 600; color: #C38936;">${formatInvoicePrice(order.amountRemaining)}</span>
+              <span style="font-weight: 600; color: #D4A017;">${formatInvoicePrice(order.amountRemaining)}</span>
             </div>`
           : ""
       }
@@ -242,18 +242,18 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   </div>
 
   <!-- Payment Info -->
-  <div style="background: #FAF9F5; padding: 16px 20px; border-radius: 12px; border: 1px solid #E9E5D9; margin-bottom: 32px; font-size: 13px;">
-    <strong style="color: #1E3A24;">Payment:</strong>
-    <span style="color: #576B55; margin-left: 8px;">
+  <div style="background: #FCFAF5; padding: 16px 20px; border-radius: 12px; border: 1px solid #EAD7BC; margin-bottom: 32px; font-size: 13px;">
+    <strong style="color: #5E0B10;">Payment:</strong>
+    <span style="color: #7A4A3B; margin-left: 8px;">
       Prepaid (Online Payment)
-      - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#16a34a" : "#C38936"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
+      - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#8A1B14" : "#D4A017"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
     </span>
   </div>
 
   <!-- Footer -->
-  <div style="text-align: center; padding-top: 24px; border-top: 1px solid #E9E5D9;">
-    <p style="font-family: 'Playfair Display', serif; font-size: 16px; color: #1E3A24; margin-bottom: 4px;">Thank you for shopping with Namo Narayana!</p>
-    <p style="font-size: 12px; color: #576B55;">Pure Food. Stronger Bharat. �</p>
+  <div style="text-align: center; padding-top: 24px; border-top: 1px solid #EAD7BC;">
+    <p style="font-family: 'Playfair Display', serif; font-size: 16px; color: #5E0B10; margin-bottom: 4px;">Thank you for shopping with Namo Narayana!</p>
+    <p style="font-size: 12px; color: #7A4A3B;">Pure Food. Stronger Bharat. 🙏</p>
     <p style="font-size: 11px; color: #8C988B; margin-top: 12px;">This is a computer-generated invoice and does not require a signature.</p>
   </div>
 

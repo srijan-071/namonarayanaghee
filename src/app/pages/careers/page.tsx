@@ -28,31 +28,31 @@ export default function CareersPage() {
 
         {/* Content */}
         <div
-          className="bg-white rounded-2xl shadow-xl border border-[#EAE2D2] p-8 md:p-16 text-left relative overflow-hidden"
+          className="bg-white rounded-2xl shadow-xl border border-[#EAD7BC] p-8 md:p-16 text-left relative overflow-hidden"
         >
           {/* Decorative background elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F2EDE1] rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FDF6E8] rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
           
           <div className="relative z-10 space-y-8 max-w-2xl">
-            <h2 className="text-3xl font-serif text-[#03483F] leading-tight">
+            <h2 className="text-3xl font-serif text-[#5E0B10] leading-tight">
               Bring your passion to a purposeful mission.
             </h2>
-            <p className="text-lg text-[#4A5450] leading-relaxed">
+            <p className="text-lg text-[#4A352F] leading-relaxed">
               We hire across sourcing, quality, operations, marketing, and technology. If our mission speaks to you, we&apos;d love to hear from you.
             </p>
             
-            <div className="bg-[#FCFAF5] p-6 rounded-xl border border-[#EAE2D2] flex flex-col sm:flex-row items-center gap-6 mt-8">
-              <div className="bg-[#075B4F] text-white p-4 rounded-full flex-shrink-0">
-                <Send className="w-6 h-6" />
+            <div className="bg-[#FCFAF5] p-6 rounded-xl border border-[#EAD7BC] flex flex-col sm:flex-row items-center gap-6 mt-8">
+              <div className="bg-gradient-to-br from-[#8A1B14] to-[#5E0B10] text-white p-4 rounded-full flex-shrink-0 shadow-md">
+                <Send className="w-6 h-6 text-[#F5BD47]" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#1C2B26] mb-1">Apply via Email</h3>
-                <p className="text-[#4A5450] text-sm mb-3">
+                <h3 className="text-lg font-bold text-[#2A1612] mb-1">Apply via Email</h3>
+                <p className="text-[#4A352F] text-sm mb-3">
                   Write to us with your resume and a few lines about why you&apos;d like to join.
                 </p>
                 <a 
                   href="mailto:support@namonarayanaghee.store"
-                  className="inline-flex items-center gap-2 text-[#C99A3D] font-semibold hover:text-[#A87845] transition-colors"
+                  className="inline-flex items-center gap-2 text-[#C99A3D] font-semibold hover:text-[#8A1B14] transition-colors"
                 >
                   support@namonarayanaghee.store
                   <ArrowRight className="w-4 h-4" />

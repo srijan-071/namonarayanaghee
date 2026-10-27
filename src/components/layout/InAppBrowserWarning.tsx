@@ -26,15 +26,15 @@ export default function InAppBrowserWarning() {
   if (!isInAppBrowser) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-[#1E3A24] text-white p-8 flex flex-col items-center justify-center text-center animate-in fade-in">
-      <ExternalLink className="w-16 h-16 text-[#F5B301] mb-6" />
+    <div className="fixed inset-0 z-[99999] bg-gradient-to-b from-[#5E0B10] to-[#2D0609] text-white p-8 flex flex-col items-center justify-center text-center animate-in fade-in">
+      <ExternalLink className="w-16 h-16 text-[#F5BD47] mb-6" />
       <h2 className="text-2xl font-bold font-serif mb-4">Please Open in Browser</h2>
       <p className="text-white/80 text-lg mb-8 leading-relaxed max-w-sm">
-        To complete your purchase securely and without errors, please click the <strong className="text-white">3 dots (•••)</strong> at the top right corner and select <strong className="text-[#F5B301]">&quot;Open in Chrome&quot;</strong> or <strong className="text-[#F5B301]">&quot;Open in System Browser&quot;</strong>.
+        To complete your purchase securely and without errors, please click the <strong className="text-white">3 dots (•••)</strong> at the top right corner and select <strong className="text-[#F5BD47]">&quot;Open in Chrome&quot;</strong> or <strong className="text-[#F5BD47]">&quot;Open in System Browser&quot;</strong>.
       </p>
       
       <div className="bg-white/10 rounded-xl p-4 border border-white/20">
-        <p className="text-sm font-bold uppercase tracking-widest text-[#F5B301] mb-2">Step-by-step</p>
+        <p className="text-sm font-bold uppercase tracking-widest text-[#F5BD47] mb-2">Step-by-step</p>
         <ol className="text-left text-sm text-white/90 space-y-2">
           <li>1. Look at the top right of this screen.</li>
           <li>2. Tap the three dots icon.</li>

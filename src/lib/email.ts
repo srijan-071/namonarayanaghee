@@ -20,17 +20,17 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
       <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #FAF9F5; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .header { background-color: #1E3A24; padding: 40px 20px; text-align: center; border-bottom: 4px solid #C38936; }
+        .header { background-color: #5E0B10; padding: 40px 20px; text-align: center; border-bottom: 4px solid #D4A017; }
         .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
-        .header p { color: #C38936; margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
-        .content { padding: 40px 30px; color: #364935; line-height: 1.6; }
-        .content h2 { color: #1E3A24; font-size: 22px; margin-top: 0; }
-        .order-box { background-color: #FAF9F5; border: 1px solid #E9E5D9; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center; }
+        .header p { color: #F5BD47; margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+        .content { padding: 40px 30px; color: #4A352F; line-height: 1.6; }
+        .content h2 { color: #5E0B10; font-size: 22px; margin-top: 0; }
+        .order-box { background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center; }
         .order-box p { margin: 5px 0; }
-        .amount { font-size: 24px; font-weight: bold; color: #C38936; margin-top: 10px !important; }
+        .amount { font-size: 24px; font-weight: bold; color: #8A1B14; margin-top: 10px !important; }
         .btn-container { text-align: center; margin: 35px 0; }
-        .btn { background-color: #C38936; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; display: inline-block; }
-        .footer { background-color: #F4F6F0; padding: 30px; text-align: center; font-size: 13px; color: #576B55; }
+        .btn { background-color: #8A1B14; color: #ffffff !important; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: bold; display: inline-block; }
+        .footer { background-color: #FCFAF5; padding: 30px; text-align: center; font-size: 13px; color: #7A4A3B; }
       </style>
     </head>
     <body>
@@ -44,8 +44,8 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
           <p>We are thrilled to let you know that we've received your order and it is currently being processed by our team.</p>
           
           <div class="order-box">
-            <p style="color: #576B55; font-size: 13px; text-transform: uppercase; font-weight: bold;">Order Reference</p>
-            <p style="font-size: 18px; color: #1E3A24; font-weight: bold; font-family: monospace;">#${orderId}</p>
+            <p style="color: #7A4A3B; font-size: 13px; text-transform: uppercase; font-weight: bold;">Order Reference</p>
+            <p style="font-size: 18px; color: #5E0B10; font-weight: bold; font-family: monospace;">#${orderId}</p>
             <p class="amount">${formattedAmount}</p>
           </div>
           
@@ -56,7 +56,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
           </div>
         </div>
         <div class="footer">
-          <p>If you have any questions, reply to this email or contact us at <a href="mailto:namonarayana.contact@gmail.com" style="color: #1E3A24;">namonarayana.contact@gmail.com</a></p>
+          <p>If you have any questions, reply to this email or contact us at <a href="mailto:namonarayana.contact@gmail.com" style="color: #8A1B14;">namonarayana.contact@gmail.com</a></p>
           <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. 🙏</p>
         </div>
       </div>

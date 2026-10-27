@@ -4,23 +4,23 @@ import { motion } from "framer-motion";
 
 export default function ProductJourney() {
   return (
-    <section className="py-20 md:py-32 bg-[#fafcfa] relative overflow-hidden">
+    <section className="py-20 md:py-32 bg-[#FCFAF5] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-20 md:mb-32">
-          <p className="text-[#00584b] font-bold tracking-widest uppercase text-sm mb-4">
+          <p className="text-[#8A1B14] font-bold tracking-widest uppercase text-sm mb-4">
             - Our Journey -
           </p>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#1c2b26] mb-6">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#2A1612] mb-6">
             Farm to Home, One Honest Step at a Time
           </h2>
-          <p className="text-lg text-[#5c6b65] leading-relaxed">
+          <p className="text-lg text-[#6A4E42] leading-relaxed">
             From the cow to your kitchen &mdash; follow every step of how our ghee is made, the traditional Bilona way.
           </p>
         </div>
 
         <div className="space-y-24 md:space-y-40 relative">
           {/* Connecting dashed line for desktop */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px border-l-2 border-dashed border-[#e3dccc] -translate-x-1/2 z-0" />
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px border-l-2 border-dashed border-[#E5D7B7] -translate-x-1/2 z-0" />
 
           {JOURNEY_STEPS.map((step, idx) => {
             const isEven = idx % 2 === 0;
@@ -57,17 +57,17 @@ export default function ProductJourney() {
                 </div>
 
                 {/* Dot for timeline (desktop) */}
-                <div className="hidden md:block absolute left-1/2 top-1/2 w-4 h-4 rounded-full bg-[#00584b] border-4 border-[#fafcfa] -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_0_4px_rgba(0,88,75,0.1)]" />
+                <div className="hidden md:block absolute left-1/2 top-1/2 w-4 h-4 rounded-full bg-[#8A1B14] border-4 border-[#FCFAF5] -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_0_4px_rgba(138,27,20,0.15)]" />
 
                 {/* Text */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center">
-                  <span className="inline-block border border-[#00584b] text-[#00584b] rounded-full px-4 py-1 text-xs font-bold tracking-widest uppercase mb-6 self-start w-auto">
+                  <span className="inline-block border border-[#8A1B14] text-[#8A1B14] rounded-full px-4 py-1 text-xs font-bold tracking-widest uppercase mb-6 self-start w-auto">
                     {step.step.replace('Stp', 'Step')}
                   </span>
-                  <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#1c2b26] mb-6">
+                  <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#2A1612] mb-6">
                     {step.title}
                   </h3>
-                  <p className="text-lg text-[#5c6b65] leading-relaxed mb-8">
+                  <p className="text-lg text-[#6A4E42] leading-relaxed mb-8">
                     {step.desc}
                   </p>
                   
@@ -76,7 +76,7 @@ export default function ProductJourney() {
                     {step.pills.map((pill, pIdx) => (
                       <span
                         key={pIdx}
-                        className="border border-[#e3dccc] bg-white text-[#1c2b26] px-4 py-2 rounded-full text-sm font-medium shadow-sm"
+                        className="border border-[#E5D7B7] bg-white text-[#2A1612] px-4 py-2 rounded-full text-sm font-medium shadow-sm"
                       >
                         {pill}
                       </span>
