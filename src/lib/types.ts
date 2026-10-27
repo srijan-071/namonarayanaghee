@@ -117,6 +117,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  compareAtPrice?: number | null;
 }
 
 export interface Cart {
