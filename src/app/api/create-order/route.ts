@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { firestoreSetDoc } from "@/lib/firestore-rest";
 import { RAW_PRODUCTS } from "@/lib/data-store";
+import { checkBotId } from "botid/server";
 
 // We copy the coupons here since it's an API route or we could import it if it's available server-side.
 // We can just import it from lib/cart but since it has "use client", we shouldn't import cart.ts in an API route.
@@ -18,6 +19,19 @@ const PROXY_URL = "/pay-proxy";
 
 export async function POST(req: Request) {
   try {
+    // Verify request authenticity via Vercel BotID
+    try {
+      const verification = await checkBotId();
+      if (verification?.isBot) {
+        return NextResponse.json(
+          { error: "Bot detected. Access denied." },
+          { status: 403 }
+        );
+      }
+    } catch {
+      // Graceful fallback for non-production environments
+    }
+
     const body = await req.json();
     const { uid, cartItems, checkoutData } = body;
 

@@ -3,9 +3,22 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { checkBotId } from "botid/server";
 
 export async function POST(req: Request) {
   try {
+    try {
+      const verification = await checkBotId();
+      if (verification?.isBot) {
+        return NextResponse.json(
+          { error: "Bot detected. Access denied." },
+          { status: 403 }
+        );
+      }
+    } catch {
+      // Fallback for non-production environments
+    }
+
     const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = await req.json();
 
     if (!orderId || !razorpay_payment_id) {

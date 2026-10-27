@@ -51,6 +51,15 @@ export const metadata: Metadata = {
 import Script from "next/script";
 import { Toaster } from 'sonner';
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+import { BotIdClient } from "botid/client";
+
+const protectedBotRoutes = [
+  { path: "/api/create-order", method: "POST" },
+  { path: "/api/razorpay/*", method: "POST" },
+  { path: "/api/payu/*", method: "POST" },
+  { path: "/api/verify-payment", method: "POST" },
+];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -58,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://namonarayana.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://namonarayana.com" />
+        <BotIdClient protect={protectedBotRoutes} />
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <Script
@@ -77,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <InAppBrowserWarning />
               <DiwaliAmbience />
               <SpeedInsights />
+              <Analytics />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>
