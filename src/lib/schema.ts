@@ -40,89 +40,107 @@ export function generateWebSiteSchema() {
 export function generateProductSchema(product: Product) {
   const url = absoluteUrl(`/products/${product.slug}`);
 
+  // Clean plain text description for Google Merchant & Shopping crawlers
+  const plainDescription = product.description
+    ? product.description.replace(/<[^>]*>?/gm, " ").replace(/\s+/g, " ").trim()
+    : "100% Pure Desi Gir Cow Ghee made via traditional bilona method.";
+
+  // Expiration 1 year ahead for priceValidUntil (Google Shopping requirement)
+  const nextYear = new Date();
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
+  const priceValidUntil = nextYear.toISOString().split("T")[0];
+
+  const primarySku = product.sku || product.mpn || "NMO-GHEE";
+
   const schema: any = {
     "@context": "https://schema.org",
     "@type": "Product",
     "@id": `${url}#product`,
     name: product.title,
-    description: product.description,
+    description: plainDescription,
     image: product.images.map(img => absoluteUrl(img)),
-    sku: product.sku,
+    sku: primarySku,
+    mpn: product.mpn || primarySku,
     brand: {
       "@type": "Brand",
-      name: product.vendor,
+      name: product.vendor || "Namo Narayana",
     },
+    category: "Food & Beverages > Dairy Products > Ghee",
     offers: {
       "@type": "Offer",
       url: url,
       priceCurrency: product.currency || "INR",
       price: (product.price / 100).toFixed(2),
-      priceValidUntil: "2027-12-31",
+      priceValidUntil: priceValidUntil,
       availability: product.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
       seller: {
         "@type": "Organization",
         name: "Namo Narayana",
-        url: siteConfig.url,
       },
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: product.shipping ? (product.shipping.cost / 100).toFixed(2) : "0.00",
-          currency: "INR"
-        },
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "IN"
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 0,
-            maxValue: 1,
-            unitCode: "d"
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: product.shipping?.daysMin || 2,
-            maxValue: product.shipping?.daysMax || 5,
-            unitCode: "d"
-          }
-        }
-      },
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        applicableCountry: "IN",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: product.returns?.days || 30,
-        returnMethod: "https://schema.org/ReturnByMail",
-        returnFees: "https://schema.org/FreeReturn"
-      }
     },
   };
+
+  if (product.shipping) {
+    schema.offers.shippingDetails = {
+      "@type": "OfferShippingDetails",
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: (product.shipping.cost / 100).toFixed(2),
+        currency: "INR"
+      },
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "IN"
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type": "QuantitativeValue",
+          minValue: 0,
+          maxValue: 1,
+          unitCode: "d"
+        },
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: product.shipping.daysMin,
+          maxValue: product.shipping.daysMax,
+          unitCode: "d"
+        }
+      }
+    };
+  }
+
+  if (product.returns) {
+    schema.offers.hasMerchantReturnPolicy = {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "IN",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: product.returns.days,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn"
+    };
+  }
 
   if (product.gtin) {
     schema.gtin = product.gtin;
   }
   
-  if (product.mpn) {
-    schema.mpn = product.mpn;
-  }
-
-  if (product.rating && product.reviews) {
+  if (product.rating && product.reviews && product.reviews.length > 0) {
     schema.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: product.rating.value.toString(),
       reviewCount: product.rating.count.toString(),
+      bestRating: "5",
+      worstRating: "1",
     };
-    schema.review = product.reviews.map(r => ({
+    schema.review = product.reviews.slice(0, 10).map(r => ({
       "@type": "Review",
       reviewRating: {
         "@type": "Rating",
         ratingValue: r.rating.toString(),
         bestRating: "5",
+        worstRating: "1",
       },
       author: {
         "@type": "Person",
