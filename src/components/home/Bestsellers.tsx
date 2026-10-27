@@ -71,12 +71,8 @@ export default function Bestsellers() {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   
   const handleAddWithLoading = (p: any) => {
-    setLoading(prev => ({ ...prev, ['add_'+p.id]: true }));
-    setTimeout(() => {
-      handleAddToCart(p);
-      setLoading(prev => ({ ...prev, ['add_'+p.id]: false }));
-      toast.success(`Added ${p.title} to cart`);
-    }, 400);
+    handleAddToCart(p);
+    toast.success(`Added ${p.title} to cart`);
   };
 
   const handleFavorite = (id: number | string) => {

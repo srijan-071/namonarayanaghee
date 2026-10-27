@@ -42,6 +42,14 @@ export default function CheckoutPage() {
     summaryRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Pre-warm Firebase auth and order modules in background so Proceed to Pay has 0ms import delay
+  useEffect(() => {
+    import("@/lib/firebase").then(({ initializeAnonymousAuth }) => {
+      initializeAnonymousAuth().catch(() => {});
+    });
+    import("@/lib/orders").catch(() => {});
+  }, []);
+
   // Load from localStorage on mount
   useEffect(() => {
     try {
@@ -93,6 +101,8 @@ export default function CheckoutPage() {
     }
   }, [form, hasGst, gstDetails, couponCode]);
 
+  const pincodeCache = useRef<Record<string, { city: string; state: string }>>({});
+
   const handlePincodeChange = async (val: string) => {
     // Only allow digits
     if (!/^\d*$/.test(val)) return;
@@ -100,29 +110,42 @@ export default function CheckoutPage() {
     setForm(prev => ({ ...prev, pincode: val }));
     
     if (val.length === 6) {
+      // Instant cache hit
+      if (pincodeCache.current[val]) {
+        const cached = pincodeCache.current[val];
+        setForm(prev => ({ ...prev, city: cached.city, state: cached.state }));
+        return;
+      }
+
       latestPincodeRef.current = val;
       setIsFetchingPincode(true);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1400);
+
       try {
-        const res = await fetch(`https://api.postalpincode.in/pincode/${val}`);
+        const res = await fetch(`https://api.postalpincode.in/pincode/${val}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
         const data = await res.json();
         
         // Prevent stale responses
         if (latestPincodeRef.current !== val) return;
 
-        if (data && data[0] && data[0].Status === 'Success') {
+        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length) {
           const postOffice = data[0].PostOffice[0];
-          setForm(prev => ({ 
-            ...prev, 
-            city: postOffice.District || postOffice.Region || prev.city, 
-            state: postOffice.State || prev.state
-          }));
-        } else {
-          toast.error("Invalid PIN code. Please enter city and state manually.");
+          const resolvedCity = postOffice.District || postOffice.Region || "";
+          const resolvedState = postOffice.State || "";
+          if (resolvedCity && resolvedState) {
+            pincodeCache.current[val] = { city: resolvedCity, state: resolvedState };
+            setForm(prev => ({ 
+              ...prev, 
+              city: resolvedCity || prev.city, 
+              state: resolvedState || prev.state
+            }));
+          }
         }
-      } catch (e) {
-        if (latestPincodeRef.current === val) {
-          toast.error("Could not fetch location. Please enter manually.");
-        }
+      } catch {
+        // Fail gracefully without blocking manual form filling
       } finally {
         if (latestPincodeRef.current === val) {
           setIsFetchingPincode(false);
@@ -172,25 +195,24 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     
     try {
-      // Ensure user is signed in anonymously if not already signed in
       const { initializeAnonymousAuth } = await import("@/lib/firebase");
-      const currentUser = await initializeAnonymousAuth();
+      const currentUser = user || await initializeAnonymousAuth();
       if (!currentUser) {
          throw new Error("Could not initialize authentication");
       }
 
       const address = {
-        name: form.name,
-        address: form.address,
-        city: form.city,
-        state: form.state,
-        pincode: form.pincode,
+        name: form.name.trim(),
+        address: form.address.trim(),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        pincode: form.pincode.trim(),
         country: "India"
       };
 
       const checkoutData: CheckoutData = {
-        email: form.email,
-        phone: form.phone,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
         shippingAddress: address,
         billingAddress: address, // Prepaid, billing = shipping is fine
         gstDetails: hasGst ? gstDetails : undefined,
@@ -216,10 +238,11 @@ export default function CheckoutPage() {
 
       const { createOrder, saveUserCheckoutProfile } = await import("@/lib/orders");
       
-      const orderIdPromise = createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, effectivePricing, freeGifts);
-      const profilePromise = saveUserCheckoutProfile(currentUser.uid, checkoutData);
+      // Save profile asynchronously in the background so user does not wait
+      saveUserCheckoutProfile(currentUser.uid, checkoutData).catch(console.error);
       
-      const [orderId] = await Promise.all([orderIdPromise, profilePromise]);
+      // Create order immediately
+      const orderId = await createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, effectivePricing, freeGifts);
 
       fetch("/api/send-telegram-notification", {
         method: "POST",
@@ -272,6 +295,8 @@ export default function CheckoutPage() {
 
   return (
     <section className="nn-section bg-[#FAF9F5] min-h-[80vh] pb-28 lg:pb-12">
+      <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://potter-world.com" />
 
       <div className="nn-container max-w-6xl mx-auto py-8">
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#1E3A24] text-center mb-8">Secure <span className="notranslate">Checkout</span></h1>

@@ -108,34 +108,29 @@ export default function DiwaliSpecials() {
   const { open } = useCartDrawer();
 
   const handleAddToCart = (p: FestiveProduct) => {
-    setLoading(prev => ({ ...prev, [p.id]: true }));
+    addToCart({
+      productId: p.id,
+      variantId: p.variantId,
+      slug: p.slug,
+      title: p.title,
+      variantTitle: p.variantTitle,
+      price: p.price,
+      image: p.image
+    });
 
-    setTimeout(() => {
-      addToCart({
-        productId: p.id,
-        variantId: p.variantId,
-        slug: p.slug,
-        title: p.title,
-        variantTitle: p.variantTitle,
-        price: p.price,
-        image: p.image
-      });
+    trackEvent("add_to_cart", {
+      currency: "INR",
+      value: p.price,
+      items: [{
+        item_id: p.id,
+        item_name: p.title,
+        quantity: 1,
+        price: p.price
+      }]
+    });
 
-      trackEvent("add_to_cart", {
-        currency: "INR",
-        value: p.price,
-        items: [{
-          item_id: p.id,
-          item_name: p.title,
-          quantity: 1,
-          price: p.price
-        }]
-      });
-
-      setLoading(prev => ({ ...prev, [p.id]: false }));
-      toast.success(`🪔 Added ${p.title} to your festive cart! Free gifts unlocked.`);
-      open();
-    }, 350);
+    toast.success(`🪔 Added ${p.title} to your festive cart! Free gifts unlocked.`);
+    open();
   };
 
   return (

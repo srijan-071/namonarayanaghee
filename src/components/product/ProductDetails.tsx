@@ -91,46 +91,42 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const reviewStats = PRODUCT_REVIEW_STATS[product.slug] || { total: 1688, average: 4.9 };
 
   function handleAddToCart() {
-    setIsAdding(true);
-    setTimeout(() => {
-      addToCart(
-        {
-          productId: product.id,
-          variantId: variant.id,
-          slug: product.slug,
-          title: product.title,
-          variantTitle: variant.title,
-          price,
-          image: product.images[0] ?? "",
-        },
-        qty
-      );
-      
-      trackEvent("add_to_cart", {
-        currency: "INR",
-        value: price * qty,
-        items: [{
-          item_id: product.id,
-          item_name: product.title,
-          quantity: qty,
-          price: price
-        }]
-      });
+    addToCart(
+      {
+        productId: product.id,
+        variantId: variant.id,
+        slug: product.slug,
+        title: product.title,
+        variantTitle: variant.title,
+        price,
+        image: product.images[0] ?? "",
+      },
+      qty
+    );
+    
+    trackEvent("add_to_cart", {
+      currency: "INR",
+      value: price * qty,
+      items: [{
+        item_id: product.id,
+        item_name: product.title,
+        quantity: qty,
+        price: price
+      }]
+    });
 
-      setIsAdding(false);
-      open();
-      
-      const vTitle = (variant.title || "").toLowerCase();
-      if (vTitle.includes("500")) {
-        toast.success(`Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!`, { duration: 4000 });
-      } else if (vTitle.includes("2.5")) {
-        toast.success(`🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added to your order!`, { duration: 4000 });
-      } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
-        toast.success(`🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!`, { duration: 4000 });
-      } else {
-        toast.success(`🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added to your order!`, { duration: 4000 });
-      }
-    }, 350);
+    open();
+    
+    const vTitle = (variant.title || "").toLowerCase();
+    if (vTitle.includes("500")) {
+      toast.success(`Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!`, { duration: 4000 });
+    } else if (vTitle.includes("2.5")) {
+      toast.success(`🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added to your order!`, { duration: 4000 });
+    } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
+      toast.success(`🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!`, { duration: 4000 });
+    } else {
+      toast.success(`🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added to your order!`, { duration: 4000 });
+    }
   }
 
   function handleBuyNow() {

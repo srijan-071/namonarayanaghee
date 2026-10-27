@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart, useCartDrawer, removeFromCart, updateQuantity, addToCart, applyCoupon, removeCoupon } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,13 @@ export default function CartDrawer() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [tempCoupon, setTempCoupon] = useState("");
   const [showBreakdown, setShowBreakdown] = useState(false);
+
+  // Proactively prefetch /checkout so clicking Continue transitions in 0ms
+  useEffect(() => {
+    if (isOpen) {
+      router.prefetch("/checkout");
+    }
+  }, [isOpen, router]);
 
   // Compute free gifts based on cart contents
   const freeGifts = getFreeGiftsForCart(cart.items);
@@ -443,21 +450,14 @@ export default function CartDrawer() {
                    )}
                  </div>
                  
-                 <button 
-                  onClick={() => {
-                    setIsNavigating(true);
-                    router.push("/checkout");
-                    setTimeout(() => {
-                      close();
-                      setIsNavigating(false);
-                    }, 500);
-                  }}
-                  disabled={isNavigating}
-                  className="bg-[#084131] text-white font-bold text-[15px] flex-1 h-[48px] rounded-full shadow-md hover:bg-[#062f23] transition disabled:opacity-70 flex items-center justify-center gap-2 cursor-pointer"
+                 <Link
+                   href="/checkout"
+                   prefetch={true}
+                   onClick={() => close()}
+                   className="bg-[#084131] text-white font-bold text-[15px] flex-1 h-[48px] rounded-full shadow-md hover:bg-[#062f23] transition flex items-center justify-center gap-2 cursor-pointer"
                  >
-                   {isNavigating ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                    <span className="notranslate">Continue</span>
-                 </button>
+                 </Link>
                </div>
                
                <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-500 pt-1">
