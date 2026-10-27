@@ -11,7 +11,8 @@ import {
   Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
   Leaf, Zap, CheckCircle2, Gift, ShoppingCart,
   Sparkles, Tag, ShieldAlert, Award, Copy, Check,
-  Flame, Eye, Clock, AlertTriangle, Shield
+  Flame, Eye, Clock, AlertTriangle, Shield,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
@@ -45,6 +46,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [recentOrderIdx, setRecentOrderIdx] = useState(0);
   const [showRecentToast, setShowRecentToast] = useState(false);
   const [countdown, setCountdown] = useState({ hours: 1, minutes: 46, seconds: 18 });
+  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
+
+  // Auto-change product images every 3 seconds with smooth faded transition
+  useEffect(() => {
+    if (!product.images || product.images.length <= 1) return;
+    if (isGalleryHovered) return;
+
+    const autoSlideTimer = setInterval(() => {
+      setSelectedImage((prev) => (prev + 1) % product.images.length);
+    }, 3000);
+
+    return () => clearInterval(autoSlideTimer);
+  }, [product.images, isGalleryHovered]);
 
   useEffect(() => {
     setNavigatingSlug(null);
@@ -230,22 +244,76 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
       {/* Gallery (Left Side) */}
       <div className="space-y-3.5 md:sticky md:top-24 md:self-start">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5] border border-gray-100 shadow-sm">
-          {product.images[selectedImage] ? (
-            <Image
-              src={product.images[selectedImage]}
-              alt={product.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(min-width: 768px) 50vw, 100vw"
-            />
+        <div 
+          className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5] border border-gray-100 shadow-sm group select-none"
+          onMouseEnter={() => setIsGalleryHovered(true)}
+          onMouseLeave={() => setIsGalleryHovered(false)}
+        >
+          {/* Layered Cross-Fading Images (Auto-changes every 3s with smooth fade) */}
+          {product.images && product.images.length > 0 ? (
+            product.images.map((img, idx) => (
+              <div
+                key={img}
+                className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+                  idx === selectedImage ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
+                }`}
+              >
+                <Image
+                  src={img}
+                  alt={`${product.title} - photo ${idx + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={idx === 0 || idx === 1}
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                />
+              </div>
+            ))
           ) : (
             <div className="w-full h-full flex items-center justify-center text-nn-bark/30 text-lg">No Image</div>
           )}
 
+          {/* Previous & Next Arrow Controls (Visible on hover and easy tap on mobile) */}
+          {product.images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+                }}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all z-20 cursor-pointer shadow-md active:scale-95"
+                aria-label="Previous product image"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage((prev) => (prev + 1) % product.images.length);
+                }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all z-20 cursor-pointer shadow-md active:scale-95"
+                aria-label="Next product image"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+
+              {/* Dots Progress Indicator */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full shadow-md">
+                {product.images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    aria-label={`Jump to image ${i + 1}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      i === selectedImage ? "w-5 bg-amber-300 shadow-xs" : "w-1.5 bg-white/60 hover:bg-white"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
           {/* Quality & Trust Badges on Image */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
             <span className="bg-[#8A1B14] text-amber-200 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5 border border-amber-400/40">
               <DiwaliDiya size={14} glow={false} />
               Diwali Festive Special
@@ -261,7 +329,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             )}
           </div>
 
-          <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5">
+          <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5 z-20">
             <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
             <span>FSSAI Lic: 10823999000412</span>
           </div>
@@ -273,8 +341,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
-                className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
-                  i === selectedImage ? "border-[#8A1B14] ring-2 ring-[#8A1B14]/20 scale-105" : "border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100"
+                className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer ${
+                  i === selectedImage ? "border-[#8A1B14] ring-2 ring-[#8A1B14]/30 scale-105 opacity-100 shadow-xs" : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
                 }`}
                 aria-label={`View image ${i + 1}`}
               >
