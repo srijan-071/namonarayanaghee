@@ -159,33 +159,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     }
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": product.title,
-    "image": product.images,
-    "description": product.description.replace(/<[^>]*>?/gm, ''),
-    "sku": product.id.toString(),
-    "brand": {
-      "@type": "Brand",
-      "name": "Namo Narayana"
-    },
-    "offers": {
-      "@type": "Offer",
-      "url": `https://namonarayanaghee.store/products/${product.slug}`,
-      "priceCurrency": "INR",
-      "price": (price / 100).toFixed(2),
-      "availability": variant?.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "itemCondition": "https://schema.org/NewCondition"
-    }
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 pb-24 md:pb-16 relative">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
 
       {/* Gallery (Left Side) */}
       <div className="space-y-3.5 md:sticky md:top-24 md:self-start">

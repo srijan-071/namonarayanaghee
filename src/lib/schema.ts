@@ -57,51 +57,51 @@ export function generateProductSchema(product: Product) {
       url: url,
       priceCurrency: product.currency || "INR",
       price: (product.price / 100).toFixed(2),
+      priceValidUntil: "2027-12-31",
       availability: product.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
+      seller: {
+        "@type": "Organization",
+        name: "Namo Narayana",
+        url: siteConfig.url,
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: product.shipping ? (product.shipping.cost / 100).toFixed(2) : "0.00",
+          currency: "INR"
+        },
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "IN"
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 0,
+            maxValue: 1,
+            unitCode: "d"
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: product.shipping?.daysMin || 2,
+            maxValue: product.shipping?.daysMax || 5,
+            unitCode: "d"
+          }
+        }
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "IN",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: product.returns?.days || 30,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn"
+      }
     },
   };
-
-  if (product.shipping) {
-    schema.offers.shippingDetails = {
-      "@type": "OfferShippingDetails",
-      shippingRate: {
-        "@type": "MonetaryAmount",
-        value: (product.shipping.cost / 100).toFixed(2),
-        currency: "INR"
-      },
-      shippingDestination: {
-        "@type": "DefinedRegion",
-        addressCountry: "IN"
-      },
-      deliveryTime: {
-        "@type": "ShippingDeliveryTime",
-        handlingTime: {
-          "@type": "QuantitativeValue",
-          minValue: 0,
-          maxValue: 1,
-          unitCode: "d"
-        },
-        transitTime: {
-          "@type": "QuantitativeValue",
-          minValue: product.shipping.daysMin,
-          maxValue: product.shipping.daysMax,
-          unitCode: "d"
-        }
-      }
-    };
-  }
-
-  if (product.returns) {
-    schema.offers.hasMerchantReturnPolicy = {
-      "@type": "MerchantReturnPolicy",
-      applicableCountry: "IN",
-      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-      merchantReturnDays: product.returns.days,
-      returnMethod: "https://schema.org/ReturnByMail",
-      returnFees: "https://schema.org/FreeReturn"
-    };
-  }
 
   if (product.gtin) {
     schema.gtin = product.gtin;

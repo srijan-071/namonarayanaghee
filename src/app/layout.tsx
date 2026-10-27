@@ -43,8 +43,12 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: siteConfig.url },
+  verification: {
+    google: "3EmYN5Q6TEaBp9b26ei0p_RF3v3GGQL4G5bdEvUr92M",
+  },
   other: {
     "google-adsense-account": "ca-pub-3806114019541775",
+    "google-site-verification": "3EmYN5Q6TEaBp9b26ei0p_RF3v3GGQL4G5bdEvUr92M",
   },
 };
 
