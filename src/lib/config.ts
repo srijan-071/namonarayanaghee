@@ -3,7 +3,7 @@ export const siteConfig = {
   name: "Official Namo Narayana Ghee | By Elvish Yadav",
   tagline: "The Only Official Namo Narayana Store",
   description: "Welcome to the OFFICIAL Namo Narayana Ghee store by Elvish Yadav. Don't be fooled by fake websites! Buy 100% pure A2 Gir Cow Bilona Ghee directly from the authentic source here.",
-  url: "https://namonarayanaghee.store",
+  url: "https://www.namonarayanaghee.store",
   locale: "en_IN",
   currency: "INR",
   currencySymbol: "₹",

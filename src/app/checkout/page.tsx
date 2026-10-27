@@ -271,7 +271,7 @@ export default function CheckoutPage() {
 
       // Full-page redirect to approved gateway hub on potter-world.com
       const amountInINR = isAdmin ? 1 : pricing.amountToPay / 100;
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://namonarayanaghee.store";
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
       const payParams = new URLSearchParams();
       payParams.set("order_id", orderId);
       payParams.set("txnid", orderId);

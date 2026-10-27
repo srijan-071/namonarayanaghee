@@ -40,7 +40,7 @@ It takes nearly 25 to 30 litres of pure Gir cow milk to produce just one single 
 If you'd like to try a jar for your home, I created a 10% farm welcome coupon for you:
 
 Coupon code: ELVISH10
-Direct Link: https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre
+Direct Link: https://www.namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre
 
 We provide Free Express Shipping across India, and every batch is packed fresh from our farm dispatches.
 
@@ -50,7 +50,7 @@ Warm regards,
 Anurag Sharma
 Founder & Farm Lead, Namo Narayana
 Traditional Vedic Bilona Ghee • Rajasthan
-https://namonarayanaghee.store
+https://www.namonarayanaghee.store
 
 ---
 Namo Narayana Vedic Farm • Pure by Promise. Traditional by Heart.
@@ -87,7 +87,7 @@ You received this because you visited namonarayanaghee.store. Reply with 'unsubs
       <p style="font-size: 15px; margin: 0 0 14px 0; color: #4A352F;">
         Use coupon code <strong style="background-color: #FDF6E8; border: 1px solid #EAD7BC; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 15px; color: #8A1B14; letter-spacing: 0.5px;">DIWALI</strong> at checkout.
       </p>
-      <a href="https://namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #8A1B14; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 10px 22px; border-radius: 6px;">
+      <a href="https://www.namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #8A1B14; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 10px 22px; border-radius: 6px;">
         Order Pure A2 Gir Cow Ghee (1L) &rarr;
       </a>
     </div>

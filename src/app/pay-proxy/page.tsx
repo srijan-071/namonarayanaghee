@@ -26,7 +26,7 @@ function PayProxyContent() {
     const isAdmin = (email || "").toLowerCase().trim() === "littlecodr@gmail.com";
     const effectiveAmount = isAdmin ? "1" : amount;
 
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://namonarayanaghee.store";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
     const returnUrl = `${origin}/api/razorpay/callback`;
     const cancelUrl = `${origin}/cart`;
 

@@ -103,7 +103,7 @@ export async function GET(req: Request) {
                     ${itemsHtml}
                   </table>
 
-                  <a href="https://namonarayanaghee.store/checkout" class="btn">Complete My Order</a>
+                  <a href="https://www.namonarayanaghee.store/checkout" class="btn">Complete My Order</a>
                 </div>
                 <div class="footer">
                   <p><strong>Namo Narayana</strong><br>Pure Food. Stronger Bharat. 🙏</p>
