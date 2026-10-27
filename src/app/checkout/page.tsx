@@ -249,7 +249,7 @@ export default function CheckoutPage() {
         keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          event: "initiated",
+          event: "payment_initiated",
           orderId,
           orderData: {
             items: [
@@ -258,6 +258,9 @@ export default function CheckoutPage() {
             ],
             freeGifts: freeGifts.map(g => `${g.name} (x${g.quantity})`),
             subtotal: cart.subtotal,
+            discount: pricing.discount,
+            totalAmount: pricing.amountAfterDiscount,
+            amountToPay: pricing.amountToPay,
             shippingAddress: address,
             contactInfo: { email: form.email, phone: form.phone },
             paymentMethod: "prepaid",

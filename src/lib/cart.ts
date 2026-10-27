@@ -81,21 +81,47 @@ export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
     items[idx] = { ...items[idx], quantity: items[idx].quantity + qty };
   } else {
     items.push({ ...item, quantity: qty });
-    
-    // Send Telegram notification if this is the first item
-    if (items.length === 1) {
+  }
+
+  const updatedCart = recalculate(items, cart.discountCode);
+  writeCart(updatedCart);
+
+  // Send Telegram Notification (Step 1: Cart Initiated)
+  if (typeof window !== "undefined") {
+    const sessionKey = "nn_cart_notified";
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, "true");
+
+      let giftName = "";
+      const vLower = (item.variantTitle || "").toLowerCase();
+      if (vLower.includes("2.5")) {
+        giftName = "3x FREE Oils (Coconut, Yellow Mustard, Mustard)";
+      } else if (vLower.includes("5")) {
+        giftName = "3x Mega FREE Oils (Coconut, Groundnut, Mustard 500ml)";
+      } else if (vLower.includes("1") || !vLower.includes("500")) {
+        giftName = "FREE 250ml Cold-Pressed Mustard Oil (Worth ₹150)";
+      }
+
       setTimeout(() => {
         fetch("/api/send-telegram-notification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: `� *Cart Initiated!*\nSomeone just added an item to their cart: ${item.title}`
+            event: "cart_initiated",
+            orderData: {
+              itemTitle: item.title,
+              variantTitle: item.variantTitle,
+              price: item.price,
+              quantity: qty,
+              cartTotal: updatedCart.total,
+              itemsCount: items.length,
+              freeGift: giftName,
+            }
           })
         }).catch(() => {});
       }, 0);
     }
   }
-  writeCart(recalculate(items, cart.discountCode));
 }
 
 export function removeFromCart(variantId: number) {
@@ -118,6 +144,13 @@ export function updateQuantity(variantId: number, qty: number) {
 }
 
 export function clearCart() {
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem("nn_cart_notified");
+    } catch {
+      // Ignore in private/restricted storage
+    }
+  }
   writeCart({ items: [], totalItems: 0, subtotal: 0 });
 }
 

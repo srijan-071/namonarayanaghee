@@ -55,16 +55,24 @@ export async function POST(req: Request) {
         orderId,
         orderData.contactInfo.email,
         orderData.shippingAddress?.name || "Customer",
-        orderData.amountToPay || orderData.totalAmount
+        orderData.amountToPay || orderData.totalAmount,
+        orderData
       ).catch(err => console.error("Email notification failed:", err));
 
       deleteDoc(doc(db, "abandoned_carts", orderData.contactInfo.email))
         .catch(err => console.error("Abandoned cart cleanup failed:", err));
     }
 
-    // Proactively send Telegram alert
-    sendTelegramNotification(orderId, orderData, "success")
-      .catch(err => console.error("Telegram notification failed:", err));
+    // Proactively send Telegram alert (Step 3: Payment Successful)
+    sendTelegramNotification(
+      orderId,
+      {
+        ...orderData,
+        paymentSessionId: razorpay_payment_id,
+        paymentStatus: "paid"
+      },
+      "success"
+    ).catch(err => console.error("Telegram notification failed:", err));
 
     return NextResponse.json({ success: true, order: { ...orderData, paymentStatus: "paid" } });
   } catch (error: any) {

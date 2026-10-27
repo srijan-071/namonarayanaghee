@@ -77,14 +77,19 @@ async function handleCallback(req: Request) {
               orderId,
               orderData.contactInfo.email,
               orderData.shippingAddress?.name || "Customer",
-              orderData.amountToPay || orderData.totalAmount
+              orderData.amountToPay || orderData.totalAmount,
+              orderData
             ).catch(err => console.error("Email notification failed:", err));
 
             deleteDoc(doc(db, "abandoned_carts", orderData.contactInfo.email))
               .catch(err => console.error("Abandoned cart cleanup failed:", err));
           }
 
-          sendTelegramNotification(orderId, orderData, "success")
+          sendTelegramNotification(orderId, {
+            ...orderData,
+            paymentSessionId: razorpayPaymentId || orderData.paymentSessionId,
+            paymentStatus: "paid"
+          }, "success")
             .catch(err => console.error("Telegram notification failed:", err));
         }
       } catch (firestoreErr) {

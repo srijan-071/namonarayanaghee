@@ -145,6 +145,11 @@ function SuccessContent() {
                   })) || []
                 });
                 
+                try {
+                  sessionStorage.removeItem("nn_cart_notified");
+                } catch {
+                  // Ignore
+                }
                 import("@/lib/cart").then((cartLib) => cartLib.clearCart());
               }
             } else {

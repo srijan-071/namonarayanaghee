@@ -52,10 +52,19 @@ export async function POST(req: Request) {
             orderId, 
             data.contactInfo.email, 
             data.shippingAddress?.name || "Customer", 
-            data.amountToPay || data.totalAmount
+            data.amountToPay || data.totalAmount,
+            data
           );
         }
-        await sendTelegramNotification(orderId, data, "success");
+        await sendTelegramNotification(
+          orderId,
+          {
+            ...data,
+            paymentSessionId: sessionId || data.paymentSessionId,
+            paymentStatus: "paid"
+          },
+          "success"
+        );
       } catch (err) {
         console.error("Failed to send post-payment notifications", err);
       }
