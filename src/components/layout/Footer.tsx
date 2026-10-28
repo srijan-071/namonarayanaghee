@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/config";
 import { Heart, Leaf, Sparkles } from "lucide-react";
 import DiwaliDiya from "@/components/ui/DiwaliDiya";
@@ -6,6 +9,11 @@ import DiwaliDiya from "@/components/ui/DiwaliDiya";
 import Image from "next/image";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/checkout")) {
+    return null;
+  }
   return (
     <footer className="bg-[#2D0609] text-white mt-auto relative overflow-hidden">
       

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCartDrawer, useCart } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 import { Search, User, ShoppingBag, Gift } from "lucide-react";
@@ -12,6 +13,7 @@ import DiwaliToran from "@/components/ui/DiwaliToran";
 import { Sparkles } from "lucide-react";
 
 export default function Header() {
+  const pathname = usePathname();
   const { open } = useCartDrawer();
   const cart = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -24,6 +26,10 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname?.startsWith("/checkout")) {
+    return null;
+  }
 
   const navLinks = [
     { 

@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken })
     });
+    const verifyData = await verifyRes.json();
 
     const adminEmails = ["hurkinds@gmail.com", "littlecodr@gmail.com"];
     if (verifyData.error || !verifyData.users || !verifyData.users[0] || !adminEmails.includes(verifyData.users[0].email?.toLowerCase())) {
