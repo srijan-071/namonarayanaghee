@@ -59,6 +59,9 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
               {products.map((p) => (
                 <ProductCard
                   key={p.slug}
+                  productId={p.id}
+                  variantId={p.variants[0]?.id}
+                  variantTitle={p.variants[0]?.title}
                   slug={p.slug}
                   title={p.title}
                   price={p.price}

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Zap } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import { Heart, ShoppingCart, ChevronDown, Leaf, Droplets, Sparkles } from "lucide-react";
@@ -68,11 +69,31 @@ const gheeProducts = [
 ];
 
 export default function Bestsellers() {
+  const router = useRouter();
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+
+  const handleQuickBuy = (p: typeof gheeProducts[0]) => {
+    setLoading(prev => ({ ...prev, ['buy_' + p.id]: true }));
+    addToCart({
+      productId: p.id,
+      variantId: p.variantId,
+      slug: p.slug,
+      title: p.title,
+      variantTitle: p.variantTitle,
+      price: p.price,
+      image: p.image
+    });
+
+    trackEvent("begin_checkout", {
+      currency: "INR",
+      value: p.price,
+    });
+
+    router.push("/checkout");
+  };
   
   const handleAddWithLoading = (p: any) => {
     handleAddToCart(p);
-    toast.success(`Added ${p.title} to cart`);
   };
 
   const handleFavorite = (id: number | string) => {
@@ -235,14 +256,25 @@ export default function Bestsellers() {
                       
                       <div className="font-bold text-xl text-[#5E0B10] mb-5">{formatPrice(p.price)}</div>
                       
-                      <button 
-                        onClick={() => handleAddWithLoading(p)}
-                        disabled={loading['add_'+p.id]}
-                        className="mt-auto w-full bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white rounded-xl py-3 flex items-center justify-center gap-2 hover:from-[#76150F] hover:to-[#4C080D] active:scale-95 transition-all font-bold shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
-                      >
-                        {loading['add_'+p.id] ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
-                        {loading['add_'+p.id] ? "Adding..." : "Add to Cart"}
-                      </button>
+                      <div className="mt-auto flex flex-col gap-2">
+                        <button 
+                          onClick={() => handleQuickBuy(p)}
+                          disabled={loading['buy_'+p.id]}
+                          className="w-full bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-95 text-stone-950 rounded-xl py-2.5 flex items-center justify-center gap-2 font-black text-xs sm:text-sm shadow-[0_2px_10px_rgba(245,158,11,0.35)] uppercase border border-amber-300 tracking-wide transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                          {loading['buy_'+p.id] ? <Loader2 className="w-4 h-4 animate-spin text-stone-950" /> : <Zap className="w-4 h-4 fill-stone-950 text-stone-950" />}
+                          {loading['buy_'+p.id] ? "Opening..." : "Quick Checkout"}
+                        </button>
+
+                        <button 
+                          onClick={() => handleAddWithLoading(p)}
+                          disabled={loading['add_'+p.id]}
+                          className="w-full bg-[#FCFAF5] hover:bg-[#8A1B14] text-[#8A1B14] hover:text-white border-2 border-[#8A1B14] rounded-xl py-2 flex items-center justify-center gap-2 active:scale-95 transition-all font-bold text-xs sm:text-sm uppercase shadow-2xs tracking-wide disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                          {loading['add_'+p.id] ? <Loader2 className="w-4 h-4 animate-spin text-current" /> : <ShoppingCart className="w-4 h-4 stroke-[2.2]" />}
+                          {loading['add_'+p.id] ? "Adding..." : "Add to Cart"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

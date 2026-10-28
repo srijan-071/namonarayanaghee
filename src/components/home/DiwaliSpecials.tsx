@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShoppingBag, Sparkles, Gift, Flame, Heart, CheckCircle2, ArrowRight, ShieldCheck, Truck, Star, Loader2 } from "lucide-react";
+import { ShoppingBag, Sparkles, Gift, Flame, Heart, CheckCircle2, ArrowRight, ShieldCheck, Truck, Star, Loader2, Zap } from "lucide-react";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/utils";
@@ -104,8 +105,29 @@ const festiveHampers: FestiveProduct[] = [
 ];
 
 export default function DiwaliSpecials() {
+  const router = useRouter();
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const { open } = useCartDrawer();
+
+  const handleQuickBuy = (p: FestiveProduct) => {
+    setLoading(prev => ({ ...prev, ['buy_' + p.id]: true }));
+    addToCart({
+      productId: p.id,
+      variantId: p.variantId,
+      slug: p.slug,
+      title: p.title,
+      variantTitle: p.variantTitle,
+      price: p.price,
+      image: p.image
+    });
+
+    trackEvent("begin_checkout", {
+      currency: "INR",
+      value: p.price,
+    });
+
+    router.push("/checkout");
+  };
 
   const handleAddToCart = (p: FestiveProduct) => {
     addToCart({
@@ -272,23 +294,43 @@ export default function DiwaliSpecials() {
                       </span>
                     </div>
 
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      disabled={isLoading}
-                      className="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-75 cursor-pointer"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Adding Offer...</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBag className="w-4 h-4" />
-                          <span>Add to Diwali Cart</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => handleQuickBuy(product)}
+                        disabled={loading['buy_' + product.id]}
+                        className="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-xs sm:text-sm py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_10px_rgba(245,158,11,0.35)] active:scale-95 disabled:opacity-75 cursor-pointer uppercase tracking-wide border border-amber-300"
+                      >
+                        {loading['buy_' + product.id] ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
+                            <span>Opening...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 fill-stone-950 text-stone-950" />
+                            <span>Quick Checkout</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        disabled={isLoading}
+                        className="w-full bg-[#3D0F14] hover:bg-[#52131A] text-amber-200 border border-amber-400/50 hover:border-amber-400 font-bold text-xs sm:text-sm py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 disabled:opacity-75 cursor-pointer uppercase tracking-wide"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Adding Offer...</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBag className="w-4 h-4" />
+                            <span>Add to Cart</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
