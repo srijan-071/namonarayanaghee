@@ -27,18 +27,26 @@ export interface CheckoutData {
 /**
  * Update the user's default information in Firestore.
  */
-export async function saveUserCheckoutProfile(uid: string, data: CheckoutData) {
+export async function saveUserCheckoutProfile(
+  uid: string, 
+  data: Partial<CheckoutData> & { fullName?: string }
+) {
+  if (!uid || uid.startsWith("guest_")) return;
   const { db } = await import("./firebase");
   const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
   const userRef = doc(db, "users", uid);
   
   await setDoc(userRef, {
     uid,
-    email: data.email,
-    phone: data.phone,
-    defaultShippingAddress: data.shippingAddress,
-    defaultBillingAddress: data.billingAddress,
-    gstDetails: data.gstDetails || null,
+    fullName: data.fullName || null,
+    email: data.email || null,
+    phone: data.phone || "",
+    defaultShippingAddress: data.shippingAddress || null,
+    defaultBillingAddress: data.billingAddress || data.shippingAddress || null,
+    gstDetails: data.gstDetails ? {
+      companyName: data.gstDetails.companyName || "",
+      gstin: data.gstDetails.gstin || ""
+    } : null,
     updatedAt: serverTimestamp()
   }, { merge: true });
 }
@@ -89,86 +97,144 @@ export function calculateCheckoutPricing(
 
 import type { FreeGift } from "./gifts";
 
+export type CreateOrderResult = {
+  orderId: string;
+  id: string;
+  toString: () => string;
+  valueOf: () => string;
+};
+
 /**
  * Creates an order in the 'orders' collection.
+ * Resilient to both (uid, cartItems, subtotal, data, pricing, freeGifts) 
+ * and (uid, cartItems, pricing, data, freeGifts) calling conventions.
+ * Strictly sanitizes all fields to prevent Firestore 'undefined' exceptions.
  */
 export async function createOrder(
   uid: string,
-  cartItems: CartItem[],
-  subtotal: number,
+  cartItems: CartItem[] = [],
+  subtotalOrPricing: any,
   data: CheckoutData,
-  pricing: ReturnType<typeof calculateCheckoutPricing>,
-  freeGifts: FreeGift[] = []
-) {
+  pricingOrFreeGifts?: any,
+  maybeFreeGifts?: FreeGift[]
+): Promise<CreateOrderResult> {
   const { db } = await import("./firebase");
   const { doc, setDoc, serverTimestamp, collection } = await import("firebase/firestore/lite");
   const ordersRef = collection(db, "orders");
   const orderDoc = doc(ordersRef);
-  
-  const shippingCost = 0; 
+
+  // Normalize parameters dynamically
+  let pricing: any = {};
+  let subtotal = 0;
+  let freeGifts: FreeGift[] = [];
+
+  if (typeof subtotalOrPricing === "object" && subtotalOrPricing !== null) {
+    // Called as: (uid, cartItems, pricing, data, freeGifts)
+    pricing = subtotalOrPricing;
+    freeGifts = (Array.isArray(pricingOrFreeGifts) ? pricingOrFreeGifts : maybeFreeGifts) || [];
+    subtotal = Number(pricing.subtotal) || (cartItems || []).reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.quantity) || 1), 0);
+  } else {
+    // Called as: (uid, cartItems, subtotal, data, pricing, freeGifts)
+    subtotal = Number(subtotalOrPricing) || 0;
+    if (pricingOrFreeGifts && !Array.isArray(pricingOrFreeGifts)) {
+      pricing = pricingOrFreeGifts;
+      freeGifts = Array.isArray(maybeFreeGifts) ? maybeFreeGifts : [];
+    } else if (Array.isArray(pricingOrFreeGifts)) {
+      freeGifts = pricingOrFreeGifts;
+    }
+  }
+
+  const resolvedSubtotal = Number(pricing?.subtotal ?? subtotal) || 0;
+  const resolvedDiscount = Number(pricing?.discount) || 0;
+  const resolvedDiscountPercent = Number(pricing?.discountPercent) || 0;
+  const resolvedAmountAfterDiscount = Number(pricing?.amountAfterDiscount ?? (resolvedSubtotal - resolvedDiscount)) || 0;
+  const resolvedTotalAmount = resolvedAmountAfterDiscount;
+  const resolvedAmountToPay = Number(pricing?.amountToPay ?? resolvedAmountAfterDiscount) || 0;
+  const resolvedAmountRemaining = Number(pricing?.amountRemaining) || 0;
+
+  const shippingCost = 0;
   const tax = 0;
 
   // Build full items list including free gift items
   const fullItems = [
-    ...cartItems.map(item => ({
-      productId: item.productId,
-      variantId: item.variantId,
-      slug: item.slug,
-      name: item.title,
-      title: item.title,
-      variantTitle: item.variantTitle,
-      price: item.price,
-      image: item.image,
-      quantity: item.quantity,
+    ...(cartItems || []).map(item => ({
+      productId: item.productId ?? 0,
+      variantId: item.variantId ?? 0,
+      slug: item.slug || "",
+      name: item.title || "",
+      title: item.title || "",
+      variantTitle: item.variantTitle || "",
+      price: Number(item.price) || 0,
+      image: item.image || "",
+      quantity: Number(item.quantity) || 1,
       isGift: false,
     })),
-    ...freeGifts.map(gift => ({
+    ...(freeGifts || []).map(gift => ({
       productId: 0,
       variantId: 0,
-      slug: gift.id,
-      name: gift.name,
-      title: gift.name,
-      variantTitle: `${gift.size} (Free Gift)`,
+      slug: gift.id || "free-gift",
+      name: gift.name || "Free Gift",
+      title: gift.name || "Free Gift",
+      variantTitle: `${gift.size || ""} (Free Gift)`.trim(),
       price: 0,
-      image: gift.image,
-      quantity: gift.quantity,
+      image: gift.image || "",
+      quantity: Number(gift.quantity) || 1,
       isGift: true,
     }))
   ];
 
-  await setDoc(orderDoc, {
+  const sanitizeAddress = (addr?: Partial<Address> | null) => ({
+    name: addr?.name || "",
+    address: addr?.address || "",
+    city: addr?.city || "",
+    state: addr?.state || "",
+    pincode: addr?.pincode || "",
+    country: addr?.country || "India"
+  });
+
+  const orderPayload = {
     orderId: orderDoc.id,
-    userId: uid,
+    userId: uid || "guest",
     items: fullItems,
-    freeGifts: freeGifts.map(g => ({
-      name: g.name,
-      variant: g.variant,
-      size: g.size,
-      quantity: g.quantity,
-      image: g.image
+    freeGifts: (freeGifts || []).map(g => ({
+      name: g?.name || "",
+      variant: g?.variant || "",
+      size: g?.size || "",
+      quantity: Number(g?.quantity) || 1,
+      image: g?.image || ""
     })),
-    subtotal,
+    subtotal: resolvedSubtotal,
     shippingCost,
     tax,
-    totalAmount: pricing.amountAfterDiscount,
-    discount: pricing.discount,
-    discountPercent: pricing.discountPercent,
-    couponCode: data.couponCode || null,
-    amountToPay: pricing.amountToPay,
-    amountRemaining: pricing.amountRemaining,
-    shippingAddress: data.shippingAddress,
-    billingAddress: data.billingAddress,
-    gstDetails: data.gstDetails || null,
+    totalAmount: resolvedTotalAmount,
+    discount: resolvedDiscount,
+    discountPercent: resolvedDiscountPercent,
+    couponCode: data?.couponCode || null,
+    amountToPay: resolvedAmountToPay,
+    amountRemaining: resolvedAmountRemaining,
+    shippingAddress: sanitizeAddress(data?.shippingAddress),
+    billingAddress: sanitizeAddress(data?.billingAddress || data?.shippingAddress),
+    gstDetails: data?.gstDetails ? {
+      companyName: data.gstDetails.companyName || "",
+      gstin: data.gstDetails.gstin || ""
+    } : null,
     contactInfo: {
-      email: data.email,
-      phone: data.phone
+      email: data?.email || null,
+      phone: data?.phone || ""
     },
-    paymentMethod: data.paymentMethod,
+    paymentMethod: data?.paymentMethod || "prepaid",
     paymentStatus: "pending",
     paymentSessionId: null,
     status: "pending",
     createdAt: serverTimestamp(),
-  });
+  };
 
-  return orderDoc.id;
+  await setDoc(orderDoc, orderPayload);
+
+  return {
+    orderId: orderDoc.id,
+    id: orderDoc.id,
+    toString: () => orderDoc.id,
+    valueOf: () => orderDoc.id,
+  };
 }

@@ -263,7 +263,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
                   alt={`${product.title} - photo ${idx + 1}`}
                   fill
                   className="object-cover"
-                  priority={idx === 0 || idx === 1}
+                  priority={idx === 0}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
               </div>

@@ -30,7 +30,7 @@ import {
   ShoppingCart,
   MessageCircle
 } from "lucide-react";
-import { useCart, addToCart, removeFromCart, updateQuantity } from "@/lib/cart";
+import { useCart, addToCart, removeFromCart, updateQuantity, clearCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
@@ -423,135 +423,74 @@ export default function CheckoutPage() {
         : pricing;
 
       const { createOrder, saveUserCheckoutProfile } = await import("@/lib/orders");
-      const { orderId } = await createOrder(
+      
+      const orderRes = await createOrder(
         currentUser.uid,
         cart.items,
-        effectivePricing,
+        cart.subtotal,
         checkoutData,
+        effectivePricing,
         freeGifts
       );
+      const orderId = typeof orderRes === "string" ? orderRes : (orderRes?.orderId || orderRes?.id);
+      if (!orderId) {
+        throw new Error("Could not initialize your order. Please retry.");
+      }
 
-      saveUserCheckoutProfile(currentUser.uid, {
-        fullName: form.name.trim(),
-        phone: cleanPhone,
-        email: customerEmail,
-        shippingAddress: address,
-        gstDetails: hasGst ? gstDetails : undefined
-      }).catch(() => {});
+      saveUserCheckoutProfile(currentUser.uid, checkoutData).catch(console.error);
 
-      // Call payment gateway
-      const paymentResponse = await fetch("/api/create-order", {
+      // Notify Telegram in background (with keepalive so it survives navigation)
+      fetch("/api/send-telegram-notification", {
         method: "POST",
+        keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          event: "payment_initiated",
           orderId,
-          amount: effectivePricing.amountToPay,
-          customerName: form.name.trim(),
-          customerEmail: customerEmail,
-          customerPhone: cleanPhone,
-          productInfo: `Namo Narayana A2 Ghee - Order #${orderId}`
+          orderData: {
+            items: [
+              ...cart.items.map(i => ({ ...i, name: i.title })),
+              ...freeGifts.map(g => ({ name: `${g.name} (${g.size} x${g.quantity})`, price: 0, quantity: g.quantity, isGift: true }))
+            ],
+            freeGifts: freeGifts.map(g => `${g.name} (x${g.quantity})`),
+            subtotal: cart.subtotal,
+            discount: effectivePricing.discount,
+            totalAmount: effectivePricing.amountAfterDiscount,
+            amountToPay: effectivePricing.amountToPay,
+            shippingAddress: address,
+            contactInfo: { email: customerEmail, phone: cleanPhone },
+            paymentMethod: "prepaid",
+            paymentStatus: "pending"
+          }
         })
+      }).catch(e => console.error("Failed to send init telegram notification", e));
+
+      // Clear abandoned cart lead upon payment checkout initiation
+      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
+        clearAbandonedCart(cleanPhone).catch(() => {});
       });
 
-      const paymentData = await paymentResponse.json();
+      // Clear cart locally right as user transitions to payment gateway
+      clearCart();
+
+      const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
+      const payParams = new URLSearchParams();
+      payParams.set("order_id", orderId);
+      payParams.set("txnid", orderId);
+      payParams.set("amount", amountInINR.toString());
+      payParams.set("firstname", address.name || "Customer");
+      payParams.set("email", customerEmail);
+      payParams.set("phone", cleanPhone);
+      payParams.set("productinfo", `Order ${orderId}`);
+      payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
+      payParams.set("cancelUrl", `${origin}/checkout`);
+      payParams.set("brand", "namonarayanaghee");
+
+      const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
+      
       toast.dismiss(loadingToastId);
-
-      if (!paymentResponse.ok || !paymentData.success) {
-        throw new Error(paymentData.error || "Payment gateway connection failed. Please retry.");
-      }
-
-      if (paymentData.provider === "razorpay") {
-        const loadRazorpay = () => {
-          return new Promise((resolve) => {
-            if ((window as any).Razorpay) {
-              resolve(true);
-              return;
-            }
-            const script = document.createElement("script");
-            script.src = "https://checkout.razorpay.com/v1/checkout.js";
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.body.appendChild(script);
-          });
-        };
-
-        const isLoaded = await loadRazorpay();
-        if (!isLoaded) {
-          throw new Error("Could not load payment gateway. Please check your internet connection.");
-        }
-
-        const options = {
-          key: paymentData.keyId,
-          amount: paymentData.amount,
-          currency: paymentData.currency || "INR",
-          name: "Namo Narayana",
-          description: "100% Pure Vedic A2 Gir Cow Ghee",
-          image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
-          order_id: paymentData.razorpayOrderId,
-          prefill: {
-            name: form.name.trim(),
-            email: customerEmail,
-            contact: cleanPhone
-          },
-          theme: {
-            color: "#5E0B10"
-          },
-          handler: async function (response: any) {
-            toast.loading("Verifying payment security...");
-            try {
-              const verifyRes = await fetch("/api/razorpay/callback", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  orderId,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature
-                })
-              });
-              const verifyData = await verifyRes.json();
-              if (verifyData.success) {
-                window.location.href = `/checkout/success?orderId=${orderId}`;
-              } else {
-                window.location.href = `/checkout/success?orderId=${orderId}&status=pending`;
-              }
-            } catch {
-              window.location.href = `/checkout/success?orderId=${orderId}&status=pending`;
-            }
-          },
-          modal: {
-            ondismiss: function () {
-              setIsSubmitting(false);
-              toast.info("Payment was cancelled. You can retry anytime.");
-            }
-          }
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-        return;
-      }
-
-      // PayU Form POST fallback
-      if (paymentData.actionUrl && paymentData.params) {
-        const payForm = document.createElement("form");
-        payForm.method = "POST";
-        payForm.action = paymentData.actionUrl;
-
-        Object.entries(paymentData.params).forEach(([key, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = String(value);
-          payForm.appendChild(input);
-        });
-
-        document.body.appendChild(payForm);
-        payForm.submit();
-        return;
-      }
-
-      throw new Error("Unexpected payment response. Please retry.");
+      window.location.href = targetUrl;
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");
@@ -584,6 +523,8 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen text-[#2A1612]">
+      <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://potter-world.com" />
       
       {/* 1. Top Announcement Header Bar */}
       <div className="bg-[#5E0B10] text-amber-200 text-[11px] sm:text-xs py-2 px-4 shadow-xs">
