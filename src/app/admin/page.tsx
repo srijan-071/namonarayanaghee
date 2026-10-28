@@ -6,7 +6,6 @@ import {
   Mail,
   Send,
   CheckCircle2,
-  User as UserIcon,
   LogOut,
   TrendingUp,
   Package,
@@ -34,6 +33,14 @@ import {
   ShieldAlert,
   ShieldCheck,
   Check,
+  MessageSquare,
+  RotateCw,
+  ChevronDown,
+  ChevronUp,
+  Percent,
+  Flame,
+  FileText,
+  CheckCheck,
 } from "lucide-react";
 
 // Whitelisted Administrator Email
@@ -56,7 +63,7 @@ function getOrderAmounts(order: any) {
   const rawSubtotal = Number(order.subtotal || rawTotal);
   const rawDiscount = Number(order.discount || 0);
 
-  // Amounts >= 100 in our Firestore are in Paise (e.g. 94900 -> ₹949.00)
+  // Amounts >= 100 in Firestore are in Paise (e.g. 94900 -> ₹949.00)
   const isPaise = rawTotal >= 100;
   const total = isPaise ? rawTotal / 100 : rawTotal;
   const subtotal = isPaise ? rawSubtotal / 100 : rawSubtotal;
@@ -82,12 +89,17 @@ function isTestOrder(order: any): boolean {
 export default function AdminPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"sales" | "promo">("sales");
+  const [activeTab, setActiveTab] = useState<"analytics" | "orders" | "abandoned" | "promo">("analytics");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  // Abandoned Carts State
+  const [abandonedCarts, setAbandonedCarts] = useState<any[]>([]);
+  const [isLoadingCarts, setIsLoadingCarts] = useState(false);
+  const [recoveringEmail, setRecoveringEmail] = useState<string | null>(null);
 
   // Filters State
   const [timeFilter, setTimeFilter] = useState<"all" | "today" | "yesterday" | "27_28" | "7days" | "30days">("all");
@@ -101,9 +113,12 @@ export default function AdminPage() {
   const [editStatus, setEditStatus] = useState("");
   const [editCourier, setEditCourier] = useState("");
   const [editTracking, setEditTracking] = useState("");
+  const [notifyCustomerEmail, setNotifyCustomerEmail] = useState(true);
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [showInvoicePrint, setShowInvoicePrint] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  // Promo Mailer State (Retained from existing tool)
+  // Promo Mailer State
   const [emails, setEmails] = useState<{ id: string; email: string; createdAt: any }[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
@@ -143,6 +158,72 @@ export default function AdminPage() {
       setIsLoadingOrders(false);
     }
   }, []);
+
+  // Fetch abandoned carts & combine with pending orders
+  const fetchAbandonedCarts = useCallback(async () => {
+    setIsLoadingCarts(true);
+    try {
+      const { db } = await import("@/lib/firebase");
+      const { collection, getDocs } = await import("firebase/firestore/lite");
+
+      const cartSnap = await getDocs(collection(db, "abandoned_carts"));
+      const rawCarts = cartSnap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+
+      // Also grab pending orders from orders collection that did not complete payment
+      const pendingFromOrders = orders
+        .filter((o) => (o.paymentStatus === "pending" || !o.paymentStatus) && !isTestOrder(o))
+        .map((o) => ({
+          id: o.id,
+          orderId: o.orderId || o.id,
+          email: o.contactInfo?.email || o.shippingAddress?.email,
+          phone: o.contactInfo?.phone,
+          name: o.shippingAddress?.name || o.contactInfo?.name || "Customer",
+          subtotal: getOrderAmounts(o).total,
+          cartItems: o.items || [],
+          lastActive: o.createdAt?.seconds ? new Date(o.createdAt.seconds * 1000).toISOString() : new Date().toISOString(),
+          notified: Boolean(o.recoveryEmailSent),
+          source: "order_pending",
+        }));
+
+      // Combine and deduplicate by email
+      const cartMap = new Map<string, any>();
+
+      rawCarts.forEach((c: any) => {
+        const email = (c.email || c.id || "").toLowerCase().trim();
+        if (email && email.includes("@")) {
+          cartMap.set(email, {
+            ...c,
+            email,
+            source: "cart_abandoned",
+          });
+        }
+      });
+
+      pendingFromOrders.forEach((p: any) => {
+        const email = (p.email || "").toLowerCase().trim();
+        if (email && email.includes("@") && !cartMap.has(email)) {
+          cartMap.set(email, p);
+        }
+      });
+
+      const merged = Array.from(cartMap.values());
+      // Sort newest first
+      merged.sort((a, b) => {
+        const tA = new Date(a.lastActive || a.updatedAt || 0).getTime();
+        const tB = new Date(b.lastActive || b.updatedAt || 0).getTime();
+        return tB - tA;
+      });
+
+      setAbandonedCarts(merged);
+    } catch (e: any) {
+      console.error("Error fetching abandoned carts:", e);
+    } finally {
+      setIsLoadingCarts(false);
+    }
+  }, [orders]);
 
   // Fetch collected promo emails
   const fetchEmails = useCallback(async () => {
@@ -215,21 +296,25 @@ export default function AdminPage() {
     initAuth();
   }, [fetchOrders, fetchEmails]);
 
+  // Trigger carts fetch when orders update
+  useEffect(() => {
+    if (orders.length > 0) {
+      fetchAbandonedCarts();
+    }
+  }, [orders, fetchAbandonedCarts]);
+
   // Filtered Orders Calculation
   const filteredOrders = useMemo(() => {
     const now = new Date();
 
     return orders.filter((order) => {
-      // 1. Exclude test orders toggle
       if (excludeAdminTests && isTestOrder(order)) {
         return false;
       }
 
       const orderDate = getOrderDate(order);
-      // Format in IST YYYY-MM-DD
       const istDateStr = orderDate.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 
-      // 2. Time Filter
       if (timeFilter === "today") {
         const todayIst = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
         if (istDateStr !== todayIst) return false;
@@ -247,22 +332,28 @@ export default function AdminPage() {
         if (diffDays > 30) return false;
       }
 
-      // 3. Status Filter
       const pStatus = (order.paymentStatus || "").toLowerCase();
       const sStatus = (order.status || "").toLowerCase();
       const pMethod = (order.paymentMethod || "").toLowerCase();
 
       if (statusFilter === "paid") {
-        if (pStatus !== "paid" && sStatus !== "paid" && sStatus !== "processing") return false;
+        if (pStatus !== "paid" && sStatus !== "paid") return false;
+      } else if (statusFilter === "processing") {
+        if (sStatus !== "processing") return false;
       } else if (statusFilter === "shipped") {
         if (sStatus !== "shipped" && order.shippingStatus !== "shipped") return false;
+      } else if (statusFilter === "out_for_delivery") {
+        if (sStatus !== "out_for_delivery") return false;
+      } else if (statusFilter === "delivery_failed") {
+        if (sStatus !== "delivery_failed") return false;
+      } else if (statusFilter === "delivered") {
+        if (sStatus !== "delivered") return false;
       } else if (statusFilter === "pending") {
-        if (pStatus === "paid" || sStatus === "shipped" || sStatus === "paid") return false;
+        if (pStatus === "paid" || sStatus === "shipped" || sStatus === "paid" || sStatus === "processing") return false;
       } else if (statusFilter === "cod") {
         if (pMethod !== "cod") return false;
       }
 
-      // 4. Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const idMatch = (order.id || "").toLowerCase().includes(q) || (order.orderId || "").toLowerCase().includes(q);
@@ -271,6 +362,7 @@ export default function AdminPage() {
         const phoneMatch = (order.contactInfo?.phone || "").toLowerCase().includes(q);
         const cityMatch = (order.shippingAddress?.city || "").toLowerCase().includes(q);
         const stateMatch = (order.shippingAddress?.state || "").toLowerCase().includes(q);
+        const trackingMatch = (order.trackingNumber || order.awbNumber || "").toLowerCase().includes(q);
         const paymentIdMatch = (
           order.paymentSessionId ||
           order.paymentDetails?.razorpay_payment_id ||
@@ -278,7 +370,7 @@ export default function AdminPage() {
         ).toLowerCase().includes(q);
         const itemMatch = (order.items || []).some((i: any) => (i.name || i.title || "").toLowerCase().includes(q));
 
-        if (!idMatch && !nameMatch && !emailMatch && !phoneMatch && !cityMatch && !stateMatch && !paymentIdMatch && !itemMatch) {
+        if (!idMatch && !nameMatch && !emailMatch && !phoneMatch && !cityMatch && !stateMatch && !trackingMatch && !paymentIdMatch && !itemMatch) {
           return false;
         }
       }
@@ -289,34 +381,46 @@ export default function AdminPage() {
 
   // Aggregate Sales KPIs
   const analytics = useMemo(() => {
-    let totalRevenue = 0;
+    let totalPaidRevenue = 0;
+    let totalGrossRevenue = 0;
     let paidOrdersCount = 0;
+    let processingCount = 0;
     let shippedOrdersCount = 0;
+    let outForDeliveryCount = 0;
+    let deliveryFailedCount = 0;
+    let deliveredCount = 0;
     let pendingOrdersCount = 0;
     let prepaidCount = 0;
     let codCount = 0;
     let totalLitres = 0;
     let totalFreeGifts = 0;
 
-    // Daily revenue distribution map
     const dailyMap: Record<string, { revenue: number; count: number; date: string }> = {};
-
-    // Product breakdown map
     const productMap: Record<string, { units: number; revenue: number }> = {};
-
-    // State breakdown map
     const stateMap: Record<string, number> = {};
 
     filteredOrders.forEach((order) => {
       const { total } = getOrderAmounts(order);
+      totalGrossRevenue += total;
+
       const isPaid =
         order.paymentStatus === "paid" ||
         order.status === "paid" ||
         order.status === "processing" ||
-        order.status === "shipped";
+        order.status === "shipped" ||
+        order.status === "out_for_delivery" ||
+        order.status === "delivered";
+
+      const sStatus = (order.status || "").toLowerCase();
+
+      if (sStatus === "processing") processingCount++;
+      else if (sStatus === "shipped") shippedOrdersCount++;
+      else if (sStatus === "out_for_delivery") outForDeliveryCount++;
+      else if (sStatus === "delivery_failed") deliveryFailedCount++;
+      else if (sStatus === "delivered") deliveredCount++;
 
       if (isPaid) {
-        totalRevenue += total;
+        totalPaidRevenue += total;
         paidOrdersCount++;
 
         if (order.paymentMethod === "cod") {
@@ -325,7 +429,6 @@ export default function AdminPage() {
           prepaidCount++;
         }
 
-        // Daily grouping
         const dateObj = getOrderDate(order);
         const dayKey = dateObj.toLocaleDateString("en-IN", {
           day: "numeric",
@@ -338,14 +441,12 @@ export default function AdminPage() {
         dailyMap[dayKey].revenue += total;
         dailyMap[dayKey].count++;
 
-        // Product volume & units
         (order.items || []).forEach((item: any) => {
           if (item.isGift) return;
           const title = item.name || item.title || "Ghee";
           const qty = Number(item.quantity || 1);
           const price = Number(item.price || 0) / 100;
 
-          // Estimate volume
           const titleLower = (title + " " + (item.variantTitle || "")).toLowerCase();
           if (titleLower.includes("5 litre") || titleLower.includes("5l")) {
             totalLitres += 5 * qty;
@@ -365,46 +466,43 @@ export default function AdminPage() {
           productMap[key].revenue += price * qty;
         });
 
-        // Free Gifts tally
         const giftsCount = (order.freeGifts || []).reduce((acc: number, g: any) => acc + (Number(g.quantity) || 1), 0);
         totalFreeGifts += giftsCount;
 
-        // State tally
         const state = order.shippingAddress?.state || "Other";
         stateMap[state] = (stateMap[state] || 0) + 1;
       } else {
         pendingOrdersCount++;
       }
-
-      if (order.status === "shipped" || order.shippingStatus === "shipped") {
-        shippedOrdersCount++;
-      }
     });
 
-    const aov = paidOrdersCount > 0 ? Math.round(totalRevenue / paidOrdersCount) : 0;
+    const aov = paidOrdersCount > 0 ? Math.round(totalPaidRevenue / paidOrdersCount) : 0;
+    const paidConversionRate = filteredOrders.length > 0 ? Math.round((paidOrdersCount / filteredOrders.length) * 100) : 0;
     const prepaidPercent = paidOrdersCount > 0 ? Math.round((prepaidCount / paidOrdersCount) * 100) : 100;
 
-    // Daily sorted array
     const dailyChart = Object.values(dailyMap);
-
-    // Top products sorted
     const topProducts = Object.entries(productMap)
       .map(([name, data]) => ({ name, ...data }))
       .sort((a, b) => b.units - a.units);
 
-    // Top states sorted
     const topStates = Object.entries(stateMap)
       .map(([state, count]) => ({ state, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
     return {
-      totalRevenue,
+      totalPaidRevenue,
+      totalGrossRevenue,
       totalOrders: filteredOrders.length,
       paidOrdersCount,
+      processingCount,
       shippedOrdersCount,
+      outForDeliveryCount,
+      deliveryFailedCount,
+      deliveredCount,
       pendingOrdersCount,
       aov,
+      paidConversionRate,
       totalLitres,
       totalFreeGifts,
       prepaidPercent,
@@ -422,44 +520,81 @@ export default function AdminPage() {
     setEditStatus(order.status || "processing");
     setEditCourier(order.courierPartner || "Delhivery Express");
     setEditTracking(order.trackingNumber || order.awbNumber || "");
+    setNotifyCustomerEmail(true);
+    setShowEmailPreview(false);
   };
 
-  // Update Order Status in Firestore
+  // Update Order Status via dedicated transactional API
   const handleUpdateOrderStatus = async () => {
     if (!selectedOrder) return;
     setIsUpdatingStatus(true);
     try {
-      const { db } = await import("@/lib/firebase");
-      const { doc, updateDoc } = await import("firebase/firestore/lite");
+      const res = await fetch("/api/admin/update-order-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: selectedOrder.id,
+          status: editStatus,
+          courierPartner: editCourier,
+          trackingNumber: editTracking,
+          notifyCustomer: notifyCustomerEmail,
+        }),
+      });
 
-      const updatePayload: Record<string, any> = {
-        status: editStatus,
-        shippingStatus: editStatus,
-        updatedAt: new Date().toISOString(),
-      };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update order");
 
-      if (editTracking.trim()) {
-        updatePayload.trackingNumber = editTracking.trim();
-        updatePayload.awbNumber = editTracking.trim();
+      if (data.emailSent) {
+        toast.success(`Order #${selectedOrder.id} status updated to ${editStatus} & Brevo email sent to customer!`);
+      } else {
+        toast.success(`Order #${selectedOrder.id} status updated to ${editStatus}! (Email notification skipped)`);
       }
-      if (editCourier.trim()) {
-        updatePayload.courierPartner = editCourier.trim();
-      }
-
-      await updateDoc(doc(db, "orders", selectedOrder.id), updatePayload);
-
-      toast.success(`Order #${selectedOrder.id} status updated to ${editStatus}!`);
 
       // Update local state
       setOrders((prev) =>
-        prev.map((o) => (o.id === selectedOrder.id ? { ...o, ...updatePayload } : o))
+        prev.map((o) => (o.id === selectedOrder.id ? { ...o, ...data.order } : o))
       );
-      setSelectedOrder((prev: any) => ({ ...prev, ...updatePayload }));
+      setSelectedOrder(data.order);
     } catch (e: any) {
       console.error("Failed to update status:", e);
-      toast.error("Failed to update Firestore: " + e.message);
+      toast.error("Status update error: " + e.message);
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  // Send Abandoned Cart Recovery Email
+  const handleSendRecoveryEmail = async (cart: any) => {
+    setRecoveringEmail(cart.email);
+    try {
+      const res = await fetch("/api/admin/recover-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cart.email,
+          name: cart.name,
+          phone: cart.phone,
+          orderId: cart.orderId,
+          items: cart.cartItems,
+          subtotal: cart.subtotal,
+          couponCode: "DIWALI",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to dispatch recovery email");
+
+      toast.success(`Recovery email sent to ${cart.email} with 10% OFF code DIWALI!`);
+
+      // Update cart local status
+      setAbandonedCarts((prev) =>
+        prev.map((c) => (c.email === cart.email ? { ...c, notified: true, recoveryEmailSent: true } : c))
+      );
+    } catch (e: any) {
+      console.error("Recovery email error:", e);
+      toast.error("Failed to send recovery email: " + e.message);
+    } finally {
+      setRecoveringEmail(null);
     }
   };
 
@@ -483,6 +618,8 @@ export default function AdminPage() {
       "State",
       "Pincode",
       "Country",
+      "Courier Partner",
+      "Tracking Number",
       "Purchased Items",
       "Free Gifts",
       "Total Amount (INR)",
@@ -515,6 +652,8 @@ export default function AdminPage() {
         `"${(o.shippingAddress?.state || "").replace(/"/g, '""')}"`,
         `"${(o.shippingAddress?.pincode || "").replace(/"/g, '""')}"`,
         `"${(o.shippingAddress?.country || "India").replace(/"/g, '""')}"`,
+        `"${(o.courierPartner || "N/A").replace(/"/g, '""')}"`,
+        `"${(o.trackingNumber || o.awbNumber || "N/A").replace(/"/g, '""')}"`,
         `"${itemsStr.replace(/"/g, '""')}"`,
         `"${(giftsStr || "None").replace(/"/g, '""')}"`,
         `₹${amounts.total.toFixed(2)}`,
@@ -610,7 +749,6 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FFFDF7] via-[#FBF5E8] to-[#F3E7D3] p-4">
         <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl text-center max-w-md w-full border border-nn-hairline relative overflow-hidden">
-          {/* Decorative Festive Banner */}
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#D4A017] via-[#8A1B14] to-[#5E0B10]"></div>
 
           <div className="w-20 h-20 bg-gradient-to-br from-[#FFFDF7] to-[#F3E7D3] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-[#EAD7BC]">
@@ -657,7 +795,7 @@ export default function AdminPage() {
     );
   }
 
-  // Authwall: Signed In with UNAUTHORIZED Account
+  // Authwall: Unauthorized Account
   if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-nn-cream p-4">
@@ -684,11 +822,11 @@ export default function AdminPage() {
     );
   }
 
-  // AUTHENTICATED ADMIN DASHBOARD
+  // Main Dashboard
   return (
-    <div className="min-h-screen bg-[#FAF6EE] text-nn-ink pb-20">
+    <div className="min-h-screen bg-[#FAF6EE] text-nn-ink pb-24">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-nn-hairline shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-nn-hairline shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8A1B14] to-[#5E0B10] flex items-center justify-center text-white shadow-md font-serif font-bold text-lg">
@@ -708,37 +846,66 @@ export default function AdminPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 bg-[#F3E7D3]/60 p-1 rounded-xl border border-nn-hairline">
+          <div className="flex items-center gap-1.5 bg-[#F3E7D3]/60 p-1.5 rounded-xl border border-nn-hairline">
             <button
-              onClick={() => setActiveTab("sales")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === "sales"
+              onClick={() => setActiveTab("analytics")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === "analytics"
                   ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white shadow-sm"
                   : "text-nn-bark hover:text-nn-ink"
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
-              Sales &amp; Orders
+              Analytics
+            </button>
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === "orders"
+                  ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white shadow-sm"
+                  : "text-nn-bark hover:text-nn-ink"
+              }`}
+            >
+              <Package className="w-3.5 h-3.5" />
+              Orders ({filteredOrders.length})
+            </button>
+            <button
+              onClick={() => setActiveTab("abandoned")}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                activeTab === "abandoned"
+                  ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white shadow-sm"
+                  : "text-nn-bark hover:text-nn-ink"
+              }`}
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              Abandoned ({abandonedCarts.length})
             </button>
             <button
               onClick={() => setActiveTab("promo")}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "promo"
                   ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white shadow-sm"
                   : "text-nn-bark hover:text-nn-ink"
               }`}
             >
               <Mail className="w-3.5 h-3.5" />
-              Promo Mailer ({emails.length})
+              Promo ({emails.length})
             </button>
           </div>
 
-          {/* User profile & actions */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-bold text-nn-forest-deep leading-none">{user.displayName || "Admin"}</span>
-              <span className="text-[11px] text-nn-bark">{user.email}</span>
-            </div>
+          {/* User profile & refresh */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                fetchOrders();
+                fetchAbandonedCarts();
+                toast.success("Refreshing Firestore data...");
+              }}
+              title="Refresh Data"
+              className="p-2 text-nn-bark hover:text-nn-forest-deep hover:bg-nn-cream rounded-xl transition border border-nn-hairline"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingOrders ? "animate-spin" : ""}`} />
+            </button>
             <button
               onClick={signOut}
               title="Sign Out"
@@ -750,59 +917,279 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {activeTab === "sales" ? (
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+        {/* ─── TAB 1: EXECUTIVE ANALYTICS & CHARTS ─── */}
+        {activeTab === "analytics" && (
           <div className="space-y-8">
-            {/* Header Controls & Filter Bar */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-nn-hairline flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            {/* Header with Quick Time Filter */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-serif font-bold text-nn-forest-deep">Sales Analyzer</h2>
-                  <span className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-semibold border border-emerald-200">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Live Firestore
-                  </span>
-                </div>
-                <p className="text-xs text-nn-bark mt-1">
-                  Real-time analytics and fulfillment details for every order placed.
-                  {lastUpdated && ` Updated: ${lastUpdated.toLocaleTimeString("en-IN")}`}
+                <h2 className="text-xl font-serif font-bold text-nn-forest-deep flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-[#8A1B14]" /> Executive Sales Analyzer
+                </h2>
+                <p className="text-xs text-nn-bark">
+                  Live Firestore metrics • Calculated across verified customer orders
                 </p>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                <button
-                  onClick={fetchOrders}
-                  disabled={isLoadingOrders}
-                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-nn-forest-deep bg-nn-cream hover:bg-[#F3E7D3] border border-nn-hairline transition flex items-center gap-1.5 shadow-2xs"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingOrders ? "animate-spin" : ""}`} />
-                  Refresh
-                </button>
-
-                <button
-                  onClick={exportToCSV}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] hover:opacity-90 transition flex items-center gap-1.5 shadow-md"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export CSV ({filteredOrders.length})
-                </button>
+              {/* Time Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[
+                  { key: "all", label: "All Time" },
+                  { key: "today", label: "Today" },
+                  { key: "yesterday", label: "Yesterday" },
+                  { key: "27_28", label: "27-28 Oct Special" },
+                  { key: "7days", label: "Last 7d" },
+                  { key: "30days", label: "Last 30d" },
+                ].map((tf) => (
+                  <button
+                    key={tf.key}
+                    onClick={() => setTimeFilter(tf.key as any)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                      timeFilter === tf.key
+                        ? "bg-nn-forest-deep text-white shadow-xs font-bold"
+                        : "bg-[#F3E7D3]/60 text-nn-bark hover:text-nn-ink hover:bg-[#F3E7D3]"
+                    }`}
+                  >
+                    {tf.label}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Filter Pills & Search Bar */}
-            <div className="bg-white rounded-2xl p-5 shadow-xs border border-nn-hairline space-y-4">
-              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Paid Revenue */}
+              <div className="bg-gradient-to-br from-white to-[#FFFDF9] p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Net Realized Revenue</span>
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                    <IndianRupee className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="text-2xl font-serif font-extrabold text-[#5E0B10]">
+                  ₹{analytics.totalPaidRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="mt-2 text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> {analytics.paidOrdersCount} Paid Orders Confirmed
+                </div>
+              </div>
+
+              {/* Gross Pipeline */}
+              <div className="bg-gradient-to-br from-white to-[#FFFDF9] p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Gross Sales Pipeline</span>
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                    <Flame className="w-4 h-4 text-[#D4A017]" />
+                  </div>
+                </div>
+                <div className="text-2xl font-serif font-extrabold text-nn-forest-deep">
+                  ₹{analytics.totalGrossRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="mt-2 text-xs text-amber-700 font-semibold flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" /> {analytics.pendingOrdersCount} Incomplete / Pending
+                </div>
+              </div>
+
+              {/* AOV & Conversion */}
+              <div className="bg-gradient-to-br from-white to-[#FFFDF9] p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Average Order Value</span>
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                    <Percent className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="text-2xl font-serif font-extrabold text-nn-forest-deep">
+                  ₹{analytics.aov.toLocaleString("en-IN")}
+                </div>
+                <div className="mt-2 text-xs text-gray-500 font-medium">
+                  Paid Conversion Rate: <strong className="text-nn-forest-deep">{analytics.paidConversionRate}%</strong>
+                </div>
+              </div>
+
+              {/* Litres Churned */}
+              <div className="bg-gradient-to-br from-white to-[#FFFDF9] p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Bilona Ghee Volume</span>
+                  <div className="w-8 h-8 rounded-lg bg-[#FAF0E6] text-[#8A1B14] flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="text-2xl font-serif font-extrabold text-[#8A1B14]">
+                  {analytics.totalLitres.toFixed(1)} <span className="text-sm font-sans font-bold">Litres</span>
+                </div>
+                <div className="mt-2 text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                  <Gift className="w-3.5 h-3.5" /> {analytics.totalFreeGifts} Festive Gifts Attached
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Daily Sales Trajectory Chart */}
+              <div className="bg-white p-6 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-nn-hairline pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+                      <TrendingUp className="w-4 h-4 text-[#8A1B14]" /> Daily Sales Trajectory (INR)
+                    </h3>
+                    <p className="text-xs text-gray-400">Paid customer orders breakdown</p>
+                  </div>
+                  <span className="text-xs font-bold text-[#8A1B14] bg-[#FFF5F5] px-2.5 py-1 rounded-full border border-red-100">
+                    Live Feed
+                  </span>
+                </div>
+
+                {analytics.dailyChart.length === 0 ? (
+                  <div className="h-48 flex items-center justify-center text-xs text-gray-400">
+                    No sales data in selected range
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-2">
+                    {(() => {
+                      const maxDaily = Math.max(...analytics.dailyChart.map((d) => d.revenue), 1);
+                      return analytics.dailyChart.map((item, idx) => {
+                        const pct = Math.round((item.revenue / maxDaily) * 100);
+                        return (
+                          <div key={idx} className="space-y-1">
+                            <div className="flex justify-between text-xs">
+                              <span className="font-semibold text-gray-700">{item.date}</span>
+                              <span className="font-bold text-[#5E0B10]">
+                                ₹{item.revenue.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                                <span className="text-[10px] text-gray-400 font-normal ml-1">({item.count} orders)</span>
+                              </span>
+                            </div>
+                            <div className="h-3 w-full bg-[#FAF6EE] rounded-full overflow-hidden border border-nn-hairline">
+                              <div
+                                className="h-full bg-gradient-to-r from-[#D4A017] via-[#8A1B14] to-[#5E0B10] rounded-full transition-all duration-500"
+                                style={{ width: `${Math.max(pct, 4)}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                )}
+              </div>
+
+              {/* Order Status Distribution Funnel */}
+              <div className="bg-white p-6 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-nn-hairline pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+                      <Truck className="w-4 h-4 text-[#D4A017]" /> Fulfillment &amp; Status Funnel
+                    </h3>
+                    <p className="text-xs text-gray-400">Current order dispatch lifecycle</p>
+                  </div>
+                  <span className="text-xs font-bold text-nn-forest-deep">
+                    Total: {analytics.totalOrders}
+                  </span>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  {[
+                    { label: "Processing (Hand-Packing)", count: analytics.processingCount, color: "bg-amber-500", text: "text-amber-800" },
+                    { label: "Shipped / In-Transit", count: analytics.shippedOrdersCount, color: "bg-blue-600", text: "text-blue-800" },
+                    { label: "Out for Delivery", count: analytics.outForDeliveryCount, color: "bg-orange-500", text: "text-orange-800" },
+                    { label: "Delivered Successfully", count: analytics.deliveredCount, color: "bg-emerald-600", text: "text-emerald-800" },
+                    { label: "Delivery Failed (Logistics RTO)", count: analytics.deliveryFailedCount, color: "bg-red-500", text: "text-red-700" },
+                    { label: "Unpaid / Pending", count: analytics.pendingOrdersCount, color: "bg-gray-400", text: "text-gray-700" },
+                  ].map((s, idx) => {
+                    const totalSafe = Math.max(analytics.totalOrders, 1);
+                    const pct = Math.round((s.count / totalSafe) * 100);
+                    return (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span className={`font-semibold ${s.text}`}>{s.label}</span>
+                          <span className="font-bold text-gray-900">
+                            {s.count} <span className="text-[10px] text-gray-400 font-normal">({pct}%)</span>
+                          </span>
+                        </div>
+                        <div className="h-2.5 w-full bg-[#FAF6EE] rounded-full overflow-hidden border border-nn-hairline">
+                          <div
+                            className={`h-full ${s.color} rounded-full transition-all duration-500`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Top Products & Top States Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Top Products Breakdown */}
+              <div className="bg-white p-6 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5 border-b border-nn-hairline pb-3">
+                  <Package className="w-4 h-4 text-[#8A1B14]" /> Top Selling Jars &amp; SKUs
+                </h3>
+                {analytics.topProducts.length === 0 ? (
+                  <p className="text-xs text-gray-400 py-6 text-center">No SKU data available</p>
+                ) : (
+                  <div className="space-y-3">
+                    {analytics.topProducts.slice(0, 5).map((prod, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EE] border border-nn-hairline">
+                        <div>
+                          <div className="text-xs font-bold text-nn-forest-deep">{prod.name}</div>
+                          <div className="text-[11px] text-gray-400">{prod.units} jars delivered</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-bold text-[#8A1B14]">₹{prod.revenue.toLocaleString("en-IN")}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Geographic Distribution */}
+              <div className="bg-white p-6 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5 border-b border-nn-hairline pb-3">
+                  <MapPin className="w-4 h-4 text-[#D4A017]" /> Top Buyer States &amp; Regions
+                </h3>
+                {analytics.topStates.length === 0 ? (
+                  <p className="text-xs text-gray-400 py-6 text-center">No regional data available</p>
+                ) : (
+                  <div className="space-y-3">
+                    {analytics.topStates.map((st, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EE] border border-nn-hairline">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-white text-xs font-bold flex items-center justify-center border border-nn-hairline">
+                            {idx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-nn-forest-deep">{st.state}</span>
+                        </div>
+                        <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                          {st.count} orders
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── TAB 2: LIVE ORDERS COMMAND CENTER ─── */}
+        {activeTab === "orders" && (
+          <div className="space-y-6">
+            {/* Filter and Search Bar */}
+            <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Search Input */}
                 <div className="relative flex-1 max-w-md">
-                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search Order ID, Customer, Phone, City, Product..."
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#FAF6EE] border border-nn-hairline rounded-xl text-xs text-nn-ink placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
+                    placeholder="Search by Order ID, Name, Phone, Email, City, AWB..."
+                    className="w-full pl-10 pr-4 py-2 text-xs border border-nn-hairline rounded-xl bg-[#FAF9F5] focus:outline-none focus:ring-2 focus:ring-[#8A1B14] text-gray-900"
                   />
                   {searchQuery && (
                     <button
@@ -814,455 +1201,202 @@ export default function AdminPage() {
                   )}
                 </div>
 
-                {/* Exclude Admin Tests Toggle */}
-                <label className="flex items-center gap-2 cursor-pointer bg-[#FBF5E8] px-3.5 py-2 rounded-xl border border-nn-hairline text-xs font-semibold text-nn-forest-deep select-none">
-                  <input
-                    type="checkbox"
-                    checked={excludeAdminTests}
-                    onChange={(e) => setExcludeAdminTests(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#8A1B14] focus:ring-[#8A1B14]"
-                  />
-                  <span>Exclude ₹1 Admin Tests</span>
-                </label>
-              </div>
+                {/* Actions & Export */}
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={excludeAdminTests}
+                      onChange={(e) => setExcludeAdminTests(e.target.checked)}
+                      className="rounded border-gray-300 text-[#8A1B14] focus:ring-[#8A1B14]"
+                    />
+                    <span>Hide ₹1 Admin Tests</span>
+                  </label>
 
-              {/* Time Range Pills */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-nn-hairline/60">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-nn-bark mr-2 flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-[#D4A017]" /> Period:
-                </span>
-                {[
-                  { key: "all", label: "All Time" },
-                  { key: "today", label: "Today (28 Oct)" },
-                  { key: "yesterday", label: "Yesterday (27 Oct)" },
-                  { key: "27_28", label: "27 & 28 Oct" },
-                  { key: "7days", label: "Last 7 Days" },
-                  { key: "30days", label: "Last 30 Days" },
-                ].map((t) => (
                   <button
-                    key={t.key}
-                    onClick={() => setTimeFilter(t.key as any)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                      timeFilter === t.key
-                        ? "bg-[#8A1B14] text-white shadow-xs"
-                        : "bg-[#FAF6EE] text-nn-bark hover:bg-[#F3E7D3] border border-nn-hairline"
-                    }`}
+                    onClick={exportToCSV}
+                    className="px-4 py-2 rounded-xl bg-[#FAF6EE] hover:bg-[#F3E7D3] border border-nn-hairline text-xs font-bold text-nn-forest-deep transition flex items-center gap-1.5 shadow-xs"
                   >
-                    {t.label}
+                    <Download className="w-3.5 h-3.5" />
+                    Export CSV
                   </button>
-                ))}
+                </div>
               </div>
 
-              {/* Status Filter Pills */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-nn-hairline/60">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-nn-bark mr-2 flex items-center gap-1">
-                  <Filter className="w-3 h-3 text-[#D4A017]" /> Status:
+              {/* Status Filter Badges */}
+              <div className="flex flex-wrap items-center gap-1.5 border-t border-nn-hairline pt-3">
+                <span className="text-xs font-bold text-gray-400 mr-2 flex items-center gap-1">
+                  <Filter className="w-3 h-3" /> Status:
                 </span>
                 {[
-                  { key: "all", label: "All Statuses" },
-                  { key: "paid", label: "Paid / Processing" },
+                  { key: "all", label: "All Orders" },
+                  { key: "paid", label: "Paid" },
+                  { key: "processing", label: "Processing" },
                   { key: "shipped", label: "Shipped" },
-                  { key: "pending", label: "Pending / Abandoned" },
-                  { key: "cod", label: "COD Orders" },
-                ].map((s) => (
+                  { key: "out_for_delivery", label: "Out for Delivery" },
+                  { key: "delivered", label: "Delivered" },
+                  { key: "delivery_failed", label: "Delivery Failed" },
+                  { key: "pending", label: "Pending" },
+                ].map((st) => (
                   <button
-                    key={s.key}
-                    onClick={() => setStatusFilter(s.key)}
+                    key={st.key}
+                    onClick={() => setStatusFilter(st.key)}
                     className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      statusFilter === s.key
-                        ? "bg-nn-forest-deep text-white shadow-xs"
-                        : "bg-[#FAF6EE] text-nn-bark hover:bg-[#F3E7D3] border border-nn-hairline"
+                      statusFilter === st.key
+                        ? "bg-[#8A1B14] text-white shadow-xs font-bold"
+                        : "bg-[#F3E7D3]/50 text-nn-bark hover:text-nn-ink hover:bg-[#F3E7D3]"
                     }`}
                   >
-                    {s.label}
+                    {st.label}
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {/* Executive KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-              {/* Total Revenue */}
-              <div className="bg-gradient-to-br from-white to-[#FFFDF7] p-5 rounded-2xl border border-[#F5BD47]/60 shadow-xs relative overflow-hidden">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#8A1B14]">
-                      Total Net Revenue
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-[#5E0B10] mt-1">
-                      ₹{analytics.totalRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-[#FFF4E5] border border-[#F5BD47]/40 flex items-center justify-center text-[#8A1B14]">
-                    <IndianRupee className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">
-                  From <strong>{analytics.paidOrdersCount}</strong> paid orders
-                </p>
-              </div>
-
-              {/* Total Orders */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-gray-500">
-                      Total Orders
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-nn-forest-deep mt-1">
-                      {analytics.totalOrders}
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                    <Package className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">
-                  <span className="text-emerald-700 font-bold">{analytics.paidOrdersCount} Paid</span> •{" "}
-                  <span className="text-purple-700 font-bold">{analytics.shippedOrdersCount} Shipped</span>
-                </p>
-              </div>
-
-              {/* AOV */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-gray-500">
-                      Average Order (AOV)
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-nn-forest-deep mt-1">
-                      ₹{analytics.aov.toLocaleString("en-IN")}
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">Per paid customer cart</p>
-              </div>
-
-              {/* Litres Sold */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-gray-500">
-                      Ghee Volume
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-nn-forest-deep mt-1">
-                      {analytics.totalLitres} <span className="text-base font-normal">Litres</span>
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">Vedic Bilona Ghee sold</p>
-              </div>
-
-              {/* Prepaid % */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-gray-500">
-                      Prepaid Ratio
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-emerald-700 mt-1">
-                      {analytics.prepaidPercent}%
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">
-                  {analytics.prepaidCount} UPI / Razorpay vs {analytics.codCount} COD
-                </p>
-              </div>
-
-              {/* Free Gifts */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider font-extrabold text-gray-500">
-                      Free Gifts Sent
-                    </span>
-                    <h3 className="text-2xl font-serif font-extrabold text-nn-forest-deep mt-1">
-                      {analytics.totalFreeGifts}
-                    </h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
-                    <Gift className="w-5 h-5" />
-                  </div>
-                </div>
-                <p className="text-[11px] text-nn-bark mt-2">Promotional cold pressed oils</p>
-              </div>
-            </div>
-
-            {/* Sales Intelligence: Daily Chart & Product Mix */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Daily Revenue Distribution */}
-              <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-xs border border-nn-hairline">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h4 className="text-base font-serif font-bold text-nn-forest-deep">
-                      Daily Revenue Breakdown
-                    </h4>
-                    <p className="text-xs text-nn-bark">Revenue generated per day in selected period</p>
-                  </div>
-                  <span className="text-xs font-semibold text-nn-forest-deep bg-nn-cream px-3 py-1 rounded-lg border border-nn-hairline">
-                    {analytics.dailyChart.length} Day(s) Active
-                  </span>
-                </div>
-
-                {analytics.dailyChart.length === 0 ? (
-                  <div className="h-44 flex items-center justify-center text-xs text-gray-400">
-                    No sales data available for this filter.
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {analytics.dailyChart.map((d) => {
-                      const maxDaily = Math.max(...analytics.dailyChart.map((item) => item.revenue), 1);
-                      const percent = Math.round((d.revenue / maxDaily) * 100);
-
-                      return (
-                        <div key={d.date} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="font-semibold text-nn-ink">{d.date}</span>
-                            <span className="text-nn-forest-deep font-bold">
-                              ₹{d.revenue.toLocaleString("en-IN", { minimumFractionDigits: 2 })} ({d.count} orders)
-                            </span>
-                          </div>
-                          <div className="h-4 bg-[#FAF6EE] rounded-full overflow-hidden border border-nn-hairline/60">
-                            <div
-                              className="h-full bg-gradient-to-r from-[#D4A017] via-[#8A1B14] to-[#5E0B10] rounded-full transition-all duration-500"
-                              style={{ width: `${Math.max(percent, 8)}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Product Pack Breakdown */}
-              <div className="bg-white rounded-2xl p-6 shadow-xs border border-nn-hairline space-y-4">
-                <div>
-                  <h4 className="text-base font-serif font-bold text-nn-forest-deep">Product Sales Mix</h4>
-                  <p className="text-xs text-nn-bark">Best selling pack sizes &amp; units</p>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  {analytics.topProducts.slice(0, 5).map((p) => {
-                    const totalUnits = analytics.topProducts.reduce((acc, curr) => acc + curr.units, 0) || 1;
-                    const percent = Math.round((p.units / totalUnits) * 100);
-
-                    return (
-                      <div key={p.name} className="space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="font-medium text-nn-ink truncate max-w-[160px]">{p.name}</span>
-                          <span className="font-bold text-nn-forest-deep">
-                            {p.units} units ({percent}%)
-                          </span>
-                        </div>
-                        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#8A1B14] rounded-full"
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Top Delivery States */}
-                <div className="pt-4 border-t border-nn-hairline">
-                  <span className="text-xs font-bold text-nn-bark uppercase tracking-wider block mb-2">
-                    Top Delivery Regions:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {analytics.topStates.map((s) => (
-                      <span
-                        key={s.state}
-                        className="text-[11px] bg-[#FAF6EE] border border-nn-hairline px-2.5 py-1 rounded-lg text-nn-ink font-medium"
-                      >
-                        {s.state}: <strong>{s.count}</strong>
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Orders Data Table */}
-            <div className="bg-white rounded-2xl shadow-xs border border-nn-hairline overflow-hidden">
-              <div className="p-6 border-b border-nn-hairline flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-[#FFFDF7] to-white">
-                <div>
-                  <h3 className="text-lg font-serif font-bold text-nn-forest-deep flex items-center gap-2">
-                    <ShoppingBag className="w-5 h-5 text-[#8A1B14]" />
-                    Orders Directory ({filteredOrders.length})
-                  </h3>
-                  <p className="text-xs text-nn-bark">Complete customer order ledger with direct Firestore sync</p>
-                </div>
-                <span className="text-xs text-gray-500 font-medium">
-                  Showing <strong>{filteredOrders.length}</strong> of {orders.length} total
-                </span>
-              </div>
-
+            <div className="bg-white rounded-2xl border border-nn-hairline shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#FAF6EE] text-nn-forest-deep text-xs font-bold uppercase tracking-wider border-b border-nn-hairline">
-                      <th className="p-4">Order ID</th>
-                      <th className="p-4">Customer</th>
-                      <th className="p-4">Items &amp; Gifts</th>
-                      <th className="p-4">Total Amount</th>
-                      <th className="p-4">Payment</th>
-                      <th className="p-4">Fulfillment</th>
-                      <th className="p-4">Date (IST)</th>
-                      <th className="p-4 text-center">Action</th>
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FAF6EE] text-nn-forest-deep uppercase text-[11px] font-bold border-b border-nn-hairline tracking-wider">
+                    <tr>
+                      <th className="py-3 px-4">Order ID &amp; Date</th>
+                      <th className="py-3 px-4">Customer</th>
+                      <th className="py-3 px-4">Purchased Items</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4">Courier / AWB</th>
+                      <th className="py-3 px-4 text-right">Settlement</th>
+                      <th className="py-3 px-4 text-center">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-nn-hairline text-xs">
+                  <tbody className="divide-y divide-nn-hairline">
                     {filteredOrders.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="p-12 text-center text-gray-400">
-                          No orders matched your active filter. Try resetting period or search query.
+                        <td colSpan={7} className="py-12 text-center text-gray-400">
+                          No matching orders found.
                         </td>
                       </tr>
                     ) : (
                       filteredOrders.map((order) => {
                         const amounts = getOrderAmounts(order);
                         const dateObj = getOrderDate(order);
-                        const isPaid =
-                          order.paymentStatus === "paid" ||
-                          order.status === "paid" ||
-                          order.status === "processing" ||
-                          order.status === "shipped";
-                        const isShipped = order.status === "shipped" || order.shippingStatus === "shipped";
-                        const itemsCount = (order.items || []).filter((i: any) => !i.isGift).length;
-                        const giftsCount = (order.freeGifts || []).length;
-                        const displayId = order.orderId || order.id;
+                        const dateStr = dateObj.toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                          timeZone: "Asia/Kolkata",
+                        });
+                        const timeStr = dateObj.toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                          timeZone: "Asia/Kolkata",
+                        });
+
+                        const status = (order.status || "processing").toLowerCase();
+                        let statusColor = "bg-amber-50 text-amber-800 border-amber-200";
+                        if (status === "shipped") statusColor = "bg-blue-50 text-blue-800 border-blue-200";
+                        else if (status === "out_for_delivery") statusColor = "bg-orange-50 text-orange-800 border-orange-200";
+                        else if (status === "delivered" || status === "paid") statusColor = "bg-emerald-50 text-emerald-800 border-emerald-200";
+                        else if (status === "delivery_failed") statusColor = "bg-red-50 text-red-800 border-red-200";
+
+                        const customerPhone = order.contactInfo?.phone || order.shippingAddress?.phone || "";
+                        const cleanPhone = customerPhone.replace(/[^0-9]/g, "").slice(-10);
 
                         return (
-                          <tr
-                            key={order.id}
-                            className="hover:bg-[#FCFAF5] transition group cursor-pointer"
-                            onClick={() => openOrderDetails(order)}
-                          >
-                            {/* Order ID */}
-                            <td className="p-4 font-mono font-bold text-nn-forest-deep flex items-center gap-1.5">
-                              <span>#{displayId.slice(0, 10)}...</span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  copyToClipboard(displayId, displayId, "Order ID copied");
-                                }}
-                                className="text-gray-400 hover:text-nn-forest-deep transition"
-                                title="Copy full Order ID"
-                              >
-                                {copiedKey === displayId ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
+                          <tr key={order.id} className="hover:bg-[#FFFDF9] transition">
+                            <td className="py-3.5 px-4">
+                              <span className="font-mono font-bold text-[#5E0B10] block">
+                                #{order.orderId || order.id}
+                              </span>
+                              <span className="text-[10px] text-gray-400 block mt-0.5">
+                                {dateStr} • {timeStr}
+                              </span>
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              <span className="font-bold text-nn-forest-deep block">
+                                {order.shippingAddress?.name || order.contactInfo?.name || "Customer"}
+                              </span>
+                              <span className="text-[11px] text-gray-500 block truncate max-w-[180px]">
+                                {order.contactInfo?.email || "No email"}
+                              </span>
+                              {cleanPhone && (
+                                <span className="text-[10px] text-gray-400 block font-mono">
+                                  +91 {cleanPhone}
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4 max-w-xs">
+                              <div className="space-y-1">
+                                {(order.items || []).slice(0, 2).map((it: any, i: number) => (
+                                  <div key={i} className="truncate text-[11px] text-gray-700">
+                                    • {it.quantity}x {it.name || it.title} {it.variantTitle ? `(${it.variantTitle})` : ""}
+                                  </div>
+                                ))}
+                                {(order.items || []).length > 2 && (
+                                  <span className="text-[10px] text-[#8A1B14] font-semibold">
+                                    +{(order.items || []).length - 2} more items
+                                  </span>
                                 )}
-                              </button>
+                              </div>
                             </td>
 
-                            {/* Customer */}
-                            <td className="p-4">
-                              <div className="font-bold text-nn-ink text-sm">
-                                {order.shippingAddress?.name || "Customer"}
-                              </div>
-                              <div className="text-gray-500 text-[11px] flex items-center gap-2 mt-0.5">
-                                <span>{order.contactInfo?.phone}</span>
-                                {order.shippingAddress?.city && (
-                                  <span className="text-nn-bark font-medium">• {order.shippingAddress.city}</span>
+                            <td className="py-3.5 px-4">
+                              <span
+                                className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wide ${statusColor}`}
+                              >
+                                {status.replace(/_/g, " ")}
+                              </span>
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              {order.trackingNumber || order.awbNumber ? (
+                                <div className="space-y-0.5">
+                                  <span className="text-[11px] font-bold text-nn-forest-deep block">
+                                    {order.courierPartner || "Delhivery"}
+                                  </span>
+                                  <span className="font-mono text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 inline-block">
+                                    {order.trackingNumber || order.awbNumber}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 italic">Unassigned</span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4 text-right">
+                              <span className="font-bold text-[#8A1B14] block">
+                                ₹{amounts.total.toFixed(2)}
+                              </span>
+                              <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                {order.paymentMethod || "Prepaid"}
+                              </span>
+                            </td>
+
+                            <td className="py-3.5 px-4 text-center">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => openOrderDetails(order)}
+                                  className="px-3 py-1.5 rounded-lg bg-[#FAF6EE] hover:bg-[#8A1B14] hover:text-white border border-nn-hairline text-xs font-bold text-nn-forest-deep transition flex items-center gap-1 shadow-xs"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  Manage
+                                </button>
+                                {cleanPhone && (
+                                  <a
+                                    href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
+                                      order.shippingAddress?.name || "Customer"
+                                    )}%2C%20here%20is%20an%20update%20on%20your%20Namo%20Narayana%20order%20%23${order.orderId || order.id}%3A%20your%20order%20is%20now%20${status.toUpperCase().replace(/_/g, " ")}.`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    title="WhatsApp Customer"
+                                    className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                                  >
+                                    <MessageSquare className="w-4 h-4" />
+                                  </a>
                                 )}
                               </div>
-                            </td>
-
-                            {/* Items & Gifts */}
-                            <td className="p-4 max-w-xs">
-                              <div className="truncate font-medium text-nn-ink">
-                                {(order.items || [])
-                                  .filter((it: any) => !it.isGift)
-                                  .map((it: any) => `${it.quantity}x ${it.name || it.title}`)
-                                  .join(", ") || "Pure Ghee"}
-                              </div>
-                              {giftsCount > 0 && (
-                                <span className="inline-flex items-center gap-1 text-[10px] text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold mt-1">
-                                  <Gift className="w-2.5 h-2.5" /> {giftsCount} Free Gift(s)
-                                </span>
-                              )}
-                            </td>
-
-                            {/* Total Amount */}
-                            <td className="p-4">
-                              <div className="font-extrabold text-sm text-[#5E0B10]">
-                                ₹{amounts.total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                              </div>
-                              {amounts.discount > 0 && (
-                                <span className="text-[10px] text-emerald-700 font-semibold block">
-                                  Saved ₹{amounts.discount.toFixed(0)} ({order.couponCode || "Discount"})
-                                </span>
-                              )}
-                            </td>
-
-                            {/* Payment Status */}
-                            <td className="p-4">
-                              {isPaid ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Paid
-                                </span>
-                              ) : order.paymentMethod === "cod" ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                                  COD
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                  <Clock className="w-3 h-3 text-amber-600" /> Pending
-                                </span>
-                              )}
-                            </td>
-
-                            {/* Fulfillment Status */}
-                            <td className="p-4">
-                              {isShipped ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                                  <Truck className="w-3 h-3" /> Shipped
-                                </span>
-                              ) : order.status === "processing" ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                                  Processing
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600 border border-gray-200">
-                                  Pending
-                                </span>
-                              )}
-                            </td>
-
-                            {/* Date */}
-                            <td className="p-4 text-nn-bark whitespace-nowrap">
-                              <div>{dateObj.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</div>
-                              <div className="text-[10px] text-gray-400">
-                                {dateObj.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-                              </div>
-                            </td>
-
-                            {/* Action */}
-                            <td className="p-4 text-center">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openOrderDetails(order);
-                                }}
-                                className="px-3 py-1.5 rounded-lg bg-[#FAF6EE] text-nn-forest-deep hover:bg-nn-forest-deep hover:text-white border border-nn-hairline text-xs font-bold transition flex items-center gap-1 mx-auto shadow-2xs"
-                              >
-                                <Eye className="w-3.5 h-3.5" /> View
-                              </button>
                             </td>
                           </tr>
                         );
@@ -1273,85 +1407,186 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
-        ) : (
-          /* Promo Mailer Tab (Existing tool) */
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-nn-hairline flex justify-between items-center">
-              <div>
-                <h3 className="text-2xl font-serif font-bold text-nn-forest-deep">Promo Email Campaigns</h3>
-                <p className="text-nn-bark text-xs mt-1">Direct inbox campaigns for collected customer leads</p>
+        )}
+
+        {/* ─── TAB 3: ABANDONED CARTS & RECOVERY HUB ─── */}
+        {activeTab === "abandoned" && (
+          <div className="space-y-6">
+            {/* Header Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
+                  Incomplete Checkouts
+                </span>
+                <div className="text-2xl font-serif font-extrabold text-[#5E0B10]">
+                  {abandonedCarts.length}
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1">Pending payments and dropped carts</p>
               </div>
-              <span className="text-xs bg-[#FDF2E9] text-[#8A1B14] font-bold px-3 py-1 rounded-full border border-[#F5BD47]/40 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#8A1B14]" /> Verified Sender
-              </span>
+
+              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
+                  Revenue at Risk
+                </span>
+                <div className="text-2xl font-serif font-extrabold text-[#8A1B14]">
+                  ₹{abandonedCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0).toLocaleString("en-IN")}
+                </div>
+                <p className="text-[11px] text-gray-400 mt-1">Potential gross order value</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
+                  Recovery Strategy
+                </span>
+                <div className="text-2xl font-serif font-extrabold text-emerald-700">
+                  Brevo + WhatsApp
+                </div>
+                <p className="text-[11px] text-emerald-600 font-semibold mt-1">
+                  100% Primary Inbox Landing • Code DIWALI
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-nn-hairline overflow-hidden">
-              <div className="p-6 border-b border-nn-hairline flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h4 className="text-lg font-bold text-nn-forest-deep flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-[#D4A017]" />
-                  Collected Leads ({emails.length})
-                </h4>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleSelectAllEmails}
-                    className="text-xs font-bold text-nn-forest-deep hover:underline px-2 py-1"
-                  >
-                    {selectedEmails.length === emails.length ? "Deselect All" : "Select All"}
-                  </button>
-                  <button
-                    onClick={() => setShowPreview(true)}
-                    disabled={selectedEmails.length === 0}
-                    className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-5 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2 shadow-md"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    Preview &amp; Send ({selectedEmails.length})
-                  </button>
+            {/* Abandoned Cart Directory Table */}
+            <div className="bg-white rounded-2xl border border-nn-hairline shadow-xs overflow-hidden">
+              <div className="p-4 bg-[#FAF6EE] border-b border-nn-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+                    <ShoppingBag className="w-4 h-4 text-[#8A1B14]" /> Abandoned Carts Directory
+                  </h3>
+                  <p className="text-xs text-gray-400">1-click automated outreach with festive incentive</p>
                 </div>
+                <button
+                  onClick={() => {
+                    fetchAbandonedCarts();
+                    toast.success("Refreshed abandoned carts");
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-nn-cream border border-nn-hairline text-xs font-bold text-nn-forest-deep transition flex items-center gap-1.5 shadow-xs"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingCarts ? "animate-spin" : ""}`} />
+                  Refresh List
+                </button>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-[#FAF6EE] text-nn-forest-deep font-bold">
-                      <th className="p-4 w-12">
-                        <input
-                          type="checkbox"
-                          checked={emails.length > 0 && selectedEmails.length === emails.length}
-                          onChange={handleSelectAllEmails}
-                          className="w-4 h-4 rounded text-[#8A1B14] focus:ring-[#8A1B14]"
-                        />
-                      </th>
-                      <th className="p-4">Email Address</th>
-                      <th className="p-4">Collected Date</th>
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FCFAF5] text-nn-forest-deep uppercase text-[11px] font-bold border-b border-nn-hairline tracking-wider">
+                    <tr>
+                      <th className="py-3 px-4">Customer Details</th>
+                      <th className="py-3 px-4">Cart Items</th>
+                      <th className="py-3 px-4">Cart Value</th>
+                      <th className="py-3 px-4">Elapsed Time</th>
+                      <th className="py-3 px-4">Recovery Status</th>
+                      <th className="py-3 px-4 text-center">Outreach Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-nn-hairline">
-                    {emails.length === 0 ? (
+                    {abandonedCarts.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="p-8 text-center text-gray-400">
-                          No promotional emails collected yet.
+                        <td colSpan={6} className="py-12 text-center text-gray-400">
+                          No abandoned carts found in recent records.
                         </td>
                       </tr>
                     ) : (
-                      emails.map((e) => (
-                        <tr key={e.id} className="hover:bg-[#FAF9F5] transition">
-                          <td className="p-4">
-                            <input
-                              type="checkbox"
-                              checked={selectedEmails.includes(e.email)}
-                              onChange={() => handleSelectEmail(e.email)}
-                              className="w-4 h-4 rounded text-[#8A1B14] focus:ring-[#8A1B14]"
-                            />
-                          </td>
-                          <td className="p-4 font-semibold text-nn-ink">{e.email}</td>
-                          <td className="p-4 text-gray-500">
-                            {e.createdAt?.seconds
-                              ? new Date(e.createdAt.seconds * 1000).toLocaleString()
-                              : "Recently"}
-                          </td>
-                        </tr>
-                      ))
+                      abandonedCarts.map((cart, idx) => {
+                        const dateObj = new Date(cart.lastActive || cart.updatedAt || 0);
+                        const dateStr = dateObj.toLocaleString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                          timeZone: "Asia/Kolkata",
+                        });
+
+                        const cleanPhone = (cart.phone || "").replace(/[^0-9]/g, "").slice(-10);
+
+                        return (
+                          <tr key={idx} className="hover:bg-[#FFFDF9] transition">
+                            <td className="py-3.5 px-4">
+                              <span className="font-bold text-nn-forest-deep block">
+                                {cart.name || "Customer"}
+                              </span>
+                              <span className="text-[11px] text-gray-500 block">
+                                {cart.email || "No email"}
+                              </span>
+                              {cleanPhone && (
+                                <span className="text-[10px] text-gray-400 block font-mono">
+                                  +91 {cleanPhone}
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4 max-w-xs">
+                              <div className="space-y-0.5">
+                                {(cart.cartItems || []).slice(0, 2).map((it: any, i: number) => (
+                                  <div key={i} className="text-[11px] text-gray-700 truncate">
+                                    • {it.quantity || 1}x {it.name || it.title || "A2 Gir Cow Ghee"}
+                                  </div>
+                                ))}
+                                {(cart.cartItems || []).length > 2 && (
+                                  <span className="text-[10px] text-[#8A1B14] font-semibold">
+                                    +{(cart.cartItems || []).length - 2} more
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              <span className="font-bold text-[#8A1B14] block">
+                                ₹{Number(cart.subtotal || 0).toLocaleString("en-IN")}
+                              </span>
+                            </td>
+
+                            <td className="py-3.5 px-4 text-gray-500 text-[11px]">
+                              {dateStr}
+                            </td>
+
+                            <td className="py-3.5 px-4">
+                              {cart.notified || cart.recoveryEmailSent ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                  <CheckCheck className="w-3 h-3 text-emerald-600" /> Email Sent
+                                </span>
+                              ) : (
+                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                                  Pending Outreach
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-4 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleSendRecoveryEmail(cart)}
+                                  disabled={recoveringEmail === cart.email}
+                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-xs font-bold hover:opacity-95 transition disabled:opacity-50 flex items-center gap-1 shadow-xs"
+                                >
+                                  {recoveringEmail === cart.email ? (
+                                    <RotateCw className="w-3 h-3 animate-spin" />
+                                  ) : (
+                                    <Send className="w-3 h-3" />
+                                  )}
+                                  Recover via Brevo
+                                </button>
+
+                                {cleanPhone && (
+                                  <a
+                                    href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
+                                      cart.name || "Customer"
+                                    )}%2C%20we%20noticed%20you%20were%20ordering%20pure%20Vedic%20Gir%20Cow%20Bilona%20Ghee%20at%20Namo%20Narayana.%20Use%20code%20DIWALI%20for%20an%20extra%2010%25%20OFF%20at%20namonarayanaghee.store`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                                    title="WhatsApp Recovery"
+                                  >
+                                    <MessageSquare className="w-4 h-4" />
+                                  </a>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
@@ -1359,272 +1594,366 @@ export default function AdminPage() {
             </div>
           </div>
         )}
-      </main>
 
-      {/* Deep Order Details Drawer / Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-            onClick={() => setSelectedOrder(null)}
-          />
-
-          {/* Slide-over Drawer Panel */}
-          <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col z-10 overflow-hidden border-l border-nn-hairline">
-            {/* Drawer Header */}
-            <div className="p-6 border-b border-nn-hairline bg-gradient-to-r from-[#FFFDF7] to-[#FAF6EE] flex justify-between items-start">
+        {/* ─── TAB 4: PROMO MAILER ─── */}
+        {activeTab === "promo" && (
+          <div className="bg-white p-6 rounded-2xl border border-nn-hairline shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-nn-hairline pb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-serif font-bold text-nn-forest-deep">
-                    Order #{selectedOrder.orderId || selectedOrder.id}
-                  </h3>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        selectedOrder.orderId || selectedOrder.id,
-                        "drawer-id",
-                        "Order ID copied!"
-                      )
-                    }
-                    className="text-gray-400 hover:text-nn-forest-deep"
-                    title="Copy Order ID"
-                  >
-                    {copiedKey === "drawer-id" ? (
-                      <Check className="w-4 h-4 text-emerald-600" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                <p className="text-xs text-nn-bark mt-1">
-                  Placed on {getOrderDate(selectedOrder).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
+                <h3 className="text-lg font-bold text-nn-forest-deep flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-[#8A1B14]" /> Customer Email Campaign Manager
+                </h3>
+                <p className="text-xs text-nn-bark">
+                  Broadcast updates to collected visitor and customer leads via Brevo API
                 </p>
               </div>
 
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSelectAllEmails}
+                  className="px-3 py-1.5 text-xs font-semibold text-nn-forest-deep bg-[#FAF6EE] hover:bg-[#F3E7D3] rounded-lg transition border border-nn-hairline"
+                >
+                  {selectedEmails.length === emails.length ? "Deselect All" : "Select All"}
+                </button>
+                <button
+                  onClick={() => setShowPreview(true)}
+                  disabled={selectedEmails.length === 0}
+                  className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-4 py-2 rounded-xl font-bold text-xs hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Preview &amp; Send ({selectedEmails.length})
+                </button>
+              </div>
             </div>
 
-            {/* Quick Actions Bar */}
-            <div className="p-4 bg-[#FBF5E8] border-b border-nn-hairline flex flex-wrap items-center justify-between gap-3 text-xs">
-              <button
-                onClick={() => {
-                  const addr = selectedOrder.shippingAddress;
-                  const label = [
-                    addr?.name || "Customer",
-                    `Phone: ${selectedOrder.contactInfo?.phone || ""}`,
-                    addr?.address || "",
-                    `${addr?.city || ""}, ${addr?.state || ""} - ${addr?.pincode || ""}`,
-                    `Country: ${addr?.country || "India"}`,
-                    `Items: ${(selectedOrder.items || []).map((i: any) => `${i.quantity}x ${i.name}`).join(", ")}`,
-                  ].join("\n");
-                  copyToClipboard(label, "drawer-label", "Shipping label copied to clipboard!");
-                }}
-                className="px-3.5 py-2 rounded-xl bg-white border border-nn-hairline font-bold text-nn-forest-deep hover:bg-gray-50 transition flex items-center gap-1.5 shadow-2xs"
-              >
-                <Copy className="w-3.5 h-3.5" />
-                Copy Shipping Label
-              </button>
+            {/* Email Leads Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#FAF6EE] text-nn-forest-deep uppercase text-[11px] font-bold border-b border-nn-hairline tracking-wider">
+                  <tr>
+                    <th className="py-3 px-4 w-12 text-center">Select</th>
+                    <th className="py-3 px-4">Recipient Email</th>
+                    <th className="py-3 px-4">Captured Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-nn-hairline">
+                  {emails.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="py-8 text-center text-gray-400">
+                        No collected promo leads found.
+                      </td>
+                    </tr>
+                  ) : (
+                    emails.map((e) => (
+                      <tr key={e.id} className="hover:bg-[#FFFDF9] transition">
+                        <td className="py-3 px-4 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedEmails.includes(e.email)}
+                            onChange={() => handleSelectEmail(e.email)}
+                            className="rounded border-gray-300 text-[#8A1B14] focus:ring-[#8A1B14]"
+                          />
+                        </td>
+                        <td className="py-3 px-4 font-semibold text-nn-forest-deep">{e.email}</td>
+                        <td className="py-3 px-4 text-gray-400 text-[11px]">
+                          {e.createdAt?.seconds
+                            ? new Date(e.createdAt.seconds * 1000).toLocaleDateString("en-IN")
+                            : "Recent"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </main>
 
-              <button
-                onClick={() => window.print()}
-                className="px-3.5 py-2 rounded-xl bg-white border border-nn-hairline font-bold text-nn-forest-deep hover:bg-gray-50 transition flex items-center gap-1.5 shadow-2xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                Print Packing Slip
-              </button>
+      {/* ─── SLIDE-OVER ORDER DETAILS & FULFILLMENT DRAWER ─── */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-fade-in">
+          <div className="bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-nn-hairline">
+            {/* Drawer Header */}
+            <div className="p-6 bg-[#FAF6EE] border-b border-nn-hairline flex items-center justify-between sticky top-0 z-20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8A1B14] to-[#5E0B10] text-white flex items-center justify-center font-bold">
+                  #{selectedOrder.id?.slice(-4)}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-serif font-bold text-lg text-nn-forest-deep">
+                      Order #{selectedOrder.orderId || selectedOrder.id}
+                    </h3>
+                    <button
+                      onClick={() =>
+                        copyToClipboard(selectedOrder.orderId || selectedOrder.id, "order-id", "Order ID copied!")
+                      }
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {getOrderDate(selectedOrder).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowInvoicePrint(true)}
+                  className="p-2 text-nn-bark hover:text-nn-forest-deep bg-white border border-nn-hairline rounded-xl shadow-xs"
+                  title="Print Invoice / Packing Slip"
+                >
+                  <Printer className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  className="p-2 text-nn-bark hover:text-nn-ink bg-white border border-nn-hairline rounded-xl shadow-xs"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Drawer Body Scroll */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
-              {/* Status Update Card */}
-              <div className="bg-[#FCFAF5] p-5 rounded-2xl border border-nn-hairline space-y-4">
-                <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-[#D4A017]" />
-                  Fulfillment &amp; Status Management
-                </h4>
+            {/* Drawer Body Content */}
+            <div className="p-6 space-y-6 flex-1 bg-white">
+              {/* 1. ORDER STATUS & EMAIL TRIGGER CONTROL HUB */}
+              <div className="bg-gradient-to-br from-[#FFFDF9] to-[#FAF6EE] p-5 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+                    <Truck className="w-4 h-4 text-[#8A1B14]" /> Order Status &amp; Customer Email Dispatch
+                  </h4>
+                  <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                    Brevo Active
+                  </span>
+                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  {/* Status Dropdown */}
                   <div>
-                    <label className="text-[11px] font-bold text-gray-600 block mb-1">Order Status:</label>
+                    <label className="font-bold text-gray-700 block mb-1">Update Order Status:</label>
                     <select
                       value={editStatus}
                       onChange={(e) => setEditStatus(e.target.value)}
-                      className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
+                      className="w-full px-3 py-2 border border-nn-hairline rounded-xl bg-white text-gray-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
                     >
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="pending">Pending</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="processing">Processing (In Hand-Packing)</option>
+                      <option value="shipped">Shipped (Handed to Courier)</option>
+                      <option value="out_for_delivery">Out for Delivery (Arriving Today)</option>
+                      <option value="delivery_failed">Delivery Failed (Logistics RTO &amp; 14d Refund)</option>
+                      <option value="delivered">Delivered Successfully</option>
+                      <option value="paid">Paid &amp; Confirmed</option>
+                      <option value="cancelled">Cancelled &amp; Refunded</option>
                     </select>
                   </div>
 
+                  {/* Courier Partner */}
                   <div>
-                    <label className="text-[11px] font-bold text-gray-600 block mb-1">Courier Partner:</label>
+                    <label className="font-bold text-gray-700 block mb-1">Courier Partner:</label>
                     <input
                       type="text"
                       value={editCourier}
                       onChange={(e) => setEditCourier(e.target.value)}
-                      placeholder="e.g. Delhivery Express"
-                      className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
+                      placeholder="e.g. Delhivery Express, Bluedart, DTDC"
+                      className="w-full px-3 py-2 border border-nn-hairline rounded-xl bg-white text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[11px] font-bold text-gray-600 block mb-1">Tracking AWB #:</label>
+                  {/* Tracking Number / AWB */}
+                  <div className="sm:col-span-2">
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="font-bold text-gray-700 block">AWB / Courier Tracking Number:</label>
+                      {editTracking && (
+                        <a
+                          href={`https://www.namonarayanaghee.store/track-order?orderId=${selectedOrder.id}&awb=${encodeURIComponent(editTracking)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#8A1B14] hover:underline font-bold text-[11px] flex items-center gap-1"
+                        >
+                          <ExternalLink className="w-3 h-3" /> Live Tracking Link
+                        </a>
+                      )}
+                    </div>
                     <input
                       type="text"
                       value={editTracking}
                       onChange={(e) => setEditTracking(e.target.value)}
-                      placeholder="e.g. NNG123456IN"
-                      className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
+                      placeholder="e.g. 142093847291"
+                      className="w-full px-3 py-2 border border-nn-hairline rounded-xl bg-white font-mono text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-2">
+                {/* Email Dispatch Checkbox */}
+                <div className="flex items-center justify-between pt-2 border-t border-nn-hairline">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={notifyCustomerEmail}
+                      onChange={(e) => setNotifyCustomerEmail(e.target.checked)}
+                      className="rounded border-gray-300 text-[#8A1B14] focus:ring-[#8A1B14]"
+                    />
+                    <span className="text-xs font-bold text-nn-forest-deep flex items-center gap-1">
+                      <Mail className="w-3.5 h-3.5 text-[#8A1B14]" /> Notify Customer via Brevo Email (100% Inbox Delivery)
+                    </span>
+                  </label>
+
                   <button
-                    onClick={handleUpdateOrderStatus}
-                    disabled={isUpdatingStatus}
-                    className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-5 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center gap-1.5 shadow-md"
+                    type="button"
+                    onClick={() => setShowEmailPreview(!showEmailPreview)}
+                    className="text-xs font-semibold text-[#8A1B14] hover:underline flex items-center gap-1"
                   >
-                    {isUpdatingStatus ? (
-                      <>
-                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Saving to Firestore...
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        Save to Firestore
-                      </>
-                    )}
+                    {showEmailPreview ? "Hide Preview" : "Preview Email"}
+                    {showEmailPreview ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                   </button>
                 </div>
-              </div>
 
-              {/* Customer & Shipping Address */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline space-y-3">
-                <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#D4A017]" />
-                  Customer &amp; Shipping Destination
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                  <div>
-                    <span className="text-gray-400 block text-[11px]">Customer Name:</span>
-                    <strong className="text-sm text-nn-ink">
-                      {selectedOrder.shippingAddress?.name || "Customer"}
-                    </strong>
-
-                    <span className="text-gray-400 block text-[11px] mt-2">Contact Phone:</span>
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`tel:${selectedOrder.contactInfo?.phone}`}
-                        className="font-bold text-[#8A1B14] hover:underline"
-                      >
-                        {selectedOrder.contactInfo?.phone || "N/A"}
-                      </a>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(selectedOrder.contactInfo?.phone || "", "cust-phone", "Phone copied!")
-                        }
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
+                {/* Live Email Preview Accordion */}
+                {showEmailPreview && (
+                  <div className="bg-white p-4 rounded-xl border border-nn-hairline space-y-2 text-xs animate-fade-in">
+                    <div className="text-[11px] text-gray-400 uppercase font-bold tracking-wider">
+                      Subject Line Preview:
+                    </div>
+                    <div className="font-bold text-[#5E0B10] bg-[#FCFAF5] p-2.5 rounded-lg border border-[#EAD7BC]">
+                      {editStatus === "processing" && `[Update] Your Order #${selectedOrder.orderId || selectedOrder.id} is Being Prepared | Namo Narayana`}
+                      {editStatus === "shipped" && `[Shipped] Order #${selectedOrder.orderId || selectedOrder.id} is on the way via ${editCourier || "Delhivery"} | Namo Narayana`}
+                      {editStatus === "out_for_delivery" && `[Arriving Today] Your Order #${selectedOrder.orderId || selectedOrder.id} is Out for Delivery | Namo Narayana`}
+                      {editStatus === "delivery_failed" && `[Important Notice] Delivery Issue Regarding Order #${selectedOrder.orderId || selectedOrder.id} | Namo Narayana`}
+                      {editStatus === "delivered" && `[Delivered] Your Namo Narayana Order #${selectedOrder.orderId || selectedOrder.id} Has Arrived! 🙏`}
+                      {editStatus === "paid" && `Order Confirmed #${selectedOrder.orderId || selectedOrder.id} - Namo Narayana Pure A2 Ghee`}
                     </div>
 
-                    <span className="text-gray-400 block text-[11px] mt-2">Email Address:</span>
-                    <a
-                      href={`mailto:${selectedOrder.contactInfo?.email}`}
-                      className="text-nn-forest-deep font-medium hover:underline block truncate"
-                    >
-                      {selectedOrder.contactInfo?.email || "N/A"}
-                    </a>
+                    <p className="text-gray-500 text-[11px] leading-relaxed pt-1">
+                      {editStatus === "delivery_failed"
+                        ? 'Includes logistics issue notification: "Delivery failed due to delivery partner logistics network issue, shipment failed to connect further, returning to seller, and refund will be initiated within 14 days."'
+                        : "Includes item table, complimentary gifts badge, full shipping address, tracking button, and customer care links."}
+                    </p>
+                  </div>
+                )}
+
+                {/* Submit Status Change Button */}
+                <button
+                  onClick={handleUpdateOrderStatus}
+                  disabled={isUpdatingStatus}
+                  className="w-full bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white py-3 rounded-xl font-bold text-xs hover:opacity-95 transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                >
+                  {isUpdatingStatus ? (
+                    <>
+                      <RotateCw className="w-4 h-4 animate-spin" />
+                      Updating Status &amp; Dispatching Brevo Email...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Save Status &amp; Dispatch Notification
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* 2. CUSTOMER & DIRECT OUTREACH CARD */}
+              <div className="bg-[#FAF6EE] p-5 rounded-2xl border border-nn-hairline space-y-3">
+                <div className="flex items-center justify-between border-b border-nn-hairline pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                      Customer Profile
+                    </span>
+                    <h4 className="font-bold text-sm text-nn-forest-deep">
+                      {selectedOrder.shippingAddress?.name || selectedOrder.contactInfo?.name || "Customer"}
+                    </h4>
+                  </div>
+
+                  {/* 1-Click WhatsApp & Call Actions */}
+                  {(() => {
+                    const phone = selectedOrder.contactInfo?.phone || selectedOrder.shippingAddress?.phone || "";
+                    const cleanPhone = phone.replace(/[^0-9]/g, "").slice(-10);
+                    return (
+                      <div className="flex items-center gap-2">
+                        {cleanPhone && (
+                          <a
+                            href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
+                              selectedOrder.shippingAddress?.name || "Customer"
+                            )}%2C%20update%20regarding%20your%20Namo%20Narayana%20order%20%23${selectedOrder.orderId || selectedOrder.id}%3A%20your%20order%20status%20is%20${selectedOrder.status || "processing"}.`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition flex items-center gap-1 shadow-xs"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            WhatsApp
+                          </a>
+                        )}
+                        {cleanPhone && (
+                          <a
+                            href={`tel:${cleanPhone}`}
+                            className="px-3 py-1.5 rounded-lg bg-white text-gray-700 font-bold text-xs hover:bg-gray-100 border border-nn-hairline transition flex items-center gap-1 shadow-xs"
+                          >
+                            <Phone className="w-3.5 h-3.5" />
+                            Call
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-gray-400 block text-[11px]">Email Address:</span>
+                    <strong className="text-nn-ink block truncate">{selectedOrder.contactInfo?.email || "N/A"}</strong>
+
+                    <span className="text-gray-400 block text-[11px] mt-2">Contact Phone:</span>
+                    <strong className="text-nn-ink block">{selectedOrder.contactInfo?.phone || "N/A"}</strong>
                   </div>
 
                   <div>
-                    <span className="text-gray-400 block text-[11px]">Full Delivery Address:</span>
-                    <p className="text-nn-ink font-medium leading-relaxed mt-0.5">
-                      {selectedOrder.shippingAddress?.address}
-                      <br />
-                      {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} -{" "}
-                      <strong>{selectedOrder.shippingAddress?.pincode}</strong>
-                      <br />
-                      {selectedOrder.shippingAddress?.country || "India"}
+                    <span className="text-gray-400 block text-[11px]">Shipping Destination:</span>
+                    <p className="text-gray-700 text-xs mt-0.5 leading-relaxed">
+                      {selectedOrder.shippingAddress?.address}<br />
+                      {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state}{" "}
+                      {selectedOrder.shippingAddress?.pincode}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Items Purchased Table */}
-              <div className="bg-white rounded-2xl border border-nn-hairline overflow-hidden">
-                <div className="p-4 bg-[#FAF6EE] border-b border-nn-hairline font-bold text-nn-forest-deep flex items-center gap-1.5">
-                  <Package className="w-4 h-4 text-[#D4A017]" /> Items in Shipment
-                </div>
+              {/* 3. PURCHASED ITEMS & FREE GIFTS */}
+              <div className="bg-white p-5 rounded-2xl border border-nn-hairline space-y-3">
+                <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+                  <ShoppingBag className="w-4 h-4 text-[#8A1B14]" /> Order Parcel Items
+                </h4>
 
                 <div className="divide-y divide-nn-hairline">
-                  {(selectedOrder.items || []).map((item: any, idx: number) => {
-                    const price = item.isGift ? 0 : Number(item.price || 0) / 100;
-                    const lineTotal = price * Number(item.quantity || 1);
-
-                    return (
-                      <div key={idx} className="p-4 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-12 h-12 object-cover rounded-xl border border-nn-hairline"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-xl bg-nn-cream flex items-center justify-center font-bold text-nn-forest-deep">
-                              NN
-                            </div>
-                          )}
-                          <div>
-                            <div className="font-bold text-nn-ink text-xs">
-                              {item.name || item.title}
-                            </div>
-                            <span className="text-[11px] text-gray-500">
-                              Variant: {item.variantTitle || "Standard"} • Qty: <strong>{item.quantity}</strong>
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-right">
-                          <div className="font-bold text-xs text-nn-forest-deep">
-                            {item.isGift ? (
-                              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">
-                                FREE GIFT
-                              </span>
-                            ) : (
-                              `₹${lineTotal.toFixed(2)}`
-                            )}
-                          </div>
-                          {!item.isGift && item.quantity > 1 && (
-                            <span className="text-[10px] text-gray-400">₹{price.toFixed(2)} each</span>
-                          )}
-                        </div>
+                  {(selectedOrder.items || []).map((item: any, idx: number) => (
+                    <div key={idx} className="py-2.5 flex items-center justify-between text-xs">
+                      <div>
+                        <strong className="text-nn-forest-deep text-xs block">{item.name || item.title}</strong>
+                        {item.variantTitle && (
+                          <span className="text-gray-400 text-[11px]">Size: {item.variantTitle}</span>
+                        )}
+                        {item.isGift && (
+                          <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200 mt-0.5">
+                            🎁 FREE GIFT
+                          </span>
+                        )}
                       </div>
-                    );
-                  })}
+                      <div className="text-right">
+                        <span className="font-bold text-gray-900 block">x{item.quantity}</span>
+                        <span className="text-[#8A1B14] font-bold">
+                          {item.isGift ? "FREE" : `₹${(((item.price || 0) * (item.quantity || 1)) / 100).toFixed(2)}`}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Financial Breakdown Card */}
+              {/* 4. FINANCIAL SETTLEMENT */}
               <div className="bg-[#FAF6EE] p-5 rounded-2xl border border-nn-hairline space-y-2">
                 <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider mb-2">
                   Pricing &amp; Settlement
                 </h4>
-
                 {(() => {
                   const amounts = getOrderAmounts(selectedOrder);
                   return (
@@ -1635,9 +1964,7 @@ export default function AdminPage() {
                       </div>
                       {amounts.discount > 0 && (
                         <div className="flex justify-between text-emerald-700 font-semibold">
-                          <span>
-                            Promotional Discount ({selectedOrder.couponCode || "Coupon"}):
-                          </span>
+                          <span>Discount Applied ({selectedOrder.couponCode || "Coupon"}):</span>
                           <span>-₹{amounts.discount.toFixed(2)}</span>
                         </div>
                       )}
@@ -1654,53 +1981,24 @@ export default function AdminPage() {
                 })()}
               </div>
 
-              {/* Gateway & Payment Audit */}
-              <div className="bg-white p-5 rounded-2xl border border-nn-hairline space-y-3">
-                <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
+              {/* 5. PAYMENT GATEWAY AUDIT */}
+              <div className="bg-white p-5 rounded-2xl border border-nn-hairline space-y-2 text-xs">
+                <h4 className="text-xs font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5 mb-2">
                   <CreditCard className="w-4 h-4 text-[#D4A017]" /> Payment Gateway Telemetry
                 </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-2 text-gray-600">
                   <div>
                     <span className="text-gray-400 block text-[11px]">Payment Method:</span>
-                    <strong className="text-nn-ink uppercase">
-                      {selectedOrder.paymentMethod || "PREPAID"}
-                    </strong>
-
-                    <span className="text-gray-400 block text-[11px] mt-2">Payment Status:</span>
-                    <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <strong className="text-gray-900 uppercase">{selectedOrder.paymentMethod || "Prepaid"}</strong>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 block text-[11px]">Payment Status:</span>
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                       {selectedOrder.paymentStatus || "Verified"}
                     </span>
                   </div>
-
-                  <div>
-                    <span className="text-gray-400 block text-[11px]">Razorpay Payment ID:</span>
-                    <div className="flex items-center gap-1 font-mono text-gray-700 mt-0.5">
-                      <span className="truncate">
-                        {selectedOrder.paymentSessionId ||
-                          selectedOrder.paymentDetails?.razorpay_payment_id ||
-                          "None"}
-                      </span>
-                      {selectedOrder.paymentSessionId && (
-                        <button
-                          onClick={() =>
-                            copyToClipboard(
-                              selectedOrder.paymentSessionId,
-                              "pay-id",
-                              "Payment ID copied!"
-                            )
-                          }
-                          className="text-gray-400 hover:text-gray-600"
-                        >
-                          <Copy className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-
-                    <span className="text-gray-400 block text-[11px] mt-2">Razorpay Order ID:</span>
-                    <span className="font-mono text-gray-700 block truncate">
-                      {selectedOrder.paymentDetails?.razorpay_order_id || "N/A"}
-                    </span>
+                  <div className="col-span-2 pt-1 font-mono text-[11px] text-gray-500">
+                    Payment ID: {selectedOrder.paymentSessionId || selectedOrder.paymentDetails?.razorpay_payment_id || "None"}
                   </div>
                 </div>
               </div>
@@ -1719,14 +2017,98 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Preview Modal for Promo Mailer */}
+      {/* ─── PRINTABLE INVOICE / PACKING SLIP MODAL ─── */}
+      {showInvoicePrint && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto space-y-6">
+            <div className="flex justify-between items-start border-b border-gray-200 pb-4">
+              <div>
+                <h2 className="text-xl font-serif font-bold text-[#5E0B10]">NAMO NARAYANA</h2>
+                <p className="text-xs text-gray-500">Pure Vedic A2 Gir Cow Ghee • Packing Slip &amp; Tax Invoice</p>
+              </div>
+              <div className="text-right">
+                <span className="font-mono font-bold text-sm text-gray-900 block">
+                  #{selectedOrder.orderId || selectedOrder.id}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {getOrderDate(selectedOrder).toLocaleDateString("en-IN")}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-xs text-gray-700">
+              <div>
+                <strong className="block text-gray-900 mb-1">Delivered To:</strong>
+                {selectedOrder.shippingAddress?.name}<br />
+                {selectedOrder.shippingAddress?.address}<br />
+                {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state}{" "}
+                {selectedOrder.shippingAddress?.pincode}<br />
+                Phone: {selectedOrder.contactInfo?.phone}
+              </div>
+              <div>
+                <strong className="block text-gray-900 mb-1">Dispatch Details:</strong>
+                Courier: {editCourier || selectedOrder.courierPartner || "Delhivery"}<br />
+                AWB Tracking: {editTracking || selectedOrder.trackingNumber || "Assigned"}<br />
+                Payment: {selectedOrder.paymentMethod?.toUpperCase() || "PREPAID"} (PAID)
+              </div>
+            </div>
+
+            <table className="w-full text-left text-xs border border-gray-200">
+              <thead className="bg-gray-50 text-gray-700 font-bold">
+                <tr>
+                  <th className="p-2 border-b">Item</th>
+                  <th className="p-2 border-b text-center">Qty</th>
+                  <th className="p-2 border-b text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {(selectedOrder.items || []).map((it: any, i: number) => (
+                  <tr key={i}>
+                    <td className="p-2">
+                      <strong>{it.name || it.title}</strong>
+                      {it.variantTitle && <span className="text-gray-500 block">Size: {it.variantTitle}</span>}
+                    </td>
+                    <td className="p-2 text-center">{it.quantity}</td>
+                    <td className="p-2 text-right">
+                      {it.isGift ? "FREE GIFT" : `₹${(((it.price || 0) * (it.quantity || 1)) / 100).toFixed(2)}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="flex justify-between items-center text-sm font-bold text-gray-900 border-t pt-3">
+              <span>Total Paid Amount:</span>
+              <span>₹{getOrderAmounts(selectedOrder).total.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <button
+                onClick={() => setShowInvoicePrint(false)}
+                className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-xs font-bold hover:opacity-90 flex items-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print Packing Slip
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── PREVIEW MODAL FOR PROMO MAILER ─── */}
       {showPreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setShowPreview(false)} />
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-nn-hairline flex justify-between items-center bg-[#FAF9F5]">
               <div>
-                <h3 className="text-xl font-bold text-nn-forest-deep">Inbox Mailer Preview</h3>
+                <h3 className="text-xl font-bold text-nn-forest-deep">Campaign Mailer Preview</h3>
                 <span className="text-xs text-[#8A1B14] font-semibold flex items-center gap-1 mt-0.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A017]" /> High deliverability plain-text letter format
                 </span>
