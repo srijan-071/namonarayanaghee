@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { firestoreGetDoc, firestoreUpdateDoc, firestoreDeleteDoc } from "@/lib/firestore-rest";
-import { sendOrderEmail } from "@/lib/email";
-import { sendTelegramNotification } from "@/lib/telegram";
 
 export async function POST(req: Request) {
   try {
@@ -29,45 +27,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
       }
 
-      // Update the order locally
+      // Record gateway confirmation telemetry in Firestore without marking as paid yet.
+      // The order will be marked as paid and notifications (Telegram + Email) dispatched
+      // ONLY when the customer reaches the Thank You page (/checkout/success).
       await firestoreUpdateDoc("orders", orderId, {
-        paymentStatus: "paid",
+        gatewayPaymentReceived: true,
         paymentSessionId: sessionId || null,
         paymentDetails: {
           sessionId: sessionId || null,
           amount: amountReceived,
           currency: currency || "INR",
-          paidAt: new Date().toISOString(),
+          gatewayConfirmedAt: new Date().toISOString(),
           metadata: metadata ? JSON.stringify(metadata) : null
         },
         updatedAt: new Date()
       });
 
-      console.log(`Order ${orderId} payment confirmed via local verification`);
-      
-      // Send notifications
-      try {
-        if (data.contactInfo && data.contactInfo.email) {
-          await sendOrderEmail(
-            orderId, 
-            data.contactInfo.email, 
-            data.shippingAddress?.name || "Customer", 
-            data.amountToPay || data.totalAmount,
-            data
-          );
-        }
-        await sendTelegramNotification(
-          orderId,
-          {
-            ...data,
-            paymentSessionId: sessionId || data.paymentSessionId,
-            paymentStatus: "paid"
-          },
-          "success"
-        );
-      } catch (err) {
-        console.error("Failed to send post-payment notifications", err);
-      }
+      console.log(`Order ${orderId} gateway webhook acknowledged (waiting for thank-you page visit)`);
 
       // Clear abandoned cart
       if (metadata?.email || data.contactInfo?.email) {

@@ -1,8 +1,4 @@
 import { NextResponse } from 'next/server';
-import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
-import { sendOrderEmail } from "@/lib/email";
-import { sendTelegramNotification } from "@/lib/telegram";
 
 async function handleCallback(req: Request) {
   try {
@@ -49,60 +45,16 @@ async function handleCallback(req: Request) {
 
     const isSuccess = status.toLowerCase() === 'success' || !!razorpayPaymentId;
 
-    if (orderId && isSuccess) {
-      try {
-        const orderRef = doc(db, "orders", orderId);
-        const snap = await getDoc(orderRef);
-        if (snap.exists()) {
-          const orderData = snap.data();
-          await updateDoc(orderRef, {
-            paymentStatus: "paid",
-            status: "processing",
-            paymentSessionId: razorpayPaymentId || null,
-            paymentDetails: {
-              razorpay_payment_id: razorpayPaymentId || null,
-              razorpay_order_id: razorpayOrderId || null,
-              razorpay_signature: razorpaySignature || null,
-              amount: Number(amount) || orderData.amountToPay || 0,
-              gateway: "razorpay",
-              proxyDomain: "potter-world.com",
-              paidAt: new Date().toISOString()
-            },
-            updatedAt: new Date()
-          });
-
-          // Send confirmation notifications
-          if (orderData.contactInfo?.email) {
-            sendOrderEmail(
-              orderId,
-              orderData.contactInfo.email,
-              orderData.shippingAddress?.name || "Customer",
-              orderData.amountToPay || orderData.totalAmount,
-              orderData
-            ).catch(err => console.error("Email notification failed:", err));
-
-            deleteDoc(doc(db, "abandoned_carts", orderData.contactInfo.email))
-              .catch(err => console.error("Abandoned cart cleanup failed:", err));
-          }
-
-          sendTelegramNotification(orderId, {
-            ...orderData,
-            paymentSessionId: razorpayPaymentId || orderData.paymentSessionId,
-            paymentStatus: "paid"
-          }, "success")
-            .catch(err => console.error("Telegram notification failed:", err));
-        }
-      } catch (firestoreErr) {
-        console.error("Firestore order update error in Razorpay callback:", firestoreErr);
-      }
-    }
-
+    // Do NOT mark order paid in Firestore here!
+    // The order will be marked paid and notifications (Telegram + Email) dispatched
+    // ONLY when the customer reaches the Thank You page (/checkout/success).
     const redirectUrl = new URL(`${origin}/checkout/success`);
     redirectUrl.searchParams.set('orderId', orderId);
     redirectUrl.searchParams.set('txnid', orderId);
     redirectUrl.searchParams.set('status', isSuccess ? 'success' : 'failed');
     if (razorpayPaymentId) redirectUrl.searchParams.set('razorpay_payment_id', razorpayPaymentId);
     if (razorpayOrderId) redirectUrl.searchParams.set('razorpay_order_id', razorpayOrderId);
+    if (razorpaySignature) redirectUrl.searchParams.set('razorpay_signature', razorpaySignature);
 
     return NextResponse.redirect(redirectUrl.toString(), 302);
   } catch (error: any) {

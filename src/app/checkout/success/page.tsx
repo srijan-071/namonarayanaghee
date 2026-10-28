@@ -69,9 +69,10 @@ function SuccessContent() {
   const orderId = searchParams.get("orderId") || searchParams.get("txnid");
   const status = searchParams.get("status");
   const sessionId = searchParams.get("session_id");
-  const razorpayPaymentId = searchParams.get("razorpay_payment_id");
+  const razorpayPaymentId = searchParams.get("razorpay_payment_id") || searchParams.get("payment_id");
   const razorpayOrderId = searchParams.get("razorpay_order_id");
   const razorpaySignature = searchParams.get("razorpay_signature");
+  const payuid = searchParams.get("payuid") || searchParams.get("mihpayid");
 
   const isSuccess = status === "success" || (!status && orderId);
   const isFailed = status === "failed" || status === "error";
@@ -79,41 +80,72 @@ function SuccessContent() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [checkVisible, setCheckVisible] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
-  const [orderLoading, setOrderLoading] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(true);
   const [paymentVerified, setPaymentVerified] = useState(false);
 
   useEffect(() => {
     if (orderId && isSuccess) {
       setOrderLoading(true);
 
-      // Proactively trigger verification if razorpay_payment_id is present
-      if (razorpayPaymentId) {
-        fetch("/api/verify-payment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId,
-            razorpay_payment_id: razorpayPaymentId,
-            razorpay_order_id: razorpayOrderId,
-            razorpay_signature: razorpaySignature,
-          }),
-        })
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData.success) {
-            setPaymentVerified(true);
-            setOrderLoading(false);
-            if (resData.order) setOrderData(resData.order);
+      const paymentId = razorpayPaymentId || payuid || sessionId || "verified";
+
+      // ─── USER REACHED THE THANK YOU PAGE ───
+      // Mark order as PAID in Firestore now, send Telegram notification to Admin,
+      // and send Order Confirmation Email to the customer's email.
+      fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_order_id: razorpayOrderId,
+          razorpay_signature: razorpaySignature,
+          gateway: payuid ? "payu" : "razorpay"
+        }),
+      })
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success && resData.order) {
+          setPaymentVerified(true);
+          setOrderLoading(false);
+          setOrderData(resData.order);
+
+          // Clear cart
+          import("@/lib/cart").then((cartLib) => cartLib.clearCart());
+
+          // Track analytics event once
+          const eventSentKey = `purchaseEventSent_${orderId}`;
+          if (!localStorage.getItem(eventSentKey)) {
+            localStorage.setItem(eventSentKey, "true");
+            trackEvent("purchase", {
+              transaction_id: orderId,
+              payment_type: resData.order.paymentMethod || "prepaid",
+              currency: "INR",
+              value: resData.order.amountToPay || resData.order.totalAmount,
+              tax: resData.order.tax || 0,
+              shipping: resData.order.shippingCost || 0,
+              items: resData.order.items?.map((i: any) => ({
+                item_id: i.productId,
+                item_name: i.name,
+                quantity: i.quantity,
+                price: i.price,
+              })) || [],
+            });
+
+            try {
+              sessionStorage.removeItem("nn_cart_notified");
+            } catch {}
           }
-        })
-        .catch((err) => console.error("Verify payment trigger error:", err));
-      }
+        } else {
+          fallbackFetchOrder();
+        }
+      })
+      .catch((err) => {
+        console.error("Order confirmation on thank-you page error:", err);
+        fallbackFetchOrder();
+      });
 
-      let attempts = 0;
-      const maxAttempts = 10;
-      let intervalId: any;
-
-      const fetchOrder = async () => {
+      const fallbackFetchOrder = async () => {
         try {
           const { db } = await import("@/lib/firebase");
           const { doc, getDoc } = await import("firebase/firestore/lite");
@@ -121,61 +153,20 @@ function SuccessContent() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             setOrderData(data);
-            
-            if (data.paymentStatus === "paid" || !!razorpayPaymentId) {
+            if (data.paymentStatus === "paid") {
               setPaymentVerified(true);
-              setOrderLoading(false);
-              clearInterval(intervalId);
-              
-              const eventSentKey = `purchaseEventSent_${orderId}`;
-              if (!localStorage.getItem(eventSentKey)) {
-                localStorage.setItem(eventSentKey, "true");
-                trackEvent("purchase", {
-                  transaction_id: orderId,
-                  payment_type: data.paymentMethod || "unknown",
-                  currency: "INR",
-                  value: data.amountToPay || data.totalAmount,
-                  tax: data.tax || 0,
-                  shipping: data.shippingCost || 0,
-                  items: data.items?.map((i: any) => ({
-                    item_id: i.productId,
-                    item_name: i.name,
-                    quantity: i.quantity,
-                    price: i.price
-                  })) || []
-                });
-                
-                try {
-                  sessionStorage.removeItem("nn_cart_notified");
-                } catch {
-                  // Ignore
-                }
-                import("@/lib/cart").then((cartLib) => cartLib.clearCart());
-              }
-            } else {
-              attempts++;
-              if (attempts >= maxAttempts) {
-                 clearInterval(intervalId);
-                 setOrderLoading(false);
-              }
             }
-          } else {
-            clearInterval(intervalId);
-            setOrderLoading(false);
           }
-        } catch (error) {
-          console.error(error);
-          clearInterval(intervalId);
+        } catch (e) {
+          console.error("Fallback order fetch error:", e);
+        } finally {
           setOrderLoading(false);
         }
       };
-      
-      fetchOrder();
-      intervalId = setInterval(fetchOrder, 3000);
-      
-      return () => clearInterval(intervalId);
+    } else {
+      setOrderLoading(false);
     }
-  }, [orderId, isSuccess]);
+  }, [orderId, isSuccess, razorpayPaymentId, razorpayOrderId, razorpaySignature, payuid, sessionId]);
 
   useEffect(() => {
     if (isSuccess) {
