@@ -48,14 +48,14 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [countdown, setCountdown] = useState({ hours: 1, minutes: 46, seconds: 18 });
   const [isGalleryHovered, setIsGalleryHovered] = useState(false);
 
-  // Auto-change product images every 3 seconds with smooth faded transition
+  // Auto-change product images every 2 seconds with smooth faded transition
   useEffect(() => {
     if (!product.images || product.images.length <= 1) return;
     if (isGalleryHovered) return;
 
     const autoSlideTimer = setInterval(() => {
       setSelectedImage((prev) => (prev + 1) % product.images.length);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(autoSlideTimer);
   }, [product.images, isGalleryHovered]);
