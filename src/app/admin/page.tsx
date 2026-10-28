@@ -377,9 +377,11 @@ export default function AdminPage() {
         // data.subtotal in abandoned_carts is stored in PAISE (e.g. 115150 paise -> 1151.50 rupees)
         const subtotalInRupees = toRupees(data.subtotal);
 
+        const phone = data.phone || (/^\d{10}$/.test(d.id) ? d.id : "");
         return {
           id: d.id,
           ...data,
+          phone,
           subtotal: subtotalInRupees,
           dateObj,
           lastActive: dateObj.toISOString(),

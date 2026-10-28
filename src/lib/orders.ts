@@ -15,7 +15,7 @@ export interface GstDetails {
 }
 
 export interface CheckoutData {
-  email: string;
+  email?: string;
   phone: string;
   shippingAddress: Address;
   billingAddress: Address;

@@ -18,7 +18,8 @@ import {
   CheckCircle2, 
   ArrowLeft,
   Check,
-  Heart
+  Heart,
+  AlertCircle
 } from "lucide-react";
 import { useCart, addToCart, removeFromCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
@@ -26,6 +27,39 @@ import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
+
+// Fast offline lookup table for instant 0ms state/city resolution
+const PINCODE_PREFIX_MAP: Record<string, { city: string; state: string }> = {
+  "11": { city: "New Delhi", state: "Delhi" },
+  "12": { city: "Gurugram", state: "Haryana" },
+  "13": { city: "Panipat", state: "Haryana" },
+  "14": { city: "Ludhiana", state: "Punjab" },
+  "16": { city: "Chandigarh", state: "Chandigarh" },
+  "20": { city: "Noida", state: "Uttar Pradesh" },
+  "22": { city: "Lucknow", state: "Uttar Pradesh" },
+  "24": { city: "Dehradun", state: "Uttarakhand" },
+  "28": { city: "Agra", state: "Uttar Pradesh" },
+  "30": { city: "Jaipur", state: "Rajasthan" },
+  "31": { city: "Udaipur", state: "Rajasthan" },
+  "32": { city: "Kota", state: "Rajasthan" },
+  "34": { city: "Jodhpur", state: "Rajasthan" },
+  "38": { city: "Ahmedabad", state: "Gujarat" },
+  "39": { city: "Surat", state: "Gujarat" },
+  "40": { city: "Mumbai", state: "Maharashtra" },
+  "41": { city: "Pune", state: "Maharashtra" },
+  "44": { city: "Nagpur", state: "Maharashtra" },
+  "45": { city: "Indore", state: "Madhya Pradesh" },
+  "46": { city: "Bhopal", state: "Madhya Pradesh" },
+  "50": { city: "Hyderabad", state: "Telangana" },
+  "56": { city: "Bengaluru", state: "Karnataka" },
+  "60": { city: "Chennai", state: "Tamil Nadu" },
+  "64": { city: "Coimbatore", state: "Tamil Nadu" },
+  "68": { city: "Kochi", state: "Kerala" },
+  "70": { city: "Kolkata", state: "West Bengal" },
+  "75": { city: "Bhubaneswar", state: "Odisha" },
+  "80": { city: "Patna", state: "Bihar" },
+  "83": { city: "Ranchi", state: "Jharkhand" },
+};
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -45,6 +79,7 @@ export default function CheckoutPage() {
     state: "",
   });
 
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [hasGst, setHasGst] = useState(false);
   const [gstDetails, setGstDetails] = useState<GstDetails>({ companyName: "", gstin: "" });
   
@@ -111,50 +146,95 @@ export default function CheckoutPage() {
     }
   }, [form, hasGst, gstDetails, couponCode]);
 
+  // Proactive lead capture: log abandoned cart when a valid phone number is entered
+  const handlePhoneBlur = () => {
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    if (cleanPhone.length === 10 && cart.items.length > 0) {
+      import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
+        logAbandonedCart({
+          phone: cleanPhone,
+          email: form.email.trim(),
+          name: form.name.trim(),
+          cartItems: cart.items,
+          subtotal: cart.subtotal
+        }).catch(() => {});
+      });
+    }
+  };
+
   const pincodeCache = useRef<Record<string, { city: string; state: string }>>({});
 
   const handlePincodeChange = async (val: string) => {
-    if (!/^\d*$/.test(val)) return;
+    // Only allow numbers
+    const cleanVal = val.replace(/\D/g, "").slice(0, 6);
+    setForm(prev => ({ ...prev, pincode: cleanVal }));
     
-    setForm(prev => ({ ...prev, pincode: val }));
+    // Clear pincode error on type
+    if (fieldErrors.pincode) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next.pincode;
+        return next;
+      });
+    }
+
+    // Instant offline 0ms prefix hint
+    if (cleanVal.length >= 2) {
+      const prefix = cleanVal.slice(0, 2);
+      if (PINCODE_PREFIX_MAP[prefix] && (!form.city || !form.state)) {
+        setForm(prev => ({
+          ...prev,
+          city: prev.city || PINCODE_PREFIX_MAP[prefix].city,
+          state: prev.state || PINCODE_PREFIX_MAP[prefix].state
+        }));
+      }
+    }
     
-    if (val.length === 6) {
-      if (pincodeCache.current[val]) {
-        const cached = pincodeCache.current[val];
+    if (cleanVal.length === 6) {
+      // Instant cache hit
+      if (pincodeCache.current[cleanVal]) {
+        const cached = pincodeCache.current[cleanVal];
         setForm(prev => ({ ...prev, city: cached.city, state: cached.state }));
         return;
       }
 
-      latestPincodeRef.current = val;
+      latestPincodeRef.current = cleanVal;
       setIsFetchingPincode(true);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1400);
+      const timeoutId = setTimeout(() => controller.abort(), 900); // 900ms fast timeout
 
       try {
-        const res = await fetch(`https://api.postalpincode.in/pincode/${val}`, { signal: controller.signal });
+        const res = await fetch(`https://api.postalpincode.in/pincode/${cleanVal}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         const data = await res.json();
         
-        if (latestPincodeRef.current !== val) return;
+        if (latestPincodeRef.current !== cleanVal) return;
 
         if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length) {
           const postOffice = data[0].PostOffice[0];
           const resolvedCity = postOffice.District || postOffice.Region || "";
           const resolvedState = postOffice.State || "";
           if (resolvedCity && resolvedState) {
-            pincodeCache.current[val] = { city: resolvedCity, state: resolvedState };
+            pincodeCache.current[cleanVal] = { city: resolvedCity, state: resolvedState };
             setForm(prev => ({ 
               ...prev, 
               city: resolvedCity || prev.city, 
               state: resolvedState || prev.state
             }));
+            // Clear city and state errors if present
+            setFieldErrors(prev => {
+              const next = { ...prev };
+              delete next.city;
+              delete next.state;
+              return next;
+            });
           }
         }
       } catch {
-        // Fail gracefully without blocking manual entry
+        // Fail silently so manual entry is never hindered
       } finally {
-        if (latestPincodeRef.current === val) {
+        if (latestPincodeRef.current === cleanVal) {
           setIsFetchingPincode(false);
         }
       }
@@ -169,7 +249,7 @@ export default function CheckoutPage() {
     return getFreeGiftsForCart(cart.items);
   }, [cart.items]);
 
-  // Order Addon (500ml Pure A2 Ghee Trial Jar)
+  // Family wellness trial jar addon (500ml)
   const bumpVariantId = 55812012572839;
   const isBumpInCart = cart.items.some(i => i.variantId === bumpVariantId);
 
@@ -213,19 +293,59 @@ export default function CheckoutPage() {
     );
   }
 
-  const isFormValid = 
-    form.name.trim() && 
-    form.email.trim() && 
-    form.phone.trim().length >= 10 && 
-    form.address.trim() && 
-    form.pincode.trim().length === 6 && 
-    form.city.trim() && 
-    form.state.trim() &&
-    (!hasGst || (gstDetails.companyName.trim() && gstDetails.gstin.trim()));
+  // Active validation: Returns true if valid, else returns errors and focuses missing field
+  const validateAndGetErrors = () => {
+    const errors: Record<string, string> = {};
+    const cleanName = form.name.trim();
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    const cleanAddress = form.address.trim();
+    const cleanPincode = form.pincode.replace(/\D/g, "");
+    const cleanCity = form.city.trim();
+    const cleanState = form.state.trim();
+
+    if (!cleanName) {
+      errors.name = "Please enter your full name";
+    }
+    if (!cleanPhone || cleanPhone.length < 10) {
+      errors.phone = "Please enter your 10-digit mobile number";
+    }
+    if (!cleanAddress || cleanAddress.length < 4) {
+      errors.address = "Please enter your house/street delivery address";
+    }
+    if (!cleanPincode || cleanPincode.length !== 6) {
+      errors.pincode = "Please enter 6-digit PIN code";
+    }
+    if (!cleanCity) {
+      errors.city = "Please enter your city / district";
+    }
+    if (!cleanState) {
+      errors.state = "Please enter your state";
+    }
+    if (hasGst) {
+      if (!gstDetails.companyName.trim()) {
+        errors.companyName = "Please enter company legal name";
+      }
+      if (!gstDetails.gstin.trim() || gstDetails.gstin.trim().length < 15) {
+        errors.gstin = "Please enter valid 15-digit GSTIN";
+      }
+    }
+
+    setFieldErrors(errors);
+    return errors;
+  };
 
   const handlePlaceOrder = async () => {
-    if (!isFormValid) {
-      toast.error("Please fill your delivery details so we can deliver your parcel safely.");
+    const errors = validateAndGetErrors();
+    const errorKeys = Object.keys(errors);
+
+    if (errorKeys.length > 0) {
+      const firstKey = errorKeys[0];
+      const targetElement = document.getElementById(`checkout-${firstKey}`);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        targetElement.focus();
+      }
+      toast.error(errors[firstKey]);
       return;
     }
 
@@ -238,6 +358,10 @@ export default function CheckoutPage() {
          throw new Error("Could not initialize authentication");
       }
 
+      const cleanPhone = form.phone.replace(/\D/g, "");
+      // If email is omitted, generate standard internal receipt email so gateways never fail
+      const customerEmail = form.email.trim() || `${cleanPhone}@customer.namonarayanaghee.store`;
+
       const address = {
         name: form.name.trim(),
         address: form.address.trim(),
@@ -248,8 +372,8 @@ export default function CheckoutPage() {
       };
 
       const checkoutData: CheckoutData = {
-        email: form.email.trim(),
-        phone: form.phone.trim(),
+        email: customerEmail,
+        phone: cleanPhone,
         shippingAddress: address,
         billingAddress: address,
         gstDetails: hasGst ? gstDetails : undefined,
@@ -257,7 +381,7 @@ export default function CheckoutPage() {
         couponCode: couponCode || undefined
       };
 
-      const loadingToastId = toast.loading("Securely preparing your order parcel...");
+      const loadingToastId = toast.loading("Connecting to secure 1-tap payment gateway...");
       
       trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
       trackEvent("add_payment_info", { payment_type: "prepaid", value: cart.subtotal, currency: "INR" });
@@ -268,7 +392,7 @@ export default function CheckoutPage() {
         payment_type: "prepaid"
       });
 
-      const isAdmin = form.email.toLowerCase().trim() === 'littlecodr@gmail.com';
+      const isAdmin = customerEmail.toLowerCase().trim() === 'littlecodr@gmail.com';
       const effectivePricing = isAdmin
         ? { ...pricing, amountToPay: 100 }
         : pricing;
@@ -279,6 +403,7 @@ export default function CheckoutPage() {
       
       const orderId = await createOrder(currentUser.uid, cart.items, cart.subtotal, checkoutData, effectivePricing, freeGifts);
 
+      // Notify Telegram in background
       fetch("/api/send-telegram-notification", {
         method: "POST",
         keepalive: true,
@@ -297,12 +422,17 @@ export default function CheckoutPage() {
             totalAmount: pricing.amountAfterDiscount,
             amountToPay: pricing.amountToPay,
             shippingAddress: address,
-            contactInfo: { email: form.email, phone: form.phone },
+            contactInfo: { email: customerEmail, phone: cleanPhone },
             paymentMethod: "prepaid",
             paymentStatus: "pending"
           }
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
+
+      // Clear abandoned cart lead upon payment checkout initiation
+      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
+        clearAbandonedCart(cleanPhone).catch(() => {});
+      });
 
       const amountInINR = isAdmin ? 1 : pricing.amountToPay / 100;
       const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
@@ -311,8 +441,8 @@ export default function CheckoutPage() {
       payParams.set("txnid", orderId);
       payParams.set("amount", amountInINR.toString());
       payParams.set("firstname", address.name || "Customer");
-      payParams.set("email", form.email || "");
-      payParams.set("phone", form.phone || "");
+      payParams.set("email", customerEmail);
+      payParams.set("phone", cleanPhone);
       payParams.set("productinfo", `Order ${orderId}`);
       payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
       payParams.set("cancelUrl", `${origin}/checkout`);
@@ -320,24 +450,34 @@ export default function CheckoutPage() {
       const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
       
       toast.dismiss(loadingToastId);
-      toast.loading("Connecting to secure payment gateway...");
       window.location.href = targetUrl;
       
     } catch (error: any) {
       console.error("Order creation failed:", error);
-      toast.error(error?.message || "There was an issue placing your order. Please try again.");
+      toast.error(error?.message || "There was an issue initiating payment. Please try again.");
       setIsSubmitting(false);
     }
   };
 
+  const handleFieldChange = (field: string, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   return (
-    <section className="bg-[#FAF9F5] min-h-[85vh] pb-24 lg:pb-16 pt-4 sm:pt-6">
+    <section className="bg-[#FAF9F5] min-h-[85vh] pb-24 lg:pb-16 pt-3 sm:pt-6">
       <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://potter-world.com" />
 
-      {/* Top Authentic Trust & Emotional Reassurance Bar */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#EAD7BC]">
+      {/* Top Reassurance & Breadcrumb Strip */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-4 sm:mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-[#EAD7BC]">
           <Link 
             href="/collections/all-products" 
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#8A1B14] hover:text-[#5E0B10] transition"
@@ -345,20 +485,15 @@ export default function CheckoutPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Continue Shopping</span>
           </Link>
-          <div className="flex items-center gap-4 text-xs text-[#7A4A3B]">
-            <span className="inline-flex items-center gap-1.5 font-medium">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs text-[#7A4A3B]">
+            <span className="inline-flex items-center gap-1 font-medium">
               <Lock className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Bank-Safe 256-Bit SSL</span>
+              <span>256-Bit SSL Safe</span>
             </span>
-            <span className="hidden sm:inline text-[#EAD7BC]">•</span>
-            <span className="inline-flex items-center gap-1.5 font-medium">
-              <Heart className="w-3.5 h-3.5 text-[#8A1B14]" />
-              <span>Handcrafted with Care in Rajasthan</span>
-            </span>
-            <span className="hidden sm:inline text-[#EAD7BC]">•</span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 font-medium">
+            <span className="text-[#EAD7BC]">•</span>
+            <span className="inline-flex items-center gap-1 font-medium">
               <Truck className="w-3.5 h-3.5 text-[#8A1B14]" />
-              <span>Free Delivery to Your Doorstep</span>
+              <span>Free Delivery</span>
             </span>
           </div>
         </div>
@@ -367,25 +502,25 @@ export default function CheckoutPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Simple & Emotionally Grounded Header */}
-        <div className="mb-6">
+        <div className="mb-5 sm:mb-6">
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] flex items-center gap-2">
             <span>Complete Your Order</span>
           </h1>
           <p className="text-xs sm:text-sm text-[#7A4A3B] mt-1">
-            You are choosing pure Vedic Bilona Ghee made with traditional wooden churners from curd — pure nourishment for your children, parents &amp; sacred home.
+            Pure Vedic Bilona Ghee churned from Gir cow curd — nourishing your children, parents &amp; family.
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
           
-          {/* Main Form Area */}
-          <div className="w-full lg:w-[58%] space-y-6">
+          {/* Main Delivery Form Area */}
+          <div className="w-full lg:w-[58%] space-y-5">
 
-            {/* Mother's Care & Authentic Heritage Trust Card */}
+            {/* Mother's Care & Trust Badge Card */}
             <div className="bg-white border border-[#EAD7BC] rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14]">
-                  <Award className="w-6 h-6 text-[#8A1B14]" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14]">
+                  <Award className="w-5 h-5 text-[#8A1B14]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -396,80 +531,111 @@ export default function CheckoutPage() {
                       Founded by Elvish Yadav
                     </span>
                   </div>
-                  <p className="text-xs text-[#7A4A3B] mt-1 leading-relaxed">
-                    Most market ghee is boiled from factory cream. We churn pure Gir cow curd slowly the Vedic way — exactly like our grandmothers did. 0% chemicals, 0% adulteration.
+                  <p className="text-xs text-[#7A4A3B] mt-0.5 leading-relaxed">
+                    Slowly churned from pure curd in Rajasthan. 0% chemicals, 0% adulteration • NABL Lab Certified.
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#EAD7BC]/60 text-[11px] font-semibold text-[#5E0B10]">
-                <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
+              <div className="grid grid-cols-3 gap-2 pt-2.5 border-t border-[#EAD7BC]/60 text-[11px] font-semibold text-[#5E0B10]">
+                <div className="bg-[#FAF9F5] py-1.5 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
                   <Heart className="w-3.5 h-3.5 text-[#8A1B14] shrink-0" />
                   <span>Maa Jaisa Vishwaas</span>
                 </div>
-                <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
+                <div className="bg-[#FAF9F5] py-1.5 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>100% Curd Bilona</span>
+                  <span>Curd Bilona</span>
                 </div>
-                <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
+                <div className="bg-[#FAF9F5] py-1.5 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>NABL Lab Tested</span>
+                  <span>Safe Glass Jar</span>
                 </div>
               </div>
             </div>
 
-            {/* Checkout Form */}
-            <div className="bg-white p-5 sm:p-7 rounded-2xl shadow-2xs border border-[#EAD7BC] space-y-7">
+            {/* Seamless 1-Tap Form */}
+            <div className="bg-white p-5 sm:p-7 rounded-2xl shadow-2xs border border-[#EAD7BC] space-y-6">
               
-              {/* 1. Contact Information */}
+              {/* 1. Contact Details */}
               <div>
                 <div className="flex items-center justify-between mb-3.5">
-                  <h2 className="font-serif text-lg font-bold text-[#5E0B10] flex items-center gap-2">
+                  <h2 className="font-serif text-base sm:text-lg font-bold text-[#5E0B10] flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold flex items-center justify-center shrink-0">
                       1
                     </span>
-                    <span>Who is this order for?</span>
+                    <span>Contact Details</span>
                   </h2>
-                  <span className="text-[11px] text-[#7A4A3B]">For delivery updates on WhatsApp &amp; invoice</span>
+                  <span className="text-[11px] text-[#7A4A3B]">For WhatsApp dispatch updates</span>
                 </div>
 
                 <div className="space-y-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
-                      Your Full Name <span className="text-red-600">*</span>
+                    <label htmlFor="checkout-name" className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                      Full Name <span className="text-red-600">*</span>
                     </label>
                     <input 
+                      id="checkout-name"
+                      name="name"
                       type="text" 
+                      autoComplete="name"
                       placeholder="e.g. Rahul Sharma" 
                       value={form.name} 
-                      onChange={(e) => setForm({...form, name: e.target.value})} 
-                      className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
+                      onChange={(e) => handleFieldChange("name", e.target.value)} 
+                      className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition bg-white ${
+                        fieldErrors.name 
+                          ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                          : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                      }`} 
                     />
+                    {fieldErrors.name && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {fieldErrors.name}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                      <label htmlFor="checkout-phone" className="block text-xs font-semibold text-[#5E0B10] mb-1">
                         Mobile Number <span className="text-red-600">*</span>
                       </label>
                       <input 
+                        id="checkout-phone"
+                        name="tel"
                         type="tel" 
+                        inputMode="tel"
+                        autoComplete="tel"
                         maxLength={10}
                         placeholder="10-digit mobile number" 
                         value={form.phone} 
-                        onChange={(e) => setForm({...form, phone: e.target.value.replace(/\D/g, '')})} 
-                        className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
+                        onChange={(e) => handleFieldChange("phone", e.target.value.replace(/\D/g, ""))} 
+                        onBlur={handlePhoneBlur}
+                        className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.phone 
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                            : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                        }`} 
                       />
+                      {fieldErrors.phone && (
+                        <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> {fieldErrors.phone}
+                        </p>
+                      )}
                     </div>
+
                     <div>
-                      <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
-                        Email Address <span className="text-red-600">*</span>
+                      <label htmlFor="checkout-email" className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                        Email Address <span className="text-gray-400 font-normal">(Optional)</span>
                       </label>
                       <input 
+                        id="checkout-email"
+                        name="email"
                         type="email" 
-                        placeholder="For official invoice & receipt" 
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="For PDF tax invoice" 
                         value={form.email} 
-                        onChange={(e) => setForm({...form, email: e.target.value})} 
+                        onChange={(e) => handleFieldChange("email", e.target.value)} 
                         className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
                       />
                     </div>
@@ -478,82 +644,131 @@ export default function CheckoutPage() {
               </div>
 
               {/* 2. Delivery Address */}
-              <div className="pt-5 border-t border-[#EAD7BC]">
+              <div className="pt-4 border-t border-[#EAD7BC]">
                 <div className="flex items-center justify-between mb-3.5">
-                  <h2 className="font-serif text-lg font-bold text-[#5E0B10] flex items-center gap-2">
+                  <h2 className="font-serif text-base sm:text-lg font-bold text-[#5E0B10] flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold flex items-center justify-center shrink-0">
                       2
                     </span>
-                    <span>Where should we deliver your parcel?</span>
+                    <span>Delivery Address</span>
                   </h2>
-                  <span className="text-[11px] text-[#7A4A3B]">Safe doorstep delivery</span>
+                  <span className="text-[11px] text-[#7A4A3B]">Doorstep delivery across 19,000+ PIN codes</span>
                 </div>
 
                 <div className="space-y-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                    <label htmlFor="checkout-address" className="block text-xs font-semibold text-[#5E0B10] mb-1">
                       House / Flat No., Society, Street <span className="text-red-600">*</span>
                     </label>
                     <input 
+                      id="checkout-address"
+                      name="address"
                       type="text" 
+                      autoComplete="street-address"
                       placeholder="e.g. Flat 302, Royal Enclave, MG Road" 
                       value={form.address} 
-                      onChange={(e) => setForm({...form, address: e.target.value})} 
-                      className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
+                      onChange={(e) => handleFieldChange("address", e.target.value)} 
+                      className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition bg-white ${
+                        fieldErrors.address 
+                          ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                          : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                      }`} 
                     />
+                    {fieldErrors.address && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {fieldErrors.address}
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                    <label htmlFor="checkout-pincode" className="block text-xs font-semibold text-[#5E0B10] mb-1">
                       PIN Code <span className="text-red-600">*</span>
                     </label>
                     <div className="relative">
                       <MapPin className="w-4 h-4 absolute left-3.5 top-[11px] text-[#8A1B14]" />
                       <input 
+                        id="checkout-pincode"
+                        name="postal-code"
                         type="text" 
+                        inputMode="numeric"
+                        autoComplete="postal-code"
                         maxLength={6} 
-                        placeholder="6-digit PIN code (Auto-fills City & State)" 
+                        placeholder="6-digit Indian PIN Code" 
                         value={form.pincode} 
                         onChange={(e) => handlePincodeChange(e.target.value)} 
-                        className="w-full border border-[#D5D8D0] rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] font-medium bg-white" 
+                        className={`w-full border rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none font-medium bg-white ${
+                          fieldErrors.pincode 
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                            : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                        }`} 
                       />
                       {isFetchingPincode && (
                         <Loader2 className="w-4 h-4 animate-spin absolute right-3.5 top-[11px] text-[#8A1B14]" />
                       )}
                     </div>
+                    {fieldErrors.pincode && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" /> {fieldErrors.pincode}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div>
-                      <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                      <label htmlFor="checkout-city" className="block text-xs font-semibold text-[#5E0B10] mb-1">
                         City / District <span className="text-red-600">*</span>
                       </label>
                       <input 
+                        id="checkout-city"
+                        name="city"
                         type="text" 
+                        autoComplete="address-level2"
                         placeholder="e.g. Jaipur" 
                         value={form.city} 
-                        onChange={(e) => setForm({...form, city: e.target.value})} 
-                        className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
+                        onChange={(e) => handleFieldChange("city", e.target.value)} 
+                        className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.city 
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                            : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                        }`} 
                       />
+                      {fieldErrors.city && (
+                        <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> {fieldErrors.city}
+                        </p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
+                      <label htmlFor="checkout-state" className="block text-xs font-semibold text-[#5E0B10] mb-1">
                         State <span className="text-red-600">*</span>
                       </label>
                       <input 
+                        id="checkout-state"
+                        name="state"
                         type="text" 
+                        autoComplete="address-level1"
                         placeholder="e.g. Rajasthan" 
                         value={form.state} 
-                        onChange={(e) => setForm({...form, state: e.target.value})} 
-                        className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
+                        onChange={(e) => handleFieldChange("state", e.target.value)} 
+                        className={`w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.state 
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                            : "border-[#D5D8D0] focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14]"
+                        }`} 
                       />
+                      {fieldErrors.state && (
+                        <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> {fieldErrors.state}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* GST Option (Optional) */}
-              <div className="pt-4 border-t border-[#EAD7BC]">
+              <div className="pt-3 border-t border-[#EAD7BC]">
                 <label className="flex items-center gap-2.5 cursor-pointer select-none">
                   <input 
                     type="checkbox" 
@@ -566,20 +781,26 @@ export default function CheckoutPage() {
                 
                 {hasGst && (
                   <div className="space-y-3 p-4 bg-[#FDFBF7] rounded-xl border border-[#EAD7BC] mt-3 animate-in fade-in">
-                    <input 
-                      type="text" 
-                      placeholder="Company Legal Name *" 
-                      value={gstDetails.companyName} 
-                      onChange={(e) => setGstDetails({...gstDetails, companyName: e.target.value})} 
-                      className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#8A1B14] bg-white" 
-                    />
-                    <input 
-                      type="text" 
-                      placeholder="15-digit GSTIN *" 
-                      value={gstDetails.gstin} 
-                      onChange={(e) => setGstDetails({...gstDetails, gstin: e.target.value})} 
-                      className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#8A1B14] bg-white uppercase" 
-                    />
+                    <div>
+                      <input 
+                        id="checkout-companyName"
+                        type="text" 
+                        placeholder="Company Legal Name *" 
+                        value={gstDetails.companyName} 
+                        onChange={(e) => setGstDetails({...gstDetails, companyName: e.target.value})} 
+                        className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#8A1B14] bg-white" 
+                      />
+                    </div>
+                    <div>
+                      <input 
+                        id="checkout-gstin"
+                        type="text" 
+                        placeholder="15-digit GSTIN *" 
+                        value={gstDetails.gstin} 
+                        onChange={(e) => setGstDetails({...gstDetails, gstin: e.target.value.toUpperCase()})} 
+                        className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#8A1B14] bg-white uppercase" 
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -785,43 +1006,47 @@ export default function CheckoutPage() {
                   <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                   <div className="leading-snug">
                     <strong className="text-[#5E0B10] font-bold block mb-0.5">Our Sacred Promise to Your Family</strong>
-                    If you open the jar and don&apos;t feel the authentic Vedic aroma, or in the rare case of transit damage, we send an instant replacement or 100% refund. Your family&apos;s health and trust is our dharma.
+                    If you open the jar and don&apos;t feel the authentic Vedic aroma, or in the rare case of transit damage, we send an instant replacement or 100% refund.
                   </div>
                 </div>
 
-                {/* Primary CTA */}
+                {/* 1-Tap UPI Payment Reassurance Strip directly above CTA */}
+                <div className="bg-[#FFFDF7] border border-[#EAD7BC] rounded-xl p-2.5 text-center space-y-1.5 shadow-2xs">
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <span className="bg-[#5F259F] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs tracking-wide">PhonePe</span>
+                    <span className="bg-white border border-[#D5D8D0] text-[#1A73E8] text-[10px] font-black px-2 py-0.5 rounded shadow-2xs tracking-wide">GPay</span>
+                    <span className="bg-[#002970] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs tracking-wide">Paytm UPI</span>
+                    <span className="bg-emerald-700 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs tracking-wide">BHIM UPI</span>
+                    <span className="text-[10px] font-bold text-[#7A4A3B] bg-gray-100 px-1.5 py-0.5 rounded">Cards &amp; NetBanking</span>
+                  </div>
+                  <p className="text-[11px] text-[#5E0B10] font-semibold">
+                    ⚡ Instant 1-Tap UPI on next screen • Zero extra payment fees
+                  </p>
+                </div>
+
+                {/* Primary CTA: Always Active & Responsive */}
                 <button 
                   onClick={handlePlaceOrder} 
-                  disabled={isSubmitting || !isFormValid} 
-                  className={`w-full py-4 rounded-xl font-bold text-base shadow-md transition-all flex items-center justify-center gap-2 ${
-                    isFormValid && !isSubmitting
-                      ? "bg-[#8A1B14] hover:bg-[#68140E] text-white active:scale-[0.99] cursor-pointer"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
-                  }`}
+                  disabled={isSubmitting} 
+                  className="w-full py-4 rounded-xl font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white active:scale-[0.99] cursor-pointer shadow-[#8A1B14]/25"
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Connecting to payment...
+                      <span>Connecting to payment...</span>
                     </>
                   ) : (
                     <>
                       <Lock className="w-4 h-4 text-[#F5BD47]" />
-                      <span>{isFormValid ? "Proceed to Pay Securely" : "Fill Delivery Details to Pay"}</span>
+                      <span>Proceed to Pay Securely</span>
                     </>
                   )}
                 </button>
 
-                {/* Trust Reassurance */}
-                <div className="pt-1 text-center space-y-1.5">
-                  <p className="text-[11px] text-[#7A4A3B] flex items-center justify-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-[#8A1B14]" />
-                    <span>UPI (Google Pay, PhonePe, Paytm), Cards &amp; NetBanking accepted</span>
-                  </p>
-                  <p className="text-[10px] text-emerald-700 font-semibold">
-                    ✓ Trusted by 10 Lakh+ families across India
-                  </p>
-                </div>
+                <p className="text-[10px] text-center text-emerald-800 font-semibold flex items-center justify-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Trusted by 10 Lakh+ happy families across India</span>
+                </p>
               </div>
             </div>
           </div>
@@ -829,12 +1054,12 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Sticky Bottom Bar on Mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-4 py-2.5 border-t border-[#EAD7BC] shadow-lg pb-[max(0.6rem,env(safe-area-inset-bottom))]">
+      {/* Sticky Bottom Bar on Mobile: Always Active with 1-Tap Trigger */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md px-4 py-2.5 border-t border-[#EAD7BC] shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[max(0.6rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
           <div className="flex flex-col shrink-0">
             <span className="text-[10px] text-[#7A4A3B] font-semibold uppercase tracking-wider">
-              Total Payable
+              Total to Pay
             </span>
             <span className="text-xl font-extrabold text-[#5E0B10] leading-tight">
               {formatPrice(pricing.amountToPay)}
@@ -843,12 +1068,8 @@ export default function CheckoutPage() {
 
           <button
             onClick={handlePlaceOrder}
-            disabled={isSubmitting || !isFormValid}
-            className={`flex-1 flex items-center justify-center gap-2 px-5 h-[48px] rounded-xl font-bold text-sm transition-all ${
-              isFormValid && !isSubmitting
-                ? "bg-[#8A1B14] hover:bg-[#68140E] text-white shadow-md active:scale-[0.98] cursor-pointer"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
-            }`}
+            disabled={isSubmitting}
+            className="flex-1 flex items-center justify-center gap-2 px-5 h-[48px] rounded-xl font-bold text-sm sm:text-base transition-all bg-[#8A1B14] hover:bg-[#68140E] text-white shadow-md active:scale-[0.98] cursor-pointer"
           >
             {isSubmitting ? (
               <>
@@ -858,7 +1079,7 @@ export default function CheckoutPage() {
             ) : (
               <>
                 <Lock className="w-4 h-4 text-[#F5BD47]" />
-                <span>{isFormValid ? "Proceed to Pay" : "Fill Details to Pay"}</span>
+                <span>Proceed to Pay</span>
               </>
             )}
           </button>

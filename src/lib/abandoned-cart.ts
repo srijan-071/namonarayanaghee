@@ -1,15 +1,17 @@
 import type { CartItem } from "@/lib/types";
 
-export async function logAbandonedCart(data: { email: string; phone?: string; cartItems: CartItem[]; subtotal: number }) {
-  if (!data.email) return;
+export async function logAbandonedCart(data: { email?: string; phone?: string; name?: string; cartItems: CartItem[]; subtotal: number }) {
+  const identifier = (data.phone || data.email || "").trim();
+  if (!identifier) return;
   try {
     const { db } = await import("./firebase");
     const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
-    const cartRef = doc(db, "abandoned_carts", data.email);
+    const cartRef = doc(db, "abandoned_carts", identifier);
     
     await setDoc(cartRef, {
-      email: data.email,
+      email: data.email || "",
       phone: data.phone || "",
+      name: data.name || "",
       cartItems: data.cartItems,
       subtotal: data.subtotal,
       lastActive: serverTimestamp(),
@@ -21,12 +23,12 @@ export async function logAbandonedCart(data: { email: string; phone?: string; ca
   }
 }
 
-export async function clearAbandonedCart(email: string) {
-  if (!email) return;
+export async function clearAbandonedCart(identifier: string) {
+  if (!identifier) return;
   try {
     const { db } = await import("./firebase");
     const { doc, deleteDoc } = await import("firebase/firestore/lite");
-    const cartRef = doc(db, "abandoned_carts", email);
+    const cartRef = doc(db, "abandoned_carts", identifier);
     await deleteDoc(cartRef);
   } catch (error) {
     console.error("Failed to clear abandoned cart", error);
