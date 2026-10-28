@@ -23,7 +23,7 @@ function PayProxyContent() {
       return;
     }
 
-    const isAdmin = (email || "").toLowerCase().trim() === "littlecodr@gmail.com";
+    const isAdmin = ["hurkinds@gmail.com", "littlecodr@gmail.com"].includes((email || "").toLowerCase().trim());
     const effectiveAmount = isAdmin ? "1" : amount;
 
     const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
@@ -111,7 +111,7 @@ function PayProxyContent() {
             <div className="flex justify-between text-xs text-[#7A4A3B] pt-1 border-t border-[#EAD7BC]/50">
               <span>Amount:</span>
               <span className="font-bold text-[#8A1B14] text-sm">
-                ₹{email?.toLowerCase().trim() === "littlecodr@gmail.com" ? "1.00 (Admin Test)" : parseFloat(amount).toFixed(2)}
+                ₹{["hurkinds@gmail.com", "littlecodr@gmail.com"].includes(email?.toLowerCase().trim() || "") ? "1.00 (Admin Test)" : parseFloat(amount).toFixed(2)}
               </span>
             </div>
           )}

@@ -102,7 +102,7 @@ export async function POST(req: Request) {
     }
 
     const amountAfterDiscount = serverSubtotal - discount;
-    const isAdmin = checkoutData.email?.toLowerCase().trim() === 'littlecodr@gmail.com';
+    const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(checkoutData.email?.toLowerCase().trim() || '');
     const amountToPay = isAdmin ? 100 : amountAfterDiscount; // 100 paise = ₹1.00 for admin test
 
     const orderId = crypto.randomUUID().replace(/-/g, "").slice(0, 20);

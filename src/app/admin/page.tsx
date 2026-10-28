@@ -43,8 +43,9 @@ import {
   CheckCheck,
 } from "lucide-react";
 
-// Whitelisted Administrator Email
-const ADMIN_EMAIL = "littlecodr@gmail.com";
+// Whitelisted Administrator Emails
+const ADMIN_EMAILS = ["hurkinds@gmail.com", "littlecodr@gmail.com"];
+const ADMIN_EMAIL = "hurkinds@gmail.com";
 
 // Helper: Universal date parser that reliably handles Firestore Timestamps, ISO strings, epoch timestamps, etc.
 export function parseAnyDate(val: any): Date {
@@ -161,9 +162,9 @@ function isTestOrder(order: any): boolean {
   const name = (order.shippingAddress?.name || "").toLowerCase();
   const amounts = getOrderAmounts(order);
 
-  if (email === ADMIN_EMAIL.toLowerCase()) return true;
+  if (ADMIN_EMAILS.includes(email)) return true;
   if (order.paymentDetails?.is_admin_test === "true") return true;
-  if (amounts.total <= 1 && (name.includes("mayank") || name.includes("bhuv") || email.includes("littlecodr"))) {
+  if (amounts.total <= 1 && (name.includes("mayank") || name.includes("bhuv") || email.includes("littlecodr") || email.includes("hurkinds"))) {
     return true;
   }
   return false;
@@ -505,7 +506,7 @@ export default function AdminPage() {
         setUser(u);
         setLoading(false);
 
-        if (u && u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        if (u && ADMIN_EMAILS.includes(u.email?.toLowerCase() || "")) {
           fetchOrders();
           fetchEmails();
         }
@@ -1069,7 +1070,7 @@ export default function AdminPage() {
   }
 
   // Authwall: Unauthorized Account
-  if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+  if (!ADMIN_EMAILS.includes(user.email?.toLowerCase() || "")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-nn-cream p-4">
         <div className="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full border border-red-200">
@@ -1081,7 +1082,7 @@ export default function AdminPage() {
             You are signed in as <strong className="text-gray-900">{user.email}</strong>, which is not authorized to access this administration panel.
           </p>
           <p className="text-xs text-gray-500 mb-6 bg-red-50 p-3 rounded-lg border border-red-100">
-            Administrative clearance is strictly restricted to <strong>{ADMIN_EMAIL}</strong>.
+            Administrative clearance is strictly restricted to <strong>{ADMIN_EMAILS.join(" or ")}</strong>.
           </p>
           <button
             onClick={signOut}

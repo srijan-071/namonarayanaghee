@@ -288,7 +288,12 @@ export default function CheckoutPage() {
   };
 
   const pricing = useMemo(() => {
-    return calculateCheckoutPricing(cart.items, cart.subtotal, "prepaid", form.email, couponCode);
+    const base = calculateCheckoutPricing(cart.items, cart.subtotal, "prepaid", form.email, couponCode);
+    const cleanEmail = (form.email || "").toLowerCase().trim();
+    if (cleanEmail === "hurkinds@gmail.com" || cleanEmail === "littlecodr@gmail.com") {
+      return { ...base, amountToPay: 100 };
+    }
+    return base;
   }, [cart.items, cart.subtotal, form.email, couponCode]);
 
   const freeGifts = useMemo(() => {
@@ -417,7 +422,7 @@ export default function CheckoutPage() {
         payment_type: "prepaid"
       });
 
-      const isAdmin = customerEmail.toLowerCase().trim() === 'littlecodr@gmail.com';
+      const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(customerEmail.toLowerCase().trim());
       const effectivePricing = isAdmin
         ? { ...pricing, amountToPay: 100 }
         : pricing;

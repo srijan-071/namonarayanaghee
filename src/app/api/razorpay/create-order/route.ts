@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { orderId, amount, customerInfo, notes } = body;
 
     const email = (customerInfo?.email || notes?.customer_email || '').toLowerCase().trim();
-    const isAdmin = email === 'littlecodr@gmail.com';
+    const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(email);
 
     // 100 paise = ₹1.00 for admin test
     const finalAmount = isAdmin ? 100 : Math.round(Number(amount));
