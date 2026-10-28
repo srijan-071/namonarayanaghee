@@ -73,7 +73,7 @@ export default function CartDrawer() {
     }, 1);
 
     if (slug === "pure-desi-cow-ghee-1-litre") {
-      toast.success("🎉 Added 1L Ghee! Free Mustard Oil (250ml) added!");
+      toast.success("Added 1L Ghee! Complimentary Mustard Oil (250ml) added!");
     } else {
       toast.success(`${p.title} added to cart`);
     }
@@ -98,7 +98,7 @@ export default function CartDrawer() {
         price: v1L.price,
         image: p1L.images[0] ?? "/assets/mustard-oil-250ml.webp"
       }, 1);
-      toast.success("🎉 Upgraded to 1 Litre Ghee! Free Mustard Oil (250ml) added!");
+      toast.success("Upgraded to 1 Litre Ghee! Complimentary Mustard Oil (250ml) added!");
     }
   };
 
@@ -334,7 +334,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => {
                           if (applyCoupon("DIWALI")) {
-                            toast.success("🎉 Shubh Deepavali! 10% Festive Discount Applied!");
+                            toast.success("Shubh Deepavali! 10% Festive Discount Applied!");
                           }
                         }}
                         className="bg-[#8A1B14] hover:bg-[#68140E] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 cursor-pointer shrink-0"

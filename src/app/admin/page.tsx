@@ -2290,7 +2290,7 @@ export default function AdminPage() {
                         )}
                         {item.isGift && (
                           <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200 mt-0.5">
-                            🎁 FREE GIFT
+                            COMPLIMENTARY GIFT
                           </span>
                         )}
                       </div>

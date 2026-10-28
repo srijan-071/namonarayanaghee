@@ -191,7 +191,7 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
                   Bring divine light, health &amp; prosperity into your home with 100% Pure A2 Gir Cow Ghee.
                 </p>
                 <div className="mt-4 bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 text-[11px] font-black py-2 px-3 rounded-xl uppercase tracking-wider shadow-md">
-                  ✨ Extra 10% OFF + Gifts
+                  Extra 10% OFF + Free Gifts
                 </div>
               </div>
             </div>

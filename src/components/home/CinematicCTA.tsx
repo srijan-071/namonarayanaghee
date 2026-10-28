@@ -41,7 +41,7 @@ export default function CinematicCTA() {
       <div
         className="absolute top-16 right-12 hidden lg:block text-[#F2C94C] text-3xl md:text-4xl font-serif italic font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-10deg] z-20 text-right"
       >
-        Shubh Deepavali <br/> Pure Blessings ✨
+        Shubh Deepavali <br/> Pure Blessings
       </div>
 
       {/* Content */}

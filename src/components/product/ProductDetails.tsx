@@ -11,7 +11,7 @@ import {
   Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
   Leaf, Zap, CheckCircle2, Gift, ShoppingCart,
   Sparkles, Tag, ShieldAlert, Award, Copy, Check,
-  Flame, Eye, Clock, AlertTriangle, Shield,
+  Flame, Eye, Clock, AlertTriangle, Shield, Lock,
   ChevronLeft, ChevronRight
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
@@ -199,13 +199,13 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     
     const vTitle = (variant.title || "").toLowerCase();
     if (vTitle.includes("500")) {
-      toast.success(`Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!`, { duration: 4000 });
+      toast.success(`Added 500ml Ghee to cart. Tip: Upgrade to 1L for complimentary Mustard Oil (250ml)!`, { duration: 4000 });
     } else if (vTitle.includes("2.5")) {
-      toast.success(`🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added to your order!`, { duration: 4000 });
+      toast.success(`Added 2.5L Ghee to cart! 3 complimentary Cold-Pressed Oils included in your order!`, { duration: 4000 });
     } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
-      toast.success(`🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!`, { duration: 4000 });
+      toast.success(`Added 5L Ghee to cart! 3 complimentary Cold-Pressed Oils (Coconut, Groundnut & Mustard) included!`, { duration: 4000 });
     } else {
-      toast.success(`🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added to your order!`, { duration: 4000 });
+      toast.success(`Added 1L Ghee to cart! Complimentary Mustard Oil (250ml) included in your order!`, { duration: 4000 });
     }
   }
 
@@ -597,27 +597,20 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Scarcity Stock Meter & Same-Day Dispatch Countdown (High Urgency) */}
-        <div className="mb-4 p-3 sm:p-3.5 bg-gradient-to-r from-red-50/90 via-[#FFFDF7] to-amber-50/90 rounded-xl border border-red-200/80 shadow-2xs space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5 font-extrabold text-red-700">
-              <span className="animate-pulse">🔥</span>
-              <span>Only 14 Jars Left from Today&apos;s Fresh Batch</span>
+        {/* Authentic Same-Day Dispatch Cutoff Reassurance */}
+        <div className="mb-4 p-3 sm:p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] shadow-2xs flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center text-[#8A1B14] shrink-0">
+              <Truck className="w-3.5 h-3.5 text-[#8A1B14]" />
             </div>
-            <span className="font-bold text-red-800 text-[10px] sm:text-[11px] bg-red-100/90 px-2 py-0.5 rounded-full border border-red-200">
-              86% Claimed
-            </span>
+            <div>
+              <span className="font-bold text-[#5E0B10] block">Same-Day Farm Dispatch</span>
+              <span className="text-[11px] text-[#7A4A3B]">Orders placed today dispatch before cutoff</span>
+            </div>
           </div>
-          {/* Animated Stock Meter Bar */}
-          <div className="w-full bg-red-100/80 rounded-full h-2 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 h-2 rounded-full w-[86%] transition-all duration-1000" />
-          </div>
-          <div className="flex items-center justify-between pt-1 text-[11px] text-gray-700 border-t border-red-100/80">
-            <span className="flex items-center gap-1 font-medium text-gray-600">
-              <Clock className="w-3.5 h-3.5 text-[#8A1B14]" />
-              <span>Same-Day Dispatch Cutoff:</span>
-            </span>
-            <span className="font-mono font-bold text-[#8A1B14] bg-white px-2 py-0.5 rounded border border-red-200 shadow-2xs">
+          <div className="flex items-center gap-1.5 shrink-0 bg-white px-2.5 py-1 rounded-lg border border-[#EAD7BC]">
+            <Clock className="w-3.5 h-3.5 text-[#8A1B14]" />
+            <span className="font-mono font-bold text-[#8A1B14] text-xs">
               {String(countdown.hours).padStart(2, '0')}h {String(countdown.minutes).padStart(2, '0')}m {String(countdown.seconds).padStart(2, '0')}s
             </span>
           </div>
@@ -668,38 +661,38 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Free Gift Unlock Announcement */}
-        <div className="mb-4 p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-xl border border-amber-200/80 flex items-center gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
-            <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
+        {/* Free Gift Announcement */}
+        <div className="mb-4 p-3 sm:p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] flex items-center gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center text-[#8A1B14] shrink-0">
+            <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-[#8A1B14]" />
           </div>
           <div className="flex-1 text-xs">
             {((variant?.title || "").toLowerCase().includes("500")) ? (
               <>
-                <span className="font-bold text-amber-900 block">💡 Festive Special Tip:</span>
-                <p className="text-gray-700 mt-0.5 leading-snug">
-                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-[#8A1B14]">FREE 250ml Cold-Pressed Mustard Oil</strong> automatically packed!
+                <span className="font-bold text-[#5E0B10] block">Special Tip:</span>
+                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
+                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-[#8A1B14]">Complimentary 250ml Cold-Pressed Mustard Oil</strong> packed with your jar!
                 </p>
               </>
             ) : ((variant?.title || "").toLowerCase().includes("2.5")) ? (
               <>
-                <span className="font-bold text-gray-900 block">🎁 3 Free Gifts Included With 2.5L Pack!</span>
-                <p className="text-gray-700 mt-0.5 leading-snug">
-                  Includes <strong>Groundnut (250ml)</strong> + <strong>Yellow Mustard (250ml)</strong> + <strong>Mustard Oil (250ml)</strong> 100% FREE!
+                <span className="font-bold text-[#5E0B10] block">3 Complimentary Gifts Included (2.5L Pack)</span>
+                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
+                  Includes <strong>Groundnut (250ml)</strong> + <strong>Yellow Mustard (250ml)</strong> + <strong>Mustard Oil (250ml)</strong> 100% free!
                 </p>
               </>
             ) : ((variant?.title || "").toLowerCase().includes("5 litre") || (variant?.title || "").toLowerCase().includes("5l")) ? (
               <>
-                <span className="font-bold text-gray-900 block">🎁 3 Mega Free Gifts Included With 5L Pack!</span>
-                <p className="text-gray-700 mt-0.5 leading-snug">
-                  Includes <strong>Coconut (250ml)</strong> + <strong>Groundnut (250ml)</strong> + <strong>Mustard Oil (500ml)</strong> 100% FREE!
+                <span className="font-bold text-[#5E0B10] block">3 Large Gifts Included (5L Pack)</span>
+                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
+                  Includes <strong>Coconut (250ml)</strong> + <strong>Groundnut (250ml)</strong> + <strong>Mustard Oil (500ml)</strong> 100% free!
                 </p>
               </>
             ) : (
               <>
-                <span className="font-bold text-gray-900 block">🎁 Free Gift Included With 1L Pack!</span>
-                <p className="text-gray-700 mt-0.5 leading-snug">
-                  Includes <strong>1x Cold-Pressed Mustard Oil (250 ml)</strong> automatically packed for free!
+                <span className="font-bold text-[#5E0B10] block">Complimentary Gift Included (1L Pack)</span>
+                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
+                  Includes <strong>1x Cold-Pressed Mustard Oil (250 ml)</strong> automatically included for free!
                 </p>
               </>
             )}
@@ -728,12 +721,12 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
         {/* In-Page Main Action Section (Always visible on mobile & desktop) */}
         <div className="mb-4">
-          <div className="mb-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300/80 flex items-center gap-2.5 text-xs text-amber-900 shadow-2xs">
-            <Gift className="w-4 h-4 text-amber-700 shrink-0" />
-            <span className="font-bold">
+          <div className="mb-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#EAD7BC] flex items-center gap-2.5 text-xs text-[#5E0B10]">
+            <Gift className="w-4 h-4 text-[#8A1B14] shrink-0" />
+            <span className="font-semibold">
               {((variant?.title || "").toLowerCase().includes("500"))
-                ? "💡 Festive Tip: Select 1L pack to get FREE 250ml Cold-Pressed Mustard Oil!"
-                : "🎉 FREE Cold-Pressed Oil gift will be automatically included in your order!"}
+                ? "Select 1L pack to receive complimentary 250ml Cold-Pressed Mustard Oil"
+                : "Complimentary Cold-Pressed Oil gift will be automatically included in your order"}
             </span>
           </div>
 
@@ -804,9 +797,9 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
         </div>
 
         {/* 100% Vedic Purity Money-Back Guarantee Risk Reversal Box */}
-        <div className="mb-5 p-3.5 sm:p-4 bg-gradient-to-r from-amber-50/80 via-[#FFFDF7] to-amber-50/80 rounded-xl border border-amber-300/80 shadow-2xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-[#8A1B14] shrink-0 font-bold text-lg border border-amber-300/60 shadow-xs">
-            🛡️
+        <div className="mb-5 p-3.5 sm:p-4 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0 border border-[#D4A017] shadow-xs">
+            <ShieldCheck className="w-5 h-5 text-[#8A1B14]" />
           </div>
           <div className="text-xs">
             <span className="font-extrabold text-[#5E0B10] block text-sm">100% Vedic Purity Guarantee</span>
@@ -896,15 +889,16 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
         {/* Delivery & Pincode Reassurance */}
         <div className="mb-6 p-4 bg-[#FCFAF5] rounded-xl border border-amber-200/60 space-y-2 text-xs">
-          <div className="flex items-center gap-2 font-bold text-gray-900">
+          <div className="flex items-center gap-2 font-bold text-[#5E0B10]">
             <Truck className="w-4 h-4 text-[#8A1B14]" />
-            <span>⚡ Expected Delivery: <strong className="text-amber-900">{deliveryDateStr}</strong></span>
+            <span>Estimated Delivery: <strong className="text-[#8A1B14]">{deliveryDateStr}</strong></span>
           </div>
           <p className="text-gray-600 pl-6">
             Dispatches from our farm within <strong>24 hours</strong>. Free Express Delivery across 19,000+ Indian pincodes.
           </p>
-          <div className="flex items-center gap-2 text-gray-800 font-semibold pt-1 border-t border-amber-200/50 pl-6">
-            <span>🔒 100% Safe & Secure Checkout via UPI, Google Pay, PhonePe, Cards & NetBanking</span>
+          <div className="flex items-center gap-2 text-gray-700 font-medium pt-1 border-t border-amber-200/50 pl-6">
+            <Lock className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span>100% Safe &amp; Secure Checkout via UPI, Google Pay, PhonePe, Cards &amp; NetBanking</span>
           </div>
         </div>
 

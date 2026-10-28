@@ -30,7 +30,7 @@ const gheeProducts = [
     id: 9545153446056,
     variantId: 55812012572840,
     slug: "pure-desi-cow-ghee-1-litre",
-    badge: "✨ LAKSHMI AARTI BESTSELLER",
+    badge: "LAKSHMI AARTI BESTSELLER",
     badgeColor: "bg-[#C38936]",
     title: "Pure A2 Gir Cow Ghee 1 Litre",
     variantTitle: "1 Litre",
@@ -43,7 +43,7 @@ const gheeProducts = [
     id: 9545146237096,
     variantId: 55811997728936,
     slug: "pure-desi-cow-ghee-2-5-litre",
-    badge: "🎁 SHUBH LABH GIFT PACK",
+    badge: "SHUBH LABH GIFT PACK",
     badgeColor: "bg-[#8A1B14]",
     title: "Pure A2 Gir Cow Ghee 2.5 Litre",
     variantTitle: "2.5 Litre",
@@ -56,7 +56,7 @@ const gheeProducts = [
     id: 9545149055144,
     variantId: 55812002971816,
     slug: "pure-desi-cow-ghee-5-litre",
-    badge: "🪔 MAHA DIWALI FAMILY PACK",
+    badge: "MAHA DIWALI FAMILY PACK",
     badgeColor: "bg-[#C38936]",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     variantTitle: "5 Litre",
@@ -105,13 +105,13 @@ export default function Bestsellers() {
 
     const vTitle = (p.variantTitle || p.title || "").toLowerCase();
     if (vTitle.includes("500")) {
-      toast.success("Added 500ml Ghee to cart. 💡 Tip: Buy 1L to get FREE Mustard Oil (250ml)!", { duration: 4000 });
+      toast.success("Added 500ml Ghee to cart. Tip: Upgrade to 1L for complimentary Mustard Oil (250ml)!", { duration: 4000 });
     } else if (vTitle.includes("2.5")) {
-      toast.success("🎉 Added 2.5L Ghee to cart! 3 FREE Cold-Pressed Oils added!", { duration: 4000 });
+      toast.success("Added 2.5L Ghee to cart! 3 complimentary Cold-Pressed Oils included!", { duration: 4000 });
     } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
-      toast.success("🎉 Added 5L Ghee to cart! 3 FREE Cold-Pressed Oils (Coconut, Groundnut & Mustard) added!", { duration: 4000 });
+      toast.success("Added 5L Ghee to cart! 3 complimentary Cold-Pressed Oils (Coconut, Groundnut & Mustard) included!", { duration: 4000 });
     } else {
-      toast.success("🎉 Added 1L Ghee to cart! FREE Mustard Oil (250ml) added!", { duration: 4000 });
+      toast.success("Added 1L Ghee to cart! Complimentary Mustard Oil (250ml) included!", { duration: 4000 });
     }
 
     open();
@@ -153,8 +153,7 @@ export default function Bestsellers() {
               className="hidden lg:flex lg:w-1/3 justify-end items-center pr-8 xl:pr-12"
             >
               <div className="text-amber-200 text-4xl lg:text-5xl font-serif italic font-light leading-tight drop-shadow-lg [text-shadow:_0_4px_12px_rgb(0_0_0_/_80%)] text-right">
-                Pure Ghee <br/> Radiant <br/> Deepavali <br/>
-                <span className="text-2xl not-italic">🪔 ✨</span>
+                Pure Ghee <br/> Radiant <br/> Deepavali
               </div>
             </div>
           </div>

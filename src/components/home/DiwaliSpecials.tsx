@@ -59,7 +59,7 @@ const festiveHampers: FestiveProduct[] = [
     price: 209900,
     mrp: 299900,
     image: "/assets/product_6-2p5_jpg.webp",
-    badge: "✨ BEST FOR GIFTING",
+    badge: "BEST FOR GIFTING",
     giftsIncluded: [
       "FREE Groundnut Oil (250 ml)",
       "FREE Yellow Mustard Oil (250 ml)",
@@ -78,7 +78,7 @@ const festiveHampers: FestiveProduct[] = [
     price: 94900,
     mrp: 139900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
-    badge: "🔥 MOST POPULAR PUJA PACK",
+    badge: "MOST POPULAR PUJA PACK",
     giftsIncluded: [
       "FREE Mustard Oil (250 ml)",
       "Diwali Festive Special Box"
