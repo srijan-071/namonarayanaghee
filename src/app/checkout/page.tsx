@@ -17,7 +17,8 @@ import {
   Award, 
   CheckCircle2, 
   ArrowLeft,
-  Check
+  Check,
+  Heart
 } from "lucide-react";
 import { useCart, addToCart, removeFromCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
@@ -51,7 +52,7 @@ export default function CheckoutPage() {
   const [tempCoupon, setTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
 
-  // Pre-warm Firebase auth and order modules in background so Proceed to Pay has 0ms import delay
+  // Pre-warm Firebase auth and order modules in background so Proceed to Pay has 0ms delay
   useEffect(() => {
     import("@/lib/firebase").then(({ initializeAnonymousAuth }) => {
       initializeAnonymousAuth().catch(() => {});
@@ -113,13 +114,11 @@ export default function CheckoutPage() {
   const pincodeCache = useRef<Record<string, { city: string; state: string }>>({});
 
   const handlePincodeChange = async (val: string) => {
-    // Only allow digits
     if (!/^\d*$/.test(val)) return;
     
     setForm(prev => ({ ...prev, pincode: val }));
     
     if (val.length === 6) {
-      // Instant cache hit
       if (pincodeCache.current[val]) {
         const cached = pincodeCache.current[val];
         setForm(prev => ({ ...prev, city: cached.city, state: cached.state }));
@@ -137,7 +136,6 @@ export default function CheckoutPage() {
         clearTimeout(timeoutId);
         const data = await res.json();
         
-        // Prevent stale responses
         if (latestPincodeRef.current !== val) return;
 
         if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length) {
@@ -154,7 +152,7 @@ export default function CheckoutPage() {
           }
         }
       } catch {
-        // Fail gracefully without blocking manual form filling
+        // Fail gracefully without blocking manual entry
       } finally {
         if (latestPincodeRef.current === val) {
           setIsFetchingPincode(false);
@@ -163,24 +161,22 @@ export default function CheckoutPage() {
     }
   };
 
-  // Compute pricing reactively
   const pricing = useMemo(() => {
     return calculateCheckoutPricing(cart.items, cart.subtotal, "prepaid", form.email, couponCode);
   }, [cart.items, cart.subtotal, form.email, couponCode]);
 
-  // Compute free gift oils for the ghee items in cart
   const freeGifts = useMemo(() => {
     return getFreeGiftsForCart(cart.items);
   }, [cart.items]);
 
-  // 1-Click Order Addon (500ml Pure A2 Ghee Trial Jar)
+  // Order Addon (500ml Pure A2 Ghee Trial Jar)
   const bumpVariantId = 55812012572839;
   const isBumpInCart = cart.items.some(i => i.variantId === bumpVariantId);
 
   const toggleOrderBump = () => {
     if (isBumpInCart) {
       removeFromCart(bumpVariantId);
-      toast.info("Removed trial jar from your order.");
+      toast.info("Removed trial jar from your parcel.");
     } else {
       addToCart({
         productId: 9545153446055,
@@ -192,25 +188,25 @@ export default function CheckoutPage() {
         slug: "pure-desi-cow-ghee-500-ml",
         compareAtPrice: 99900
       }, 1);
-      toast.success("Added 500ml Trial Jar at exclusive price ₹599!");
+      toast.success("Added 500ml A2 Ghee Jar for family wellness!");
     }
   };
 
   if (cart.items.length === 0 && !isSubmitting) {
     return (
-      <section className="nn-section bg-[#FAF9F5] min-h-[70vh] flex items-center justify-center">
-        <div className="nn-container max-w-md mx-auto text-center py-16 px-4 space-y-4">
+      <section className="bg-[#FAF9F5] min-h-[70vh] flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center py-16 px-4 space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-[#FDF6E8] border border-[#EAD7BC] flex items-center justify-center text-[#8A1B14]">
-            <Truck className="w-7 h-7" />
+            <Heart className="w-7 h-7 text-[#8A1B14]" />
           </div>
           <h1 className="font-serif text-2xl font-bold text-[#5E0B10]">Your Cart is Empty</h1>
-          <p className="text-sm text-[#7A4A3B]">Please add authentic Vedic Bilona Ghee to your cart before proceeding to checkout.</p>
+          <p className="text-sm text-[#7A4A3B]">Add authentic Vedic Bilona Ghee to bring pure health and blessings to your family.</p>
           <Link 
             href="/collections/all-products" 
             className="inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md transition-all mt-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Explore Products</span>
+            <span>Explore Pure Ghee</span>
           </Link>
         </div>
       </section>
@@ -229,7 +225,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!isFormValid) {
-      toast.error("Please fill all required delivery details correctly.");
+      toast.error("Please fill your delivery details so we can deliver your parcel safely.");
       return;
     }
 
@@ -261,7 +257,7 @@ export default function CheckoutPage() {
         couponCode: couponCode || undefined
       };
 
-      const loadingToastId = toast.loading("Securely preparing your order...");
+      const loadingToastId = toast.loading("Securely preparing your order parcel...");
       
       trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
       trackEvent("add_payment_info", { payment_type: "prepaid", value: cart.subtotal, currency: "INR" });
@@ -339,7 +335,7 @@ export default function CheckoutPage() {
       <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://potter-world.com" />
 
-      {/* Top Authentic Trust & Breadcrumb Bar */}
+      {/* Top Authentic Trust & Emotional Reassurance Bar */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#EAD7BC]">
           <Link 
@@ -352,12 +348,17 @@ export default function CheckoutPage() {
           <div className="flex items-center gap-4 text-xs text-[#7A4A3B]">
             <span className="inline-flex items-center gap-1.5 font-medium">
               <Lock className="w-3.5 h-3.5 text-emerald-700" />
-              <span>256-Bit SSL Encrypted</span>
+              <span>Bank-Safe 256-Bit SSL</span>
+            </span>
+            <span className="hidden sm:inline text-[#EAD7BC]">•</span>
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              <Heart className="w-3.5 h-3.5 text-[#8A1B14]" />
+              <span>Handcrafted with Care in Rajasthan</span>
             </span>
             <span className="hidden sm:inline text-[#EAD7BC]">•</span>
             <span className="hidden sm:inline-flex items-center gap-1.5 font-medium">
               <Truck className="w-3.5 h-3.5 text-[#8A1B14]" />
-              <span>Free Delivery Across India</span>
+              <span>Free Delivery to Your Doorstep</span>
             </span>
           </div>
         </div>
@@ -365,13 +366,13 @@ export default function CheckoutPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* Header Title */}
+        {/* Simple & Emotionally Grounded Header */}
         <div className="mb-6">
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] flex items-center gap-2">
-            <span>Secure Checkout</span>
+            <span>Complete Your Order</span>
           </h1>
           <p className="text-xs sm:text-sm text-[#7A4A3B] mt-1">
-            Complete your delivery details to receive authentic Vedic Bilona A2 Gir Cow Ghee direct from Rajasthan.
+            You are choosing pure Vedic Bilona Ghee made with traditional wooden churners from curd — pure nourishment for your children, parents &amp; sacred home.
           </p>
         </div>
 
@@ -380,39 +381,39 @@ export default function CheckoutPage() {
           {/* Main Form Area */}
           <div className="w-full lg:w-[58%] space-y-6">
 
-            {/* Authentic Brand Quality Assurance Strip */}
+            {/* Mother's Care & Authentic Heritage Trust Card */}
             <div className="bg-white border border-[#EAD7BC] rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14]">
-                  <Award className="w-5 h-5 text-[#8A1B14]" />
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14]">
+                  <Award className="w-6 h-6 text-[#8A1B14]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-serif font-bold text-[#5E0B10] text-sm sm:text-base">
-                      Namo Narayana Official Store
+                      The Purity Your Family Deserves
                     </span>
                     <span className="text-[11px] font-semibold text-[#8A1B14] bg-[#FDF6E8] px-2 py-0.5 rounded-full border border-[#EAD7BC]">
                       Founded by Elvish Yadav
                     </span>
                   </div>
-                  <p className="text-xs text-[#7A4A3B] mt-0.5">
-                    100% Pure A2 Gir Cow Ghee • Traditional Bilona Churned from Curd • NABL Lab Certified
+                  <p className="text-xs text-[#7A4A3B] mt-1 leading-relaxed">
+                    Most market ghee is boiled from factory cream. We churn pure Gir cow curd slowly the Vedic way — exactly like our grandmothers did. 0% chemicals, 0% adulteration.
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#EAD7BC]/60 text-[11px] font-semibold text-[#5E0B10]">
                 <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>NABL Certified</span>
+                  <Heart className="w-3.5 h-3.5 text-[#8A1B14] shrink-0" />
+                  <span>Maa Jaisa Vishwaas</span>
                 </div>
                 <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Vedic Bilona</span>
+                  <span>100% Curd Bilona</span>
                 </div>
                 <div className="bg-[#FAF9F5] py-2 px-2 rounded-lg border border-[#EAD7BC]/60 flex items-center justify-center gap-1.5 text-center">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Glass Jar Safe</span>
+                  <span>NABL Lab Tested</span>
                 </div>
               </div>
             </div>
@@ -427,15 +428,15 @@ export default function CheckoutPage() {
                     <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold flex items-center justify-center shrink-0">
                       1
                     </span>
-                    <span>Contact Details</span>
+                    <span>Who is this order for?</span>
                   </h2>
-                  <span className="text-[11px] text-[#7A4A3B]">For tracking &amp; invoice</span>
+                  <span className="text-[11px] text-[#7A4A3B]">For delivery updates on WhatsApp &amp; invoice</span>
                 </div>
 
                 <div className="space-y-3.5">
                   <div>
                     <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
-                      Full Name <span className="text-red-600">*</span>
+                      Your Full Name <span className="text-red-600">*</span>
                     </label>
                     <input 
                       type="text" 
@@ -466,7 +467,7 @@ export default function CheckoutPage() {
                       </label>
                       <input 
                         type="email" 
-                        placeholder="For order confirmation" 
+                        placeholder="For official invoice & receipt" 
                         value={form.email} 
                         onChange={(e) => setForm({...form, email: e.target.value})} 
                         className="w-full border border-[#D5D8D0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] transition bg-white" 
@@ -483,15 +484,15 @@ export default function CheckoutPage() {
                     <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold flex items-center justify-center shrink-0">
                       2
                     </span>
-                    <span>Delivery Address</span>
+                    <span>Where should we deliver your parcel?</span>
                   </h2>
-                  <span className="text-[11px] text-[#7A4A3B]">Doorstep express courier</span>
+                  <span className="text-[11px] text-[#7A4A3B]">Safe doorstep delivery</span>
                 </div>
 
                 <div className="space-y-3.5">
                   <div>
                     <label className="block text-xs font-semibold text-[#5E0B10] mb-1">
-                      House / Flat No., Building, Street <span className="text-red-600">*</span>
+                      House / Flat No., Society, Street <span className="text-red-600">*</span>
                     </label>
                     <input 
                       type="text" 
@@ -511,7 +512,7 @@ export default function CheckoutPage() {
                       <input 
                         type="text" 
                         maxLength={6} 
-                        placeholder="6-digit Indian PIN Code" 
+                        placeholder="6-digit PIN code (Auto-fills City & State)" 
                         value={form.pincode} 
                         onChange={(e) => handlePincodeChange(e.target.value)} 
                         className="w-full border border-[#D5D8D0] rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:border-[#8A1B14] focus:ring-1 focus:ring-[#8A1B14] font-medium bg-white" 
@@ -560,7 +561,7 @@ export default function CheckoutPage() {
                     onChange={(e) => setHasGst(e.target.checked)} 
                     className="w-4 h-4 rounded border-[#D5D8D0] text-[#8A1B14] focus:ring-[#8A1B14] accent-[#8A1B14]" 
                   />
-                  <span className="text-xs font-medium text-[#4A352F]">I need a business GST invoice (Optional)</span>
+                  <span className="text-xs font-medium text-[#4A352F]">I need a business GST invoice for my company (Optional)</span>
                 </label>
                 
                 {hasGst && (
@@ -607,7 +608,7 @@ export default function CheckoutPage() {
               
               <div className="flex items-center justify-between border-b border-[#EAD7BC] pb-3">
                 <h3 className="font-serif text-xl font-bold text-[#5E0B10]">
-                  <span>Order Summary</span>
+                  <span>Your Order Parcel</span>
                 </h3>
                 <span className="text-xs font-semibold text-[#8A1B14] bg-[#FDF6E8] px-2.5 py-1 rounded-full border border-[#EAD7BC]">
                   {cart.items.reduce((s, i) => s + i.quantity, 0)} {cart.items.reduce((s, i) => s + i.quantity, 0) === 1 ? 'item' : 'items'}
@@ -634,7 +635,7 @@ export default function CheckoutPage() {
                   </li>
                 ))}
 
-                {/* Authentic Free Gift Items */}
+                {/* Free Gaushala Blessing Oil Gifts */}
                 {freeGifts.map((gift, idx) => (
                   <li key={`checkout-gift-${idx}`} className="flex gap-3 py-2.5 bg-[#FAF9F5] border border-[#D4A017]/50 rounded-xl p-2.5 my-2">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-[#EAD7BC] shrink-0 bg-white p-0.5 flex items-center justify-center">
@@ -644,7 +645,7 @@ export default function CheckoutPage() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="inline-flex items-center gap-1 bg-[#8A1B14] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                           <Gift className="w-2.5 h-2.5 text-[#F5BD47]" />
-                          <span>Complimentary Gift</span>
+                          <span>Gaushala Blessing Gift</span>
                         </span>
                         <span className="text-[10px] text-[#7A4A3B] font-medium">
                           {gift.size} × {gift.quantity}
@@ -652,7 +653,7 @@ export default function CheckoutPage() {
                       </div>
                       <p className="font-semibold text-[#5E0B10] text-xs leading-tight mt-1 truncate">{gift.name}</p>
                       <div className="flex justify-between items-center mt-0.5">
-                        <span className="text-[11px] text-[#7A4A3B]">Included with your order</span>
+                        <span className="text-[11px] text-[#7A4A3B]">Pure wooden Kolhu pressed</span>
                         <span className="font-bold text-emerald-700 text-xs">FREE</span>
                       </div>
                     </div>
@@ -660,7 +661,7 @@ export default function CheckoutPage() {
                 ))}
               </ul>
 
-              {/* Authentic Addon Option (500ml Trial Jar) */}
+              {/* Family Care Addon: 500ml Trial Jar */}
               <div className="p-3.5 rounded-xl border border-[#D4A017] bg-[#FFFDF9] hover:border-[#8A1B14] transition">
                 <div className="flex items-start gap-3">
                   <input 
@@ -672,14 +673,14 @@ export default function CheckoutPage() {
                   />
                   <label htmlFor="order-bump-checkbox" className="flex-1 cursor-pointer select-none">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-[#5E0B10]">
-                      <Sparkles className="w-3.5 h-3.5 text-[#D4A017]" />
-                      <span>Add 500ml A2 Bilona Ghee Trial Jar</span>
+                      <Heart className="w-3.5 h-3.5 text-[#8A1B14]" />
+                      <span>Care for Parents: Add 500ml A2 Bilona Ghee Jar</span>
                     </div>
                     <p className="text-xs text-[#7A4A3B] mt-0.5">
-                      Special price: <strong className="text-[#8A1B14]">₹599</strong> (Regular ₹999)
+                      Special price: <strong className="text-[#8A1B14]">₹599</strong> (Regular ₹999 • Save ₹400)
                     </p>
                     <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">
-                      {isBumpInCart ? "✓ Added to your parcel" : "+ Check box to include in your order"}
+                      {isBumpInCart ? "✓ Added to your delivery parcel" : "+ Check to add to your parcel for your family"}
                     </span>
                   </label>
                 </div>
@@ -696,7 +697,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-center text-[#8A1B14]">
                     <span className="flex items-center gap-1.5 text-xs font-medium">
                       <Gift className="w-3.5 h-3.5 text-[#8A1B14]" />
-                      <span>Complimentary Gifts</span>
+                      <span>Farm Blessing Gifts</span>
                     </span>
                     <span className="font-bold text-emerald-700">FREE</span>
                   </div>
@@ -706,7 +707,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-center text-emerald-800 font-semibold">
                     <span className="flex items-center gap-1 text-xs">
                       <Tag className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>Discount ({pricing.discountPercent}%)</span>
+                      <span>Festive Discount ({pricing.discountPercent}%)</span>
                     </span>
                     <span>-{formatPrice(pricing.discount)}</span>
                   </div>
@@ -769,22 +770,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
               
-              {/* Total & Guarantees */}
+              {/* Total & Sacred Risk-Free Guarantee */}
               <div className="border-t border-[#EAD7BC] pt-4 space-y-4">
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="block text-sm font-semibold text-[#5E0B10]">Total to Pay</span>
-                    <span className="text-[11px] text-[#7A4A3B]">Inclusive of all taxes</span>
+                    <span className="text-[11px] text-[#7A4A3B]">Inclusive of all taxes &amp; Free Delivery</span>
                   </div>
                   <span className="text-2xl sm:text-3xl font-extrabold text-[#5E0B10]">{formatPrice(pricing.amountToPay)}</span>
                 </div>
 
-                {/* Authentic Transit Safety Reassurance */}
+                {/* Emotional & Sacred Risk-Free Guarantee */}
                 <div className="bg-[#FAF9F5] border border-[#EAD7BC] rounded-xl p-3 flex items-start gap-2.5 text-xs text-[#7A4A3B]">
                   <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                   <div className="leading-snug">
-                    <strong className="text-[#5E0B10] font-bold block mb-0.5">Zero-Breakage Transit Guarantee</strong>
-                    Packed in multi-layer shock-proof casing. In the rare case of transit damage, we send an instant free replacement.
+                    <strong className="text-[#5E0B10] font-bold block mb-0.5">Our Sacred Promise to Your Family</strong>
+                    If you open the jar and don&apos;t feel the authentic Vedic aroma, or in the rare case of transit damage, we send an instant replacement or 100% refund. Your family&apos;s health and trust is our dharma.
                   </div>
                 </div>
 
@@ -806,16 +807,19 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <Lock className="w-4 h-4 text-[#F5BD47]" />
-                      <span>{isFormValid ? "Proceed to Pay Securely" : "Fill Details to Pay"}</span>
+                      <span>{isFormValid ? "Proceed to Pay Securely" : "Fill Delivery Details to Pay"}</span>
                     </>
                   )}
                 </button>
 
-                {/* Payment Options Row */}
+                {/* Trust Reassurance */}
                 <div className="pt-1 text-center space-y-1.5">
                   <p className="text-[11px] text-[#7A4A3B] flex items-center justify-center gap-1.5">
                     <CreditCard className="w-3.5 h-3.5 text-[#8A1B14]" />
-                    <span>UPI (Google Pay, PhonePe, Paytm), Cards &amp; NetBanking</span>
+                    <span>UPI (Google Pay, PhonePe, Paytm), Cards &amp; NetBanking accepted</span>
+                  </p>
+                  <p className="text-[10px] text-emerald-700 font-semibold">
+                    ✓ Trusted by 10 Lakh+ families across India
                   </p>
                 </div>
               </div>

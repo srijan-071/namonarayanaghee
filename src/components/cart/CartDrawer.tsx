@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, Star, Gift, Sparkles, ArrowRight } from "lucide-react";
+import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, Star, Gift, Sparkles, ArrowRight, Lock, ShieldCheck } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { RAW_PRODUCTS } from "@/lib/data-store";
 import { getFreeGiftsForCart, has500mlGheeUpsell } from "@/lib/gifts";
@@ -389,8 +389,8 @@ export default function CartDrawer() {
           )}
 
           {cart.items.length > 0 && (
-            <div className="bg-[#FCF5E3] text-[#A66D25] text-center py-3 text-[13px] font-bold border-y border-[#F0E0B6]">
-              Unlock your best offer at <span className="notranslate">checkout</span>!
+            <div className="bg-[#FAF6EE] text-[#5E0B10] text-center py-2.5 px-4 text-[12px] font-semibold border-y border-[#EAD7BC]">
+              Direct from Rajasthan Gaushala • 100% Pure Curd Churned
             </div>
           )}
         </div>
@@ -456,7 +456,8 @@ export default function CartDrawer() {
                    onClick={() => close()}
                    className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white font-bold text-[15px] flex-1 h-[48px] rounded-full shadow-[0_4px_16px_rgba(138,27,20,0.3)] hover:from-[#76150F] hover:to-[#4C080D] transition flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                  >
-                   <span className="notranslate">Continue</span>
+                   <Lock className="w-4 h-4 text-amber-300" />
+                   <span>Proceed to Checkout</span>
                  </Link>
                </div>
                
@@ -467,6 +468,10 @@ export default function CartDrawer() {
                    <span className="bg-white border border-gray-200 text-blue-800 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider italic">VISA</span>
                    <span className="bg-white border border-gray-200 text-orange-500 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider">MC</span>
                  </div>
+               </div>
+               <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-[#7A4A3B]">
+                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                 <span>100% Curd Churned • Safe Glass Packaging Guarantee</span>
                </div>
              </div>
           </div>
