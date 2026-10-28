@@ -10,7 +10,6 @@ import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
 import DiwaliAmbience from "@/components/ui/DiwaliAmbience";
-import OneSignalProvider from "@/components/providers/OneSignalProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
@@ -52,7 +51,6 @@ export const metadata: Metadata = {
   },
 };
 
-import Script from "next/script";
 import { Toaster } from 'sonner';
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -68,15 +66,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://namonarayana.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://namonarayana.com" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
+          crossOrigin="anonymous"
+        />
         <BotIdClient protect={protectedBotRoutes} />
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
-        <Script
-          id="google-adsense"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
         <AnalyticsProvider>
           <FirebaseProvider>
             <CartDrawerProvider>
@@ -87,7 +84,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartDrawer />
               <InAppBrowserWarning />
               <DiwaliAmbience />
-              <OneSignalProvider />
               <SpeedInsights />
               <Analytics />
             </CartDrawerProvider>
