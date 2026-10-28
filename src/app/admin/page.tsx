@@ -86,6 +86,127 @@ function isTestOrder(order: any): boolean {
   return false;
 }
 
+export interface StatusConfig {
+  key: string;
+  label: string;
+  badgeClass: string;
+  dotClass: string;
+  pillActiveClass: string;
+  pillInactiveClass: string;
+  pillDotClass: string;
+  description: string;
+}
+
+export function getStatusConfig(statusRaw?: string, paymentStatusRaw?: string): StatusConfig {
+  const s = (statusRaw || "").toLowerCase().trim();
+  const p = (paymentStatusRaw || "").toLowerCase().trim();
+
+  // If status is empty, fallback to paymentStatus or "pending"
+  const normalized = s || (p === "paid" ? "paid" : "pending");
+
+  switch (normalized) {
+    case "paid":
+      return {
+        key: "paid",
+        label: "Paid",
+        badgeClass: "bg-teal-50 text-teal-900 border-teal-300 ring-1 ring-teal-200/80 shadow-2xs",
+        dotClass: "bg-teal-500",
+        pillActiveClass: "bg-teal-600 text-white font-bold ring-2 ring-teal-400 shadow-sm",
+        pillInactiveClass: "bg-teal-50/70 text-teal-900 border border-teal-200 hover:bg-teal-100",
+        pillDotClass: "bg-teal-500",
+        description: "Payment captured successfully, awaiting fulfillment",
+      };
+    case "processing":
+      return {
+        key: "processing",
+        label: "Processing",
+        badgeClass: "bg-amber-50 text-amber-950 border-amber-300 ring-1 ring-amber-200/80 shadow-2xs",
+        dotClass: "bg-amber-500 animate-pulse",
+        pillActiveClass: "bg-amber-500 text-white font-bold ring-2 ring-amber-300 shadow-sm",
+        pillInactiveClass: "bg-amber-50/70 text-amber-950 border border-amber-200 hover:bg-amber-100",
+        pillDotClass: "bg-amber-500",
+        description: "In warehouse hand-packing & preparation",
+      };
+    case "shipped":
+      return {
+        key: "shipped",
+        label: "Shipped",
+        badgeClass: "bg-blue-50 text-blue-950 border-blue-300 ring-1 ring-blue-200/80 shadow-2xs",
+        dotClass: "bg-blue-600",
+        pillActiveClass: "bg-blue-600 text-white font-bold ring-2 ring-blue-300 shadow-sm",
+        pillInactiveClass: "bg-blue-50/70 text-blue-950 border border-blue-200 hover:bg-blue-100",
+        pillDotClass: "bg-blue-600",
+        description: "Dispatched & handed over to courier partner",
+      };
+    case "out_for_delivery":
+      return {
+        key: "out_for_delivery",
+        label: "Out for Delivery",
+        badgeClass: "bg-orange-50 text-orange-950 border-orange-300 ring-1 ring-orange-200/80 shadow-2xs",
+        dotClass: "bg-orange-500 ring-2 ring-orange-200 animate-bounce",
+        pillActiveClass: "bg-orange-600 text-white font-bold ring-2 ring-orange-400 shadow-sm",
+        pillInactiveClass: "bg-orange-50/70 text-orange-950 border border-orange-200 hover:bg-orange-100",
+        pillDotClass: "bg-orange-500",
+        description: "On delivery vehicle, arriving at customer doorstep today",
+      };
+    case "delivered":
+      return {
+        key: "delivered",
+        label: "Delivered",
+        badgeClass: "bg-emerald-50 text-emerald-950 border-emerald-400 ring-1 ring-emerald-300/80 font-bold shadow-2xs",
+        dotClass: "bg-emerald-600",
+        pillActiveClass: "bg-emerald-700 text-white font-bold ring-2 ring-emerald-400 shadow-sm",
+        pillInactiveClass: "bg-emerald-50/70 text-emerald-950 border border-emerald-300 hover:bg-emerald-100",
+        pillDotClass: "bg-emerald-600",
+        description: "Successfully handed over to customer",
+      };
+    case "delivery_failed":
+      return {
+        key: "delivery_failed",
+        label: "Delivery Failed",
+        badgeClass: "bg-rose-50 text-rose-950 border-rose-300 ring-1 ring-rose-200/90 font-bold shadow-2xs",
+        dotClass: "bg-rose-600 animate-pulse",
+        pillActiveClass: "bg-rose-700 text-white font-bold ring-2 ring-rose-400 shadow-sm",
+        pillInactiveClass: "bg-rose-50/70 text-rose-950 border border-rose-300 hover:bg-rose-100",
+        pillDotClass: "bg-rose-600",
+        description: "Logistics network issue, returning to seller, refund initiated",
+      };
+    case "pending":
+      return {
+        key: "pending",
+        label: "Pending",
+        badgeClass: "bg-slate-100 text-slate-800 border-slate-300 ring-1 ring-slate-200/80 shadow-2xs",
+        dotClass: "bg-slate-400",
+        pillActiveClass: "bg-slate-700 text-white font-bold ring-2 ring-slate-400 shadow-sm",
+        pillInactiveClass: "bg-slate-100/80 text-slate-800 border border-slate-300 hover:bg-slate-200",
+        pillDotClass: "bg-slate-400",
+        description: "Awaiting customer payment completion",
+      };
+    case "cancelled":
+      return {
+        key: "cancelled",
+        label: "Cancelled",
+        badgeClass: "bg-zinc-100 text-zinc-800 border-zinc-300 ring-1 ring-zinc-200/80 shadow-2xs",
+        dotClass: "bg-zinc-500",
+        pillActiveClass: "bg-zinc-800 text-white font-bold ring-2 ring-zinc-400 shadow-sm",
+        pillInactiveClass: "bg-zinc-100/80 text-zinc-800 border border-zinc-300 hover:bg-zinc-200",
+        pillDotClass: "bg-zinc-500",
+        description: "Order cancelled or voided",
+      };
+    default:
+      return {
+        key: normalized,
+        label: normalized.replace(/_/g, " "),
+        badgeClass: "bg-gray-100 text-gray-800 border-gray-300",
+        dotClass: "bg-gray-400",
+        pillActiveClass: "bg-gray-800 text-white font-bold shadow-sm",
+        pillInactiveClass: "bg-gray-100 text-gray-800 border border-gray-300 hover:bg-gray-200",
+        pillDotClass: "bg-gray-400",
+        description: normalized,
+      };
+  }
+}
+
 export default function AdminPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -378,6 +499,61 @@ export default function AdminPage() {
       return true;
     });
   }, [orders, timeFilter, statusFilter, searchQuery, excludeAdminTests]);
+
+  // Live Counts for each Status Filter Button
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: 0,
+      paid: 0,
+      processing: 0,
+      shipped: 0,
+      out_for_delivery: 0,
+      delivered: 0,
+      delivery_failed: 0,
+      pending: 0,
+    };
+
+    const now = new Date();
+
+    orders.forEach((order) => {
+      if (excludeAdminTests && isTestOrder(order)) return;
+
+      const orderDate = getOrderDate(order);
+      const istDateStr = orderDate.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+
+      if (timeFilter === "today") {
+        const todayIst = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+        if (istDateStr !== todayIst) return;
+      } else if (timeFilter === "yesterday") {
+        const yesterday = new Date(now.getTime() - 86400 * 1000);
+        const yestIst = yesterday.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+        if (istDateStr !== yestIst) return;
+      } else if (timeFilter === "27_28") {
+        if (istDateStr !== "2026-10-27" && istDateStr !== "2026-10-28") return;
+      } else if (timeFilter === "7days") {
+        const diffDays = (now.getTime() - orderDate.getTime()) / (1000 * 3600 * 24);
+        if (diffDays > 7) return;
+      } else if (timeFilter === "30days") {
+        const diffDays = (now.getTime() - orderDate.getTime()) / (1000 * 3600 * 24);
+        if (diffDays > 30) return;
+      }
+
+      counts.all++;
+
+      const pStatus = (order.paymentStatus || "").toLowerCase();
+      const sStatus = (order.status || "").toLowerCase();
+
+      if (sStatus === "processing") counts.processing++;
+      else if (sStatus === "shipped" || order.shippingStatus === "shipped") counts.shipped++;
+      else if (sStatus === "out_for_delivery") counts.out_for_delivery++;
+      else if (sStatus === "delivered") counts.delivered++;
+      else if (sStatus === "delivery_failed") counts.delivery_failed++;
+      else if (sStatus === "paid" || pStatus === "paid") counts.paid++;
+      else counts.pending++;
+    });
+
+    return counts;
+  }, [orders, timeFilter, excludeAdminTests]);
 
   // Aggregate Sales KPIs
   const analytics = useMemo(() => {
@@ -1090,19 +1266,23 @@ export default function AdminPage() {
 
                 <div className="space-y-3 pt-1">
                   {[
-                    { label: "Processing (Hand-Packing)", count: analytics.processingCount, color: "bg-amber-500", text: "text-amber-800" },
-                    { label: "Shipped / In-Transit", count: analytics.shippedOrdersCount, color: "bg-blue-600", text: "text-blue-800" },
-                    { label: "Out for Delivery", count: analytics.outForDeliveryCount, color: "bg-orange-500", text: "text-orange-800" },
-                    { label: "Delivered Successfully", count: analytics.deliveredCount, color: "bg-emerald-600", text: "text-emerald-800" },
-                    { label: "Delivery Failed (Logistics RTO)", count: analytics.deliveryFailedCount, color: "bg-red-500", text: "text-red-700" },
-                    { label: "Unpaid / Pending", count: analytics.pendingOrdersCount, color: "bg-gray-400", text: "text-gray-700" },
+                    { label: "Paid & Confirmed", count: analytics.paidOrdersCount, color: "bg-teal-500", text: "text-teal-900", dot: "bg-teal-500" },
+                    { label: "Processing (Hand-Packing)", count: analytics.processingCount, color: "bg-amber-500", text: "text-amber-950", dot: "bg-amber-500" },
+                    { label: "Shipped / In-Transit", count: analytics.shippedOrdersCount, color: "bg-blue-600", text: "text-blue-950", dot: "bg-blue-600" },
+                    { label: "Out for Delivery", count: analytics.outForDeliveryCount, color: "bg-orange-500", text: "text-orange-950", dot: "bg-orange-500" },
+                    { label: "Delivered Successfully", count: analytics.deliveredCount, color: "bg-emerald-600", text: "text-emerald-950", dot: "bg-emerald-600" },
+                    { label: "Delivery Failed (Logistics RTO)", count: analytics.deliveryFailedCount, color: "bg-rose-600", text: "text-rose-950", dot: "bg-rose-600" },
+                    { label: "Unpaid / Pending", count: analytics.pendingOrdersCount, color: "bg-slate-400", text: "text-slate-800", dot: "bg-slate-400" },
                   ].map((s, idx) => {
                     const totalSafe = Math.max(analytics.totalOrders, 1);
                     const pct = Math.round((s.count / totalSafe) * 100);
                     return (
                       <div key={idx} className="space-y-1">
                         <div className="flex justify-between text-xs">
-                          <span className={`font-semibold ${s.text}`}>{s.label}</span>
+                          <span className={`font-semibold flex items-center gap-1.5 ${s.text}`}>
+                            <span className={`w-2 h-2 rounded-full ${s.dot}`} />
+                            {s.label}
+                          </span>
                           <span className="font-bold text-gray-900">
                             {s.count} <span className="text-[10px] text-gray-400 font-normal">({pct}%)</span>
                           </span>
@@ -1223,33 +1403,98 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Status Filter Badges */}
-              <div className="flex flex-wrap items-center gap-1.5 border-t border-nn-hairline pt-3">
-                <span className="text-xs font-bold text-gray-400 mr-2 flex items-center gap-1">
+              {/* Status Filter Badges with Distinct Colors & Live Counts */}
+              <div className="flex flex-wrap items-center gap-2 border-t border-nn-hairline pt-3">
+                <span className="text-xs font-bold text-gray-400 mr-1 flex items-center gap-1">
                   <Filter className="w-3 h-3" /> Status:
                 </span>
                 {[
-                  { key: "all", label: "All Orders" },
-                  { key: "paid", label: "Paid" },
-                  { key: "processing", label: "Processing" },
-                  { key: "shipped", label: "Shipped" },
-                  { key: "out_for_delivery", label: "Out for Delivery" },
-                  { key: "delivered", label: "Delivered" },
-                  { key: "delivery_failed", label: "Delivery Failed" },
-                  { key: "pending", label: "Pending" },
-                ].map((st) => (
-                  <button
-                    key={st.key}
-                    onClick={() => setStatusFilter(st.key)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      statusFilter === st.key
-                        ? "bg-[#8A1B14] text-white shadow-xs font-bold"
-                        : "bg-[#F3E7D3]/50 text-nn-bark hover:text-nn-ink hover:bg-[#F3E7D3]"
-                    }`}
-                  >
-                    {st.label}
-                  </button>
-                ))}
+                  {
+                    key: "all",
+                    label: "All Orders",
+                    count: statusCounts.all,
+                    dotClass: "bg-[#8A1B14]",
+                    activeClass: "bg-[#5E0B10] text-white ring-2 ring-[#8A1B14] shadow-sm font-bold",
+                    inactiveClass: "bg-white text-gray-700 border border-nn-hairline hover:bg-[#F3E7D3]/60",
+                  },
+                  {
+                    key: "paid",
+                    label: "Paid",
+                    count: statusCounts.paid,
+                    dotClass: "bg-teal-500",
+                    activeClass: "bg-teal-600 text-white ring-2 ring-teal-400 shadow-sm font-bold",
+                    inactiveClass: "bg-teal-50/70 text-teal-900 border border-teal-200 hover:bg-teal-100",
+                  },
+                  {
+                    key: "processing",
+                    label: "Processing",
+                    count: statusCounts.processing,
+                    dotClass: "bg-amber-500 animate-pulse",
+                    activeClass: "bg-amber-500 text-white ring-2 ring-amber-300 shadow-sm font-bold",
+                    inactiveClass: "bg-amber-50/70 text-amber-950 border border-amber-200 hover:bg-amber-100",
+                  },
+                  {
+                    key: "shipped",
+                    label: "Shipped",
+                    count: statusCounts.shipped,
+                    dotClass: "bg-blue-600",
+                    activeClass: "bg-blue-600 text-white ring-2 ring-blue-300 shadow-sm font-bold",
+                    inactiveClass: "bg-blue-50/70 text-blue-950 border border-blue-200 hover:bg-blue-100",
+                  },
+                  {
+                    key: "out_for_delivery",
+                    label: "Out for Delivery",
+                    count: statusCounts.out_for_delivery,
+                    dotClass: "bg-orange-500",
+                    activeClass: "bg-orange-600 text-white ring-2 ring-orange-400 shadow-sm font-bold",
+                    inactiveClass: "bg-orange-50/70 text-orange-950 border border-orange-200 hover:bg-orange-100",
+                  },
+                  {
+                    key: "delivered",
+                    label: "Delivered",
+                    count: statusCounts.delivered,
+                    dotClass: "bg-emerald-600",
+                    activeClass: "bg-emerald-700 text-white ring-2 ring-emerald-400 shadow-sm font-bold",
+                    inactiveClass: "bg-emerald-50/70 text-emerald-950 border border-emerald-300 hover:bg-emerald-100",
+                  },
+                  {
+                    key: "delivery_failed",
+                    label: "Delivery Failed",
+                    count: statusCounts.delivery_failed,
+                    dotClass: "bg-rose-600 animate-pulse",
+                    activeClass: "bg-rose-700 text-white ring-2 ring-rose-400 shadow-sm font-bold",
+                    inactiveClass: "bg-rose-50/70 text-rose-950 border border-rose-300 hover:bg-rose-100",
+                  },
+                  {
+                    key: "pending",
+                    label: "Pending",
+                    count: statusCounts.pending,
+                    dotClass: "bg-slate-400",
+                    activeClass: "bg-slate-700 text-white ring-2 ring-slate-400 shadow-sm font-bold",
+                    inactiveClass: "bg-slate-100/80 text-slate-800 border border-slate-300 hover:bg-slate-200",
+                  },
+                ].map((st) => {
+                  const isActive = statusFilter === st.key;
+                  return (
+                    <button
+                      key={st.key}
+                      onClick={() => setStatusFilter(st.key)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition ${
+                        isActive ? st.activeClass : st.inactiveClass
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${st.dotClass}`} />
+                      <span>{st.label}</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                          isActive ? "bg-white/20 text-white" : "bg-black/5 text-gray-600"
+                        }`}
+                      >
+                        {st.count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1292,13 +1537,7 @@ export default function AdminPage() {
                           timeZone: "Asia/Kolkata",
                         });
 
-                        const status = (order.status || "processing").toLowerCase();
-                        let statusColor = "bg-amber-50 text-amber-800 border-amber-200";
-                        if (status === "shipped") statusColor = "bg-blue-50 text-blue-800 border-blue-200";
-                        else if (status === "out_for_delivery") statusColor = "bg-orange-50 text-orange-800 border-orange-200";
-                        else if (status === "delivered" || status === "paid") statusColor = "bg-emerald-50 text-emerald-800 border-emerald-200";
-                        else if (status === "delivery_failed") statusColor = "bg-red-50 text-red-800 border-red-200";
-
+                        const stConfig = getStatusConfig(order.status, order.paymentStatus);
                         const customerPhone = order.contactInfo?.phone || order.shippingAddress?.phone || "";
                         const cleanPhone = customerPhone.replace(/[^0-9]/g, "").slice(-10);
 
@@ -1342,11 +1581,12 @@ export default function AdminPage() {
                               </div>
                             </td>
 
-                            <td className="py-3.5 px-4">
+                            <td className="py-3.5 px-4 whitespace-nowrap">
                               <span
-                                className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wide ${statusColor}`}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${stConfig.badgeClass}`}
                               >
-                                {status.replace(/_/g, " ")}
+                                <span className={`w-2 h-2 rounded-full shrink-0 ${stConfig.dotClass}`} />
+                                {stConfig.label}
                               </span>
                             </td>
 
@@ -1681,7 +1921,7 @@ export default function AdminPage() {
                   #{selectedOrder.id?.slice(-4)}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-serif font-bold text-lg text-nn-forest-deep">
                       Order #{selectedOrder.orderId || selectedOrder.id}
                     </h3>
@@ -1693,6 +1933,15 @@ export default function AdminPage() {
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
+                    {(() => {
+                      const headerSt = getStatusConfig(selectedOrder.status, selectedOrder.paymentStatus);
+                      return (
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${headerSt.badgeClass}`}>
+                          <span className={`w-2 h-2 rounded-full shrink-0 ${headerSt.dotClass}`} />
+                          {headerSt.label}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <span className="text-xs text-gray-500">
                     {getOrderDate(selectedOrder).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
@@ -1731,21 +1980,33 @@ export default function AdminPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  {/* Status Dropdown */}
+                  {/* Status Dropdown with Live Badge */}
                   <div>
-                    <label className="font-bold text-gray-700 block mb-1">Update Order Status:</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-bold text-gray-700 block">Update Order Status:</label>
+                      {(() => {
+                        const curCfg = getStatusConfig(editStatus);
+                        return (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${curCfg.badgeClass}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${curCfg.dotClass}`} />
+                            {curCfg.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     <select
                       value={editStatus}
                       onChange={(e) => setEditStatus(e.target.value)}
                       className="w-full px-3 py-2 border border-nn-hairline rounded-xl bg-white text-gray-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#8A1B14]"
                     >
-                      <option value="processing">Processing (In Hand-Packing)</option>
-                      <option value="shipped">Shipped (Handed to Courier)</option>
-                      <option value="out_for_delivery">Out for Delivery (Arriving Today)</option>
-                      <option value="delivery_failed">Delivery Failed (Logistics RTO &amp; 14d Refund)</option>
-                      <option value="delivered">Delivered Successfully</option>
-                      <option value="paid">Paid &amp; Confirmed</option>
-                      <option value="cancelled">Cancelled &amp; Refunded</option>
+                      <option value="paid">🩵 Paid &amp; Confirmed (Awaiting Packing)</option>
+                      <option value="processing">🟡 Processing (In Hand-Packing)</option>
+                      <option value="shipped">🔵 Shipped (Handed to Courier)</option>
+                      <option value="out_for_delivery">🟠 Out for Delivery (Arriving Today)</option>
+                      <option value="delivered">🟢 Delivered Successfully</option>
+                      <option value="delivery_failed">🔴 Delivery Failed (Logistics Issue &amp; 14d Refund)</option>
+                      <option value="pending">⚪ Pending Payment</option>
+                      <option value="cancelled">⚫ Cancelled &amp; Refunded</option>
                     </select>
                   </div>
 
@@ -1875,7 +2136,7 @@ export default function AdminPage() {
                           <a
                             href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
                               selectedOrder.shippingAddress?.name || "Customer"
-                            )}%2C%20update%20regarding%20your%20Namo%20Narayana%20order%20%23${selectedOrder.orderId || selectedOrder.id}%3A%20your%20order%20status%20is%20${selectedOrder.status || "processing"}.`}
+                            )}%2C%20update%20regarding%20your%20Namo%20Narayana%20order%20%23${selectedOrder.orderId || selectedOrder.id}%3A%20your%20order%20status%20is%20${encodeURIComponent(getStatusConfig(selectedOrder.status, selectedOrder.paymentStatus).label)}.`}
                             target="_blank"
                             rel="noreferrer"
                             className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition flex items-center gap-1 shadow-xs"
@@ -2030,9 +2291,18 @@ export default function AdminPage() {
                 <span className="font-mono font-bold text-sm text-gray-900 block">
                   #{selectedOrder.orderId || selectedOrder.id}
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 block mb-1">
                   {getOrderDate(selectedOrder).toLocaleDateString("en-IN")}
                 </span>
+                {(() => {
+                  const invSt = getStatusConfig(selectedOrder.status, selectedOrder.paymentStatus);
+                  return (
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${invSt.badgeClass}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${invSt.dotClass}`} />
+                      {invSt.label}
+                    </span>
+                  );
+                })()}
               </div>
             </div>
 
