@@ -46,14 +46,97 @@ import {
 // Whitelisted Administrator Email
 const ADMIN_EMAIL = "littlecodr@gmail.com";
 
+// Helper: Universal date parser that reliably handles Firestore Timestamps, ISO strings, epoch timestamps, etc.
+export function parseAnyDate(val: any): Date {
+  if (!val) return new Date(0);
+  if (val instanceof Date) return isNaN(val.getTime()) ? new Date(0) : val;
+  if (typeof val.toDate === "function") {
+    try {
+      const d = val.toDate();
+      if (d instanceof Date && !isNaN(d.getTime())) return d;
+    } catch {}
+  }
+  if (typeof val.seconds === "number") return new Date(val.seconds * 1000);
+  if (typeof val._seconds === "number") return new Date(val._seconds * 1000);
+  if (typeof val === "number") {
+    return val < 10000000000 ? new Date(val * 1000) : new Date(val);
+  }
+  if (typeof val === "string") {
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) return d;
+    const num = Number(val);
+    if (!isNaN(num) && num > 0) {
+      return num < 10000000000 ? new Date(num * 1000) : new Date(num);
+    }
+  }
+  return new Date(0);
+}
+
+// Helper: Formats Date into IST date-time and relative elapsed string
+export function formatDateTime(date: Date): { formatted: string; relative: string } {
+  if (!date || isNaN(date.getTime()) || date.getTime() === 0) {
+    return { formatted: "Recently", relative: "Active cart" };
+  }
+
+  const formatted = date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  });
+
+  const now = Date.now();
+  const diffSec = Math.max(0, Math.floor((now - date.getTime()) / 1000));
+  let relative = "just now";
+  if (diffSec < 60) {
+    relative = "just now";
+  } else if (diffSec < 3600) {
+    const mins = Math.floor(diffSec / 60);
+    relative = `${mins}m ago`;
+  } else if (diffSec < 86400) {
+    const hrs = Math.floor(diffSec / 3600);
+    relative = `${hrs}h ago`;
+  } else {
+    const days = Math.floor(diffSec / 86400);
+    relative = `${days}d ago`;
+  }
+
+  return { formatted, relative };
+}
+
+// Helper: Universal Rupee currency formatter with strict 2-decimal precision (e.g. ₹1,151.50, ₹854.10)
+export function formatINR(amountInRupees: number): string {
+  const safe = Number.isFinite(amountInRupees) ? amountInRupees : 0;
+  return `₹${safe.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+// Helper: Convert raw amount (which is in Paise if >= 100) to clean Rupees
+export function toRupees(rawAmount: any): number {
+  const num = Number(rawAmount || 0);
+  if (!Number.isFinite(num) || num <= 0) return 0;
+  // If >= 100, it's stored in Paise (e.g. 115150 paise -> 1151.50 rupees, 100 paise -> 1.00 rupee)
+  return num >= 100 ? num / 100 : num;
+}
+
 // Helper: Extract valid JS Date from order
 function getOrderDate(order: any): Date {
   if (order.createdAt) {
-    if (typeof order.createdAt.toDate === "function") return order.createdAt.toDate();
-    if (order.createdAt.seconds) return new Date(order.createdAt.seconds * 1000);
-    if (typeof order.createdAt === "string") return new Date(order.createdAt);
+    const d = parseAnyDate(order.createdAt);
+    if (d.getTime() > 0) return d;
   }
-  if (order.paymentDetails?.paidAt) return new Date(order.paymentDetails.paidAt);
+  if (order.paymentDetails?.paidAt) {
+    const d = parseAnyDate(order.paymentDetails.paidAt);
+    if (d.getTime() > 0) return d;
+  }
+  if (order.updatedAt) {
+    const d = parseAnyDate(order.updatedAt);
+    if (d.getTime() > 0) return d;
+  }
   return new Date(0);
 }
 
@@ -288,26 +371,42 @@ export default function AdminPage() {
       const { collection, getDocs } = await import("firebase/firestore/lite");
 
       const cartSnap = await getDocs(collection(db, "abandoned_carts"));
-      const rawCarts = cartSnap.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      }));
+      const rawCarts = cartSnap.docs.map((d) => {
+        const data = d.data();
+        const dateObj = parseAnyDate(data.lastActive || data.updatedAt || data.createdAt);
+        // data.subtotal in abandoned_carts is stored in PAISE (e.g. 115150 paise -> 1151.50 rupees)
+        const subtotalInRupees = toRupees(data.subtotal);
+
+        return {
+          id: d.id,
+          ...data,
+          subtotal: subtotalInRupees,
+          dateObj,
+          lastActive: dateObj.toISOString(),
+          source: "cart_abandoned",
+        };
+      });
 
       // Also grab pending orders from orders collection that did not complete payment
       const pendingFromOrders = orders
         .filter((o) => (o.paymentStatus === "pending" || !o.paymentStatus) && !isTestOrder(o))
-        .map((o) => ({
-          id: o.id,
-          orderId: o.orderId || o.id,
-          email: o.contactInfo?.email || o.shippingAddress?.email,
-          phone: o.contactInfo?.phone,
-          name: o.shippingAddress?.name || o.contactInfo?.name || "Customer",
-          subtotal: getOrderAmounts(o).total,
-          cartItems: o.items || [],
-          lastActive: o.createdAt?.seconds ? new Date(o.createdAt.seconds * 1000).toISOString() : new Date().toISOString(),
-          notified: Boolean(o.recoveryEmailSent),
-          source: "order_pending",
-        }));
+        .map((o) => {
+          const dateObj = getOrderDate(o);
+          const amounts = getOrderAmounts(o);
+          return {
+            id: o.id,
+            orderId: o.orderId || o.id,
+            email: o.contactInfo?.email || o.shippingAddress?.email,
+            phone: o.contactInfo?.phone,
+            name: o.shippingAddress?.name || o.contactInfo?.name || "Customer",
+            subtotal: amounts.total, // Already in clean Rupees!
+            cartItems: o.items || [],
+            dateObj,
+            lastActive: dateObj.toISOString(),
+            notified: Boolean(o.recoveryEmailSent),
+            source: "order_pending",
+          };
+        });
 
       // Combine and deduplicate by email
       const cartMap = new Map<string, any>();
@@ -315,11 +414,7 @@ export default function AdminPage() {
       rawCarts.forEach((c: any) => {
         const email = (c.email || c.id || "").toLowerCase().trim();
         if (email && email.includes("@")) {
-          cartMap.set(email, {
-            ...c,
-            email,
-            source: "cart_abandoned",
-          });
+          cartMap.set(email, c);
         }
       });
 
@@ -331,10 +426,10 @@ export default function AdminPage() {
       });
 
       const merged = Array.from(cartMap.values());
-      // Sort newest first
+      // Sort newest first using parsed Date
       merged.sort((a, b) => {
-        const tA = new Date(a.lastActive || a.updatedAt || 0).getTime();
-        const tB = new Date(b.lastActive || b.updatedAt || 0).getTime();
+        const tA = (a.dateObj instanceof Date ? a.dateObj.getTime() : parseAnyDate(a.lastActive || a.updatedAt).getTime()) || 0;
+        const tB = (b.dateObj instanceof Date ? b.dateObj.getTime() : parseAnyDate(b.lastActive || b.updatedAt).getTime()) || 0;
         return tB - tA;
       });
 
@@ -1177,7 +1272,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className="text-2xl font-serif font-extrabold text-nn-forest-deep">
-                  ₹{analytics.aov.toLocaleString("en-IN")}
+                  ₹{analytics.aov.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <div className="mt-2 text-xs text-gray-500 font-medium">
                   Paid Conversion Rate: <strong className="text-nn-forest-deep">{analytics.paidConversionRate}%</strong>
@@ -1318,7 +1413,7 @@ export default function AdminPage() {
                           <div className="text-[11px] text-gray-400">{prod.units} jars delivered</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs font-bold text-[#8A1B14]">₹{prod.revenue.toLocaleString("en-IN")}</div>
+                          <div className="text-xs font-bold text-[#8A1B14]">₹{prod.revenue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         </div>
                       </div>
                     ))}
@@ -1627,7 +1722,7 @@ export default function AdminPage() {
                                   <a
                                     href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
                                       order.shippingAddress?.name || "Customer"
-                                    )}%2C%20here%20is%20an%20update%20on%20your%20Namo%20Narayana%20order%20%23${order.orderId || order.id}%3A%20your%20order%20is%20now%20${status.toUpperCase().replace(/_/g, " ")}.`}
+                                    )}%2C%20here%20is%20an%20update%20on%20your%20Namo%20Narayana%20order%20%23${order.orderId || order.id}%3A%20your%20order%20is%20now%20${encodeURIComponent(stConfig.label)}.`}
                                     target="_blank"
                                     rel="noreferrer"
                                     title="WhatsApp Customer"
@@ -1669,7 +1764,7 @@ export default function AdminPage() {
                   Revenue at Risk
                 </span>
                 <div className="text-2xl font-serif font-extrabold text-[#8A1B14]">
-                  ₹{abandonedCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0).toLocaleString("en-IN")}
+                  {formatINR(abandonedCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0))}
                 </div>
                 <p className="text-[11px] text-gray-400 mt-1">Potential gross order value</p>
               </div>
@@ -1729,15 +1824,10 @@ export default function AdminPage() {
                       </tr>
                     ) : (
                       abandonedCarts.map((cart, idx) => {
-                        const dateObj = new Date(cart.lastActive || cart.updatedAt || 0);
-                        const dateStr = dateObj.toLocaleString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                          timeZone: "Asia/Kolkata",
-                        });
+                        const dateObj = cart.dateObj instanceof Date && !isNaN(cart.dateObj.getTime())
+                          ? cart.dateObj
+                          : parseAnyDate(cart.lastActive || cart.updatedAt || cart.createdAt);
+                        const { formatted, relative } = formatDateTime(dateObj);
 
                         const cleanPhone = (cart.phone || "").replace(/[^0-9]/g, "").slice(-10);
 
@@ -1772,14 +1862,19 @@ export default function AdminPage() {
                               </div>
                             </td>
 
-                            <td className="py-3.5 px-4">
-                              <span className="font-bold text-[#8A1B14] block">
-                                ₹{Number(cart.subtotal || 0).toLocaleString("en-IN")}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className="font-bold text-[#8A1B14] block text-xs">
+                                {formatINR(cart.subtotal)}
                               </span>
                             </td>
 
-                            <td className="py-3.5 px-4 text-gray-500 text-[11px]">
-                              {dateStr}
+                            <td className="py-3.5 px-4 whitespace-nowrap">
+                              <span className="text-gray-900 font-semibold block text-xs">
+                                {formatted}
+                              </span>
+                              <span className="text-gray-400 text-[10px] block font-medium">
+                                {relative}
+                              </span>
                             </td>
 
                             <td className="py-3.5 px-4">
