@@ -167,14 +167,15 @@ export function getBlogPost(slug: string): BlogPost | null {
   const seo = (raw.seo as Record<string, string>) ?? {};
   return {
     slug: (raw.handle as string) ?? slug,
-    title: seo.title ?? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-    excerpt: "",
+    title: (raw.title as string) ?? seo.title ?? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    excerpt: (raw.excerpt as string) ?? seo.description ?? "",
     content: (raw.content as string) ?? "",
-    publishedAt: "",
-    author: "Namo Narayana",
+    publishedAt: (raw.published_at as string) ?? "2026-10-28",
+    author: (raw.author as string) ?? "Namo Narayana",
+    image: (raw.image as string) ?? (seo.ogImage as string) ?? "/assets/hero-new-cows.jpg",
     seo: {
-      title: seo.title ?? slug,
-      description: seo.description ?? "",
+      title: seo.title ?? (raw.title as string) ?? slug,
+      description: seo.description ?? (raw.excerpt as string) ?? "",
     },
   };
 }
