@@ -10,6 +10,7 @@ import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
 import DiwaliAmbience from "@/components/ui/DiwaliAmbience";
+import OneSignalProvider from "@/components/providers/OneSignalProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartDrawer />
               <InAppBrowserWarning />
               <DiwaliAmbience />
+              <OneSignalProvider />
               <SpeedInsights />
               <Analytics />
             </CartDrawerProvider>
