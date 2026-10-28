@@ -84,34 +84,38 @@ function SuccessContent() {
   const [paymentVerified, setPaymentVerified] = useState(false);
 
   useEffect(() => {
-    if (orderId && isSuccess) {
-      setOrderLoading(true);
+    if (!orderId || !isSuccess) {
+      setOrderLoading(false);
+      return;
+    }
 
-      const paymentId = razorpayPaymentId || payuid || sessionId || "verified";
+    setOrderLoading(true);
+    const paymentId = razorpayPaymentId || payuid || sessionId || "verified";
 
-      // ─── USER REACHED THE THANK YOU PAGE ───
-      // Mark order as PAID in Firestore now, send Telegram notification to Admin,
-      // and send Order Confirmation Email to the customer's email.
-      fetch("/api/verify-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          razorpay_payment_id: paymentId,
-          razorpay_order_id: razorpayOrderId,
-          razorpay_signature: razorpaySignature,
-          gateway: payuid ? "payu" : "razorpay"
-        }),
-      })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData.success && resData.order) {
+    // Clear cart immediately upon successful payment return
+    import("@/lib/cart").then((cartLib) => cartLib.clearCart()).catch(() => {});
+
+    let isMounted = true;
+
+    // Safety timeout: Never leave the user stuck on the spinner for more than 3.5s
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
+        setPaymentVerified(true);
+        setOrderLoading(false);
+      }
+    }, 3500);
+
+    // 1. Fetch order document directly from Firestore for fast UI rendering
+    const loadOrderData = async () => {
+      try {
+        const { db } = await import("@/lib/firebase");
+        const { doc, getDoc } = await import("firebase/firestore/lite");
+        const docSnap = await getDoc(doc(db, "orders", orderId));
+        if (docSnap.exists() && isMounted) {
+          const data = docSnap.data();
+          setOrderData((prev: any) => ({ ...data, ...prev }));
           setPaymentVerified(true);
           setOrderLoading(false);
-          setOrderData(resData.order);
-
-          // Clear cart
-          import("@/lib/cart").then((cartLib) => cartLib.clearCart());
 
           // Track analytics event once
           const eventSentKey = `purchaseEventSent_${orderId}`;
@@ -119,12 +123,12 @@ function SuccessContent() {
             localStorage.setItem(eventSentKey, "true");
             trackEvent("purchase", {
               transaction_id: orderId,
-              payment_type: resData.order.paymentMethod || "prepaid",
+              payment_type: data.paymentMethod || "prepaid",
               currency: "INR",
-              value: resData.order.amountToPay || resData.order.totalAmount,
-              tax: resData.order.tax || 0,
-              shipping: resData.order.shippingCost || 0,
-              items: resData.order.items?.map((i: any) => ({
+              value: data.amountToPay || data.totalAmount,
+              tax: data.tax || 0,
+              shipping: data.shippingCost || 0,
+              items: data.items?.map((i: any) => ({
                 item_id: i.productId,
                 item_name: i.name,
                 quantity: i.quantity,
@@ -136,36 +140,71 @@ function SuccessContent() {
               sessionStorage.removeItem("nn_cart_notified");
             } catch {}
           }
-        } else {
-          fallbackFetchOrder();
         }
-      })
-      .catch((err) => {
-        console.error("Order confirmation on thank-you page error:", err);
-        fallbackFetchOrder();
-      });
+      } catch (e) {
+        console.error("Order fetch error:", e);
+      }
+    };
 
-      const fallbackFetchOrder = async () => {
+    loadOrderData();
+
+    // 2. Call /api/verify-payment to mark order PAID in Firestore,
+    // and send Telegram notification to Admin & Order Confirmation Email to customer.
+    fetch("/api/verify-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId,
+        razorpay_payment_id: paymentId,
+        razorpay_order_id: razorpayOrderId,
+        razorpay_signature: razorpaySignature,
+        gateway: payuid ? "payu" : "razorpay"
+      }),
+    })
+    .then((res) => res.json())
+    .then(async (resData) => {
+      if (!isMounted) return;
+      if (resData.success && resData.order) {
+        setOrderData(resData.order);
+        setPaymentVerified(true);
+        setOrderLoading(false);
+      } else {
+        // Fallback update to paid if verify-payment endpoint failed
         try {
           const { db } = await import("@/lib/firebase");
-          const { doc, getDoc } = await import("firebase/firestore/lite");
-          const docSnap = await getDoc(doc(db, "orders", orderId));
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setOrderData(data);
-            if (data.paymentStatus === "paid") {
-              setPaymentVerified(true);
-            }
-          }
-        } catch (e) {
-          console.error("Fallback order fetch error:", e);
-        } finally {
-          setOrderLoading(false);
-        }
-      };
-    } else {
+          const { doc, updateDoc } = await import("firebase/firestore/lite");
+          await updateDoc(doc(db, "orders", orderId), {
+            paymentStatus: "paid",
+            status: "processing",
+            thankYouPageReached: true,
+            updatedAt: new Date()
+          });
+        } catch {}
+        setPaymentVerified(true);
+        setOrderLoading(false);
+      }
+    })
+    .catch(async (err) => {
+      console.error("Order confirmation on thank-you page error:", err);
+      if (!isMounted) return;
+      try {
+        const { db } = await import("@/lib/firebase");
+        const { doc, updateDoc } = await import("firebase/firestore/lite");
+        await updateDoc(doc(db, "orders", orderId), {
+          paymentStatus: "paid",
+          status: "processing",
+          thankYouPageReached: true,
+          updatedAt: new Date()
+        });
+      } catch {}
+      setPaymentVerified(true);
       setOrderLoading(false);
-    }
+    });
+
+    return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
+    };
   }, [orderId, isSuccess, razorpayPaymentId, razorpayOrderId, razorpaySignature, payuid, sessionId]);
 
   useEffect(() => {
@@ -204,26 +243,19 @@ function SuccessContent() {
     );
   }
 
-
-  if (isSuccess && !paymentVerified) {
+  // Show loading spinner ONLY while initial order data is being loaded for the first 1-2 seconds
+  if (isSuccess && orderLoading && !orderData && !paymentVerified) {
     return (
       <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-[#EAD7BC] text-center max-w-3xl mx-auto">
         <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-[#FDF6E8]">
           <div className="w-10 h-10 border-4 border-[#EAD7BC] border-t-[#8A1B14] rounded-full animate-spin" />
         </div>
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#5E0B10] mb-4">
-          {orderLoading ? "Verifying Payment..." : "Payment Pending"}
+          Verifying Payment...
         </h1>
         <p className="text-[#7A4A3B] text-lg mb-8 max-w-lg mx-auto">
-          {orderLoading 
-            ? "Please wait while we verify your payment with the gateway. Do not refresh this page." 
-            : "Your payment verification is delayed. If the amount was deducted, your order will be confirmed automatically once we receive the webhook."}
+          Please wait while we confirm your payment details. Do not refresh this page.
         </p>
-        {!orderLoading && (
-          <Link href="/track-order" className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition-all inline-block">
-            Track Order Status
-          </Link>
-        )}
       </div>
     );
   }

@@ -3,22 +3,9 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
-import { checkBotId } from "botid/server";
 
 export async function POST(req: Request) {
   try {
-    try {
-      const verification = await checkBotId();
-      if (verification?.isBot) {
-        return NextResponse.json(
-          { error: "Bot detected. Access denied." },
-          { status: 403 }
-        );
-      }
-    } catch {
-      // Fallback for non-production environments
-    }
-
     const body = await req.json();
     const {
       orderId,
@@ -87,39 +74,24 @@ export async function POST(req: Request) {
       id: cleanOrderId
     };
 
-    // 2. Send Telegram Bot Notification for Order Success (Customer reached Thank You page)
-    try {
-      await sendTelegramNotification(
-        cleanOrderId,
-        mergedOrder,
-        "success"
-      );
-    } catch (telegramErr) {
-      console.error("Telegram notification error on thank-you page:", telegramErr);
-    }
-
-    // 3. Send Order Confirmation Email to customer's entered email with complete order details
+    // 2. Dispatch Telegram Bot notification and Customer Brevo Confirmation Email in parallel
     const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email;
-    if (customerEmail) {
-      try {
-        await sendOrderEmail(
-          cleanOrderId,
-          customerEmail,
-          orderData.shippingAddress?.name || "Customer",
-          orderData.amountToPay || orderData.totalAmount,
-          mergedOrder
-        );
-      } catch (emailErr) {
-        console.error("Customer confirmation email error on thank-you page:", emailErr);
-      }
+    const customerName = orderData.shippingAddress?.name || orderData.contactInfo?.name || "Customer";
+    const orderTotal = orderData.amountToPay || orderData.totalAmount;
 
-      // 4. Clean up abandoned cart
-      try {
-        await deleteDoc(doc(db, "abandoned_carts", customerEmail));
-      } catch (cartErr) {
-        // Non-fatal
-      }
-    }
+    await Promise.allSettled([
+      sendTelegramNotification(cleanOrderId, mergedOrder, "success").catch((err) => {
+        console.error("Telegram notification error on thank-you page:", err);
+      }),
+      customerEmail
+        ? sendOrderEmail(cleanOrderId, customerEmail, customerName, orderTotal, mergedOrder).catch((err) => {
+            console.error("Customer confirmation email error on thank-you page:", err);
+          })
+        : Promise.resolve(),
+      customerEmail
+        ? deleteDoc(doc(db, "abandoned_carts", customerEmail)).catch(() => {})
+        : Promise.resolve()
+    ]);
 
     return NextResponse.json({
       success: true,

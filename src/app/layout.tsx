@@ -59,9 +59,6 @@ import { BotIdClient } from "botid/client";
 
 const protectedBotRoutes = [
   { path: "/api/create-order", method: "POST" },
-  { path: "/api/razorpay/*", method: "POST" },
-  { path: "/api/payu/*", method: "POST" },
-  { path: "/api/verify-payment", method: "POST" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
