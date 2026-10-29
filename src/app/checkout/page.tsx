@@ -4,16 +4,16 @@ import { toast } from "sonner";
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  ShieldCheck, 
-  Truck, 
-  Loader2, 
-  Tag, 
-  MapPin, 
-  Lock, 
-  Gift, 
-  Sparkles, 
-  CheckCircle2, 
+import {
+  ShieldCheck,
+  Truck,
+  Loader2,
+  Tag,
+  MapPin,
+  Lock,
+  Gift,
+  Sparkles,
+  CheckCircle2,
   ArrowLeft,
   AlertCircle,
   User,
@@ -156,13 +156,13 @@ const QUICK_COUPONS = [
 export default function CheckoutPage() {
   const cart = useCart();
   const { user } = useAuth();
-  
+
   const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
   const [pincodeSuccess, setPincodeSuccess] = useState(false);
   const [showMobileSummary, setShowMobileSummary] = useState(false);
-  
+
   // Single form state
   const [form, setForm] = useState({
     name: "",
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [hasGst, setHasGst] = useState(false);
   const [gstDetails, setGstDetails] = useState<GstDetails>({ companyName: "", gstin: "" });
-  
+
   const [couponCode, setCouponCode] = useState("");
   const [tempCoupon, setTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
@@ -188,9 +188,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     setIsMounted(true);
     import("@/lib/firebase").then(({ initializeAnonymousAuth }) => {
-      initializeAnonymousAuth().catch(() => {});
+      initializeAnonymousAuth().catch(() => { });
     });
-    import("@/lib/orders").catch(() => {});
+    import("@/lib/orders").catch(() => { });
   }, []);
 
   // Load from localStorage & URL on mount
@@ -268,7 +268,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // Proactive lead capture: log abandoned cart when a valid phone number is entered
+  // Proactive lead capture: log abandoned cart when a valid phone number or email is entered
   const handlePhoneBlur = () => {
     const cleanPhone = form.phone.replace(/\D/g, "");
     if (cleanPhone.length === 10 && cart.items.length > 0) {
@@ -279,7 +279,23 @@ export default function CheckoutPage() {
           name: form.name.trim(),
           cartItems: cart.items,
           subtotal: cart.subtotal
-        }).catch(() => {});
+        }).catch(() => { });
+      });
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const cleanEmail = form.email.trim();
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    if (cleanEmail && cleanEmail.includes("@") && cart.items.length > 0) {
+      import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
+        logAbandonedCart({
+          phone: cleanPhone || "0000000000",
+          email: cleanEmail,
+          name: form.name.trim(),
+          cartItems: cart.items,
+          subtotal: cart.subtotal
+        }).catch(() => { });
       });
     }
   };
@@ -300,7 +316,7 @@ export default function CheckoutPage() {
         }));
       }
     }
-    
+
     if (cleanVal.length === 6) {
       // Instant cache hit
       if (pincodeCache.current[cleanVal]) {
@@ -327,7 +343,7 @@ export default function CheckoutPage() {
         const res = await fetch(`https://api.postalpincode.in/pincode/${cleanVal}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         const data = await res.json();
-        
+
         if (latestPincodeRef.current !== cleanVal) return;
 
         if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length) {
@@ -336,9 +352,9 @@ export default function CheckoutPage() {
           const resolvedState = postOffice.State || "";
           if (resolvedCity && resolvedState) {
             pincodeCache.current[cleanVal] = { city: resolvedCity, state: resolvedState };
-            setForm(prev => ({ 
-              ...prev, 
-              city: resolvedCity || prev.city, 
+            setForm(prev => ({
+              ...prev,
+              city: resolvedCity || prev.city,
               state: resolvedState || prev.state
             }));
             setPincodeSuccess(true);
@@ -412,9 +428,9 @@ export default function CheckoutPage() {
         price: 59900,
         image: "/media/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942_cab5f3.webp",
         slug: "pure-desi-cow-ghee-500-ml",
-        compareAtPrice: 99900
+        compareAtPrice: 149900
       }, 1);
-      toast.success("Added 500ml A2 Ghee jar (40% OFF) to your parcel!");
+      toast.success("Added 500ml A2 Ghee jar (60% OFF) to your parcel!");
     }
   };
 
@@ -422,11 +438,19 @@ export default function CheckoutPage() {
   const validateAndGetErrors = () => {
     const errors: Record<string, string> = {};
     const cleanName = form.name.trim();
+    const cleanEmail = form.email.trim();
     const cleanPhone = form.phone.replace(/\D/g, "");
     const cleanAddress = form.address.trim();
     const cleanPincode = form.pincode.replace(/\D/g, "");
     const cleanCity = form.city.trim();
     const cleanState = form.state.trim();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail) {
+      errors.email = "Please enter your email address for order confirmation & tracking";
+    } else if (!emailRegex.test(cleanEmail)) {
+      errors.email = "Please enter a valid email address (e.g. name@gmail.com)";
+    }
 
     if (!cleanPhone || cleanPhone.length < 10) {
       errors.phone = "Please enter 10-digit mobile number";
@@ -475,18 +499,18 @@ export default function CheckoutPage() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const { initializeAnonymousAuth } = await import("@/lib/firebase");
       const currentUser = user || await initializeAnonymousAuth();
       if (!currentUser) {
-         throw new Error("Could not initialize authentication");
+        throw new Error("Could not initialize authentication");
       }
 
       const cleanPhone = form.phone.replace(/\D/g, "");
-      const customerEmail = form.email.trim() || `${cleanPhone}@customer.namonarayanaghee.store`;
+      const customerEmail = form.email.trim();
 
-      const fullStreetAddress = form.landmark.trim() 
+      const fullStreetAddress = form.landmark.trim()
         ? `${form.address.trim()}, Near ${form.landmark.trim()}`
         : form.address.trim();
 
@@ -510,10 +534,10 @@ export default function CheckoutPage() {
       };
 
       const loadingToastId = toast.loading("Connecting to secure 1-tap payment gateway...");
-      
+
       trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
       trackEvent("add_payment_info", { payment_type: "prepaid", value: cart.subtotal, currency: "INR" });
-      
+
       trackEvent("order_created", {
         value: pricing.amountToPay,
         currency: "INR",
@@ -526,7 +550,7 @@ export default function CheckoutPage() {
         : pricing;
 
       const { createOrder, saveUserCheckoutProfile } = await import("@/lib/orders");
-      
+
       const orderRes = await createOrder(
         currentUser.uid,
         cart.items,
@@ -570,7 +594,7 @@ export default function CheckoutPage() {
 
       // Clear abandoned cart lead upon payment checkout initiation
       import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
-        clearAbandonedCart(cleanPhone).catch(() => {});
+        clearAbandonedCart(cleanPhone).catch(() => { });
       });
 
       // Clear cart locally right as user transitions to payment gateway
@@ -591,7 +615,7 @@ export default function CheckoutPage() {
       payParams.set("brand", "namonarayanaghee");
 
       const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
-      
+
       toast.dismiss(loadingToastId);
       window.location.href = targetUrl;
     } catch (err: any) {
@@ -627,8 +651,8 @@ export default function CheckoutPage() {
           <p className="text-sm text-[#7A4A3B]">
             Add pure, authentic A2 Gir Cow Ghee made with the traditional Vedic Bilona method.
           </p>
-          <Link 
-            href="/collections/all-products" 
+          <Link
+            href="/collections/all-products"
             className="inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md transition-all mt-3"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -650,8 +674,8 @@ export default function CheckoutPage() {
       <header className="bg-white border-b border-[#EAD7BC]/70 sticky top-0 z-30 shadow-2xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link 
-              href="/collections/all-products" 
+            <Link
+              href="/collections/all-products"
               className="text-[#7A4A3B] hover:text-[#5E0B10] p-1.5 -ml-1.5 rounded-lg hover:bg-stone-50 transition flex items-center gap-1 text-xs font-semibold"
               title="Return to shopping"
             >
@@ -662,11 +686,11 @@ export default function CheckoutPage() {
             <div className="h-4 w-px bg-stone-200 hidden sm:block" />
 
             <Link href="/" className="flex items-center gap-2">
-              <Image 
-                src="/assets/logo.png" 
-                alt="Namo Narayana" 
-                width={36} 
-                height={36} 
+              <Image
+                src="/assets/logo.png"
+                alt="Namo Narayana"
+                width={36}
+                height={36}
                 className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
               />
               <span className="font-serif font-bold text-base sm:text-lg text-[#5E0B10] tracking-tight">
@@ -797,13 +821,13 @@ export default function CheckoutPage() {
       {/* ─── 3. Main Checkout Container (2 Columns) ─── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-32 lg:pb-16">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-          
+
           {/* ═══ Left Column: Seamless Unified Checkout Form ═══ */}
           <div className="w-full lg:w-[58%] space-y-5">
-            
+
             {/* Unified Clean Form Card */}
             <div className="bg-white rounded-2xl border border-[#EAD7BC] p-5 sm:p-7 shadow-xs">
-              
+
               {/* Step 1: Contact Details */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#EAD7BC]/60">
@@ -830,20 +854,19 @@ export default function CheckoutPage() {
                       <div className="bg-stone-50 border-r border-stone-200 px-3 py-2.5 sm:py-3 flex items-center gap-1 text-xs font-bold text-[#5E0B10] select-none shrink-0">
                         <span>🇮🇳 +91</span>
                       </div>
-                      <input 
+                      <input
                         id="checkout-phone"
                         name="tel"
-                        type="tel" 
+                        type="tel"
                         inputMode="numeric"
                         autoComplete="tel"
                         maxLength={10}
-                        placeholder="10-digit mobile" 
-                        value={form.phone} 
-                        onChange={(e) => handleFieldChange("phone", e.target.value.replace(/\D/g, ""))} 
+                        placeholder="10-digit mobile"
+                        value={form.phone}
+                        onChange={(e) => handleFieldChange("phone", e.target.value.replace(/\D/g, ""))}
                         onBlur={handlePhoneBlur}
-                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${
-                          fieldErrors.phone ? "bg-red-50/20" : ""
-                        }`}
+                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${fieldErrors.phone ? "bg-red-50/20" : ""
+                          }`}
                       />
                     </div>
                     {fieldErrors.phone && (
@@ -860,19 +883,18 @@ export default function CheckoutPage() {
                     </label>
                     <div className="relative">
                       <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                      <input 
+                      <input
                         id="checkout-name"
                         name="name"
-                        type="text" 
+                        type="text"
                         autoComplete="name"
-                        placeholder="e.g. Rahul Sharma" 
-                        value={form.name} 
-                        onChange={(e) => handleFieldChange("name", e.target.value)} 
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.name 
-                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                        placeholder="e.g. Rahul Sharma"
+                        value={form.name}
+                        onChange={(e) => handleFieldChange("name", e.target.value)}
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.name
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                        }`} 
+                          }`}
                       />
                     </div>
                     {fieldErrors.name && (
@@ -882,28 +904,40 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  {/* Email (Optional) */}
+                  {/* Email (Required) */}
                   <div className="sm:col-span-2">
                     <div className="flex items-center justify-between mb-1.5">
                       <label htmlFor="checkout-email" className="block text-xs font-bold text-[#5E0B10]">
-                        Email Address
+                        Email Address <span className="text-red-600 font-bold">*</span>
                       </label>
-                      <span className="text-[10px] text-stone-400 font-medium">Optional — for tax invoice</span>
+                      <span className="text-[10px] text-[#8A1B14] font-semibold">Required for order tracking &amp; invoice</span>
                     </div>
                     <div className="relative">
                       <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                      <input 
+                      <input
                         id="checkout-email"
                         name="email"
-                        type="email" 
+                        type="email"
                         inputMode="email"
                         autoComplete="email"
-                        placeholder="e.g. rahul@example.com" 
-                        value={form.email} 
-                        onChange={(e) => handleFieldChange("email", e.target.value)} 
-                        className="w-full border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10] transition bg-white" 
+                        required
+                        placeholder="e.g. rahul@gmail.com"
+                        value={form.email}
+                        onChange={(e) => handleFieldChange("email", e.target.value)}
+                        onBlur={handleEmailBlur}
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.email 
+                            ? "border-red-500 ring-1 ring-red-500 bg-red-50/20" 
+                            : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
+                        }`}
                       />
                     </div>
+                    {fieldErrors.email && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1 font-medium">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        <span>{fieldErrors.email}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -932,19 +966,18 @@ export default function CheckoutPage() {
                     </label>
                     <div className="relative">
                       <Home className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                      <input 
+                      <input
                         id="checkout-address"
                         name="address"
-                        type="text" 
+                        type="text"
                         autoComplete="street-address"
-                        placeholder="e.g. Flat 302, Royal Enclave, MG Road" 
-                        value={form.address} 
-                        onChange={(e) => handleFieldChange("address", e.target.value)} 
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.address 
-                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                        placeholder="e.g. Flat 302, Royal Enclave, MG Road"
+                        value={form.address}
+                        onChange={(e) => handleFieldChange("address", e.target.value)}
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.address
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                        }`} 
+                          }`}
                       />
                     </div>
                     {fieldErrors.address && (
@@ -964,14 +997,14 @@ export default function CheckoutPage() {
                     </div>
                     <div className="relative">
                       <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                      <input 
+                      <input
                         id="checkout-landmark"
                         name="landmark"
-                        type="text" 
-                        placeholder="e.g. Near Shiv Mandir / Opp Metro Gate 2" 
-                        value={form.landmark} 
-                        onChange={(e) => handleFieldChange("landmark", e.target.value)} 
-                        className="w-full border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10] transition bg-white" 
+                        type="text"
+                        placeholder="e.g. Near Shiv Mandir / Opp Metro Gate 2"
+                        value={form.landmark}
+                        onChange={(e) => handleFieldChange("landmark", e.target.value)}
+                        className="w-full border border-stone-200 rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10] transition bg-white"
                       />
                     </div>
                   </div>
@@ -992,21 +1025,20 @@ export default function CheckoutPage() {
                       </div>
                       <div className="relative">
                         <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A1B14] pointer-events-none" />
-                        <input 
+                        <input
                           id="checkout-pincode"
                           name="postal-code"
-                          type="text" 
+                          type="text"
                           inputMode="numeric"
                           autoComplete="postal-code"
-                          maxLength={6} 
-                          placeholder="6-digit PIN" 
-                          value={form.pincode} 
-                          onChange={(e) => handlePincodeChange(e.target.value)} 
-                          className={`w-full border rounded-xl pl-10 pr-8 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white ${
-                            fieldErrors.pincode 
-                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                          maxLength={6}
+                          placeholder="6-digit PIN"
+                          value={form.pincode}
+                          onChange={(e) => handlePincodeChange(e.target.value)}
+                          className={`w-full border rounded-xl pl-10 pr-8 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white ${fieldErrors.pincode
+                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                          }`} 
+                            }`}
                         />
                         {isFetchingPincode && (
                           <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-[#8A1B14]" />
@@ -1026,19 +1058,18 @@ export default function CheckoutPage() {
                       </label>
                       <div className="relative">
                         <Building2 className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                        <input 
+                        <input
                           id="checkout-city"
                           name="city"
-                          type="text" 
+                          type="text"
                           autoComplete="address-level2"
-                          placeholder="City" 
-                          value={form.city} 
-                          onChange={(e) => handleFieldChange("city", e.target.value)} 
-                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                            fieldErrors.city 
-                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                          placeholder="City"
+                          value={form.city}
+                          onChange={(e) => handleFieldChange("city", e.target.value)}
+                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.city
+                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                          }`} 
+                            }`}
                         />
                       </div>
                       {fieldErrors.city && (
@@ -1059,11 +1090,10 @@ export default function CheckoutPage() {
                           name="state"
                           value={form.state}
                           onChange={(e) => handleFieldChange("state", e.target.value)}
-                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${
-                            fieldErrors.state 
-                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20" 
+                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${fieldErrors.state
+                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                          }`}
+                            }`}
                         >
                           <option value="">Select State</option>
                           {INDIAN_STATES.map((st) => (
@@ -1086,37 +1116,37 @@ export default function CheckoutPage() {
                   {/* GST Invoice (Subtle Accordion) */}
                   <div className="pt-2">
                     <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-stone-600 hover:text-[#5E0B10]">
-                      <input 
-                        type="checkbox" 
-                        checked={hasGst} 
-                        onChange={(e) => setHasGst(e.target.checked)} 
-                        className="w-4 h-4 rounded border-stone-300 text-[#5E0B10] focus:ring-[#5E0B10] accent-[#5E0B10]" 
+                      <input
+                        type="checkbox"
+                        checked={hasGst}
+                        onChange={(e) => setHasGst(e.target.checked)}
+                        className="w-4 h-4 rounded border-stone-300 text-[#5E0B10] focus:ring-[#5E0B10] accent-[#5E0B10]"
                       />
                       <span>I need a business GST tax invoice (Optional)</span>
                     </label>
-                    
+
                     {hasGst && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-[#FDFBF7] rounded-xl border border-stone-200 mt-3 animate-in fade-in">
                         <div>
                           <label className="block text-[11px] font-bold text-[#5E0B10] mb-1">Company Legal Name *</label>
-                          <input 
+                          <input
                             id="checkout-companyName"
-                            type="text" 
-                            placeholder="e.g. Acme Enterprises Ltd" 
-                            value={gstDetails.companyName} 
-                            onChange={(e) => setGstDetails({...gstDetails, companyName: e.target.value})} 
-                            className="w-full border border-stone-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#5E0B10] bg-white" 
+                            type="text"
+                            placeholder="e.g. Acme Enterprises Ltd"
+                            value={gstDetails.companyName}
+                            onChange={(e) => setGstDetails({ ...gstDetails, companyName: e.target.value })}
+                            className="w-full border border-stone-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#5E0B10] bg-white"
                           />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold text-[#5E0B10] mb-1">15-digit GSTIN *</label>
-                          <input 
+                          <input
                             id="checkout-gstin"
-                            type="text" 
-                            placeholder="e.g. 07AAAAA0000A1Z5" 
-                            value={gstDetails.gstin} 
-                            onChange={(e) => setGstDetails({...gstDetails, gstin: e.target.value.toUpperCase()})} 
-                            className="w-full border border-stone-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#5E0B10] bg-white uppercase font-mono" 
+                            type="text"
+                            placeholder="e.g. 07AAAAA0000A1Z5"
+                            value={gstDetails.gstin}
+                            onChange={(e) => setGstDetails({ ...gstDetails, gstin: e.target.value.toUpperCase() })}
+                            className="w-full border border-stone-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-[#5E0B10] bg-white uppercase font-mono"
                           />
                         </div>
                       </div>
@@ -1207,7 +1237,7 @@ export default function CheckoutPage() {
           {/* ═══ Right Column: Compact Order Summary & Checkout CTA ═══ */}
           <div className="w-full lg:w-[42%] lg:sticky lg:top-20 h-fit">
             <div className="bg-white rounded-2xl border border-[#EAD7BC] p-5 sm:p-6 shadow-xs space-y-4">
-              
+
               {/* Header */}
               <div className="flex items-center justify-between pb-3 border-b border-[#EAD7BC]/60">
                 <div className="flex items-center gap-2">

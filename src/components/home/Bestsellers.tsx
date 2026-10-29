@@ -24,6 +24,7 @@ const gheeProducts = [
     subtitle: "Traditional Bilona Churned • 100% Pure A2",
     size: "500 ml",
     price: 59900,
+    compareAtPrice: 149900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
   },
   {
@@ -37,6 +38,7 @@ const gheeProducts = [
     subtitle: "Bilona Churned • 1 Free Mustard Oil (250ml)",
     size: "1 Litre",
     price: 94900,
+    compareAtPrice: 249900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
   },
   {
@@ -50,6 +52,7 @@ const gheeProducts = [
     subtitle: "Family Pack • 3 Free Cold-Pressed Oils",
     size: "2.5 Litre",
     price: 209900,
+    compareAtPrice: 575000,
     image: "/assets/product_6-2p5_jpg.webp"
   },
   {
@@ -63,6 +66,7 @@ const gheeProducts = [
     subtitle: "Bulk Savings • 3 Free Cold-Pressed Oils",
     size: "5 Litre",
     price: 349900,
+    compareAtPrice: 1099900,
     image: "/assets/product_6-5L_jpg.webp"
   }
 ];
@@ -84,6 +88,7 @@ export default function Bestsellers() {
       title: p.title,
       variantTitle: p.variantTitle,
       price: p.price,
+      compareAtPrice: p.compareAtPrice,
       image: p.image
     });
 
@@ -113,6 +118,7 @@ export default function Bestsellers() {
       title: p.title,
       variantTitle: p.variantTitle,
       price: p.price,
+      compareAtPrice: p.compareAtPrice,
       image: p.image
     });
     
@@ -257,7 +263,19 @@ export default function Bestsellers() {
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A4A3B] pointer-events-none" />
                       </div>
                       
-                      <div className="font-bold text-xl text-[#5E0B10] mb-5">{formatPrice(p.price)}</div>
+                      <div className="flex items-baseline gap-2 mb-4 flex-wrap">
+                        <span className="font-extrabold text-2xl text-[#5E0B10]">{formatPrice(p.price)}</span>
+                        {p.compareAtPrice && p.compareAtPrice > p.price && (
+                          <span className="text-sm text-gray-400 line-through font-semibold">
+                            {formatPrice(p.compareAtPrice)}
+                          </span>
+                        )}
+                        {p.compareAtPrice && (
+                          <span className="text-[11px] font-extrabold bg-[#8A1B14] text-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            {Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100)}% OFF
+                          </span>
+                        )}
+                      </div>
                       
                       <div className="mt-auto flex flex-col gap-2">
                         <button 

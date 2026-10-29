@@ -19,15 +19,6 @@ import ProductJourney from "./ProductJourney";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 import { useRouter } from "next/navigation";
 
-const RECENT_ORDERS = [
-  { name: "Pooja S.", city: "Mumbai", item: "1L Pure A2 Gir Cow Ghee", time: "3 mins ago" },
-  { name: "Rajesh K.", city: "Bengaluru", item: "2.5L Family Value Pack", time: "8 mins ago" },
-  { name: "Anil M.", city: "Delhi NCR", item: "1L Pure A2 Gir Cow Ghee", time: "14 mins ago" },
-  { name: "Kavita D.", city: "Pune", item: "1L Pure A2 Gir Cow Ghee", time: "19 mins ago" },
-  { name: "Suresh P.", city: "Hyderabad", item: "5L Mega Family Pack", time: "25 mins ago" },
-  { name: "Meera N.", city: "Jaipur", item: "1L Pure A2 Gir Cow Ghee", time: "32 mins ago" },
-];
-
 export default function ProductDetails({ product, gheePacks }: { product: Product; gheePacks?: Product[] | null }) {
   const router = useRouter();
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
@@ -37,27 +28,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
   const [isAdding, setIsAdding] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [showCoupon, setShowCoupon] = useState(false);
   const [navigatingSlug, setNavigatingSlug] = useState<string | null>(null);
-
-  // High converting live signals
-  const [liveViewers, setLiveViewers] = useState(38);
-  const [recentOrderIdx, setRecentOrderIdx] = useState(0);
-  const [showRecentToast, setShowRecentToast] = useState(false);
-  const [countdown, setCountdown] = useState({ hours: 1, minutes: 46, seconds: 18 });
-  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
-
-  // Auto-change product images every 2 seconds with smooth faded transition
-  useEffect(() => {
-    if (!product.images || product.images.length <= 1) return;
-    if (isGalleryHovered) return;
-
-    const autoSlideTimer = setInterval(() => {
-      setSelectedImage((prev) => (prev + 1) % product.images.length);
-    }, 2000);
-
-    return () => clearInterval(autoSlideTimer);
-  }, [product.images, isGalleryHovered]);
 
   useEffect(() => {
     setNavigatingSlug(null);
@@ -78,77 +49,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
     d2.setDate(now.getDate() + 5);
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     setDeliveryDateStr(`${d1.toLocaleDateString('en-IN', options)} - ${d2.toLocaleDateString('en-IN', options)}`);
-
-    // Live viewers fluctuation (32 - 46 viewers)
-    const viewersTimer = setInterval(() => {
-      setLiveViewers((prev) => {
-        const delta = Math.floor(Math.random() * 5) - 2;
-        return Math.min(48, Math.max(31, prev + delta));
-      });
-    }, 5500);
-
-    // Rotating recent order toast
-    const recentOrderTimer = setInterval(() => {
-      setRecentOrderIdx((prev) => (prev + 1) % RECENT_ORDERS.length);
-      setShowRecentToast(true);
-      setTimeout(() => setShowRecentToast(false), 4000);
-    }, 11000);
-
-    // Initial popup after 4 seconds
-    const initialToastTimer = setTimeout(() => {
-      setShowRecentToast(true);
-      setTimeout(() => setShowRecentToast(false), 4500);
-    }, 3500);
-
-    // Same-day dispatch countdown timer
-    const countdownTimer = setInterval(() => {
-      const cur = new Date();
-      const cutoff = new Date(cur);
-      cutoff.setHours(18, 0, 0, 0);
-      let diff = cutoff.getTime() - cur.getTime();
-      if (diff < 0) {
-        cutoff.setDate(cutoff.getDate() + 1);
-        diff = cutoff.getTime() - cur.getTime();
-      }
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-      setCountdown({ hours, minutes, seconds });
-    }, 1000);
-
-    // Load 10% discount code only after 45 seconds on site
-    let sessionStart = sessionStorage.getItem("nn_session_start");
-    if (!sessionStart) {
-      sessionStart = Date.now().toString();
-      sessionStorage.setItem("nn_session_start", sessionStart);
-    }
-
-    const elapsed = Date.now() - parseInt(sessionStart, 10);
-    const remainingTime = Math.max(0, 45000 - elapsed);
-
-    if (remainingTime === 0) {
-      setShowCoupon(true);
-    } else {
-      const timer = setTimeout(() => {
-        setShowCoupon(true);
-      }, remainingTime);
-
-      return () => {
-        clearTimeout(timer);
-        clearInterval(viewersTimer);
-        clearInterval(recentOrderTimer);
-        clearTimeout(initialToastTimer);
-        clearInterval(countdownTimer);
-      };
-    }
-
-    return () => {
-      clearInterval(viewersTimer);
-      clearInterval(recentOrderTimer);
-      clearTimeout(initialToastTimer);
-      clearInterval(countdownTimer);
-    };
-  }, []);
+  }, [router]);
 
   const variant = product.variants[selectedVariantIdx];
   const price = variant?.price ?? product.price;
@@ -246,8 +147,6 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
       <div className="space-y-3.5 md:sticky md:top-24 md:self-start">
         <div 
           className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5] border border-gray-100 shadow-sm group select-none"
-          onMouseEnter={() => setIsGalleryHovered(true)}
-          onMouseLeave={() => setIsGalleryHovered(false)}
         >
           {/* Layered Cross-Fading Images (Auto-changes every 3s with smooth fade) */}
           {product.images && product.images.length > 0 ? (
@@ -427,31 +326,16 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <span className="text-xs text-gray-500 font-medium">• 100% Verified Buyers</span>
         </div>
 
-        {/* Real-time Viewers & Demand Signals (High Converting Urgency) */}
-        <div className="flex flex-wrap items-center gap-2 mb-3.5">
-          <div className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200/80 shadow-2xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-            <span>{liveViewers} people viewing right now</span>
-          </div>
-          <div className="inline-flex items-center gap-1 text-xs text-[#5E0B10] font-semibold bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/70 shadow-2xs">
-            <Flame className="w-3.5 h-3.5 text-[#C38936] fill-current" />
-            <span>29 jars dispatched today</span>
-          </div>
-        </div>
-
         {/* Variants & Packs Selector (500ml, 1L, 2.5L, 5L) - Positioned High for Instant Mobile Access */}
         {gheePacks && gheePacks.length > 0 && (
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <label className="text-xs sm:text-sm font-extrabold text-[#5E0B10] flex items-center gap-1.5">
                 <span>Select Pack Size:</span>
-                <span className="text-[11px] font-normal text-gray-500 hidden sm:inline">(Bigger Pack = Bigger Savings)</span>
+                <span className="text-[11px] font-normal text-gray-500 hidden sm:inline">(Direct Farm-To-Home Savings)</span>
               </label>
               <span className="text-[11px] sm:text-xs font-bold text-[#8A1B14] bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
-                Save up to 42%/L &rarr;
+                Save up to 68% Off MRP &rarr;
               </span>
             </div>
             
@@ -597,7 +481,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Authentic Same-Day Dispatch Cutoff Reassurance */}
+        {/* Authentic Same-Day Dispatch Reassurance */}
         <div className="mb-4 p-3 sm:p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] shadow-2xs flex items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center text-[#8A1B14] shrink-0">
@@ -605,14 +489,12 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             </div>
             <div>
               <span className="font-bold text-[#5E0B10] block">Same-Day Farm Dispatch</span>
-              <span className="text-[11px] text-[#7A4A3B]">Orders placed today dispatch before cutoff</span>
+              <span className="text-[11px] text-[#7A4A3B]">Handcrafted fresh in small batches &bull; Dispatched directly from farms</span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0 bg-white px-2.5 py-1 rounded-lg border border-[#EAD7BC]">
-            <Clock className="w-3.5 h-3.5 text-[#8A1B14]" />
-            <span className="font-mono font-bold text-[#8A1B14] text-xs">
-              {String(countdown.hours).padStart(2, '0')}h {String(countdown.minutes).padStart(2, '0')}m {String(countdown.seconds).padStart(2, '0')}s
-            </span>
+          <div className="flex items-center gap-1.5 shrink-0 bg-white px-2.5 py-1 rounded-lg border border-[#EAD7BC] text-[#8A1B14] font-bold text-xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Est. Delivery: {deliveryDateStr}</span>
           </div>
         </div>
 
@@ -998,27 +880,6 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           totalReviews={reviewStats?.total || 1688} 
           averageRating={reviewStats?.average || 4.9} 
         />
-      </div>
-
-      {/* Live Verified Order Social Proof Toast (Bottom Left) */}
-      <div
-        className={`fixed bottom-24 md:bottom-6 left-4 z-40 max-w-xs sm:max-w-sm bg-white/95 backdrop-blur-md border border-amber-300/80 rounded-2xl p-3 shadow-xl transition-all duration-500 flex items-center gap-2.5 ${
-          showRecentToast ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
-      >
-        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold shrink-0 text-sm">
-          ✓
-        </div>
-        <div className="min-w-0 text-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="font-extrabold text-[#5E0B10] truncate">{RECENT_ORDERS[recentOrderIdx].name}</span>
-            <span className="text-[10px] text-gray-500 font-normal">from {RECENT_ORDERS[recentOrderIdx].city}</span>
-          </div>
-          <p className="text-[11px] text-gray-700 font-medium truncate">
-            Ordered {RECENT_ORDERS[recentOrderIdx].item}
-          </p>
-          <span className="text-[10px] text-amber-700 font-bold">{RECENT_ORDERS[recentOrderIdx].time}</span>
-        </div>
       </div>
     </div>
   );

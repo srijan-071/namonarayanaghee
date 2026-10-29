@@ -128,6 +128,10 @@ export async function POST(req: Request) {
         email: checkoutData.email,
         phone: checkoutData.phone
       },
+      customerName: checkoutData.shippingAddress?.name || "",
+      customerEmail: checkoutData.email || "",
+      customerPhone: checkoutData.phone || "",
+      source: "web_checkout",
       paymentMethod: "prepaid",
       paymentStatus: "pending",
       paymentSessionId: null,

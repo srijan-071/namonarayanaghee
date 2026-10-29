@@ -174,11 +174,16 @@ export default function ProductCard({
 
         <div className="flex flex-col items-center gap-1 mt-auto">
           {/* Price & Savings */}
-          <div className="flex items-center justify-center gap-2 mb-0.5">
-            <span className="font-bold text-[#8A1B14] text-base sm:text-lg font-sans">{formatPrice(price)}</span>
+          <div className="flex items-center justify-center gap-1.5 mb-0.5 flex-wrap">
+            <span className="font-extrabold text-[#5E0B10] text-base sm:text-lg font-sans">{formatPrice(price)}</span>
             {compareAtPrice && compareAtPrice > price && (
-              <span className="text-xs sm:text-sm font-medium text-nn-bark/60 line-through">
+              <span className="text-xs sm:text-sm font-semibold text-stone-400 line-through">
                 {formatPrice(compareAtPrice)}
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="text-[10px] font-black bg-[#8A1B14] text-amber-200 px-1.5 py-0.5 rounded uppercase">
+                {discount}% OFF
               </span>
             )}
           </div>

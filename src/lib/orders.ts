@@ -222,11 +222,16 @@ export async function createOrder(
       email: data?.email || null,
       phone: data?.phone || ""
     },
+    customerName: data?.shippingAddress?.name || "",
+    customerEmail: data?.email || "",
+    customerPhone: data?.phone || "",
+    source: "web_checkout",
     paymentMethod: data?.paymentMethod || "prepaid",
     paymentStatus: "pending",
     paymentSessionId: null,
     status: "pending",
     createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   };
 
   await setDoc(orderDoc, orderPayload);
