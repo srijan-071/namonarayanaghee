@@ -38,20 +38,50 @@ function PayProxyContent() {
     potterParams.set("email", email);
     potterParams.set("phone", phone);
     potterParams.set("productinfo", productinfo);
+    potterParams.set("embed", "true");
     potterParams.set("returnUrl", returnUrl);
     potterParams.set("cancelUrl", cancelUrl);
     potterParams.set("brand", "namonarayanaghee");
 
     const target = `https://potter-world.com/pay-proxy?${potterParams.toString()}`;
     setDestinationUrl(target);
-
-    // Ultra-fast 150ms aesthetic redirect delay for seamless combined transition under 1s
-    const timer = setTimeout(() => {
-      window.location.href = target;
-    }, 150);
-
-    return () => clearTimeout(timer);
   }, [txnid, amount, productinfo, firstname, email, phone]);
+
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (!event.origin.includes("potter-world.com")) return;
+
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+
+      if (data.type === "RAZORPAY_SUCCESS") {
+        try {
+          await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: data.orderId,
+              razorpay_payment_id: data.razorpay_payment_id,
+              razorpay_order_id: data.razorpay_order_id,
+              razorpay_signature: data.razorpay_signature,
+            }),
+          });
+        } catch (e) {
+          console.error("Verification error:", e);
+        }
+
+        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
+        window.location.href = successUrl;
+      } else if (data.type === "RAZORPAY_DISMISSED") {
+        window.location.href = "/checkout";
+      } else if (data.type === "RAZORPAY_FAILED") {
+        window.location.href = "/checkout";
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   if (error) {
     return (
@@ -144,6 +174,15 @@ function PayProxyContent() {
           </p>
         </div>
       </div>
+
+      {destinationUrl && (
+        <iframe
+          src={destinationUrl}
+          title="Secure Payment Gateway"
+          className="fixed inset-0 w-full h-full border-0 z-50 bg-transparent"
+          allow="payment *; clipboard-read *; clipboard-write *"
+        />
+      )}
     </div>
   );
 }
