@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 import { Search, User, ShoppingBag, Gift } from "lucide-react";
 
 import Image from "next/image";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
-import DiwaliToran from "@/components/ui/DiwaliToran";
 import { Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const pathname = usePathname();
   const { open } = useCartDrawer();
   const cart = useCart();
@@ -33,12 +33,12 @@ export default function Header() {
 
   const navLinks = [
     { 
-      href: "/#diwali-specials", 
+      href: "/collections/all-products", 
       label: (
         <span className="flex items-center gap-1.5 text-[#8A1B14] font-extrabold px-2.5 py-1 bg-amber-100/90 border border-amber-400/50 rounded-full shadow-xs hover:bg-amber-200 transition">
-          <DiwaliDiya size={16} glow={false} />
-          <span>Diwali Hampers</span>
-          <span className="bg-[#8A1B14] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ml-0.5">Special</span>
+          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <span>Bestsellers</span>
+          <span className="bg-[#8A1B14] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ml-0.5">Pure A2</span>
         </span>
       ) 
     },
@@ -51,37 +51,34 @@ export default function Header() {
 
   return (
     <>
-      {/* Decorative Hanging Toran Garland */}
-      <DiwaliToran className="absolute top-0 inset-x-0 z-50 pointer-events-none opacity-90 hidden sm:block" />
-
-      {/* Diwali Festive Announcement Bar */}
+      {/* Royal Festive Announcement Bar */}
       <div className="bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] text-amber-100 text-xs py-2 px-3 sm:px-4 font-medium tracking-wide border-b border-amber-400/30 shadow-md relative z-40">
         <div className="nn-container flex items-center justify-center md:justify-between">
           <div className="hidden md:flex items-center gap-2.5">
-            <DiwaliDiya size={18} />
-            <span className="font-bold text-amber-300 tracking-wider">शुभ दीपावली महोत्सव</span>
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span className="font-bold text-amber-300 tracking-wider">100% PURE VEDIC BILONA GHEE</span>
             <span className="text-white/60">|</span>
-            <span className="text-white/95 text-[11px] font-semibold">100% Pure A2 Gir Cow Ghee for Akhand Diya &amp; Sweets</span>
+            <span className="text-white/95 text-[11px] font-semibold">Handcrafted from Indigenous Desi Gir Cows • Free Delivery</span>
           </div>
           <Link 
-            href="/#diwali-specials"
+            href="/collections/all-products"
             className="flex flex-col md:hidden text-center justify-center w-full gap-0.5 cursor-pointer hover:opacity-95 transition" 
           >
             <span className="text-[11px] font-bold text-amber-300 flex items-center justify-center gap-1.5">
-              <DiwaliDiya size={16} /> 🪔 SHUBH DEEPAVALI SPECIAL 🪔
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> 100% PURE A2 GIR COW GHEE
             </span>
             <span className="text-amber-100 font-extrabold text-[12px] flex items-center justify-center gap-1">
-              Flat 10% OFF (Code: <span className="bg-amber-300 text-stone-900 px-1 rounded font-black">DIWALI</span>) + Free Gifts!
+              Flat 10% OFF (Code: <span className="bg-amber-300 text-stone-900 px-1 rounded font-black">NAMO10</span>) + Free Delivery!
             </span>
           </Link>
           <Link 
-            href="/#diwali-specials"
+            href="/collections/all-products"
             className="hidden md:flex items-center gap-2 text-amber-200 font-bold cursor-pointer hover:text-white transition" 
           >
             <span className="bg-amber-400/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full border border-amber-400/40 uppercase tracking-widest font-extrabold">
-              Diwali Offer
+              Special Offer
             </span>
-            <span>Use Code: <strong className="text-amber-300 font-black underline">DIWALI</strong> for Extra 10% OFF + Free Gifts!</span>
+            <span>Use Code: <strong className="text-amber-300 font-black underline">NAMO10</strong> for Extra 10% OFF + Free Gifts!</span>
             <Gift className="w-3.5 h-3.5 text-amber-300" />
           </Link>
         </div>
@@ -104,18 +101,17 @@ export default function Header() {
             </svg>
           </button>
 
-          {/* Logo with Diwali Festive Greeting Accent */}
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
             <Image src="/assets/logo.png" alt="Namo Narayana Logo" width={100} height={100} className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-md transition-transform group-hover:scale-105" />
             <div className="hidden sm:flex flex-col">
               <span className="font-serif font-bold text-sm md:text-base text-[#5E0B10] leading-tight flex items-center gap-1.5">
                 <span>Namo Narayana</span>
-                <DiwaliDiya size={16} glow={true} />
               </span>
               <span className="text-[10px] md:text-[11px] font-bold text-[#8A1B14] tracking-widest uppercase flex items-center gap-1">
-                <span>शुभ दीपावली</span>
+                <span>Vedic Bilona Ghee</span>
                 <span className="text-amber-500">•</span>
-                <span className="text-[#C38936]">Festival of Lights</span>
+                <span className="text-[#C38936]">100% Pure A2</span>
               </span>
             </div>
           </Link>
@@ -149,7 +145,12 @@ export default function Header() {
             <Link href="/account" className="p-2 text-[#2A1612] hover:text-[#8A1B14] transition-colors hidden sm:block" aria-label="Account">
               <User strokeWidth={1.5} size={22} />
             </Link>
-            <button onClick={open} className="relative p-2 text-[#2A1612] hover:text-[#8A1B14] transition-colors group flex items-center" aria-label="Open cart">
+            <button 
+              onClick={open} 
+              onMouseEnter={() => router.prefetch("/checkout")}
+              className="relative p-2 text-[#2A1612] hover:text-[#8A1B14] transition-colors group flex items-center" 
+              aria-label="Open cart"
+            >
               <ShoppingBag strokeWidth={1.5} size={22} />
               {cart.totalItems > 0 && (
                 <span className="absolute top-1 right-0 bg-[#8A1B14] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center transform translate-x-1/4 -translate-y-1/4 shadow-xs">

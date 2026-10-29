@@ -34,6 +34,7 @@ function writeCart(cart: Cart) {
 }
 
 export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
+  "NAMO10": { type: 'percentage', value: 10 },
   "DIWALI": { type: 'percentage', value: 10 },
   "DIWALI2026": { type: 'percentage', value: 10 },
   "SHUBHLAABH": { type: 'fixed', value: 100 },

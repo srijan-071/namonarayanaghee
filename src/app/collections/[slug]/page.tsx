@@ -4,7 +4,7 @@ import { getCollection, getAllCollectionSlugs, getProduct } from "@/lib/data";
 import { generateCollectionMetadata } from "@/lib/seo";
 import { generateBreadcrumbSchema } from "@/lib/schema";
 import ProductCard from "@/components/product/ProductCard";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
+import { Sparkles } from "lucide-react";
 
 export const dynamic = "force-static";
 
@@ -47,8 +47,8 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
         <div className="nn-container">
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-[#5E0B10] text-amber-200 text-xs font-bold px-4 py-1.5 rounded-full mb-3 shadow-md border border-amber-400/50">
-              <DiwaliDiya size={16} glow={false} />
-              <span>शुभ दीपावली महोत्सव • FLAT 10% OFF WITH CODE: DIWALI</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <span>100% PURE BILONA GHEE • FLAT 10% OFF WITH CODE: NAMO10</span>
             </div>
             <h1 className="nn-title">{collection.title}</h1>
             {collection.description && <p className="nn-sub mt-3 max-w-xl mx-auto">{collection.description}</p>}

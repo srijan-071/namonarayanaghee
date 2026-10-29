@@ -18,7 +18,6 @@ import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 import { useRouter } from "next/navigation";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 const RECENT_ORDERS = [
   { name: "Pooja S.", city: "Mumbai", item: "1L Pure A2 Gir Cow Ghee", time: "3 mins ago" },
@@ -69,6 +68,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
   useEffect(() => {
     setIsMounted(true);
+    router.prefetch("/checkout");
 
     // Calculate dynamic delivery range (3 to 5 days ahead)
     const now = new Date();
@@ -315,8 +315,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           {/* Quality & Trust Badges on Image */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
             <span className="bg-[#8A1B14] text-amber-200 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5 border border-amber-400/40">
-              <DiwaliDiya size={14} glow={false} />
-              Diwali Festive Special
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              100% Pure Vedic A2
             </span>
             <span className="bg-[#8A1B14] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
               <Award className="w-3.5 h-3.5 text-amber-300" />
@@ -380,8 +380,8 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 border border-amber-400/50 shadow-xs">
-                <DiwaliDiya size={12} glow={false} />
-                <span>शुभ दीपावली स्पेशल</span>
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                <span>100% PURE BILONA</span>
               </span>
               <span className="text-xs uppercase tracking-widest font-extrabold text-[#C38936]">
                 Pure Desi Vedic Cow Ghee
@@ -699,19 +699,19 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
         </div>
 
-        {/* Quick Diwali Festive Coupon Code */}
+        {/* Special Coupon Code */}
         <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 rounded-xl border border-dashed border-amber-500/80 flex items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-2.5">
-            <DiwaliDiya size={18} glow={false} />
+            <Sparkles className="w-5 h-5 text-[#8A1B14] shrink-0" />
             <div className="text-xs">
-              <span className="font-extrabold text-[#8A1B14] block">Shubh Deepavali 10% Discount:</span>
+              <span className="font-extrabold text-[#8A1B14] block">Special 10% Discount:</span>
               <span className="font-mono font-black text-stone-900 bg-amber-300 px-2 py-0.5 rounded text-[11px] tracking-wider">
-                DIWALI
+                NAMO10
               </span>
             </div>
           </div>
           <button
-            onClick={() => handleCopyCoupon("DIWALI")}
+            onClick={() => handleCopyCoupon("NAMO10")}
             className="text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer shrink-0"
           >
             {codeCopied ? <Check className="w-3.5 h-3.5 text-[#8A1B14]" /> : <Copy className="w-3.5 h-3.5 text-stone-900" />}

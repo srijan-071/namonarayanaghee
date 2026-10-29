@@ -11,7 +11,6 @@ import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, Star, G
 import { trackEvent } from "@/lib/analytics";
 import { RAW_PRODUCTS } from "@/lib/data-store";
 import { getFreeGiftsForCart, has500mlGheeUpsell } from "@/lib/gifts";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 export default function CartDrawer() {
   const cart = useCart();
@@ -126,8 +125,8 @@ export default function CartDrawer() {
             <div className="w-8"></div>
           </div>
           <div className="bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] text-amber-200 text-center py-2.5 px-3 text-[12px] font-bold tracking-wide shadow-sm flex items-center justify-center gap-2 border-b border-amber-400/30">
-            <DiwaliDiya size={16} glow={false} />
-            <span>शुभ दीपावली: Free Shipping + Free Festive Gifts!</span>
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>100% Pure Vedic Ghee: Free Pan-India Delivery!</span>
           </div>
         </div>
 
@@ -317,24 +316,24 @@ export default function CartDrawer() {
                   <div className="flex items-center gap-2 text-[#5E0B10] font-bold text-[13px] mb-3">
                     <Ticket className="w-[18px] h-[18px] -rotate-45" /> Have a <span className="notranslate">coupon</span> code?
                   </div>
-                  {/* 1-Click Diwali Offer Coupon */}
+                  {/* 1-Click Offer Coupon */}
                   {!cart.discountCode && (
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-xl p-3 flex items-center justify-between mb-3 shadow-xs">
                       <div className="flex items-center gap-2 min-w-0">
-                        <DiwaliDiya size={20} glow={false} />
+                        <Sparkles className="w-5 h-5 text-[#8A1B14] shrink-0" />
                         <div>
                           <p className="text-[12px] font-black text-[#8A1B14] leading-tight">
-                            DIWALI SPECIAL (10% OFF)
+                            SPECIAL SAVINGS (10% OFF)
                           </p>
                           <p className="text-[11px] text-stone-600 font-medium">
-                            Apply code <span className="font-bold text-amber-900">DIWALI</span> for festive savings
+                            Apply code <span className="font-bold text-amber-900">NAMO10</span> for extra 10% OFF
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={() => {
-                          if (applyCoupon("DIWALI")) {
-                            toast.success("Shubh Deepavali! 10% Festive Discount Applied!");
+                          if (applyCoupon("NAMO10")) {
+                            toast.success("10% Special Discount Applied!");
                           }
                         }}
                         className="bg-[#8A1B14] hover:bg-[#68140E] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 cursor-pointer shrink-0"

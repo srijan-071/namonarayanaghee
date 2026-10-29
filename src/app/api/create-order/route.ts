@@ -6,6 +6,7 @@ import { checkBotId } from "botid/server";
 // We copy the coupons here since it's an API route or we could import it if it's available server-side.
 // We can just import it from lib/cart but since it has "use client", we shouldn't import cart.ts in an API route.
 const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
+  "NAMO10": { type: 'percentage', value: 10 },
   "ELVISH10": { type: 'percentage', value: 10 },
   "NAMO50": { type: 'fixed', value: 50 },
   "WELCOME": { type: 'percentage', value: 5 },

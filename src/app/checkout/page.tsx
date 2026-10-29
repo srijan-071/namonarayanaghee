@@ -36,7 +36,6 @@ import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 // Indian States list for dropdown selection
 const INDIAN_STATES = [
@@ -81,36 +80,75 @@ const PINCODE_PREFIX_MAP: Record<string, { city: string; state: string }> = {
   "12": { city: "Gurugram", state: "Haryana" },
   "13": { city: "Panipat", state: "Haryana" },
   "14": { city: "Ludhiana", state: "Punjab" },
+  "15": { city: "Bathinda", state: "Punjab" },
   "16": { city: "Chandigarh", state: "Chandigarh" },
+  "17": { city: "Shimla", state: "Himachal Pradesh" },
+  "18": { city: "Jammu", state: "Jammu & Kashmir" },
+  "19": { city: "Srinagar", state: "Jammu & Kashmir" },
   "20": { city: "Noida", state: "Uttar Pradesh" },
+  "21": { city: "Kanpur", state: "Uttar Pradesh" },
   "22": { city: "Lucknow", state: "Uttar Pradesh" },
+  "23": { city: "Mirzapur", state: "Uttar Pradesh" },
   "24": { city: "Dehradun", state: "Uttarakhand" },
+  "25": { city: "Meerut", state: "Uttar Pradesh" },
+  "26": { city: "Bareilly", state: "Uttar Pradesh" },
+  "27": { city: "Gorakhpur", state: "Uttar Pradesh" },
   "28": { city: "Mathura", state: "Uttar Pradesh" },
   "30": { city: "Jaipur", state: "Rajasthan" },
   "31": { city: "Udaipur", state: "Rajasthan" },
   "32": { city: "Kota", state: "Rajasthan" },
+  "33": { city: "Bikaner", state: "Rajasthan" },
   "34": { city: "Jodhpur", state: "Rajasthan" },
+  "36": { city: "Rajkot", state: "Gujarat" },
+  "37": { city: "Jamnagar", state: "Gujarat" },
   "38": { city: "Ahmedabad", state: "Gujarat" },
   "39": { city: "Surat", state: "Gujarat" },
   "40": { city: "Mumbai", state: "Maharashtra" },
   "41": { city: "Pune", state: "Maharashtra" },
+  "42": { city: "Nashik", state: "Maharashtra" },
+  "43": { city: "Aurangabad", state: "Maharashtra" },
   "44": { city: "Nagpur", state: "Maharashtra" },
   "45": { city: "Indore", state: "Madhya Pradesh" },
   "46": { city: "Bhopal", state: "Madhya Pradesh" },
+  "47": { city: "Gwalior", state: "Madhya Pradesh" },
+  "48": { city: "Jabalpur", state: "Madhya Pradesh" },
+  "49": { city: "Raipur", state: "Chhattisgarh" },
   "50": { city: "Hyderabad", state: "Telangana" },
+  "51": { city: "Tirupati", state: "Andhra Pradesh" },
+  "52": { city: "Vijayawada", state: "Andhra Pradesh" },
+  "53": { city: "Visakhapatnam", state: "Andhra Pradesh" },
   "56": { city: "Bengaluru", state: "Karnataka" },
+  "57": { city: "Mangaluru", state: "Karnataka" },
+  "58": { city: "Hubballi", state: "Karnataka" },
+  "59": { city: "Belagavi", state: "Karnataka" },
   "60": { city: "Chennai", state: "Tamil Nadu" },
+  "61": { city: "Thanjavur", state: "Tamil Nadu" },
+  "62": { city: "Madurai", state: "Tamil Nadu" },
+  "63": { city: "Salem", state: "Tamil Nadu" },
   "64": { city: "Coimbatore", state: "Tamil Nadu" },
+  "67": { city: "Kozhikode", state: "Kerala" },
   "68": { city: "Kochi", state: "Kerala" },
+  "69": { city: "Thiruvananthapuram", state: "Kerala" },
   "70": { city: "Kolkata", state: "West Bengal" },
+  "71": { city: "Howrah", state: "West Bengal" },
+  "72": { city: "Kharagpur", state: "West Bengal" },
+  "73": { city: "Siliguri", state: "West Bengal" },
+  "74": { city: "North 24 Parganas", state: "West Bengal" },
   "75": { city: "Bhubaneswar", state: "Odisha" },
+  "76": { city: "Cuttack", state: "Odisha" },
+  "78": { city: "Guwahati", state: "Assam" },
+  "79": { city: "Shillong", state: "Meghalaya" },
   "80": { city: "Patna", state: "Bihar" },
+  "81": { city: "Bhagalpur", state: "Bihar" },
+  "82": { city: "Gaya", state: "Bihar" },
   "83": { city: "Ranchi", state: "Jharkhand" },
+  "84": { city: "Muzaffarpur", state: "Bihar" },
+  "85": { city: "Purnia", state: "Bihar" },
 };
 
 // Popular instant-apply coupons
 const QUICK_COUPONS = [
-  { code: "DIWALI", label: "10% OFF", desc: "Festive Special" },
+  { code: "NAMO10", label: "10% OFF", desc: "Special 10% Off" },
   { code: "SHUBHLAABH", label: "₹100 OFF", desc: "Instant Discount" },
   { code: "WELCOME", label: "5% OFF", desc: "First Order" },
 ];
@@ -119,6 +157,7 @@ export default function CheckoutPage() {
   const cart = useCart();
   const { user } = useAuth();
   
+  const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
   const [pincodeSuccess, setPincodeSuccess] = useState(false);
@@ -147,6 +186,7 @@ export default function CheckoutPage() {
 
   // Pre-warm Firebase auth and order modules in background so Proceed to Pay has 0ms delay
   useEffect(() => {
+    setIsMounted(true);
     import("@/lib/firebase").then(({ initializeAnonymousAuth }) => {
       initializeAnonymousAuth().catch(() => {});
     });
@@ -281,7 +321,7 @@ export default function CheckoutPage() {
       setIsFetchingPincode(true);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 600);
 
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${cleanVal}`, { signal: controller.signal });
@@ -560,6 +600,21 @@ export default function CheckoutPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (!isMounted) {
+    return (
+      <div className="bg-[#FAF9F5] min-h-screen">
+        <header className="bg-white border-b border-[#EAD7BC]/70 h-14 sm:h-16" />
+        <div className="max-w-6xl mx-auto px-4 py-8 animate-pulse">
+          <div className="h-7 bg-stone-200 rounded w-44 mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-7 bg-white rounded-2xl h-96 border border-[#EAD7BC]/70" />
+            <div className="lg:col-span-5 bg-white rounded-2xl h-80 border border-[#EAD7BC]/70" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.items.length === 0 && !isSubmitting) {
     return (

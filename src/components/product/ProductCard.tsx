@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { formatPrice, discountPercent } from "@/lib/utils";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 export interface ProductCardProps {
   slug: string;
@@ -144,16 +143,14 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Festive Discount Badge */}
+        {/* Purity & Discount Badge */}
         {discount > 0 ? (
-          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-gradient-to-r from-[#8A1B14] to-[#630D12] text-amber-200 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40 flex items-center gap-1">
-            <DiwaliDiya size={12} glow={false} />
-            <span>{discount}% OFF</span>
+          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-gradient-to-r from-[#8A1B14] to-[#630D12] text-amber-200 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40">
+            {discount}% OFF
           </span>
         ) : (
-          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40 flex items-center gap-1">
-            <DiwaliDiya size={12} glow={false} />
-            <span>Diwali Special</span>
+          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40">
+            100% Pure A2
           </span>
         )}
 
@@ -167,7 +164,7 @@ export default function ProductCard({
         <div>
           <Link href={`/products/${slug}`} className="block focus:outline-none">
             <span className="text-[10px] text-[#8A1B14] font-extrabold uppercase tracking-widest block mb-1">
-              शुभ दीपावली स्पेशल
+              100% PURE BILONA GHEE
             </span>
             <h3 className="font-serif font-bold text-sm sm:text-base leading-snug text-nn-ink group-hover:text-[#8A1B14] transition-colors line-clamp-2 mb-1.5">
               {title}
@@ -196,6 +193,7 @@ export default function ProductCard({
             <button
               type="button"
               onClick={handleBuyNow}
+              onMouseEnter={() => router.prefetch("/checkout")}
               disabled={!available || isBuying}
               className="w-full bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-[0.98] text-stone-950 font-black text-xs sm:text-sm py-2 sm:py-2.5 px-2.5 rounded-xl transition-all shadow-[0_2px_10px_rgba(245,158,11,0.35)] flex items-center justify-center gap-1.5 uppercase border border-amber-300 cursor-pointer disabled:opacity-70 tracking-wide"
             >

@@ -33,7 +33,6 @@ import {
 import { toast } from "sonner";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
 
 interface ProductItem {
   id: number;
@@ -551,7 +550,7 @@ export default function NamoNarayanaGheeReviewContent() {
 
               {/* Best Pack Highlight Callout */}
               <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 flex items-center gap-3">
-                <DiwaliDiya size={28} className="shrink-0 text-amber-600" />
+                <Sparkles className="w-6 h-6 shrink-0 text-amber-600" />
                 <div className="text-xs sm:text-sm text-stone-700">
                   <strong className="text-[#8A1B14]">Editor&apos;s Recommendation:</strong> For a typical Indian household of 3–4 people, the <strong>1 Litre Pack (₹949)</strong> or <strong>2.5 Litre Family Pack (₹2,099)</strong> offers the ideal balance of culinary freshness, daily immunity dosage, and direct farm savings.
                 </div>

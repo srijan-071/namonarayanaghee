@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Leaf, Heart, Droplets, Ban, Users, Hexagon, Sparkles, Flame } from "lucide-react";
-import DiwaliDiya from "@/components/ui/DiwaliDiya";
+import { ArrowRight, Leaf, Heart, Droplets, Ban, Users, Hexagon, Sparkles, Flame, ShieldCheck } from "lucide-react";
 
 export default function BrandStory() {
   return (
@@ -16,24 +15,24 @@ export default function BrandStory() {
             className="relative bg-[#E9DFD1] rounded-[2rem] overflow-hidden p-8 md:p-12 pb-0 flex flex-col min-h-[500px] z-10"
           >
             <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em] mb-4 flex items-center gap-1.5">
-              <DiwaliDiya size={16} glow={false} />
-              <span>Shubh Deepavali Purity • Our Signature</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#8A1B14]" />
+              <span>VEDIC BILONA METHOD • OUR SIGNATURE</span>
             </span>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#5E0B10] mb-3">
-              100% A2 Gir Cow Ghee
+              100% Pure A2 Gir Cow Ghee
             </h2>
             <p className="text-[#4A352F] text-lg mb-8">
-              Pure by nature. Sacred for your Diwali puja, sweets &amp; family health.
+              Pure by nature. Sacred for your daily culinary recipes, wellness &amp; family health.
             </p>
             
             <div className="space-y-4 relative z-20 w-full sm:w-2/3 mb-10">
               <div className="flex items-start gap-4">
                 <div className="w-8 h-8 rounded-full border border-[#8A1B14]/40 bg-amber-50 flex items-center justify-center shrink-0">
-                  <Flame className="w-4 h-4 text-[#8A1B14]" />
+                  <Sparkles className="w-4 h-4 text-[#8A1B14]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">Akhand Diya Purity</h4>
-                  <p className="text-xs text-[#7A4A3B]">Sacred, smokeless sattvic golden flame</p>
+                  <h4 className="font-bold text-[#5E0B10] text-sm">Vedic Danedar Texture</h4>
+                  <p className="text-xs text-[#7A4A3B]">Golden, grainy texture with rich nutty aroma</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -50,8 +49,8 @@ export default function BrandStory() {
                   <Heart className="w-4 h-4 text-[#8A1B14]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">Rich Aroma for Diwali Sweets</h4>
-                  <p className="text-xs text-[#7A4A3B]">Perfect for Besan Laddoos &amp; Gujiyas</p>
+                  <h4 className="font-bold text-[#5E0B10] text-sm">Rich Aroma for Daily Cooking</h4>
+                  <p className="text-xs text-[#7A4A3B]">Elevates dal, rotis, parathas &amp; traditional sweets</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -60,14 +59,14 @@ export default function BrandStory() {
                 </div>
                 <div>
                   <h4 className="font-bold text-[#5E0B10] text-sm">Traditional Vedic Bilona</h4>
-                  <p className="text-xs text-[#7A4A3B]">Hand-churned makhana from curd</p>
+                  <p className="text-xs text-[#7A4A3B]">Hand-churned makhana from whole milk curd</p>
                 </div>
               </div>
             </div>
 
             <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
-              <DiwaliDiya size={16} glow={false} />
-              <span>Explore Diwali A2 Ghee</span>
+              <Sparkles className="w-4 h-4" />
+              <span>Explore A2 Gir Cow Ghee</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 

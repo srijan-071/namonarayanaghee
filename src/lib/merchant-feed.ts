@@ -148,7 +148,7 @@ ${additionalImages}
         <g:price>0.00 INR</g:price>
       </g:shipping>
       <g:custom_label_0>Bestseller</g:custom_label_0>
-      <g:custom_label_1>Diwali Special</g:custom_label_1>
+      <g:custom_label_1>Pure Vedic Bilona Ghee</g:custom_label_1>
     </item>`;
   }).join("\n");
 
