@@ -51,8 +51,6 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from 'sonner';
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
 import { BotIdClient } from "botid/client";
 
 const protectedBotRoutes = [
@@ -82,8 +80,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
               <CartDrawer />
               <InAppBrowserWarning />
-              <SpeedInsights />
-              <Analytics />
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>
