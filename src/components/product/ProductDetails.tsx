@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
+import DiwaliGiftToast from "./DiwaliGiftToast";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 import { useRouter } from "next/navigation";
 
@@ -641,6 +642,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
 
             {/* Instant Buy Now Button (High Impact Radiant Gold CTA) */}
             <button 
+              id="product-buy-now-btn"
               onClick={handleBuyNow} 
               disabled={!variant?.available || isAdding} 
               className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-[0.98] text-stone-950 font-black h-[52px] rounded-xl transition-all disabled:opacity-70 text-base sm:text-lg tracking-wide shadow-[0_4px_18px_rgba(245,158,11,0.45)] flex items-center justify-center gap-2 uppercase border border-amber-300 cursor-pointer"
@@ -888,6 +890,9 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           averageRating={reviewStats?.average || 4.9} 
         />
       </div>
+
+      {/* Diwali Special Deal Floating Gift Toast */}
+      <DiwaliGiftToast currentSlug={product.slug} onClaim={handleBuyNow} />
     </div>
   );
 }
