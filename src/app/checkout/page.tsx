@@ -90,7 +90,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetchingPincode, setIsFetchingPincode] = useState(false);
   const [pincodeSuccess, setPincodeSuccess] = useState(false);
-  const [showMobileSummary, setShowMobileSummary] = useState(false);
+  const [showMobileSummary, setShowMobileSummary] = useState(true);
 
   // Single form state
   const [form, setForm] = useState({
