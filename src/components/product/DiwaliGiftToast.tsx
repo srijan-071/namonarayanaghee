@@ -14,25 +14,17 @@ export default function DiwaliGiftToast({ currentSlug = "pure-desi-cow-ghee-1-li
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem("nn_diwali_toast_dismissed") === "true") {
-        return;
-      }
-    } catch {}
-
+    setIsDismissed(false);
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 1200);
+    }, 800);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [currentSlug]);
 
   const handleDismiss = () => {
     setIsVisible(false);
     setIsDismissed(true);
-    try {
-      sessionStorage.setItem("nn_diwali_toast_dismissed", "true");
-    } catch {}
   };
 
   const handleClaimClick = () => {
@@ -82,8 +74,8 @@ export default function DiwaliGiftToast({ currentSlug = "pure-desi-cow-ghee-1-li
   }
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-40 transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
-      <div className="bg-white/98 backdrop-blur-md border border-stone-200/90 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.14)] p-2.5 flex items-center gap-3">
+    <div className="fixed bottom-[calc(132px+env(safe-area-inset-bottom,0px))] md:bottom-6 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-[60] transition-all duration-300 animate-in fade-in slide-in-from-bottom-3">
+      <div className="bg-white/98 backdrop-blur-md border border-amber-300/80 rounded-2xl shadow-[0_12px_36px_rgba(94,11,16,0.18)] p-2.5 flex items-center gap-3">
         
         {/* Specific Bottle Image */}
         <div className="relative w-12 h-12 rounded-xl bg-[#FAF9F5] border border-stone-100 flex items-center justify-center p-1 shrink-0 overflow-hidden">
