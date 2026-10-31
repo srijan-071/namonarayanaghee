@@ -287,6 +287,13 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
               </span>
             </div>
             <h1 className="text-3xl lg:text-[34px] leading-tight font-serif font-bold text-[#5E0B10]">{product.title}</h1>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <span className="inline-flex items-center gap-1 bg-[#FDF6E8] border border-[#EAD7BC] px-2.5 py-0.5 rounded-full text-[11px] font-bold text-[#8A1B14]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                Official Store by Elvish Yadav
+              </span>
+              <span className="text-[11px] text-[#7A4A3B] font-medium hidden sm:inline">• Direct Farm Dispatch</span>
+            </div>
           </div>
           <button 
             className="p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition shrink-0 shadow-sm" 
@@ -663,7 +670,7 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 text-[11px] text-gray-600 mb-3 py-1.5 border-y border-amber-100">
             <span className="flex items-center gap-1 font-semibold text-emerald-800">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              UPI / Google Pay / Cards / COD
+              100% Secure UPI / GPay / PhonePe / Cards
             </span>
             <span className="text-gray-300 hidden sm:inline">•</span>
             <span className="flex items-center gap-1 font-semibold text-amber-900">

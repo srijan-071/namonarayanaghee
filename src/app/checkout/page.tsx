@@ -1349,10 +1349,43 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* COD Area Unavailability Notice (User Requirement & Psychological Reframe) */}
+                  {form.pincode.length === 6 && (
+                    <div className="mt-4 p-3.5 sm:p-4 bg-gradient-to-r from-amber-50/95 via-orange-50/70 to-amber-50/95 border border-amber-300/90 rounded-2xl flex items-start gap-3 text-xs animate-in fade-in slide-in-from-top-1 shadow-2xs">
+                      <div className="w-7 h-7 rounded-full bg-amber-200/90 text-amber-900 flex items-center justify-center shrink-0 font-bold text-sm mt-0.5 border border-amber-300">
+                        !
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <span className="font-extrabold text-[#5E0B10] text-[12px] sm:text-xs">
+                            Cash on Delivery (COD) is not available in {form.city ? form.city : "your area"}
+                          </span>
+                          <span className="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md border border-amber-300">
+                            PIN {form.pincode}
+                          </span>
+                        </div>
+                        <p className="text-[#7A4A3B] text-[11px] mt-1.5 leading-relaxed">
+                          Due to fragile glass-jar safety regulations with courier partners on this route, <strong>Cash on Delivery is temporarily unserviceable</strong>. Please complete your prepaid order via <strong>Instant UPI (Google Pay, PhonePe, Paytm) or Cards</strong> for 100% Guaranteed Express Dispatch.
+                        </p>
+                        <div className="mt-2.5 pt-2 border-t border-amber-200 flex flex-wrap items-center gap-3 text-[10px] font-bold text-emerald-800">
+                          <span className="flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Free Express Shipping
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Gift className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Free Complimentary Gift Included
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> 100% Vedic Purity Refund Guarantee
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Step 3: Payment Method Preview & Assurance */}
+              {/* Step 3: Payment Method Selector (Prepaid Active vs COD Unavailable) */}
               <div className="mt-8 pt-6 border-t border-[#EAD7BC]/60">
                 <div className="flex items-center justify-between pb-3">
                   <div className="flex items-center gap-2">
@@ -1363,36 +1396,66 @@ export default function CheckoutPage() {
                       Payment Method
                     </h2>
                   </div>
-                  <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Instant 1-Tap UPI Available
+                  <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    Instant 1-Tap UPI Ready
                   </span>
                 </div>
 
-                <div className="bg-[#FAF9F5] border border-[#EAD7BC] rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full border-4 border-[#5E0B10] bg-white" />
-                      <span className="text-xs sm:text-sm font-bold text-[#5E0B10]">
-                        UPI, Cards, NetBanking &amp; Wallets
+                <div className="space-y-3">
+                  {/* Option 1: Online Prepaid (Active & Selected) */}
+                  <div className="bg-[#FAF9F5] border-2 border-[#5E0B10] rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-4 h-4 rounded-full border-4 border-[#5E0B10] bg-white shrink-0" />
+                        <div>
+                          <span className="text-xs sm:text-sm font-extrabold text-[#5E0B10] block">
+                            Instant Online Payment (UPI, Cards, NetBanking)
+                          </span>
+                          <span className="text-[11px] text-emerald-700 font-semibold">
+                            Recommended • 100% Guaranteed Express Dispatch
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                        ACTIVE
                       </span>
                     </div>
-                    <Lock className="w-3.5 h-3.5 text-stone-400" />
+
+                    {/* Payment Badges Strip */}
+                    <div className="flex items-center gap-1.5 flex-wrap pt-1 pl-6">
+                      <span className="bg-[#5F259F] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">PhonePe</span>
+                      <span className="bg-white border border-[#D5D8D0] text-[#1A73E8] text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">GPay</span>
+                      <span className="bg-[#002970] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Paytm</span>
+                      <span className="bg-emerald-700 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">UPI</span>
+                      <span className="bg-[#1A1F71] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">VISA</span>
+                      <span className="bg-[#EB001B] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Mastercard</span>
+                      <span className="bg-[#097939] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">RuPay</span>
+                    </div>
+
+                    <p className="text-[11px] text-[#7A4A3B] pl-6 pt-2">
+                      Pay smoothly using Google Pay, PhonePe, Paytm, CRED or any Card. Zero payment gateway charges.
+                    </p>
                   </div>
 
-                  {/* Payment Badges Strip */}
-                  <div className="flex items-center gap-2 flex-wrap pt-1 pl-6">
-                    <span className="bg-[#5F259F] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">PhonePe</span>
-                    <span className="bg-white border border-[#D5D8D0] text-[#1A73E8] text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">GPay</span>
-                    <span className="bg-[#002970] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Paytm</span>
-                    <span className="bg-emerald-700 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">UPI</span>
-                    <span className="bg-[#1A1F71] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">VISA</span>
-                    <span className="bg-[#EB001B] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Mastercard</span>
-                    <span className="bg-[#097939] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">RuPay</span>
+                  {/* Option 2: Cash on Delivery (Visually Disabled with Explanation) */}
+                  <div className="bg-stone-50/70 border border-stone-200 rounded-2xl p-3.5 opacity-65 cursor-not-allowed select-none">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-4 h-4 rounded-full border-2 border-stone-300 bg-stone-100 shrink-0" />
+                        <div>
+                          <span className="text-xs sm:text-sm font-bold text-stone-500 line-through block">
+                            Cash on Delivery (COD)
+                          </span>
+                          <span className="text-[10px] text-red-600 font-semibold">
+                            {form.pincode ? `Temporarily unavailable for PIN ${form.pincode}` : "Temporarily unavailable in your area"}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full shrink-0">
+                        UNAVAILABLE
+                      </span>
+                    </div>
                   </div>
-
-                  <p className="text-[11px] text-[#7A4A3B] pl-6">
-                    Pay securely using your preferred UPI app (PhonePe, Google Pay, Paytm, CRED) or any Debit/Credit Card.
-                  </p>
                 </div>
               </div>
 
