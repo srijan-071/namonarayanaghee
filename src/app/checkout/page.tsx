@@ -75,78 +75,6 @@ const INDIAN_STATES = [
   "West Bengal",
 ];
 
-// Fast offline lookup table for instant 0ms state/city resolution
-const PINCODE_PREFIX_MAP: Record<string, { city: string; state: string }> = {
-  "11": { city: "New Delhi", state: "Delhi" },
-  "12": { city: "Gurugram", state: "Haryana" },
-  "13": { city: "Panipat", state: "Haryana" },
-  "14": { city: "Ludhiana", state: "Punjab" },
-  "15": { city: "Bathinda", state: "Punjab" },
-  "16": { city: "Chandigarh", state: "Chandigarh" },
-  "17": { city: "Shimla", state: "Himachal Pradesh" },
-  "18": { city: "Jammu", state: "Jammu & Kashmir" },
-  "19": { city: "Srinagar", state: "Jammu & Kashmir" },
-  "20": { city: "Noida", state: "Uttar Pradesh" },
-  "21": { city: "Kanpur", state: "Uttar Pradesh" },
-  "22": { city: "Lucknow", state: "Uttar Pradesh" },
-  "23": { city: "Mirzapur", state: "Uttar Pradesh" },
-  "24": { city: "Dehradun", state: "Uttarakhand" },
-  "25": { city: "Meerut", state: "Uttar Pradesh" },
-  "26": { city: "Bareilly", state: "Uttar Pradesh" },
-  "27": { city: "Gorakhpur", state: "Uttar Pradesh" },
-  "28": { city: "Mathura", state: "Uttar Pradesh" },
-  "30": { city: "Jaipur", state: "Rajasthan" },
-  "31": { city: "Udaipur", state: "Rajasthan" },
-  "32": { city: "Kota", state: "Rajasthan" },
-  "33": { city: "Bikaner", state: "Rajasthan" },
-  "34": { city: "Jodhpur", state: "Rajasthan" },
-  "36": { city: "Rajkot", state: "Gujarat" },
-  "37": { city: "Jamnagar", state: "Gujarat" },
-  "38": { city: "Ahmedabad", state: "Gujarat" },
-  "39": { city: "Surat", state: "Gujarat" },
-  "40": { city: "Mumbai", state: "Maharashtra" },
-  "41": { city: "Pune", state: "Maharashtra" },
-  "42": { city: "Nashik", state: "Maharashtra" },
-  "43": { city: "Aurangabad", state: "Maharashtra" },
-  "44": { city: "Nagpur", state: "Maharashtra" },
-  "45": { city: "Indore", state: "Madhya Pradesh" },
-  "46": { city: "Bhopal", state: "Madhya Pradesh" },
-  "47": { city: "Gwalior", state: "Madhya Pradesh" },
-  "48": { city: "Jabalpur", state: "Madhya Pradesh" },
-  "49": { city: "Raipur", state: "Chhattisgarh" },
-  "50": { city: "Hyderabad", state: "Telangana" },
-  "51": { city: "Tirupati", state: "Andhra Pradesh" },
-  "52": { city: "Vijayawada", state: "Andhra Pradesh" },
-  "53": { city: "Visakhapatnam", state: "Andhra Pradesh" },
-  "56": { city: "Bengaluru", state: "Karnataka" },
-  "57": { city: "Mangaluru", state: "Karnataka" },
-  "58": { city: "Hubballi", state: "Karnataka" },
-  "59": { city: "Belagavi", state: "Karnataka" },
-  "60": { city: "Chennai", state: "Tamil Nadu" },
-  "61": { city: "Thanjavur", state: "Tamil Nadu" },
-  "62": { city: "Madurai", state: "Tamil Nadu" },
-  "63": { city: "Salem", state: "Tamil Nadu" },
-  "64": { city: "Coimbatore", state: "Tamil Nadu" },
-  "67": { city: "Kozhikode", state: "Kerala" },
-  "68": { city: "Kochi", state: "Kerala" },
-  "69": { city: "Thiruvananthapuram", state: "Kerala" },
-  "70": { city: "Kolkata", state: "West Bengal" },
-  "71": { city: "Howrah", state: "West Bengal" },
-  "72": { city: "Kharagpur", state: "West Bengal" },
-  "73": { city: "Siliguri", state: "West Bengal" },
-  "74": { city: "North 24 Parganas", state: "West Bengal" },
-  "75": { city: "Bhubaneswar", state: "Odisha" },
-  "76": { city: "Cuttack", state: "Odisha" },
-  "78": { city: "Guwahati", state: "Assam" },
-  "79": { city: "Shillong", state: "Meghalaya" },
-  "80": { city: "Patna", state: "Bihar" },
-  "81": { city: "Bhagalpur", state: "Bihar" },
-  "82": { city: "Gaya", state: "Bihar" },
-  "83": { city: "Ranchi", state: "Jharkhand" },
-  "84": { city: "Muzaffarpur", state: "Bihar" },
-  "85": { city: "Purnia", state: "Bihar" },
-};
-
 // Popular instant-apply coupons
 const QUICK_COUPONS = [
   { code: "NAMO10", label: "10% OFF", desc: "Special 10% Off" },
@@ -185,6 +113,11 @@ export default function CheckoutPage() {
   const latestPincodeRef = useRef("");
   const pincodeCache = useRef<Record<string, { city: string; state: string }>>({});
 
+  // Funnel tracking guards so events fire once per checkout session
+  const hasTrackedContactStarted = useRef(false);
+  const hasTrackedContactCompleted = useRef(false);
+  const hasTrackedAddressStarted = useRef(false);
+
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [isIframeOpen, setIsIframeOpen] = useState(false);
 
@@ -205,8 +138,13 @@ export default function CheckoutPage() {
 
         try {
           clearCart();
+          // Clear abandoned cart ONLY upon verified payment success
+          const cleanPhone = form.phone.replace(/\D/g, "");
+          if (cleanPhone) {
+            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(cleanPhone).catch(() => { }));
+          }
           if (form.email) {
-            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email));
+            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email).catch(() => { }));
           }
 
           await fetch("/api/verify-payment", {
@@ -244,7 +182,7 @@ export default function CheckoutPage() {
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [form.email]);
+  }, [form.phone, form.email]);
 
   // Pre-warm Firebase auth and order modules in background so Proceed to Pay has 0ms delay
   useEffect(() => {
@@ -330,26 +268,96 @@ export default function CheckoutPage() {
     }
   };
 
-  // Proactive lead capture: log abandoned cart when a valid phone number or email is entered
+  // Funnel tracking: Contact form start
+  const handleContactFocus = () => {
+    if (!hasTrackedContactStarted.current) {
+      hasTrackedContactStarted.current = true;
+      trackEvent("contact_form_started", {
+        currency: "INR",
+        value: cart.subtotal
+      });
+    }
+  };
+
+  // Funnel tracking: Address form start
+  const handleAddressFocus = () => {
+    if (!hasTrackedAddressStarted.current) {
+      hasTrackedAddressStarted.current = true;
+      trackEvent("address_form_started", {
+        currency: "INR",
+        value: cart.subtotal
+      });
+    }
+  };
+
+  const checkAndTrackContactCompleted = (cleanPhone: string, cleanName: string) => {
+    if (cleanPhone.length === 10 && cleanName.length >= 2 && !hasTrackedContactCompleted.current) {
+      hasTrackedContactCompleted.current = true;
+      trackEvent("contact_completed", {
+        currency: "INR",
+        value: cart.subtotal
+      });
+    }
+  };
+
+  // Progressive Blur Validation & Lead Capture
   const handlePhoneBlur = () => {
     const cleanPhone = form.phone.replace(/\D/g, "");
-    if (cleanPhone.length === 10 && cart.items.length > 0) {
-      import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
-        logAbandonedCart({
-          phone: cleanPhone,
-          email: form.email.trim(),
-          name: form.name.trim(),
-          cartItems: cart.items,
-          subtotal: cart.subtotal
-        }).catch(() => { });
+    if (cleanPhone.length > 0 && cleanPhone.length < 10) {
+      setFieldErrors(prev => ({ ...prev, phone: "Please enter 10-digit mobile number" }));
+    } else if (cleanPhone.length === 10) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next.phone;
+        return next;
       });
+      // Proactive lead capture on valid 10-digit phone
+      if (cart.items.length > 0) {
+        import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
+          logAbandonedCart({
+            phone: cleanPhone,
+            email: form.email.trim(),
+            name: form.name.trim(),
+            cartItems: cart.items,
+            subtotal: cart.subtotal
+          }).catch(() => { });
+        });
+      }
+      checkAndTrackContactCompleted(cleanPhone, form.name.trim());
+    }
+  };
+
+  const handleNameBlur = () => {
+    const cleanName = form.name.trim();
+    if (cleanName.length > 0 && cleanName.length < 2) {
+      setFieldErrors(prev => ({ ...prev, name: "Please enter your full name" }));
+    } else if (cleanName.length >= 2) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next.name;
+        return next;
+      });
+      checkAndTrackContactCompleted(form.phone.replace(/\D/g, ""), cleanName);
     }
   };
 
   const handleEmailBlur = () => {
     const cleanEmail = form.email.trim();
     const cleanPhone = form.phone.replace(/\D/g, "");
-    if (cleanEmail && cleanEmail.includes("@") && cart.items.length > 0) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Email is optional: only validate format if user entered something
+    if (cleanEmail && !emailRegex.test(cleanEmail)) {
+      setFieldErrors(prev => ({ ...prev, email: "Please enter a valid email address (e.g. name@gmail.com)" }));
+    } else {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next.email;
+        return next;
+      });
+    }
+
+    if (cleanEmail && emailRegex.test(cleanEmail) && cart.items.length > 0) {
       import("@/lib/abandoned-cart").then(({ logAbandonedCart }) => {
         logAbandonedCart({
           phone: cleanPhone || "0000000000",
@@ -362,28 +370,51 @@ export default function CheckoutPage() {
     }
   };
 
+  const handlePincodeBlur = () => {
+    const cleanPincode = form.pincode.replace(/\D/g, "");
+    if (cleanPincode.length > 0 && cleanPincode.length < 6) {
+      setFieldErrors(prev => ({ ...prev, pincode: "Please enter 6-digit PIN code" }));
+    }
+  };
+
+  const handleAddressBlur = () => {
+    const cleanAddr = form.address.trim();
+    if (cleanAddr.length > 0 && cleanAddr.length < 4) {
+      setFieldErrors(prev => ({ ...prev, address: "Please enter house/flat & street address" }));
+    }
+  };
+
+  const handleCityBlur = () => {
+    if (!form.city.trim()) {
+      setFieldErrors(prev => ({ ...prev, city: "Please enter city / district" }));
+    }
+  };
+
+  const handleStateBlur = () => {
+    if (!form.state.trim()) {
+      setFieldErrors(prev => ({ ...prev, state: "Please select state" }));
+    }
+  };
+
+  // Robust 6-digit PIN lookup with 3.5s timeout, cache, abort controller, and fallback
   const handlePincodeChange = async (val: string) => {
     const cleanVal = val.replace(/\D/g, "").slice(0, 6);
     handleFieldChange("pincode", cleanVal);
-    setPincodeSuccess(false);
 
-    // Instant offline 0ms prefix hint
-    if (cleanVal.length >= 2) {
-      const prefix = cleanVal.slice(0, 2);
-      if (PINCODE_PREFIX_MAP[prefix] && (!form.city || !form.state)) {
-        setForm(prev => ({
-          ...prev,
-          city: prev.city || PINCODE_PREFIX_MAP[prefix].city,
-          state: prev.state || PINCODE_PREFIX_MAP[prefix].state
-        }));
-      }
+    if (cleanVal.length < 6) {
+      setPincodeSuccess(false);
+      return;
     }
 
     if (cleanVal.length === 6) {
       // Instant cache hit
       if (pincodeCache.current[cleanVal]) {
         const cached = pincodeCache.current[cleanVal];
-        setForm(prev => ({ ...prev, city: cached.city, state: cached.state }));
+        setForm(prev => ({
+          ...prev,
+          city: prev.city || cached.city,
+          state: prev.state || cached.state
+        }));
         setPincodeSuccess(true);
         setFieldErrors(prev => {
           const next = { ...prev };
@@ -399,7 +430,8 @@ export default function CheckoutPage() {
       setIsFetchingPincode(true);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      // Increased timeout to 3500ms to avoid aggressive network drops on mobile
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
 
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${cleanVal}`, { signal: controller.signal });
@@ -416,8 +448,8 @@ export default function CheckoutPage() {
             pincodeCache.current[cleanVal] = { city: resolvedCity, state: resolvedState };
             setForm(prev => ({
               ...prev,
-              city: resolvedCity || prev.city,
-              state: resolvedState || prev.state
+              city: resolvedCity,
+              state: resolvedState
             }));
             setPincodeSuccess(true);
             setFieldErrors(prev => {
@@ -430,7 +462,7 @@ export default function CheckoutPage() {
           }
         }
       } catch {
-        // Fail silently so manual entry is never hindered
+        // Fallback gracefully so manual entry is never hindered
       } finally {
         if (latestPincodeRef.current === cleanVal) {
           setIsFetchingPincode(false);
@@ -507,10 +539,9 @@ export default function CheckoutPage() {
     const cleanCity = form.city.trim();
     const cleanState = form.state.trim();
 
+    // Email is OPTIONAL: only validate format if user entered an email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!cleanEmail) {
-      errors.email = "Please enter your email address for order confirmation & tracking";
-    } else if (!emailRegex.test(cleanEmail)) {
+    if (cleanEmail && !emailRegex.test(cleanEmail)) {
       errors.email = "Please enter a valid email address (e.g. name@gmail.com)";
     }
 
@@ -570,7 +601,8 @@ export default function CheckoutPage() {
       }
 
       const cleanPhone = form.phone.replace(/\D/g, "");
-      const customerEmail = form.email.trim();
+      // Synthetic fallback for email when user leaves it optional
+      const customerEmail = form.email.trim() || `${cleanPhone}@customer.namonarayanaghee.store`;
 
       const fullStreetAddress = form.landmark.trim()
         ? `${form.address.trim()}, Near ${form.landmark.trim()}`
@@ -595,10 +627,16 @@ export default function CheckoutPage() {
         couponCode: couponCode || undefined
       };
 
-      const loadingToastId = toast.loading("Connecting to secure 1-tap payment gateway...");
+      const loadingToastId = toast.loading("Preparing secure payment options...");
 
-      trackEvent("add_shipping_info", { value: cart.subtotal, currency: "INR" });
-      trackEvent("add_payment_info", { payment_type: "prepaid", value: cart.subtotal, currency: "INR" });
+      // Track verified address submission
+      trackEvent("add_shipping_info", {
+        value: cart.subtotal,
+        currency: "INR",
+        city: address.city,
+        state: address.state,
+        pincode: address.pincode
+      });
 
       trackEvent("order_created", {
         value: pricing.amountToPay,
@@ -654,10 +692,9 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
 
-      // Clear abandoned cart lead upon payment checkout initiation
-      import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => {
-        clearAbandonedCart(cleanPhone).catch(() => { });
-      });
+      // Note: We deliberately DO NOT delete the abandoned cart lead here!
+      // If the user drops out of the payment gateway, the lead remains recoverable.
+      // It is only cleared upon verified payment success (RAZORPAY_SUCCESS).
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
       const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
@@ -679,6 +716,19 @@ export default function CheckoutPage() {
       toast.dismiss(loadingToastId);
       setIframeUrl(targetUrl);
       setIsIframeOpen(true);
+
+      // User has reached and viewed the actual payment interface
+      trackEvent("payment_step_viewed", {
+        orderId,
+        value: effectivePricing.amountToPay,
+        currency: "INR"
+      });
+      trackEvent("add_payment_info", {
+        orderId,
+        payment_type: "prepaid",
+        value: effectivePricing.amountToPay,
+        currency: "INR"
+      });
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");
@@ -927,7 +977,7 @@ export default function CheckoutPage() {
                     </h2>
                   </div>
                   <span className="text-[11px] text-[#7A4A3B]">
-                    For WhatsApp delivery tracking
+                    For order &amp; delivery updates
                   </span>
                 </div>
 
@@ -952,13 +1002,19 @@ export default function CheckoutPage() {
                         value={form.phone}
                         onChange={(e) => handleFieldChange("phone", e.target.value.replace(/\D/g, ""))}
                         onBlur={handlePhoneBlur}
-                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${fieldErrors.phone ? "bg-red-50/20" : ""
-                          }`}
+                        onFocus={handleContactFocus}
+                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${
+                          fieldErrors.phone ? "bg-red-50/20" : ""
+                        }`}
                       />
                     </div>
-                    {fieldErrors.phone && (
+                    {fieldErrors.phone ? (
                       <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {fieldErrors.phone}
+                        <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.phone}
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-stone-500 mt-1 flex items-center gap-1 font-medium">
+                        <span>🔒 Delivery updates via WhatsApp only. No spam calls.</span>
                       </p>
                     )}
                   </div>
@@ -978,26 +1034,29 @@ export default function CheckoutPage() {
                         placeholder="e.g. Rahul Sharma"
                         value={form.name}
                         onChange={(e) => handleFieldChange("name", e.target.value)}
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.name
+                        onBlur={handleNameBlur}
+                        onFocus={handleContactFocus}
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.name
                             ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                          }`}
+                        }`}
                       />
                     </div>
                     {fieldErrors.name && (
                       <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {fieldErrors.name}
+                        <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.name}
                       </p>
                     )}
                   </div>
 
-                  {/* Email (Required) */}
+                  {/* Email (Optional!) */}
                   <div className="sm:col-span-2">
                     <div className="flex items-center justify-between mb-1.5">
                       <label htmlFor="checkout-email" className="block text-xs font-bold text-[#5E0B10]">
-                        Email Address <span className="text-red-600 font-bold">*</span>
+                        Email Address <span className="text-stone-400 font-normal text-[11px]">(Optional)</span>
                       </label>
-                      <span className="text-[10px] text-[#8A1B14] font-semibold">Required for order tracking &amp; invoice</span>
+                      <span className="text-[10px] text-stone-400 font-medium">For PDF invoice &amp; tax receipt</span>
                     </div>
                     <div className="relative">
                       <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
@@ -1007,14 +1066,13 @@ export default function CheckoutPage() {
                         type="email"
                         inputMode="email"
                         autoComplete="email"
-                        required
                         placeholder="e.g. rahul@gmail.com"
                         value={form.email}
                         onChange={(e) => handleFieldChange("email", e.target.value)}
                         onBlur={handleEmailBlur}
                         className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.email 
-                            ? "border-red-500 ring-1 ring-red-500 bg-red-50/20" 
+                          fieldErrors.email
+                            ? "border-red-500 ring-1 ring-red-500 bg-red-50/20"
                             : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
                         }`}
                       />
@@ -1029,7 +1087,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Step 2: Delivery Address */}
+              {/* Step 2: Delivery Address (PIN Code First!) */}
               <div className="space-y-4 mt-8 pt-6 border-t border-[#EAD7BC]/60">
                 <div className="flex items-center justify-between pb-3 border-b border-[#EAD7BC]/60">
                   <div className="flex items-center gap-2">
@@ -1041,12 +1099,70 @@ export default function CheckoutPage() {
                     </h2>
                   </div>
                   <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                    <Truck className="w-3 h-3" /> Pan India Free
+                    <Truck className="w-3 h-3" /> Free Express Shipping
                   </span>
                 </div>
 
                 <div className="space-y-4">
-                  {/* Street Address */}
+                  {/* 1. PIN Code (Top / First Field!) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label htmlFor="checkout-pincode" className="block text-xs font-bold text-[#5E0B10]">
+                        Delivery PIN Code <span className="text-red-600">*</span>
+                      </label>
+                      {pincodeSuccess && (
+                        <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-0.5">
+                          <Check className="w-3 h-3 text-emerald-600" /> Location Verified
+                        </span>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A1B14] pointer-events-none" />
+                      <input
+                        id="checkout-pincode"
+                        name="postal-code"
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="postal-code"
+                        maxLength={6}
+                        placeholder="Enter 6-digit PIN code (e.g. 110001)"
+                        value={form.pincode}
+                        onChange={(e) => handlePincodeChange(e.target.value)}
+                        onBlur={handlePincodeBlur}
+                        onFocus={handleAddressFocus}
+                        className={`w-full border rounded-xl pl-10 pr-9 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white transition ${
+                          fieldErrors.pincode
+                            ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
+                            : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
+                        }`}
+                      />
+                      {isFetchingPincode && (
+                        <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-[#8A1B14]" />
+                      )}
+                    </div>
+                    {fieldErrors.pincode && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.pincode}
+                      </p>
+                    )}
+
+                    {/* Instant Positive Delivery Feedback Card */}
+                    {pincodeSuccess && form.city && form.state && (
+                      <div className="mt-2 p-2.5 bg-emerald-50/80 border border-emerald-200/80 rounded-xl flex items-center justify-between text-xs text-emerald-900 animate-in fade-in slide-in-from-top-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span className="font-medium text-[11px] sm:text-xs">
+                            Delivering to <strong>{form.city}, {form.state}</strong>
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold bg-white text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                          3–5 Days • FREE
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. Street Address */}
                   <div>
                     <label htmlFor="checkout-address" className="block text-xs font-bold text-[#5E0B10] mb-1.5">
                       House / Flat No., Building, Street or Area <span className="text-red-600">*</span>
@@ -1061,20 +1177,23 @@ export default function CheckoutPage() {
                         placeholder="e.g. Flat 302, Royal Enclave, MG Road"
                         value={form.address}
                         onChange={(e) => handleFieldChange("address", e.target.value)}
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.address
+                        onBlur={handleAddressBlur}
+                        onFocus={handleAddressFocus}
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
+                          fieldErrors.address
                             ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                          }`}
+                        }`}
                       />
                     </div>
                     {fieldErrors.address && (
                       <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> {fieldErrors.address}
+                        <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.address}
                       </p>
                     )}
                   </div>
 
-                  {/* Nearby Landmark */}
+                  {/* 3. Nearby Landmark */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label htmlFor="checkout-landmark" className="block text-xs font-bold text-[#5E0B10]">
@@ -1096,53 +1215,18 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Pincode, City, State Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                    {/* PIN Code */}
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label htmlFor="checkout-pincode" className="block text-xs font-bold text-[#5E0B10]">
-                          PIN Code <span className="text-red-600">*</span>
-                        </label>
-                        {pincodeSuccess && (
-                          <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-0.5">
-                            <Check className="w-3 h-3" /> Verified
-                          </span>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <MapPin className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A1B14] pointer-events-none" />
-                        <input
-                          id="checkout-pincode"
-                          name="postal-code"
-                          type="text"
-                          inputMode="numeric"
-                          autoComplete="postal-code"
-                          maxLength={6}
-                          placeholder="6-digit PIN"
-                          value={form.pincode}
-                          onChange={(e) => handlePincodeChange(e.target.value)}
-                          className={`w-full border rounded-xl pl-10 pr-8 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white ${fieldErrors.pincode
-                              ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
-                              : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                            }`}
-                        />
-                        {isFetchingPincode && (
-                          <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-[#8A1B14]" />
-                        )}
-                      </div>
-                      {fieldErrors.pincode && (
-                        <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" /> {fieldErrors.pincode}
-                        </p>
-                      )}
-                    </div>
-
+                  {/* 4. City & State (Pre-filled from PIN, editable) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {/* City */}
                     <div>
-                      <label htmlFor="checkout-city" className="block text-xs font-bold text-[#5E0B10] mb-1.5">
-                        City / District <span className="text-red-600">*</span>
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label htmlFor="checkout-city" className="block text-xs font-bold text-[#5E0B10]">
+                          City / District <span className="text-red-600">*</span>
+                        </label>
+                        {form.city && (
+                          <span className="text-[10px] text-stone-400 font-medium">Editable</span>
+                        )}
+                      </div>
                       <div className="relative">
                         <Building2 className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
                         <input
@@ -1150,37 +1234,46 @@ export default function CheckoutPage() {
                           name="city"
                           type="text"
                           autoComplete="address-level2"
-                          placeholder="City"
+                          placeholder="City / District"
                           value={form.city}
                           onChange={(e) => handleFieldChange("city", e.target.value)}
-                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.city
+                          onBlur={handleCityBlur}
+                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
+                            fieldErrors.city
                               ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                            }`}
+                          }`}
                         />
                       </div>
                       {fieldErrors.city && (
                         <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" /> {fieldErrors.city}
+                          <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.city}
                         </p>
                       )}
                     </div>
 
                     {/* State Dropdown */}
                     <div>
-                      <label htmlFor="checkout-state" className="block text-xs font-bold text-[#5E0B10] mb-1.5">
-                        State <span className="text-red-600">*</span>
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label htmlFor="checkout-state" className="block text-xs font-bold text-[#5E0B10]">
+                          State <span className="text-red-600">*</span>
+                        </label>
+                        {form.state && (
+                          <span className="text-[10px] text-stone-400 font-medium">Editable</span>
+                        )}
+                      </div>
                       <div className="relative">
                         <select
                           id="checkout-state"
                           name="state"
                           value={form.state}
                           onChange={(e) => handleFieldChange("state", e.target.value)}
-                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${fieldErrors.state
+                          onBlur={handleStateBlur}
+                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${
+                            fieldErrors.state
                               ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#5E0B10] focus:ring-1 focus:ring-[#5E0B10]"
-                            }`}
+                          }`}
                         >
                           <option value="">Select State</option>
                           {INDIAN_STATES.map((st) => (
@@ -1194,7 +1287,7 @@ export default function CheckoutPage() {
                       </div>
                       {fieldErrors.state && (
                         <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" /> {fieldErrors.state}
+                          <AlertCircle className="w-3 h-3 shrink-0" /> {fieldErrors.state}
                         </p>
                       )}
                     </div>
@@ -1556,14 +1649,14 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                     <Lock className="w-4 h-4 text-amber-300" />
-                    <span>Pay {formatPrice(pricing.amountToPay)} via UPI / Card →</span>
+                    <span>Continue to Payment →</span>
                   </>
                 )}
               </button>
 
               <p className="text-[11px] text-center text-[#7A4A3B] font-medium flex items-center justify-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                <span>256-Bit Encrypted • No hidden charges</span>
+                <span>Secure 256-Bit SSL • Free Delivery • No hidden charges</span>
               </p>
 
             </div>
@@ -1591,11 +1684,11 @@ export default function CheckoutPage() {
       </main>
 
       {/* ─── 4. Mobile Sticky Bottom Bar (Zero Friction) ─── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md px-4 py-2.5 border-t border-[#EAD7BC] shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[max(0.6rem,env(safe-area-inset-bottom))]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md px-4 py-2.5 border-t border-[#EAD7BC] shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
           <div className="flex flex-col shrink-0">
-            <span className="text-[10px] text-[#7A4A3B] font-semibold uppercase tracking-wider">
-              Total to Pay
+            <span className="text-[9px] text-[#7A4A3B] font-bold uppercase tracking-wider">
+              Step 2 · Total
             </span>
             <span className="text-xl font-extrabold text-[#5E0B10] leading-tight">
               {formatPrice(pricing.amountToPay)}
@@ -1617,7 +1710,7 @@ export default function CheckoutPage() {
             ) : (
               <>
                 <Lock className="w-3.5 h-3.5 text-amber-300" />
-                <span>Pay {formatPrice(pricing.amountToPay)} →</span>
+                <span>Continue to Payment →</span>
               </>
             )}
           </button>
