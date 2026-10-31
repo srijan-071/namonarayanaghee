@@ -1451,25 +1451,58 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  {/* Option 2: Cash on Delivery (Visually Disabled with Explanation) */}
-                  <div className="bg-stone-50/70 border border-stone-200 rounded-2xl p-3.5 opacity-65 cursor-not-allowed select-none">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-4 h-4 rounded-full border-2 border-stone-300 bg-stone-100 shrink-0" />
-                        <div>
-                          <span className="text-xs sm:text-sm font-bold text-stone-500 line-through block">
-                            Cash on Delivery (COD)
-                          </span>
-                          <span className="text-[10px] text-red-600 font-semibold">
-                            {form.pincode ? `Temporarily unavailable for PIN ${form.pincode}` : "Temporarily unavailable in your area"}
-                          </span>
+                  {/* Option 2: Cash on Delivery (Appears available until 6-digit PIN is entered) */}
+                  {form.pincode.length === 6 ? (
+                    // Only after 6-digit PIN is entered: Show unavailable state for this specific PIN
+                    <div className="bg-stone-50/70 border border-stone-200 rounded-2xl p-3.5 opacity-65 cursor-not-allowed select-none animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-4 h-4 rounded-full border-2 border-stone-300 bg-stone-100 shrink-0" />
+                          <div>
+                            <span className="text-xs sm:text-sm font-bold text-stone-500 line-through block">
+                              Cash on Delivery (COD)
+                            </span>
+                            <span className="text-[10px] text-red-600 font-semibold">
+                              Temporarily unavailable for PIN {form.pincode}
+                            </span>
+                          </div>
                         </div>
+                        <span className="text-[10px] font-bold bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full shrink-0">
+                          UNAVAILABLE
+                        </span>
                       </div>
-                      <span className="text-[10px] font-bold bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full shrink-0">
-                        UNAVAILABLE
-                      </span>
                     </div>
-                  </div>
+                  ) : (
+                    // Before PIN is entered: Looks active & prompts to enter PIN
+                    <div
+                      onClick={() => {
+                        const pinEl = document.getElementById("checkout-pincode");
+                        if (pinEl) {
+                          pinEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                          pinEl.focus();
+                        }
+                        toast.info("Please enter your 6-digit delivery PIN code above to verify COD serviceability.");
+                      }}
+                      className="bg-white border border-stone-200 hover:border-[#5E0B10]/40 rounded-2xl p-3.5 cursor-pointer transition-all active:scale-[0.99] group shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-4 h-4 rounded-full border-2 border-stone-300 group-hover:border-[#5E0B10] bg-white shrink-0 transition-colors" />
+                          <div>
+                            <span className="text-xs sm:text-sm font-bold text-stone-800 block group-hover:text-[#5E0B10] transition-colors">
+                              Cash on Delivery (COD)
+                            </span>
+                            <span className="text-[10px] text-stone-500 font-medium">
+                              Enter 6-digit delivery PIN code above to verify serviceability
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold bg-stone-100 text-stone-700 px-2 py-0.5 rounded-full border border-stone-200 shrink-0 group-hover:bg-[#5E0B10]/10 group-hover:text-[#5E0B10] transition-colors">
+                          CHECK PIN
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
