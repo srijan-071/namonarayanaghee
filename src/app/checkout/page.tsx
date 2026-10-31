@@ -134,18 +134,24 @@ export default function CheckoutPage() {
         setIframeUrl(null);
         setIsSubmitting(true);
 
+        // Track payment info submission now that payment credentials succeeded
+        trackEvent("add_payment_info", {
+          orderId: data.orderId,
+          payment_type: "razorpay_prepaid",
+          value: pricing.amountToPay,
+          currency: "INR"
+        });
+
         const verifyToastId = toast.loading("Payment received! Confirming your order...");
 
         try {
           clearCart();
-          // Clear abandoned cart ONLY upon verified payment success
+          // Update abandoned cart lifecycle to PAID / recovered
           const cleanPhone = form.phone.replace(/\D/g, "");
-          if (cleanPhone) {
-            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(cleanPhone).catch(() => { }));
-          }
-          if (form.email) {
-            import("@/lib/abandoned-cart").then(({ clearAbandonedCart }) => clearAbandonedCart(form.email).catch(() => { }));
-          }
+          import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
+            if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "paid", { orderId: data.orderId }).catch(() => {});
+            if (form.email) updateAbandonedCartStatus(form.email, "paid", { orderId: data.orderId }).catch(() => {});
+          });
 
           await fetch("/api/verify-payment", {
             method: "POST",
@@ -170,12 +176,26 @@ export default function CheckoutPage() {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(false);
+
+        // Preserve lead: update lifecycle status to 'failed' (dismissed) without deleting
+        const cleanPhone = form.phone.replace(/\D/g, "");
+        import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
+          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: "Payment dismissed by user" }).catch(() => {});
+        });
+
         toast.info("Payment window closed. You can complete your order whenever you're ready.");
 
       } else if (data.type === "RAZORPAY_FAILED") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(false);
+
+        // Preserve lead: update lifecycle status to 'failed' with reason
+        const cleanPhone = form.phone.replace(/\D/g, "");
+        import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
+          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: data.error?.description || "Gateway payment failure" }).catch(() => {});
+        });
+
         toast.error(data.error?.description || "Payment failed. Please try another payment method.");
       }
     };
@@ -692,9 +712,12 @@ export default function CheckoutPage() {
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
 
-      // Note: We deliberately DO NOT delete the abandoned cart lead here!
-      // If the user drops out of the payment gateway, the lead remains recoverable.
-      // It is only cleared upon verified payment success (RAZORPAY_SUCCESS).
+      // Transition abandoned cart lead to 'pending' with orderId attached.
+      // Lead remains active and recoverable if gateway is closed without payment.
+      import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
+        if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "pending", { orderId }).catch(() => {});
+        if (form.email.trim()) updateAbandonedCartStatus(form.email.trim(), "pending", { orderId }).catch(() => {});
+      });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
       const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
@@ -720,12 +743,6 @@ export default function CheckoutPage() {
       // User has reached and viewed the actual payment interface
       trackEvent("payment_step_viewed", {
         orderId,
-        value: effectivePricing.amountToPay,
-        currency: "INR"
-      });
-      trackEvent("add_payment_info", {
-        orderId,
-        payment_type: "prepaid",
         value: effectivePricing.amountToPay,
         currency: "INR"
       });

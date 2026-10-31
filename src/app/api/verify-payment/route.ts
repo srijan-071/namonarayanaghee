@@ -46,6 +46,25 @@ export async function POST(req: Request) {
 
     const nowIso = new Date().toISOString();
 
+    // Verify HMAC SHA256 signature if credentials and signature parameters are present
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    let signatureVerified: boolean | null = null;
+    if (key_secret && razorpay_order_id && razorpay_payment_id && razorpay_signature) {
+      try {
+        const crypto = await import("crypto");
+        const expectedSignature = crypto
+          .createHmac("sha256", key_secret)
+          .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+          .digest("hex");
+        signatureVerified = expectedSignature === razorpay_signature;
+        if (!signatureVerified) {
+          console.warn(`[PAYMENT_WARNING] Signature mismatch for order ${cleanOrderId}.`);
+        }
+      } catch (sigErr) {
+        console.error("Signature verification error:", sigErr);
+      }
+    }
+
     // 1. Mark order as PAID in Firestore now that user has officially reached the Thank You page
     const updatedFields: Record<string, any> = {
       paymentStatus: "paid",
@@ -56,6 +75,7 @@ export async function POST(req: Request) {
         razorpay_payment_id: paymentId,
         razorpay_order_id: razorpay_order_id || orderData.paymentDetails?.razorpay_order_id || null,
         razorpay_signature: razorpay_signature || orderData.paymentDetails?.razorpay_signature || null,
+        signatureVerified: signatureVerified ?? orderData.paymentDetails?.signatureVerified ?? null,
         gateway: gateway || orderData.paymentDetails?.gateway || "razorpay",
         proxyDomain: "potter-world.com",
         paidAt: orderData.paymentDetails?.paidAt || nowIso,
@@ -75,9 +95,12 @@ export async function POST(req: Request) {
     };
 
     // 2. Dispatch Telegram Bot notification and Customer Brevo Confirmation Email in parallel
-    const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email;
+    const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || orderData.customerEmail;
+    const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || orderData.customerPhone;
     const customerName = orderData.shippingAddress?.name || orderData.contactInfo?.name || "Customer";
     const orderTotal = orderData.amountToPay || orderData.totalAmount;
+
+    const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
 
     await Promise.allSettled([
       sendTelegramNotification(cleanOrderId, mergedOrder, "success").catch((err) => {
@@ -88,8 +111,12 @@ export async function POST(req: Request) {
             console.error("Customer confirmation email error on thank-you page:", err);
           })
         : Promise.resolve(),
-      customerEmail
-        ? deleteDoc(doc(db, "abandoned_carts", customerEmail)).catch(() => {})
+      // Transition abandoned-cart lead to 'paid' / recovered across both phone and email
+      customerPhone
+        ? updateAbandonedCartStatus(customerPhone.replace(/\D/g, ""), "paid", { orderId: cleanOrderId }).catch(() => {})
+        : Promise.resolve(),
+      customerEmail && !customerEmail.endsWith("@customer.namonarayanaghee.store")
+        ? updateAbandonedCartStatus(customerEmail, "paid", { orderId: cleanOrderId }).catch(() => {})
         : Promise.resolve()
     ]);
 

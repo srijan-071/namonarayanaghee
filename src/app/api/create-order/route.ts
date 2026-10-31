@@ -40,9 +40,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
     
-    if (!checkoutData || !checkoutData.email || !checkoutData.phone) {
-        return NextResponse.json({ error: "Missing checkout info" }, { status: 400 });
+    if (!checkoutData || !checkoutData.phone) {
+      return NextResponse.json({ error: "Missing required contact phone" }, { status: 400 });
     }
+
+    const cleanPhone = String(checkoutData.phone).replace(/\D/g, "");
+    if (!cleanPhone || cleanPhone.length < 10) {
+      return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
+    }
+
+    const customerEmail = (checkoutData.email || "").trim() || `${cleanPhone}@customer.namonarayanaghee.store`;
 
     // Server-side subtotal calculation
     let serverSubtotal = 0;
@@ -103,7 +110,7 @@ export async function POST(req: Request) {
     }
 
     const amountAfterDiscount = serverSubtotal - discount;
-    const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(checkoutData.email?.toLowerCase().trim() || '');
+    const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(customerEmail.toLowerCase().trim());
     const amountToPay = isAdmin ? 100 : amountAfterDiscount; // 100 paise = ₹1.00 for admin test
 
     const orderId = crypto.randomUUID().replace(/-/g, "").slice(0, 20);
@@ -125,12 +132,12 @@ export async function POST(req: Request) {
       billingAddress: checkoutData.billingAddress || null,
       gstDetails: checkoutData.gstDetails || null,
       contactInfo: {
-        email: checkoutData.email,
-        phone: checkoutData.phone
+        email: customerEmail,
+        phone: cleanPhone
       },
       customerName: checkoutData.shippingAddress?.name || "",
-      customerEmail: checkoutData.email || "",
-      customerPhone: checkoutData.phone || "",
+      customerEmail: customerEmail,
+      customerPhone: cleanPhone,
       source: "web_checkout",
       paymentMethod: "prepaid",
       paymentStatus: "pending",
@@ -144,8 +151,8 @@ export async function POST(req: Request) {
     if (uid && !uid.startsWith("guest_")) {
        await firestoreSetDoc("users", uid, {
            uid,
-           email: checkoutData.email,
-           phone: checkoutData.phone,
+           email: customerEmail,
+           phone: cleanPhone,
            defaultShippingAddress: checkoutData.shippingAddress || null,
            defaultBillingAddress: checkoutData.billingAddress || null,
            gstDetails: checkoutData.gstDetails || null,

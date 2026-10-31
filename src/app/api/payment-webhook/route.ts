@@ -45,14 +45,20 @@ export async function POST(req: Request) {
 
       console.log(`Order ${orderId} gateway webhook acknowledged (waiting for thank-you page visit)`);
 
-      // Clear abandoned cart
-      if (metadata?.email || data.contactInfo?.email) {
-        const emailToClear = metadata?.email || data.contactInfo?.email;
-        try {
-          await firestoreDeleteDoc("abandoned_carts", emailToClear);
-        } catch (e) {
-          console.error("Failed to delete abandoned cart on webhook", e);
+      // Transition abandoned cart to paid / recovered across phone and email
+      const phoneToClear = (data.contactInfo?.phone || metadata?.phone || data.customerPhone || "").replace(/\D/g, "");
+      const emailToClear = metadata?.email || data.contactInfo?.email || data.customerEmail;
+      
+      try {
+        const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
+        if (phoneToClear) {
+          await updateAbandonedCartStatus(phoneToClear, "paid", { orderId }).catch(() => {});
         }
+        if (emailToClear && !emailToClear.endsWith("@customer.namonarayanaghee.store")) {
+          await updateAbandonedCartStatus(emailToClear, "paid", { orderId }).catch(() => {});
+        }
+      } catch (e) {
+        console.error("Failed to update abandoned cart status on webhook", e);
       }
     }
 

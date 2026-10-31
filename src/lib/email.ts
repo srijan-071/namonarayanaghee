@@ -3,6 +3,12 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
     throw new Error("Missing orderId or email");
   }
 
+  // Gracefully skip delivery if customer checked out with phone-only (synthetic email fallback)
+  if (email.toLowerCase().endsWith("@customer.namonarayanaghee.store")) {
+    console.log(`[EMAIL_SKIPPED] Order ${orderId} has phone-only checkout (synthetic address: ${email}).`);
+    return true;
+  }
+
   const amountInINR = (amount || 0) / 100;
   const formattedAmount = new Intl.NumberFormat("en-IN", {
     style: "currency",
