@@ -669,21 +669,43 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
           </div>
 
           {/* Quick Payment & Trust Badges Strip */}
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 text-[11px] text-gray-600 mb-3 py-1.5 border-y border-amber-100">
-            <span className="flex items-center gap-1 font-semibold text-emerald-800">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              100% Secure UPI / GPay / PhonePe / Cards
-            </span>
-            <span className="text-gray-300 hidden sm:inline">•</span>
-            <span className="flex items-center gap-1 font-semibold text-amber-900">
-              <Truck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-              Free Express Delivery
-            </span>
-            <span className="text-gray-300 hidden sm:inline">•</span>
-            <span className="flex items-center gap-1 font-semibold text-[#8A1B14]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#8A1B14] shrink-0" />
-              100% Purity Guarantee
-            </span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-gray-600 mb-3 py-2 border-y border-amber-100">
+            <div className="flex items-center gap-3 font-semibold text-emerald-800">
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                100% Secure Instant UPI &amp; Cards
+              </span>
+              <span className="text-gray-300 hidden sm:inline">•</span>
+              <span className="flex items-center gap-1 font-semibold text-amber-900 hidden sm:flex">
+                <Truck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                Free Express Delivery
+              </span>
+            </div>
+
+            {/* Official Payment Logos */}
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={56} height={16} className="h-3 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/gpay.png" alt="Google Pay" width={42} height={14} className="h-3 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/paytm.png" alt="Paytm" width={38} height={12} className="h-2.5 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/upi.png" alt="UPI" width={38} height={14} className="h-2.5 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/visa.png" alt="Visa" width={34} height={12} className="h-2.5 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/mastercard.svg" alt="Mastercard" width={22} height={14} className="h-3 w-auto object-contain" />
+              </div>
+              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
+                <Image src="/assets/payments/rupay.svg" alt="RuPay" width={36} height={12} className="h-2.5 w-auto object-contain" />
+              </div>
+            </div>
           </div>
         </div>
 

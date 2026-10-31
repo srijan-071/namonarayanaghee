@@ -155,3 +155,4 @@ export default function DiwaliGiftToast({ currentSlug = "pure-desi-cow-ghee-1-li
     </div>
   );
 }
+

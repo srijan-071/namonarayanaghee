@@ -1421,15 +1421,29 @@ export default function CheckoutPage() {
                       </span>
                     </div>
 
-                    {/* Payment Badges Strip */}
-                    <div className="flex items-center gap-1.5 flex-wrap pt-1 pl-6">
-                      <span className="bg-[#5F259F] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">PhonePe</span>
-                      <span className="bg-white border border-[#D5D8D0] text-[#1A73E8] text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">GPay</span>
-                      <span className="bg-[#002970] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Paytm</span>
-                      <span className="bg-emerald-700 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">UPI</span>
-                      <span className="bg-[#1A1F71] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">VISA</span>
-                      <span className="bg-[#EB001B] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">Mastercard</span>
-                      <span className="bg-[#097939] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-2xs">RuPay</span>
+                    {/* Official Payment Logos Strip */}
+                    <div className="flex items-center gap-2 flex-wrap pt-2 pl-6">
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={70} height={20} className="h-4 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/gpay.png" alt="Google Pay" width={52} height={20} className="h-4 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/paytm.png" alt="Paytm" width={48} height={16} className="h-3.5 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/upi.png" alt="UPI" width={48} height={18} className="h-3.5 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/visa.png" alt="Visa" width={42} height={14} className="h-3.5 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/mastercard.svg" alt="Mastercard" width={30} height={20} className="h-4 w-auto object-contain" />
+                      </div>
+                      <div className="h-7 px-2.5 py-1 bg-white rounded-lg border border-stone-200/90 flex items-center justify-center shadow-2xs hover:border-[#5E0B10]/30 transition-all">
+                        <Image src="/assets/payments/rupay.svg" alt="RuPay" width={46} height={16} className="h-3.5 w-auto object-contain" />
+                      </div>
                     </div>
 
                     <p className="text-[11px] text-[#7A4A3B] pl-6 pt-2">
