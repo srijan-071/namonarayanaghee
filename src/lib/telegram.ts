@@ -9,7 +9,12 @@ function formatTelegramPrice(paise: number | undefined | null): string {
   })}`;
 }
 
-export async function sendTelegramNotification(orderId: string, orderData: any, event: string = "success", rawMessage?: string) {
+export async function sendTelegramNotification(
+  orderId: string,
+  orderData: any,
+  event: string = "success",
+  rawMessage?: string
+) {
   let finalMessage = rawMessage;
 
   const nowIST = new Date().toLocaleString("en-IN", {
@@ -19,7 +24,7 @@ export async function sendTelegramNotification(orderId: string, orderData: any, 
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true
+    hour12: true,
   });
 
   if (!finalMessage) {
@@ -31,16 +36,66 @@ export async function sendTelegramNotification(orderId: string, orderData: any, 
       const totalPaise = orderData?.cartTotal || pricePaise * qty;
       const freeGift = orderData?.freeGift;
 
+      // Visitor tracking & repeat identification
+      const visitor = orderData?.visitor || {};
+      const visitorId = visitor.visitorId || orderData?.visitorId || "N/A";
+      const sessionCount = visitor.sessionCartCount ?? orderData?.sessionCartCount ?? 1;
+      const lifetimeCount = visitor.lifetimeCartCount ?? orderData?.lifetimeCartCount ?? 1;
+      const isRepeat = visitor.isRepeat ?? orderData?.isRepeat ?? (sessionCount > 1);
+
+      let activityLabel = "✨ 1st time adding to cart (New Visitor)";
+      if (sessionCount > 1) {
+        activityLabel = `⚠️ REPEAT ADDITION #${sessionCount} in this session (Lifetime: ${lifetimeCount} times)`;
+      } else if (lifetimeCount > 1) {
+        activityLabel = `🔁 Returning Visitor (Lifetime: ${lifetimeCount} additions across sessions)`;
+      }
+
+      // Geo & Network Details
+      const geo = orderData?.geo || {};
+      const locationParts = [
+        geo.city || orderData.city,
+        geo.region || orderData.region,
+        geo.country || orderData.country,
+      ].filter(Boolean);
+      const locationStr = locationParts.length > 0 ? locationParts.join(", ") : "Location Unknown";
+      const ipStr = geo.ip || orderData.clientIp || "N/A";
+      const ispStr = geo.isp || orderData.isp;
+      const zipStr = geo.zip || orderData.zip;
+      const deviceStr = geo.deviceSummary || orderData.deviceSummary || "Unknown Device";
+      const screenStr = visitor.screenResolution || orderData.screenResolution;
+
+      // Attribution Details (Meta ads, UTM, Referrer)
+      const utmSource = visitor.utmSource || orderData.utmSource;
+      const utmMedium = visitor.utmMedium || orderData.utmMedium;
+      const utmCampaign = visitor.utmCampaign || orderData.utmCampaign;
+      const fbclid = visitor.fbclid || orderData.fbclid;
+      const referrer = visitor.referrer || orderData.referrer;
+      const pageStr = visitor.currentPage || orderData.currentPage || "/";
+
+      const headerTitle = isRepeat
+        ? "🔄 CART INITIATED (REPEAT ADDITION) 🔄"
+        : "🛒 1. CART INITIATED 🛒";
+
       finalMessage = `
-🛒 1. CART INITIATED 🛒
+${headerTitle}
 ------------------------------
-A customer just added an item to their cart:
+A customer added an item to their cart:
 
 📦 Item: ${itemTitle}${variantTitle} (x${qty})
 💵 Item Price: ${formatTelegramPrice(pricePaise * qty)}
 💰 Cart Subtotal: ${formatTelegramPrice(totalPaise)}
 ${freeGift ? `🎁 Free Gift: ${freeGift}\n` : ""}📊 Total Items in Cart: ${orderData?.itemsCount || 1}
 ⏰ Time: ${nowIST}
+
+🌐 Customer Location & Network:
+📍 Location: ${locationStr}${zipStr ? ` (PIN: ${zipStr})` : ""}
+🌐 IP Address: ${ipStr}
+${ispStr ? `🏢 Network/ISP: ${ispStr}\n` : ""}📱 Device: ${deviceStr}${screenStr ? ` (${screenStr})` : ""}
+
+👤 Visitor Attribution & Repeat Check:
+🆔 Visitor ID: ${visitorId}
+🔄 Cart Activity: ${activityLabel}
+${(utmSource || fbclid) ? `🎯 Traffic Source: ${utmSource || (fbclid ? "Meta Ads (Instagram/FB)" : "Direct")}${utmMedium ? ` / ${utmMedium}` : ""}\n` : ""}${utmCampaign ? `📢 Campaign: ${utmCampaign}\n` : ""}${fbclid ? `🔗 Meta Click (fbclid): ${String(fbclid).substring(0, 32)}...\n` : ""}${referrer ? `🔗 Referrer: ${referrer}\n` : ""}📄 Page: ${pageStr}
 ------------------------------
       `.trim();
     } else if (event === "payment_initiated" || event === "initiated") {
@@ -48,16 +103,43 @@ ${freeGift ? `🎁 Free Gift: ${freeGift}\n` : ""}📊 Total Items in Cart: ${or
         throw new Error("Missing orderId or orderData");
       }
 
-      const itemsText = orderData.items?.map((item: any) => 
-        `• ${item.quantity}x ${item.name || item.title} ${item.variantTitle ? `(${item.variantTitle})` : ''} - ${item.price === 0 || item.isGift ? 'FREE GIFT' : formatTelegramPrice(item.price * item.quantity)}`
-      ).join('\n') || 'No items found';
+      const itemsText =
+        orderData.items
+          ?.map(
+            (item: any) =>
+              `• ${item.quantity}x ${item.name || item.title} ${
+                item.variantTitle ? `(${item.variantTitle})` : ""
+              } - ${
+                item.price === 0 || item.isGift
+                  ? "FREE GIFT"
+                  : formatTelegramPrice(item.price * item.quantity)
+              }`
+          )
+          .join("\n") || "No items found";
 
-      const giftsText = orderData.freeGifts && orderData.freeGifts.length > 0
-        ? `\n🎁 Free Gifts Included:\n${orderData.freeGifts.map((g: any) => typeof g === 'string' ? `• ${g}` : `• ${g.name} (${g.size} x${g.quantity})`).join('\n')}`
-        : '';
+      const giftsText =
+        orderData.freeGifts && orderData.freeGifts.length > 0
+          ? `\n🎁 Free Gifts Included:\n${orderData.freeGifts
+              .map((g: any) =>
+                typeof g === "string" ? `• ${g}` : `• ${g.name} (${g.size} x${g.quantity})`
+              )
+              .join("\n")}`
+          : "";
 
       const shipping = orderData.shippingAddress || {};
       const contact = orderData.contactInfo || {};
+
+      // Network & Geo info
+      const geo = orderData?.geo || {};
+      const locationParts = [
+        geo.city || orderData.city,
+        geo.region || orderData.region,
+        geo.country || orderData.country,
+      ].filter(Boolean);
+      const ipStr = geo.ip || orderData.clientIp;
+      const ispStr = geo.isp || orderData.isp;
+      const deviceStr = geo.deviceSummary || orderData.deviceSummary;
+      const visitorId = orderData?.visitor?.visitorId || orderData?.visitorId;
 
       finalMessage = `
 🟡 2. PAYMENT INITIATED (Pending) 🟡
@@ -68,15 +150,17 @@ Payment Method: PREPAID (Razorpay UPI / Cards)
 Gateway Domain: potter-world.com
 
 👤 Customer Details:
-Name: ${shipping.name || contact.name || 'N/A'}
-Phone: ${contact.phone || 'N/A'}
-Email: ${contact.email || 'N/A'}
+Name: ${shipping.name || contact.name || "N/A"}
+Phone: ${contact.phone || "N/A"}
+Email: ${contact.email || "N/A"}
 
 📍 Delivery Address:
-${shipping.address || 'N/A'}
-${shipping.city || ''}, ${shipping.state || ''} ${shipping.pincode || ''}
-Country: ${shipping.country || 'India'}
+${shipping.address || "N/A"}
+${shipping.city || ""}, ${shipping.state || ""} ${shipping.pincode || ""}
+Country: ${shipping.country || "India"}
 
+🌐 Network & Verification:
+${ipStr ? `🌐 IP Address: ${ipStr}${ispStr ? ` (${ispStr})` : ""}\n` : ""}${locationParts.length > 0 ? `📍 IP Location: ${locationParts.join(", ")}\n` : ""}${deviceStr ? `📱 Device: ${deviceStr}\n` : ""}${visitorId ? `🆔 Visitor ID: ${visitorId}\n` : ""}
 📦 Order Items:
 ${itemsText}${giftsText}
 
@@ -94,17 +178,39 @@ Total Payable: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmo
         throw new Error("Missing orderId or orderData");
       }
 
-      const itemsText = orderData.items?.map((item: any) => 
-        `• ${item.quantity}x ${item.name || item.title} ${item.variantTitle ? `(${item.variantTitle})` : ''} - ${item.price === 0 || item.isGift ? 'FREE GIFT' : formatTelegramPrice(item.price * item.quantity)}`
-      ).join('\n') || 'No items found';
+      const itemsText =
+        orderData.items
+          ?.map(
+            (item: any) =>
+              `• ${item.quantity}x ${item.name || item.title} ${
+                item.variantTitle ? `(${item.variantTitle})` : ""
+              } - ${
+                item.price === 0 || item.isGift
+                  ? "FREE GIFT"
+                  : formatTelegramPrice(item.price * item.quantity)
+              }`
+          )
+          .join("\n") || "No items found";
 
-      const giftsText = orderData.freeGifts && orderData.freeGifts.length > 0
-        ? `\n🎁 Free Gifts Included:\n${orderData.freeGifts.map((g: any) => typeof g === 'string' ? `• ${g}` : `• ${g.name} (${g.size} x${g.quantity})`).join('\n')}`
-        : '';
+      const giftsText =
+        orderData.freeGifts && orderData.freeGifts.length > 0
+          ? `\n🎁 Free Gifts Included:\n${orderData.freeGifts
+              .map((g: any) =>
+                typeof g === "string" ? `• ${g}` : `• ${g.name} (${g.size} x${g.quantity})`
+              )
+              .join("\n")}`
+          : "";
 
       const shipping = orderData.shippingAddress || {};
       const contact = orderData.contactInfo || {};
-      const paymentId = orderData.paymentSessionId || orderData.paymentDetails?.razorpay_payment_id || 'Captured via Gateway';
+      const paymentId =
+        orderData.paymentSessionId ||
+        orderData.paymentDetails?.razorpay_payment_id ||
+        "Captured via Gateway";
+
+      const geo = orderData?.geo || {};
+      const ipStr = geo.ip || orderData.clientIp;
+      const ispStr = geo.isp || orderData.isp;
 
       finalMessage = `
 🟢 3. PAYMENT SUCCESSFUL (Order Confirmed) 🟢
@@ -115,16 +221,16 @@ Status: ✅ PAID & VERIFIED
 Payment Gateway: Razorpay (potter-world.com)
 
 👤 Customer Details:
-Name: ${shipping.name || contact.name || 'N/A'}
-Phone: ${contact.phone || 'N/A'}
-Email: ${contact.email || 'N/A'}
+Name: ${shipping.name || contact.name || "N/A"}
+Phone: ${contact.phone || "N/A"}
+Email: ${contact.email || "N/A"}
 
 📍 Delivery Address:
-${shipping.address || 'N/A'}
-${shipping.city || ''}, ${shipping.state || ''} ${shipping.pincode || ''}
-Country: ${shipping.country || 'India'}
+${shipping.address || "N/A"}
+${shipping.city || ""}, ${shipping.state || ""} ${shipping.pincode || ""}
+Country: ${shipping.country || "India"}
 
-📦 Order Items:
+${ipStr ? `🌐 Verified IP: ${ipStr}${ispStr ? ` (${ispStr})` : ""}\n` : ""}📦 Order Items:
 ${itemsText}${giftsText}
 
 💰 Pricing Summary:
@@ -132,7 +238,7 @@ Total Amount: ${formatTelegramPrice(orderData.totalAmount || orderData.amountToP
 Amount Paid: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmount)}
 Remaining: Rs. 0.00
 
-📧 Brevo Confirmation Email: Dispatched to ${contact.email || 'Customer'}
+📧 Brevo Confirmation Email: Dispatched to ${contact.email || "Customer"}
 ⏰ Time: ${nowIST}
 ------------------------------
       `.trim();
@@ -140,7 +246,7 @@ Remaining: Rs. 0.00
   }
 
   const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-  
+
   const response = await fetch(telegramUrl, {
     method: "POST",
     headers: {

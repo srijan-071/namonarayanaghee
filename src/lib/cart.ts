@@ -3,6 +3,7 @@
 
 import { createContext, useContext, useSyncExternalStore } from "react";
 import type { Cart, CartItem } from "@/lib/types";
+import { recordAndGetCartAddition } from "./visitor";
 
 // ─── Storage abstraction (swap for API later) ───────────
 const STORAGE_KEY = "nn-cart";
@@ -87,12 +88,11 @@ export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
   const updatedCart = recalculate(items, cart.discountCode);
   writeCart(updatedCart);
 
-  // Send Telegram Notification (Step 1: Cart Initiated)
+  // Send Telegram Notification (Step 1: Cart Initiated with IP, Geo Location, and Repeat Tracking)
   if (typeof window !== "undefined") {
-    const sessionKey = "nn_cart_notified";
-    if (!sessionStorage.getItem(sessionKey)) {
-      sessionStorage.setItem(sessionKey, "true");
+    const { attribution, shouldNotify } = recordAndGetCartAddition();
 
+    if (shouldNotify) {
       let giftName = "";
       const vLower = (item.variantTitle || "").toLowerCase();
       if (vLower.includes("2.5")) {
@@ -117,6 +117,7 @@ export function addToCart(item: Omit<CartItem, "quantity">, qty = 1) {
               cartTotal: updatedCart.total,
               itemsCount: items.length,
               freeGift: giftName,
+              visitor: attribution,
             }
           })
         }).catch(() => {});
@@ -147,7 +148,8 @@ export function updateQuantity(variantId: number, qty: number) {
 export function clearCart() {
   if (typeof window !== "undefined") {
     try {
-      sessionStorage.removeItem("nn_cart_notified");
+      sessionStorage.removeItem("nn_last_cart_notified_at");
+      sessionStorage.removeItem("nn_sess_cart_count");
     } catch {
       // Ignore in private/restricted storage
     }

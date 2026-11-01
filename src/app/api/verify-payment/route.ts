@@ -3,6 +3,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { resolveClientGeo } from "@/lib/server-geo";
 
 export async function POST(req: Request) {
   try {
@@ -94,6 +95,15 @@ export async function POST(req: Request) {
       id: cleanOrderId
     };
 
+    const geoInfo = await resolveClientGeo(req);
+    const orderWithGeo = {
+      ...mergedOrder,
+      geo: geoInfo,
+      clientIp: geoInfo.ip,
+      isp: geoInfo.isp,
+      deviceSummary: geoInfo.deviceSummary,
+    };
+
     // 2. Dispatch Telegram Bot notification and Customer Brevo Confirmation Email in parallel
     const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || orderData.customerEmail;
     const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || orderData.customerPhone;
@@ -103,7 +113,7 @@ export async function POST(req: Request) {
     const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
 
     await Promise.allSettled([
-      sendTelegramNotification(cleanOrderId, mergedOrder, "success").catch((err) => {
+      sendTelegramNotification(cleanOrderId, orderWithGeo, "success").catch((err) => {
         console.error("Telegram notification error on thank-you page:", err);
       }),
       customerEmail

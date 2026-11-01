@@ -37,6 +37,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
+import { getVisitorAttribution } from "@/lib/visitor";
 
 // Indian States list for dropdown selection
 const INDIAN_STATES = [
@@ -707,7 +708,8 @@ export default function CheckoutPage() {
             shippingAddress: address,
             contactInfo: { email: customerEmail, phone: cleanPhone },
             paymentMethod: "prepaid",
-            paymentStatus: "pending"
+            paymentStatus: "pending",
+            visitor: getVisitorAttribution()
           }
         })
       }).catch(e => console.error("Failed to send init telegram notification", e));
