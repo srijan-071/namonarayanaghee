@@ -101,7 +101,12 @@ export async function POST(req: Request) {
         discount = Math.round(serverSubtotal * (coupon.value / 100));
         discountPercent = coupon.value;
       } else if (coupon.type === 'fixed') {
-        discount = coupon.value;
+        discount = coupon.value * 100;
+      }
+    } else if (couponCode && /^DIWALI(100|250|500|1000)/.test(couponCode)) {
+      const match = couponCode.match(/^DIWALI(\d+)/);
+      if (match) {
+        discount = parseInt(match[1], 10) * 100;
       }
     }
 

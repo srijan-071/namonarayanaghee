@@ -95,6 +95,38 @@ export async function POST(req: Request) {
       id: cleanOrderId
     };
 
+    // 1.5. Issue Diwali Coupon
+    const items = orderData.items || [];
+    let gheeVolume = 0;
+    items.forEach((item: any) => {
+      const title = (item.name || item.title || "").toLowerCase();
+      if (title.includes("500 ml") || title.includes("500ml")) gheeVolume += 0.5;
+      else if (title.includes("1 litre") || title.includes("1l")) gheeVolume += 1;
+      else if (title.includes("2.5 litre") || title.includes("2.5")) gheeVolume += 2.5;
+      else if (title.includes("5 litre") || title.includes("5l")) gheeVolume += 5;
+    });
+
+    let rewardAmount = 0;
+    if (gheeVolume >= 5) rewardAmount = 1000;
+    else if (gheeVolume >= 2.5) rewardAmount = 500;
+    else if (gheeVolume >= 1) rewardAmount = 250;
+    else if (gheeVolume >= 0.5) rewardAmount = 100;
+
+    let couponCode = "";
+    if (rewardAmount > 0) {
+      try {
+        const { generateDiwaliCoupon } = await import("@/lib/coupons");
+        const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || "";
+        const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || "";
+        couponCode = await generateDiwaliCoupon(customerEmail, customerPhone, rewardAmount);
+        await updateDoc(orderRef, { diwaliCoupon: couponCode, rewardAmount });
+        (mergedOrder as any).diwaliCoupon = couponCode;
+        (mergedOrder as any).rewardAmount = rewardAmount;
+      } catch (couponErr) {
+        console.error("Failed to generate Diwali coupon:", couponErr);
+      }
+    }
+
     const geoInfo = await resolveClientGeo(req);
     const orderWithGeo = {
       ...mergedOrder,

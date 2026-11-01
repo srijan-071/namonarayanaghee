@@ -38,23 +38,28 @@ export default function AccountPage() {
 
       // Fetch user's orders using client side to avoid Cloudflare Worker CPU limits
       try {
+        const { query, where, getDocs, collection, or } = await import("firebase/firestore/lite");
         const q = query(
           collection(db, "orders"),
-          where("userId", "==", currentUser.uid)
+          or(
+            where("userId", "==", currentUser.uid),
+            where("contactInfo.email", "==", currentUser.email || ""),
+            where("shippingAddress.email", "==", currentUser.email || "")
+          )
         );
         const querySnapshot = await getDocs(q);
         const fetchedOrders: any[] = [];
         querySnapshot.forEach((doc) => {
           fetchedOrders.push({ id: doc.id, ...doc.data() });
         });
-        
+
         // Sort in memory to avoid needing a Firestore composite index
         fetchedOrders.sort((a, b) => {
           const timeA = a.createdAt?.seconds || 0;
           const timeB = b.createdAt?.seconds || 0;
           return timeB - timeA;
         });
-        
+
         setOrders(fetchedOrders);
       } catch (err) {
         console.error("Failed to fetch orders", err);

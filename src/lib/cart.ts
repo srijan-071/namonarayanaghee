@@ -50,15 +50,24 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
   let discountAmount = 0;
   let validCode: string | undefined = undefined;
 
-  if (discountCode && VALID_COUPONS[discountCode]) {
-    const coupon = VALID_COUPONS[discountCode];
-    validCode = discountCode;
-    if (coupon.type === 'percentage') {
-      discountAmount = Math.round(subtotal * (coupon.value / 100));
-    } else if (coupon.type === 'fixed') {
-      discountAmount = coupon.value * 100;
+  if (discountCode) {
+    const code = discountCode.trim().toUpperCase();
+    if (VALID_COUPONS[code]) {
+      const coupon = VALID_COUPONS[code];
+      validCode = code;
+      if (coupon.type === 'percentage') {
+        discountAmount = Math.round(subtotal * (coupon.value / 100));
+      } else if (coupon.type === 'fixed') {
+        discountAmount = coupon.value * 100;
+      }
+    } else if (/^DIWALI(100|250|500|1000)/.test(code)) {
+      const match = code.match(/^DIWALI(\d+)/);
+      if (match) {
+        const val = parseInt(match[1], 10);
+        validCode = code;
+        discountAmount = val * 100;
+      }
     }
-    // ensure discount doesn't exceed subtotal
     if (discountAmount > subtotal) {
       discountAmount = subtotal;
     }
@@ -160,7 +169,7 @@ export function clearCart() {
 export function applyCoupon(code: string): boolean {
   const cart = readCart();
   const normalized = code.trim().toUpperCase();
-  if (VALID_COUPONS[normalized]) {
+  if (VALID_COUPONS[normalized] || /^DIWALI(100|250|500|1000)/.test(normalized)) {
     writeCart(recalculate(cart.items, normalized));
     return true;
   }

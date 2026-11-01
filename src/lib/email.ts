@@ -25,8 +25,23 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
     return false;
   }
 
-  // Build items table if available
+  // Order items table
   const items = orderData?.items || [];
+
+  // Diwali Coupon section
+  const diwaliCoupon = orderData?.diwaliCoupon;
+  const rewardAmount = orderData?.rewardAmount;
+  const diwaliCouponHtml = diwaliCoupon ? `
+    <div style="background: linear-gradient(135deg, #FDF6E8 0%, #FAF0D7 100%); border: 2px dashed #D4A017; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+      <h3 style="color: #8A1B14; margin: 0 0 10px 0; font-size: 16px;">✨ Special Diwali Reward Unlocked!</h3>
+      <p style="margin: 0 0 15px 0; font-size: 13px; color: #5E0B10;">Because you chose Namo Narayana, we've gifted you a <strong>₹${rewardAmount} Diwali Gift Card</strong> for your next purchase.</p>
+      <div style="background-color: #ffffff; padding: 10px 20px; border-radius: 6px; font-family: monospace; font-size: 20px; font-weight: bold; color: #5E0B10; display: inline-block; border: 1px solid #EAD7BC; letter-spacing: 2px;">
+        ${diwaliCoupon}
+      </div>
+      <p style="margin: 15px 0 0 0; font-size: 11px; color: #7A4A3B;">Use this code at checkout on your next order. Valid until Nov 15th.</p>
+    </div>
+  ` : "";
+
   const itemsTableHtml = items.length > 0 ? `
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px;">
       <thead>
@@ -54,6 +69,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
         `).join("")}
       </tbody>
     </table>
+    ${diwaliCouponHtml}
   ` : "";
 
   // Free gifts highlight

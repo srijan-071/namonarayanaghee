@@ -281,8 +281,46 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
     setPinMessage("Delivery available pan-India via express insured courier. Complete your address at checkout.");
   };
 
+  // Diwali Reward Promotion
+  const rewardAmount = useMemo(() => {
+    if (is500ml) return 100;
+    if (is1L) return 250;
+    if (is2_5L) return 500;
+    if (is5L) return 1000;
+    return 0;
+  }, [is500ml, is1L, is2_5L, is5L]);
+
+  // Automatic image slideshow
+  useEffect(() => {
+    if (product.images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setSelectedImage((prev) => (prev + 1) % product.images.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [product.images.length]);
+
+  // Section 14: Diwali Banner
   return (
     <div className="pb-28 lg:pb-12 text-[#24211E]">
+
+      {/* DIWALI PROMO BANNER */}
+      <div className="mb-6 bg-gradient-to-r from-[#8A1B14] to-[#4E1013] rounded-2xl p-4 sm:p-5 text-white flex items-center justify-between shadow-lg">
+        <div>
+          <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
+            <Sparkles className="text-[#D6A53B]" /> Diwali Special Reward
+          </h3>
+          <p className="text-[11px] sm:text-xs opacity-90 mt-1">
+            Order now and get a <strong>₹{rewardAmount} Gift Card</strong> for your next purchase!
+          </p>
+        </div>
+        <div className="text-center bg-white/10 rounded-lg p-2 min-w-[70px]">
+          <span className="block text-xl font-bold">₹{rewardAmount}</span>
+          <span className="text-[9px] uppercase tracking-wider">Discount</span>
+        </div>
+      </div>
+
       {/* 2-Column Responsive Product Container (Section 14) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
 
