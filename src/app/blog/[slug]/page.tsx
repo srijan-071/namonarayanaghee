@@ -121,7 +121,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           name: "How can I order Namo Narayana Ghee online?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "You can order genuine Namo Narayana Ghee directly through the official website at https://www.namonarayanaghee.store by choosing your pack size, clicking Add to Cart or Buy Now, and completing checkout via UPI, Cards, Netbanking, or COD."
+            text: "You can order genuine Namo Narayana Ghee directly through the official website at https://www.namonarayanaghee.store by choosing your pack size, clicking Add to Cart or Buy Now, and completing checkout via UPI, Cards, or Netbanking."
           }
         },
         {

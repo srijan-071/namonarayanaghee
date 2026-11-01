@@ -1104,7 +1104,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     <span className="text-xs font-bold text-amber-700 block mb-1">Step 03</span>
                     <h4 className="font-bold text-sm text-stone-900 mb-1">Secure Checkout</h4>
                     <p className="text-xs text-stone-600">
-                      Pay safely via UPI (Google Pay, PhonePe, Paytm), Cards, Netbanking, or choose Cash on Delivery.
+                      Pay safely via Instant UPI (Google Pay, PhonePe, Paytm), Cards, or Netbanking.
                     </p>
                   </div>
 
@@ -1189,7 +1189,7 @@ export default function NamoNarayanaGheeReviewContent() {
                   },
                   {
                     q: "How can I order Namo Narayana Ghee online safely?",
-                    a: "You can order genuine Namo Narayana Ghee by visiting the official website (https://www.namonarayanaghee.store), selecting your preferred pack size (500ml, 1L, 2.5L, or 5L), clicking 'Buy Now' or 'Add to Cart', and completing payment via UPI, Credit/Debit Cards, Netbanking, or Cash on Delivery. Avoid purchasing from unauthorized third-party links or social media pages to protect against counterfeits."
+                    a: "You can order genuine Namo Narayana Ghee by visiting the official website (https://www.namonarayanaghee.store), selecting your preferred pack size (500ml, 1L, 2.5L, or 5L), clicking 'Buy Now' or 'Add to Cart', and completing payment via UPI, Credit/Debit Cards, or Netbanking. Avoid purchasing from unauthorized third-party links or social media pages to protect against counterfeits."
                   },
                   {
                     q: "Can lactose-intolerant people consume Namo Narayana Ghee?",

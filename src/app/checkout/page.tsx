@@ -1350,38 +1350,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  {/* COD Area Unavailability Notice (User Requirement & Psychological Reframe) */}
-                  {form.pincode.length === 6 && (
-                    <div className="mt-4 p-3.5 sm:p-4 bg-gradient-to-r from-amber-50/95 via-orange-50/70 to-amber-50/95 border border-amber-300/90 rounded-2xl flex items-start gap-3 text-xs animate-in fade-in slide-in-from-top-1 shadow-2xs">
-                      <div className="w-7 h-7 rounded-full bg-amber-200/90 text-amber-900 flex items-center justify-center shrink-0 font-bold text-sm mt-0.5 border border-amber-300">
-                        !
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between flex-wrap gap-1">
-                          <span className="font-extrabold text-[#5E0B10] text-[12px] sm:text-xs">
-                            Cash on Delivery (COD) is not available in {form.city ? form.city : "your area"}
-                          </span>
-                          <span className="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md border border-amber-300">
-                            PIN {form.pincode}
-                          </span>
-                        </div>
-                        <p className="text-[#7A4A3B] text-[11px] mt-1.5 leading-relaxed">
-                          Due to fragile glass-jar safety regulations with courier partners on this route, <strong>Cash on Delivery is temporarily unserviceable</strong>. Please complete your prepaid order via <strong>Instant UPI (Google Pay, PhonePe, Paytm) or Cards</strong> for 100% Guaranteed Express Dispatch.
-                        </p>
-                        <div className="mt-2.5 pt-2 border-t border-amber-200 flex flex-wrap items-center gap-3 text-[10px] font-bold text-emerald-800">
-                          <span className="flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Free Express Shipping
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Gift className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Free Complimentary Gift Included
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> 100% Vedic Purity Refund Guarantee
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+
                 </div>
               </div>
 
@@ -1447,62 +1416,17 @@ export default function CheckoutPage() {
                     </div>
 
                     <p className="text-[11px] text-[#7A4A3B] pl-6 pt-2">
-                      Pay smoothly using Google Pay, PhonePe, Paytm, CRED or any Card. Zero payment gateway charges.
+                      Available payment methods: UPI, cards and other supported online methods. Zero payment gateway charges.
                     </p>
                   </div>
 
-                  {/* Option 2: Cash on Delivery (Appears available until 6-digit PIN is entered) */}
-                  {form.pincode.length === 6 ? (
-                    // Only after 6-digit PIN is entered: Show unavailable state for this specific PIN
-                    <div className="bg-stone-50/70 border border-stone-200 rounded-2xl p-3.5 opacity-65 cursor-not-allowed select-none animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full border-2 border-stone-300 bg-stone-100 shrink-0" />
-                          <div>
-                            <span className="text-xs sm:text-sm font-bold text-stone-500 line-through block">
-                              Cash on Delivery (COD)
-                            </span>
-                            <span className="text-[10px] text-red-600 font-semibold">
-                              Temporarily unavailable for PIN {form.pincode}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold bg-stone-200 text-stone-600 px-2 py-0.5 rounded-full shrink-0">
-                          UNAVAILABLE
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    // Before PIN is entered: Looks active & prompts to enter PIN
-                    <div
-                      onClick={() => {
-                        const pinEl = document.getElementById("checkout-pincode");
-                        if (pinEl) {
-                          pinEl.scrollIntoView({ behavior: "smooth", block: "center" });
-                          pinEl.focus();
-                        }
-                        toast.info("Please enter your 6-digit delivery PIN code above to verify COD serviceability.");
-                      }}
-                      className="bg-white border border-stone-200 hover:border-[#5E0B10]/40 rounded-2xl p-3.5 cursor-pointer transition-all active:scale-[0.99] group shadow-2xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full border-2 border-stone-300 group-hover:border-[#5E0B10] bg-white shrink-0 transition-colors" />
-                          <div>
-                            <span className="text-xs sm:text-sm font-bold text-stone-800 block group-hover:text-[#5E0B10] transition-colors">
-                              Cash on Delivery (COD)
-                            </span>
-                            <span className="text-[10px] text-stone-500 font-medium">
-                              Enter 6-digit delivery PIN code above to verify serviceability
-                            </span>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold bg-stone-100 text-stone-700 px-2 py-0.5 rounded-full border border-stone-200 shrink-0 group-hover:bg-[#5E0B10]/10 group-hover:text-[#5E0B10] transition-colors">
-                          CHECK PIN
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                  {/* Transparent Prepaid Priority Notice (Section 16) */}
+                  <div className="p-3.5 bg-[#FAF9F5] border border-[#EAD7BC] rounded-xl flex items-center gap-2.5 text-xs text-[#5E0B10]">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span className="text-[11px] leading-relaxed">
+                      <strong>100% Insured Delivery:</strong> All orders are prepaid to ensure prioritized farm dispatch, transit glass protection, and zero courier handling fees.
+                    </span>
+                  </div>
                 </div>
               </div>
 

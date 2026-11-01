@@ -10,6 +10,7 @@ import { Search, User, ShoppingBag, Gift } from "lucide-react";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Header() {
   const router = useRouter();
@@ -18,6 +19,18 @@ export default function Header() {
   const cart = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [announcementCopied, setAnnouncementCopied] = useState(false);
+
+  const handleCopyAnnouncementCoupon = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText("NAMO10");
+      setAnnouncementCopied(true);
+      toast.success("Coupon code NAMO10 copied! Apply at checkout for 10% off.");
+      setTimeout(() => setAnnouncementCopied(false), 2500);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,36 +64,25 @@ export default function Header() {
 
   return (
     <>
-      {/* Royal Festive Announcement Bar */}
-      <div className="bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] text-amber-100 text-xs py-2 px-3 sm:px-4 font-medium tracking-wide border-b border-amber-400/30 shadow-md relative z-40">
-        <div className="nn-container flex items-center justify-center md:justify-between">
-          <div className="hidden md:flex items-center gap-2.5">
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            <span className="font-bold text-amber-300 tracking-wider">100% PURE VEDIC BILONA GHEE</span>
-            <span className="text-white/60">|</span>
-            <span className="text-white/95 text-[11px] font-semibold">Handcrafted from Indigenous Desi Gir Cows • Free Delivery</span>
-          </div>
-          <Link 
-            href="/collections/all-products"
-            className="flex flex-col md:hidden text-center justify-center w-full gap-0.5 cursor-pointer hover:opacity-95 transition" 
+      {/* Compact Single-Line Announcement Bar (Section 4, Section A) */}
+      <div className="bg-[#4E1013] text-[#FAF8F2] text-xs h-9 px-3 sm:px-4 font-medium tracking-wide border-b border-[#701619]/40 relative z-40 flex items-center justify-center select-none">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center text-[12px] sm:text-[13px] truncate">
+          <span>10% OFF with</span>
+          <button
+            type="button"
+            onClick={handleCopyAnnouncementCoupon}
+            className="inline-flex items-center gap-1 font-mono font-bold bg-[#FAF8F2] text-[#4E1013] px-2 py-0.5 rounded text-[11px] hover:bg-white active:scale-95 transition-all cursor-pointer shadow-2xs"
+            title="Click to copy coupon code"
           >
-            <span className="text-[11px] font-bold text-amber-300 flex items-center justify-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> 100% PURE A2 GIR COW GHEE
-            </span>
-            <span className="text-amber-100 font-extrabold text-[12px] flex items-center justify-center gap-1">
-              Flat 10% OFF (Code: <span className="bg-amber-300 text-stone-900 px-1 rounded font-black">NAMO10</span>) + Free Delivery!
-            </span>
-          </Link>
-          <Link 
-            href="/collections/all-products"
-            className="hidden md:flex items-center gap-2 text-amber-200 font-bold cursor-pointer hover:text-white transition" 
-          >
-            <span className="bg-amber-400/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full border border-amber-400/40 uppercase tracking-widest font-extrabold">
-              Special Offer
-            </span>
-            <span>Use Code: <strong className="text-amber-300 font-black underline">NAMO10</strong> for Extra 10% OFF + Free Gifts!</span>
-            <Gift className="w-3.5 h-3.5 text-amber-300" />
-          </Link>
+            <span>NAMO10</span>
+            {announcementCopied ? (
+              <span className="text-[10px] text-emerald-700 font-sans font-bold">✓ Copied</span>
+            ) : (
+              <span className="text-[9px] text-[#701619]/70 font-sans uppercase">Copy</span>
+            )}
+          </button>
+          <span className="text-[#FAF8F2]/60">·</span>
+          <span>Free Delivery Pan-India</span>
         </div>
       </div>
 
@@ -88,9 +90,7 @@ export default function Header() {
       <header
         className={cn(
           "sticky top-0 z-40 w-full transition-all duration-300",
-          scrolled 
-            ? "bg-[#F7F4EB] shadow-sm py-2" 
-            : "bg-[#F7F4EB] py-4"
+          scrolled ? "bg-[#F7F4EB] shadow-xs py-2" : "bg-[#F7F4EB] py-2.5 sm:py-3"
         )}
       >
         <div className="nn-container flex items-center justify-between">
@@ -103,7 +103,7 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <Image src="/assets/logo.png" alt="Namo Narayana Logo" width={100} height={100} className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-md transition-transform group-hover:scale-105" />
+            <Image src="/assets/logo.png" alt="Namo Narayana Logo" width={100} height={100} className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-md transition-transform group-hover:scale-105" />
             <div className="hidden sm:flex flex-col">
               <span className="font-serif font-bold text-sm md:text-base text-[#5E0B10] leading-tight flex items-center gap-1.5">
                 <span>Namo Narayana</span>

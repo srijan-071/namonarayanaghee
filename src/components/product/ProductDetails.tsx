@@ -1,78 +1,170 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { 
-  Loader2, Share2, Star, Truck, ShieldCheck, Factory, 
-  Leaf, Zap, CheckCircle2, Gift, ShoppingCart,
-  Sparkles, Tag, ShieldAlert, Award, Copy, Check,
-  Flame, Eye, Clock, AlertTriangle, Shield, Lock,
-  ChevronLeft, ChevronRight
+import {
+  Check,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Gift,
+  Loader2,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Truck,
+  Zap,
+  Award,
+  Leaf,
+  Factory,
+  ArrowRight
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
-import DiwaliGiftToast from "./DiwaliGiftToast";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
-import { useRouter } from "next/navigation";
 
-export default function ProductDetails({ product, gheePacks }: { product: Product; gheePacks?: Product[] | null }) {
+interface ProductDetailsProps {
+  product: Product;
+  gheePacks?: Product[] | null;
+}
+
+export default function ProductDetails({ product, gheePacks }: ProductDetailsProps) {
   const router = useRouter();
+  const { open } = useCartDrawer();
+
+  // State
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const [qty, setQty] = useState(1);
-  const { open } = useCartDrawer();
   const [isAdding, setIsAdding] = useState(false);
-  const [codeCopied, setCodeCopied] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [couponCopied, setCouponCopied] = useState(false);
   const [navigatingSlug, setNavigatingSlug] = useState<string | null>(null);
 
+  // Delivery & PIN state
+  const [pinInput, setPinInput] = useState("");
+  const [pinStatus, setPinStatus] = useState<"idle" | "loading" | "success" | "fallback">("idle");
+  const [pinMessage, setPinMessage] = useState("");
+  const [deliveryDateStr, setDeliveryDateStr] = useState("3 – 5 Business Days");
+
+  // Variant & Pricing calculation from authoritative product config
+  const variant = product.variants[selectedVariantIdx] || product.variants[0];
+  const price = variant?.price ?? product.price;
+  const compareAt = variant?.compareAtPrice ?? product.compareAtPrice;
+  const discount = compareAt && compareAt > price ? discountPercent(price, compareAt) : 0;
+  const savingsRupees = compareAt && compareAt > price ? Math.round((compareAt - price) / 100) : 0;
+
+  // Review stats
+  const reviewStats = PRODUCT_REVIEW_STATS[product.slug] || { total: 1688, average: 4.9 };
+
+  // Clear navigating slug when product updates & prefetch sibling packs
   useEffect(() => {
     setNavigatingSlug(null);
   }, [product.slug]);
 
-  // Dynamic delivery date calculation
-  const [deliveryDateStr, setDeliveryDateStr] = useState("3 - 4 Days");
-
   useEffect(() => {
-    setIsMounted(true);
     router.prefetch("/checkout");
+    if (gheePacks && gheePacks.length > 0) {
+      gheePacks.forEach((p) => {
+        if (p.slug !== product.slug) {
+          router.prefetch(`/products/${p.slug}`);
+        }
+      });
+    }
 
-    // Calculate dynamic delivery range (3 to 5 days ahead)
+    // Dynamic arrival estimate (3 to 5 days)
     const now = new Date();
     const d1 = new Date(now);
     d1.setDate(now.getDate() + 3);
     const d2 = new Date(now);
     d2.setDate(now.getDate() + 5);
-    const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-    setDeliveryDateStr(`${d1.toLocaleDateString('en-IN', options)} - ${d2.toLocaleDateString('en-IN', options)}`);
-  }, [router]);
+    const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+    setDeliveryDateStr(`${d1.toLocaleDateString("en-IN", options)} – ${d2.toLocaleDateString("en-IN", options)}`);
+  }, [router, gheePacks, product.slug]);
 
-  const variant = product.variants[selectedVariantIdx];
-  const price = variant?.price ?? product.price;
-  const compareAt = variant?.compareAtPrice ?? product.compareAtPrice;
-  const discount = compareAt ? discountPercent(price, compareAt) : 0;
-  const savingsRupees = compareAt ? Math.round((compareAt - price) / 100) : 0;
-
+  // ViewItem analytics tracking (deduplicated per slug)
+  const trackedViewRef = useRef<string | null>(null);
   useEffect(() => {
-    trackEvent("view_item", {
-      currency: "INR",
-      value: price,
-      items: [{
-        item_id: product.id,
-        item_name: product.title,
-        price: price
-      }]
-    });
-  }, [product.id, product.title, price]);
+    if (trackedViewRef.current !== product.slug) {
+      trackedViewRef.current = product.slug;
+      trackEvent("view_item", {
+        currency: "INR",
+        value: price,
+        items: [
+          {
+            item_id: product.id,
+            item_name: product.title,
+            price: price,
+          },
+        ],
+      });
+    }
+  }, [product.slug, product.id, product.title, price]);
 
-  const reviewStats = PRODUCT_REVIEW_STATS[product.slug] || { total: 1688, average: 4.9 };
+  // Pack detection
+  const slugLower = product.slug.toLowerCase();
+  const is500ml = slugLower.includes("500-ml") || slugLower.includes("500ml");
+  const is1L = slugLower.includes("1-litre") || slugLower.includes("1l");
+  const is2_5L = slugLower.includes("2-5-litre") || slugLower.includes("2.5");
+  const is5L = slugLower.includes("5-litre") || slugLower.includes("5l");
 
-  function handleAddToCart() {
+  // Gift definition based strictly on selected pack (Section 7)
+  const giftData = useMemo(() => {
+    if (is500ml) {
+      return {
+        hasGift: false,
+        title: "Gift Offer Available with Larger Packs",
+        description: "Choose 1 Litre or larger packs to receive complimentary cold-pressed oil gifts.",
+        badge: "STARTER PACK",
+        items: [] as Array<{ name: string; image: string; size: string }>,
+      };
+    } else if (is2_5L) {
+      return {
+        hasGift: true,
+        title: "3 Complimentary Cold-Pressed Oils Included",
+        description: "Your order includes 3 complimentary cold-pressed oils (250ml each).",
+        badge: "DIWALI GIFT",
+        items: [
+          { name: "Groundnut Oil", image: "/assets/groundnut-oil-250ml.webp", size: "250 ml" },
+          { name: "Yellow Mustard Oil", image: "/assets/yellow-mustard-oil-250ml.webp", size: "250 ml" },
+          { name: "Mustard Oil", image: "/assets/mustard-oil-250ml.webp", size: "250 ml" },
+        ],
+      };
+    } else if (is5L) {
+      return {
+        hasGift: true,
+        title: "3 Complimentary Large Cold-Pressed Oils Included",
+        description: "Your order includes 3 complimentary cold-pressed oils (Coconut 250ml, Groundnut 250ml, Mustard 500ml).",
+        badge: "DIWALI GIFT",
+        items: [
+          { name: "Coconut Oil", image: "/assets/coconut-oil-250ml.webp", size: "250 ml" },
+          { name: "Groundnut Oil", image: "/assets/groundnut-oil-250ml.webp", size: "250 ml" },
+          { name: "Mustard Oil", image: "/assets/mustard-oil-500ml.webp", size: "500 ml" },
+        ],
+      };
+    } else {
+      // 1 Litre
+      return {
+        hasGift: true,
+        title: "Complimentary Cold-Pressed Mustard Oil Included",
+        description: "Your order includes 1 complimentary bottle of Cold-Pressed Mustard Oil (250ml).",
+        badge: "DIWALI GIFT",
+        items: [
+          { name: "Mustard Oil", image: "/assets/mustard-oil-250ml.webp", size: "250 ml" },
+        ],
+      };
+    }
+  }, [is500ml, is1L, is2_5L, is5L]);
+
+  // Add to Cart handler (Section 12)
+  const handleAddToCart = () => {
     addToCart(
       {
         productId: product.id,
@@ -85,33 +177,31 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
       },
       qty
     );
-    
+
     trackEvent("add_to_cart", {
       currency: "INR",
       value: price * qty,
-      items: [{
-        item_id: product.id,
-        item_name: product.title,
-        quantity: qty,
-        price: price
-      }]
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.title,
+          quantity: qty,
+          price: price,
+        },
+      ],
     });
 
     open();
-    
-    const vTitle = (variant.title || "").toLowerCase();
-    if (vTitle.includes("500")) {
-      toast.success(`Added 500ml Ghee to cart. Tip: Upgrade to 1L for complimentary Mustard Oil (250ml)!`, { duration: 4000 });
-    } else if (vTitle.includes("2.5")) {
-      toast.success(`Added 2.5L Ghee to cart! 3 complimentary Cold-Pressed Oils included in your order!`, { duration: 4000 });
-    } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
-      toast.success(`Added 5L Ghee to cart! 3 complimentary Cold-Pressed Oils (Coconut, Groundnut & Mustard) included!`, { duration: 4000 });
-    } else {
-      toast.success(`Added 1L Ghee to cart! Complimentary Mustard Oil (250ml) included in your order!`, { duration: 4000 });
-    }
-  }
 
-  function handleBuyNow() {
+    if (giftData.hasGift) {
+      toast.success(`Added ${product.title} to cart · Complimentary gift included!`);
+    } else {
+      toast.success(`Added ${product.title} to cart.`);
+    }
+  };
+
+  // Buy Now handler (Section 12)
+  const handleBuyNow = () => {
     setIsAdding(true);
     addToCart(
       {
@@ -125,637 +215,317 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
       },
       qty
     );
+
     trackEvent("begin_checkout", {
       currency: "INR",
       value: price * qty,
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.title,
+          quantity: qty,
+          price: price,
+        },
+      ],
     });
-    router.push("/checkout");
-  }
 
-  function handleCopyCoupon(code: string) {
-    if (navigator.clipboard) {
+    router.push("/checkout");
+  };
+
+  // Copy coupon handler (Section 10)
+  const handleCopyCoupon = (code: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(code);
-      setCodeCopied(true);
-      toast.success(`Coupon code ${code} copied! Applied at checkout.`);
-      setTimeout(() => setCodeCopied(false), 3000);
+      setCouponCopied(true);
+      toast.success(`Coupon code ${code} copied! Apply at checkout for 10% off.`);
+      setTimeout(() => setCouponCopied(false), 3000);
     }
-  }
+  };
+
+  // PIN code checker (Section 8)
+  const handleCheckPincode = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanPin = pinInput.trim().replace(/\D/g, "");
+    if (cleanPin.length !== 6) {
+      setPinStatus("fallback");
+      setPinMessage("Please enter a valid 6-digit PIN code.");
+      return;
+    }
+
+    setPinStatus("loading");
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(`https://api.postalpincode.in/pincode/${cleanPin}`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data[0]?.Status === "Success" && data[0]?.PostOffice?.length > 0) {
+          const po = data[0].PostOffice[0];
+          const city = po.District || po.Block || "Your Area";
+          const state = po.State || "";
+          setPinStatus("success");
+          setPinMessage(`Delivery available to ${city}${state ? `, ${state}` : ""} · Est. arrival in 3–5 days.`);
+          return;
+        }
+      }
+    } catch {
+      // API failure fallback
+    }
+
+    // Graceful non-blocking fallback
+    setPinStatus("fallback");
+    setPinMessage("Delivery available pan-India via express insured courier. Complete your address at checkout.");
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 pb-24 md:pb-16 relative">
+    <div className="pb-28 lg:pb-12 text-[#24211E]">
+      {/* 2-Column Responsive Product Container (Section 14) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
 
-      {/* Gallery (Left Side) */}
-      <div className="space-y-3.5 md:sticky md:top-24 md:self-start">
-        <div 
-          className="relative aspect-square rounded-2xl overflow-hidden bg-[#FAF9F5] border border-gray-100 shadow-sm group select-none"
-        >
-          {/* Layered Cross-Fading Images (Auto-changes every 3s with smooth fade) */}
-          {product.images && product.images.length > 0 ? (
-            product.images.map((img, idx) => (
-              <div
-                key={img}
-                className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
-                  idx === selectedImage ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
-                }`}
-              >
-                <Image
-                  src={img}
-                  alt={`${product.title} - photo ${idx + 1}`}
-                  fill
-                  className="object-cover"
-                  priority={idx === 0}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </div>
-            ))
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-nn-bark/30 text-lg">No Image</div>
-          )}
-
-          {/* Previous & Next Arrow Controls (Visible on hover and easy tap on mobile) */}
-          {product.images.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
-                }}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all z-20 cursor-pointer shadow-md active:scale-95"
-                aria-label="Previous product image"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedImage((prev) => (prev + 1) % product.images.length);
-                }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all z-20 cursor-pointer shadow-md active:scale-95"
-                aria-label="Next product image"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-
-              {/* Dots Progress Indicator */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full shadow-md">
-                {product.images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(i)}
-                    aria-label={`Jump to image ${i + 1}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      i === selectedImage ? "w-5 bg-amber-300 shadow-xs" : "w-1.5 bg-white/60 hover:bg-white"
-                    }`}
+        {/* ═══ LEFT COLUMN: Product Gallery (Section 4, Section C) ═══ */}
+        <div className="lg:col-span-6 xl:col-span-6 lg:sticky lg:top-24 space-y-3">
+          {/* Main Visual Display */}
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-[#FAF8F2] border border-[#E9E3D9] shadow-xs select-none group">
+            {product.images && product.images.length > 0 ? (
+              product.images.map((img, idx) => (
+                <div
+                  key={img}
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out ${
+                    idx === selectedImage ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`${product.title} - photo ${idx + 1}`}
+                    fill
+                    className="object-contain p-2 sm:p-4"
+                    priority={idx === 0}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
                   />
-                ))}
+                </div>
+              ))
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-stone-400 text-sm">
+                No image available
               </div>
-            </>
-          )}
+            )}
 
-          {/* Quality & Trust Badges on Image */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-20">
-            <span className="bg-[#8A1B14] text-amber-200 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5 border border-amber-400/40">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              100% Pure Vedic A2
-            </span>
-            <span className="bg-[#8A1B14] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-              <Award className="w-3.5 h-3.5 text-amber-300" />
-              100% Traditional Bilona
-            </span>
-            {discount > 0 && (
-              <span className="bg-[#C38936] text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-md w-fit">
-                {discount}% OFF
+            {/* Restrained Single Image Overlay (Section 4, Section C) */}
+            <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+              <span className="bg-[#4E1013]/90 backdrop-blur-xs text-[#FAF8F2] text-[11px] font-semibold px-2.5 py-1 rounded-md shadow-2xs border border-[#701619]/40">
+                Traditional Bilona
               </span>
+            </div>
+
+            {/* Gallery Arrow Controls */}
+            {product.images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#24211E] flex items-center justify-center backdrop-blur-xs transition-all z-20 cursor-pointer shadow-xs border border-[#E9E3D9] active:scale-95"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImage((prev) => (prev + 1) % product.images.length);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#24211E] flex items-center justify-center backdrop-blur-xs transition-all z-20 cursor-pointer shadow-xs border border-[#E9E3D9] active:scale-95"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+
+                {/* Dots Indicator */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-black/40 backdrop-blur-xs px-2.5 py-1 rounded-full">
+                  {product.images.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedImage(i)}
+                      aria-label={`Jump to photo ${i + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-200 cursor-pointer ${
+                        i === selectedImage ? "w-4 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
-          <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-md shadow flex items-center gap-1.5 z-20">
-            <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>FSSAI Lic: 10823999000412</span>
-          </div>
-        </div>
-
-        {product.images.length > 1 && (
-          <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
-            {product.images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedImage(i)}
-                className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer ${
-                  i === selectedImage ? "border-[#8A1B14] ring-2 ring-[#8A1B14]/30 scale-105 opacity-100 shadow-xs" : "border-gray-200 hover:border-gray-400 opacity-60 hover:opacity-100"
-                }`}
-                aria-label={`View image ${i + 1}`}
-              >
-                <Image src={img} alt="" fill className="object-cover" sizes="80px" />
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Mini Trust Highlights Box below Gallery on Desktop */}
-        <div className="hidden md:grid grid-cols-2 gap-3 p-4 bg-[#FCFAF5] rounded-xl border border-amber-200/60">
-          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
-            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-[#8A1B14] shrink-0 font-bold">✓</div>
-            <span>Curd Churned (Not Cream Separator)</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
-            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0 font-bold">✓</div>
-            <span>Slow Cooked in Traditional Vessels</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
-            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-[#8A1B14] shrink-0 font-bold">✓</div>
-            <span>No Palm Oil or Chemical Adulteration</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs text-[#5E0B10] font-medium">
-            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0 font-bold">✓</div>
-            <span>Aromatic Golden Granular Danedar Texture</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Details (Right Side) */}
-      <div className="flex flex-col">
-        {/* Title & Share */}
-        <div className="flex justify-between items-start gap-4 mb-2">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 border border-amber-400/50 shadow-xs">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                <span>100% PURE BILONA</span>
-              </span>
-              <span className="text-xs uppercase tracking-widest font-extrabold text-[#C38936]">
-                Pure Desi Vedic Cow Ghee
-              </span>
-            </div>
-            <h1 className="text-3xl lg:text-[34px] leading-tight font-serif font-bold text-[#5E0B10]">{product.title}</h1>
-            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              <span className="inline-flex items-center gap-1 bg-[#FDF6E8] border border-[#EAD7BC] px-2.5 py-0.5 rounded-full text-[11px] font-bold text-[#8A1B14]">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                Official Store by Elvish Yadav
-              </span>
-              <span className="text-[11px] text-[#7A4A3B] font-medium hidden sm:inline">• Direct Farm Dispatch</span>
-            </div>
-          </div>
-          <button 
-            className="p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition shrink-0 shadow-sm" 
-            aria-label="Share product"
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: product.title,
-                  url: window.location.href
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-                toast.success("Link copied to clipboard!");
-              }
-            }}
-          >
-            <Share2 className="w-5 h-5 text-gray-700" />
-          </button>
-        </div>
-
-        {/* Reviews and Ratings badge */}
-        <div className="flex items-center gap-3 mb-2.5">
-          <button 
-            onClick={() => {
-              const el = document.getElementById("product-reviews-section");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-[#FDF6E8] px-3 py-1 rounded-full border border-[#EAD7BC]"
-          >
-            <div className="flex text-[#D4A017]">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(reviewStats.average) ? "fill-current" : "text-gray-300"}`} />
+          {/* Clean Thumbnail Strip */}
+          {product.images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {product.images.map((img, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setSelectedImage(i)}
+                  className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden bg-[#FAF8F2] border transition-all cursor-pointer shrink-0 ${
+                    i === selectedImage
+                      ? "border-[#701619] ring-2 ring-[#701619]/25 opacity-100 shadow-2xs"
+                      : "border-[#E9E3D9] hover:border-stone-400 opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`View photo ${i + 1}`}
+                >
+                  <Image src={img} alt="" fill className="object-contain p-1" sizes="72px" />
+                </button>
               ))}
             </div>
-            <span className="text-xs font-bold text-[#5E0B10]">{reviewStats.average}★ ({reviewStats.total} reviews)</span>
-          </button>
-          <span className="text-xs text-gray-500 font-medium">• 100% Verified Buyers</span>
+          )}
         </div>
 
-        {/* Variants & Packs Selector (500ml, 1L, 2.5L, 5L) - Positioned High for Instant Mobile Access */}
-        {gheePacks && gheePacks.length > 0 && (
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="text-xs sm:text-sm font-extrabold text-[#5E0B10] flex items-center gap-1.5">
-                <span>Select Pack Size:</span>
-                <span className="text-[11px] font-normal text-gray-500 hidden sm:inline">(Direct Farm-To-Home Savings)</span>
-              </label>
-              <span className="text-[11px] sm:text-xs font-bold text-[#8A1B14] bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
-                Save up to 68% Off MRP &rarr;
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
-              {gheePacks.map((pack) => {
-                let ml = 1000;
-                let badge = null;
-                let saveLabel = null;
-                let badgeBg = "bg-gray-900 text-white";
-                let packRole = "Daily Use";
-                
-                if (pack.slug.includes("500-ml")) {
-                  ml = 500;
-                  badge = "STARTER";
-                  badgeBg = "bg-[#7A4B2A] text-white";
-                  packRole = "Trial Pack";
-                } else if (pack.slug.includes("1-litre")) {
-                  ml = 1000;
-                  badge = "★ BESTSELLER";
-                  badgeBg = "bg-[#C38936] text-white";
-                  saveLabel = "Save 21%/L";
-                  packRole = "Most Popular";
-                } else if (pack.slug.includes("2-5-litre")) {
-                  ml = 2500;
-                  badge = "VALUE PACK";
-                  badgeBg = "bg-[#8A1B14] text-white";
-                  saveLabel = "Save 30%/L";
-                  packRole = "Family Saver";
-                } else if (pack.slug.includes("5-litre")) {
-                  ml = 5000;
-                  badge = "BEST VALUE";
-                  badgeBg = "bg-[#5E0B10] text-amber-200 border border-amber-400/50";
-                  saveLabel = "Save 42%/L";
-                  packRole = "Mega Family";
-                }
-                
-                const perLitre = Math.round((pack.price / 100) / (ml / 1000));
-                const isSelected = product.slug === pack.slug || (product.slug.includes("500-ml") && pack.slug.includes("500-ml"));
-                const packDiscount = pack.compareAtPrice ? discountPercent(pack.price, pack.compareAtPrice) : 0;
-                const isNavigatingThis = navigatingSlug === pack.slug;
+        {/* ═══ RIGHT COLUMN: Product Information & Purchase (Section 4, Section D) ═══ */}
+        <div className="lg:col-span-6 xl:col-span-6 flex flex-col space-y-5">
 
-                return (
-                  <button
-                    key={pack.id}
-                    onClick={() => {
-                      if (!isSelected) {
-                        setNavigatingSlug(pack.slug);
-                        router.push(`/products/${pack.slug}`);
-                      }
-                    }}
-                    className={`relative text-left rounded-xl border-2 flex flex-col overflow-hidden transition-all duration-150 transform active:scale-95 ${
-                      isSelected 
-                        ? "border-[#8A1B14] bg-amber-50/40 ring-2 ring-[#8A1B14]/30 shadow-md scale-[1.01]" 
-                        : "border-gray-200 bg-white hover:border-[#8A1B14]/50 hover:bg-gray-50/60 shadow-2xs"
-                    }`}
-                  >
-                    {/* Top Header */}
-                    <div className={`px-2 py-1 sm:px-2.5 sm:py-1.5 flex justify-between items-center text-[11px] sm:text-xs ${
-                      isSelected ? "bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white" : "bg-gray-100 text-gray-800"
-                    }`}>
-                      <span className="font-extrabold truncate">
-                        {pack.variants[0]?.title ?? pack.title.split(' ').slice(-2).join(' ')}
-                      </span>
-                      {isNavigatingThis ? (
-                        <Loader2 className="w-3 h-3 animate-spin shrink-0" />
-                      ) : badge ? (
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase tracking-wider shrink-0 ${badgeBg}`}>
-                          {badge}
-                        </span>
-                      ) : null}
-                    </div>
-                    
-                    {/* Bottom Details */}
-                    <div className="p-2 sm:p-2.5 flex flex-col gap-1 flex-1">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-sm sm:text-base font-extrabold text-[#5E0B10]">
-                          Rs. {Math.round(pack.price / 100).toLocaleString('en-IN')}
-                        </span>
-                        {pack.compareAtPrice && (
-                          <span className="text-[10px] sm:text-[11px] text-gray-400 line-through">
-                            Rs. {Math.round(pack.compareAtPrice / 100).toLocaleString('en-IN')}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
-                        <span className="font-bold text-[#8A1B14]">{packDiscount}% off</span>
-                        <span className="text-gray-500 text-[9px] sm:text-[10px]">{packRole}</span>
-                      </div>
-                      
-                      <div className="mt-auto pt-1 sm:pt-1.5 border-t border-gray-100 flex items-center justify-between">
-                        <span className="text-[10px] sm:text-[11px] font-bold text-[#8A1B14]">
-                          ₹{perLitre.toLocaleString("en-IN")}/L
-                        </span>
-                        {saveLabel && (
-                          <span className="text-[9px] sm:text-[10px] font-extrabold text-amber-800 bg-amber-50 px-1 py-0.5 rounded border border-amber-200/50">
-                            {saveLabel}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Pricing Box with High-Contrast Mobile Clean Layout */}
-        <div className="mb-4 bg-gradient-to-br from-[#FFFDF7] via-[#FCFAF5] to-white p-3.5 sm:p-5 rounded-2xl border border-amber-200/80 shadow-xs">
-          <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
-            <span className="text-3xl sm:text-4xl font-extrabold text-[#5E0B10] tracking-tight">
-              Rs. {(price / 100).toLocaleString('en-IN')}
+          {/* SECTION D: Product Title & Credibility */}
+          <div className="space-y-1.5">
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-[#77716A]">
+              Pure Desi Vedic Cow Ghee
             </span>
-            {compareAt && compareAt > price && (
-              <span className="text-xl sm:text-2xl text-gray-400 line-through font-medium">
-                Rs. {(compareAt / 100).toLocaleString('en-IN')}
-              </span>
-            )}
-            {discount > 0 && (
-              <span className="bg-[#8A1B14] text-amber-200 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                Save {discount}% (₹{savingsRupees.toLocaleString('en-IN')} OFF)
-              </span>
-            )}
-          </div>
+            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-[#4E1013] leading-tight">
+              {product.title}
+            </h1>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-2">
-            <span className="font-semibold text-amber-900 bg-amber-100/70 px-2.5 py-1 rounded-md flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
-              FREE Express Shipping Pan-India
-            </span>
-            <span className="text-gray-500">MRP (Inclusive of all taxes)</span>
-          </div>
-
-          <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex flex-wrap items-center justify-between gap-2 text-xs text-[#5E0B10]">
-            <span className="flex items-center gap-1.5 font-bold">
-              <Factory className="w-4 h-4 text-[#C38936]" />
-              Authentic Wooden Bilona Churned from Curd
-            </span>
-            <span className="text-[#8A1B14] font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
-              Farm Fresh
-            </span>
-          </div>
-        </div>
-
-        {/* Authentic Same-Day Dispatch Reassurance */}
-        <div className="mb-4 p-3 sm:p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] shadow-2xs flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center text-[#8A1B14] shrink-0">
-              <Truck className="w-3.5 h-3.5 text-[#8A1B14]" />
-            </div>
-            <div>
-              <span className="font-bold text-[#5E0B10] block">Same-Day Farm Dispatch</span>
-              <span className="text-[11px] text-[#7A4A3B]">Handcrafted fresh in small batches &bull; Dispatched directly from farms</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0 bg-white px-2.5 py-1 rounded-lg border border-[#EAD7BC] text-[#8A1B14] font-bold text-xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Est. Delivery: {deliveryDateStr}</span>
-          </div>
-        </div>
-
-        {/* Legitimate Trust & Verification Cards (Compact Mobile Micro-Grid) */}
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FCFAF5] border border-amber-200/60 shadow-2xs">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0">
-              <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8A1B14]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-[#5E0B10] block leading-tight">
-                Small-Batch Gir Cows
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[#7A4A3B] leading-tight block mt-0.5 hidden sm:block">
-                Indigenous Gir Breed
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FBF8EF] border border-[#EEDBBA] shadow-2xs">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F8EFD8] flex items-center justify-center text-[#8C601E] shrink-0">
-              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8C601E]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-[#6D4911] block leading-tight">
-                NABL Lab Certified
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[#8C601E] leading-tight block mt-0.5 hidden sm:block">
-                0% Adulteration Purity
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-3 p-2 sm:p-3 rounded-xl bg-[#FCFAF5] border border-amber-200/60 shadow-2xs">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0">
-              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8A1B14]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] sm:text-xs font-bold text-[#5E0B10] block leading-tight">
-                FSSAI Central Lic
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[#5E0B10] font-mono font-bold tracking-tight block mt-0.5 hidden sm:block">
-                10823999000412
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Free Gift Announcement */}
-        <div className="mb-4 p-3 sm:p-3.5 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] flex items-center gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FDF6E8] border border-[#D4A017] flex items-center justify-center text-[#8A1B14] shrink-0">
-            <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-[#8A1B14]" />
-          </div>
-          <div className="flex-1 text-xs">
-            {((variant?.title || "").toLowerCase().includes("500")) ? (
-              <>
-                <span className="font-bold text-[#5E0B10] block">Special Tip:</span>
-                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
-                  Choose the <strong>1 Litre pack</strong> to get a <strong className="text-[#8A1B14]">Complimentary 250ml Cold-Pressed Mustard Oil</strong> packed with your jar!
-                </p>
-              </>
-            ) : ((variant?.title || "").toLowerCase().includes("2.5")) ? (
-              <>
-                <span className="font-bold text-[#5E0B10] block">3 Complimentary Gifts Included (2.5L Pack)</span>
-                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
-                  Includes <strong>Groundnut (250ml)</strong> + <strong>Yellow Mustard (250ml)</strong> + <strong>Mustard Oil (250ml)</strong> 100% free!
-                </p>
-              </>
-            ) : ((variant?.title || "").toLowerCase().includes("5 litre") || (variant?.title || "").toLowerCase().includes("5l")) ? (
-              <>
-                <span className="font-bold text-[#5E0B10] block">3 Large Gifts Included (5L Pack)</span>
-                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
-                  Includes <strong>Coconut (250ml)</strong> + <strong>Groundnut (250ml)</strong> + <strong>Mustard Oil (500ml)</strong> 100% free!
-                </p>
-              </>
-            ) : (
-              <>
-                <span className="font-bold text-[#5E0B10] block">Complimentary Gift Included (1L Pack)</span>
-                <p className="text-[#7A4A3B] mt-0.5 leading-snug">
-                  Includes <strong>1x Cold-Pressed Mustard Oil (250 ml)</strong> automatically included for free!
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Special Coupon Code */}
-        <div className="mb-5 p-3.5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 rounded-xl border border-dashed border-amber-500/80 flex items-center justify-between gap-3 shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <Sparkles className="w-5 h-5 text-[#8A1B14] shrink-0" />
-            <div className="text-xs">
-              <span className="font-extrabold text-[#8A1B14] block">Special 10% Discount:</span>
-              <span className="font-mono font-black text-stone-900 bg-amber-300 px-2 py-0.5 rounded text-[11px] tracking-wider">
-                NAMO10
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleCopyCoupon("NAMO10")}
-            className="text-xs font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer shrink-0"
-          >
-            {codeCopied ? <Check className="w-3.5 h-3.5 text-[#8A1B14]" /> : <Copy className="w-3.5 h-3.5 text-stone-900" />}
-            <span>{codeCopied ? "Copied!" : "Copy Code"}</span>
-          </button>
-        </div>
-
-        {/* In-Page Main Action Section (Always visible on mobile & desktop) */}
-        <div className="mb-4">
-          <div className="mb-3 p-3 rounded-xl bg-[#FAF9F5] border border-[#EAD7BC] flex items-center gap-2.5 text-xs text-[#5E0B10]">
-            <Gift className="w-4 h-4 text-[#8A1B14] shrink-0" />
-            <span className="font-semibold">
-              {((variant?.title || "").toLowerCase().includes("500"))
-                ? "Select 1L pack to receive complimentary 250ml Cold-Pressed Mustard Oil"
-                : "Complimentary Cold-Pressed Oil gift will be automatically included in your order"}
-            </span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch gap-2.5 mb-2.5">
-            {/* Quantity Stepper */}
-            <div className="flex items-center justify-between sm:justify-start bg-[#FDF6E8] rounded-xl border border-[#F0DCB8] h-[52px] px-2 shrink-0">
-              <button 
-                onClick={() => setQty(Math.max(1, qty - 1))} 
-                className="w-10 h-full flex items-center justify-center text-[#8A1B14] hover:bg-[#FBE9CE] active:scale-95 rounded-lg transition text-xl font-bold cursor-pointer"
-                aria-label="Decrease quantity"
-              >
-                −
-              </button>
-              <span className="w-10 text-center font-extrabold text-[#5E0B10] text-base">{qty}</span>
-              <button 
-                onClick={() => setQty(qty + 1)} 
-                className="w-10 h-full flex items-center justify-center text-[#8A1B14] hover:bg-[#FBE9CE] active:scale-95 rounded-lg transition text-xl font-bold cursor-pointer"
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
-            </div>
-
-            {/* Instant Buy Now Button (High Impact Radiant Gold CTA) */}
-            <button 
-              id="product-buy-now-btn"
-              onClick={handleBuyNow} 
-              disabled={!variant?.available || isAdding} 
-              className="flex-1 bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-[0.98] text-stone-950 font-black h-[52px] rounded-xl transition-all disabled:opacity-70 text-base sm:text-lg tracking-wide shadow-[0_4px_18px_rgba(245,158,11,0.45)] flex items-center justify-center gap-2 uppercase border border-amber-300 cursor-pointer"
-            >
-              {isAdding ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  <Zap className="w-5 h-5 fill-current text-stone-950" />
-                  <span>Buy Now — ₹{((price * qty) / 100).toLocaleString('en-IN')}</span>
-                </>
-              )}
-            </button>
-
-            {/* Add To Cart Button */}
-            <button 
-              onClick={handleAddToCart}
-              disabled={!variant?.available}
-              className="h-[52px] px-5 rounded-xl border-2 border-[#8A1B14] text-[#8A1B14] hover:bg-[#8A1B14] hover:text-white font-extrabold text-sm uppercase tracking-wide transition-all active:scale-[0.98] flex items-center justify-center gap-2 bg-[#FCFAF5] cursor-pointer shrink-0"
-            >
-              <ShoppingCart className="w-4 h-4 stroke-[2.5]" />
-              <span>Add to Cart</span>
-            </button>
-          </div>
-
-          {/* Quick Payment & Trust Badges Strip */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-gray-600 mb-3 py-2 border-y border-amber-100">
-            <div className="flex items-center gap-3 font-semibold text-emerald-800">
-              <span className="flex items-center gap-1">
+            {/* Official Store Indicator & Reviews */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-1 text-xs">
+              <span className="inline-flex items-center gap-1 text-[#4E1013] font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                100% Secure Instant UPI &amp; Cards
+                <span>Official Store by Elvish Yadav</span>
               </span>
-              <span className="text-gray-300 hidden sm:inline">•</span>
-              <span className="flex items-center gap-1 font-semibold text-amber-900 hidden sm:flex">
-                <Truck className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                Free Express Delivery
-              </span>
-            </div>
-
-            {/* Official Payment Logos */}
-            <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={56} height={16} className="h-3 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/gpay.png" alt="Google Pay" width={42} height={14} className="h-3 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/paytm.png" alt="Paytm" width={38} height={12} className="h-2.5 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/upi.png" alt="UPI" width={38} height={14} className="h-2.5 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/visa.png" alt="Visa" width={34} height={12} className="h-2.5 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/mastercard.svg" alt="Mastercard" width={22} height={14} className="h-3 w-auto object-contain" />
-              </div>
-              <div className="h-5 px-1.5 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center shadow-2xs">
-                <Image src="/assets/payments/rupay.svg" alt="RuPay" width={36} height={12} className="h-2.5 w-auto object-contain" />
-              </div>
+              <span className="text-[#E9E3D9]">|</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("product-reviews-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-flex items-center gap-1.5 text-[#24211E] hover:text-[#701619] transition-colors cursor-pointer"
+              >
+                <div className="flex text-[#D6A53B]">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-3.5 h-3.5 ${
+                        i < Math.floor(reviewStats.average) ? "fill-current text-[#D6A53B]" : "text-stone-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="font-semibold">{reviewStats.average}★</span>
+                <span className="text-[#77716A]">({reviewStats.total} reviews)</span>
+                <span className="text-[#77716A] text-[11px]">• Verified Buyers</span>
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* 100% Vedic Purity Money-Back Guarantee Risk Reversal Box */}
-        <div className="mb-5 p-3.5 sm:p-4 bg-[#FAF9F5] rounded-xl border border-[#EAD7BC] shadow-2xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] shrink-0 border border-[#D4A017] shadow-xs">
-            <ShieldCheck className="w-5 h-5 text-[#8A1B14]" />
-          </div>
-          <div className="text-xs">
-            <span className="font-extrabold text-[#5E0B10] block text-sm">100% Vedic Purity Guarantee</span>
-            <p className="text-gray-600 mt-0.5 leading-snug">
-              If our ghee is not 100% authentic Bilona Ghee made with traditional wooden churner from curd, get a <strong>100% instant refund</strong>. No hassle, no questions asked.
-            </p>
-          </div>
-        </div>
-
-        {/* Sticky Mobile Buy Bar (Mobile Only: Ensures 1-Tap Checkout is always within thumb reach) */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md px-3 py-2.5 border-t border-amber-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-          {/* Sticky Pack Quick Switcher */}
+          {/* ═══ SECTION 5: Pack Size Selector ═══ */}
           {gheePacks && gheePacks.length > 0 && (
-            <div className="flex items-center justify-between gap-1.5 pb-2 mb-2 border-b border-gray-100">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider shrink-0">Pack:</span>
-              <div className="flex items-center gap-1.5 flex-1 justify-end overflow-x-auto scrollbar-hide py-0.5">
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#4E1013] uppercase tracking-wide">
+                  Select Pack Size:
+                </span>
+                <span className="text-[11px] font-medium text-[#77716A]">
+                  Direct from farm gaushala
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
                 {gheePacks.map((pack) => {
+                  let ml = 1000;
+                  let packRole = "Starter Pack";
+                  let giftNote = "";
+
+                  if (pack.slug.includes("500-ml")) {
+                    ml = 500;
+                    packRole = "Starter Pack";
+                    giftNote = "Trial Size";
+                  } else if (pack.slug.includes("1-litre")) {
+                    ml = 1000;
+                    packRole = "Bestseller";
+                    giftNote = "+ Free Mustard Oil";
+                  } else if (pack.slug.includes("2-5-litre")) {
+                    ml = 2500;
+                    packRole = "Value Pack";
+                    giftNote = "+ 3 Free Oils";
+                  } else if (pack.slug.includes("5-litre")) {
+                    ml = 5000;
+                    packRole = "Best Value";
+                    giftNote = "+ 3 Large Free Oils";
+                  }
+
+                  const perLitre = Math.round((pack.price / 100) / (ml / 1000));
                   const isSelected = product.slug === pack.slug || (product.slug.includes("500-ml") && pack.slug.includes("500-ml"));
-                  const shortName = pack.slug.includes("500-ml") ? "500ml" : pack.slug.includes("1-litre") ? "1L" : pack.slug.includes("2-5-litre") ? "2.5L" : "5L";
-                  const shortPrice = `₹${Math.round(pack.price / 100).toLocaleString('en-IN')}`;
                   const isNavigatingThis = navigatingSlug === pack.slug;
+
                   return (
                     <button
                       key={pack.id}
+                      type="button"
                       onClick={() => {
                         if (!isSelected) {
                           setNavigatingSlug(pack.slug);
                           router.push(`/products/${pack.slug}`);
                         }
                       }}
-                      className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 ${
+                      className={`relative text-left rounded-xl p-3 border transition-all duration-150 flex flex-col justify-between cursor-pointer ${
                         isSelected
-                          ? "bg-[#8A1B14] text-white shadow-xs ring-1 ring-[#8A1B14]"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95"
+                          ? "border-[#701619] bg-[#FAF8F2] ring-1 ring-[#701619] shadow-2xs"
+                          : "border-[#E9E3D9] bg-white hover:border-[#701619]/40 hover:bg-[#FAF8F2]/40"
                       }`}
                     >
-                      {isNavigatingThis ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <>
-                          <span>{shortName}</span>
-                          <span className={`text-[10px] ${isSelected ? "text-amber-300 font-semibold" : "text-gray-500"}`}>{shortPrice}</span>
-                        </>
+                      <div className="flex items-start justify-between gap-1 mb-1">
+                        <div>
+                          <span className="font-bold text-sm text-[#24211E] block">
+                            {pack.variants[0]?.title ?? pack.title.split(" ").slice(-2).join(" ")}
+                          </span>
+                          <span className="text-[11px] font-semibold text-[#701619] block">
+                            {packRole}
+                          </span>
+                        </div>
+                        {isNavigatingThis ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[#701619] shrink-0" />
+                        ) : isSelected ? (
+                          <span className="w-4 h-4 rounded-full bg-[#701619] text-white flex items-center justify-center shrink-0">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div className="mt-2 pt-2 border-t border-[#E9E3D9]/60 flex items-baseline justify-between">
+                        <div>
+                          <span className="text-base font-bold text-[#4E1013]">
+                            ₹{Math.round(pack.price / 100).toLocaleString("en-IN")}
+                          </span>
+                          {pack.compareAtPrice && pack.compareAtPrice > pack.price && (
+                            <span className="text-[11px] text-stone-400 line-through ml-1.5 font-normal">
+                              ₹{Math.round(pack.compareAtPrice / 100).toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[11px] font-medium text-[#77716A]">
+                          ₹{perLitre.toLocaleString("en-IN")}/L
+                        </span>
+                      </div>
+
+                      {giftNote && (
+                        <div className="mt-1 text-[10px] font-semibold text-emerald-700 flex items-center gap-1">
+                          <Gift className="w-3 h-3 shrink-0" />
+                          <span className="truncate">{giftNote}</span>
+                        </div>
                       )}
                     </button>
                   );
@@ -764,157 +534,421 @@ export default function ProductDetails({ product, gheePacks }: { product: Produc
             </div>
           )}
 
-          {/* Sticky CTA Row */}
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col min-w-0 flex-1">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-black text-[#5E0B10]">
-                  ₹{((price * qty) / 100).toLocaleString('en-IN')}
+          {/* ═══ SECTION 6: Single Clear Price Summary ═══ */}
+          <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-3.5 sm:p-4 space-y-2">
+            <div className="flex flex-wrap items-baseline gap-2.5">
+              <span className="text-2xl sm:text-3xl font-bold text-[#4E1013] tracking-tight">
+                ₹{(price / 100).toLocaleString("en-IN")}
+              </span>
+              {compareAt && compareAt > price && (
+                <span className="text-base text-stone-400 line-through font-normal">
+                  MRP ₹{(compareAt / 100).toLocaleString("en-IN")}
                 </span>
-                {compareAt && compareAt > price && (
-                  <span className="text-xs text-gray-400 line-through">
-                    ₹{((compareAt * qty) / 100).toLocaleString('en-IN')}
-                  </span>
-                )}
-              </div>
-              <span className="text-[10px] font-extrabold text-emerald-700 flex items-center gap-0.5 truncate">
-                <Gift className="w-3 h-3 text-emerald-600 shrink-0" />
-                <span>FREE Gift Included + Free Shipping</span>
+              )}
+              {discount > 0 && (
+                <span className="bg-[#16794B] text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-2xs">
+                  Save ₹{savingsRupees.toLocaleString("en-IN")} ({discount}% OFF)
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#77716A]">
+              <span className="text-[#16794B] font-semibold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5" /> Free pan-India delivery
+              </span>
+              <span>•</span>
+              <span>Inclusive of all taxes</span>
+              <span>•</span>
+              <span className="text-[#701619] font-medium">Prepaid orders only</span>
+            </div>
+          </div>
+
+          {/* ═══ SECTION 7: Diwali Gift Promotion (Inline, Non-Intrusive) ═══ */}
+          <div className="border border-[#E9E3D9] bg-white rounded-xl p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#701619] uppercase tracking-wide flex items-center gap-1.5">
+                <Gift className="w-4 h-4 text-[#701619]" />
+                <span>{giftData.badge}</span>
+              </span>
+              <span className="text-[11px] font-semibold text-[#16794B] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+                Automatically Added · ₹0
               </span>
             </div>
 
-            <button 
-              onClick={handleBuyNow} 
-              disabled={!variant?.available || isAdding} 
-              className="bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-95 text-stone-950 font-black h-[46px] px-5 rounded-xl shadow-[0_4px_14px_rgba(245,158,11,0.5)] flex items-center justify-center gap-1.5 uppercase text-sm border border-amber-300 shrink-0 cursor-pointer"
+            <p className="text-xs text-[#24211E] font-medium leading-relaxed">
+              {giftData.description}
+            </p>
+
+            {giftData.items.length > 0 ? (
+              <div className="flex items-center gap-2.5 overflow-x-auto pt-1">
+                {giftData.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 bg-[#FAF8F2] border border-[#E9E3D9] rounded-lg p-1.5 pr-2.5 shrink-0"
+                  >
+                    <div className="relative w-9 h-9 bg-white rounded border border-[#E9E3D9] shrink-0 overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={32}
+                        height={32}
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="text-[11px] leading-tight">
+                      <span className="font-bold text-[#4E1013] block">{item.name}</span>
+                      <span className="text-stone-500 text-[10px]">{item.size} • Free Gift</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const p1L = gheePacks?.find((p) => p.slug.includes("1-litre"));
+                    if (p1L) {
+                      setNavigatingSlug(p1L.slug);
+                      router.push(`/products/${p1L.slug}`);
+                    }
+                  }}
+                  className="text-xs font-bold text-[#701619] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Upgrade to 1 Litre pack to unlock free cold-pressed oil gift</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ═══ SECTION 8: Delivery & Dispatch with Simple PIN Checker ═══ */}
+          <div className="border border-[#E9E3D9] bg-[#FAF8F2] rounded-xl p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-[#4E1013]">
+                <Truck className="w-4 h-4 text-[#701619]" />
+                <span>Estimated Delivery: {deliveryDateStr}</span>
+              </div>
+              <span className="text-[11px] text-[#77716A]">Pan-India</span>
+            </div>
+
+            <p className="text-xs text-[#77716A] leading-relaxed">
+              Handcrafted in small batches. Dispatched directly from farms within 24 hours.
+            </p>
+
+            {/* PIN Code Lookup Form */}
+            <form onSubmit={handleCheckPincode} className="flex items-center gap-2 pt-1">
+              <input
+                type="text"
+                maxLength={6}
+                value={pinInput}
+                onChange={(e) => {
+                  setPinInput(e.target.value);
+                  if (pinStatus !== "idle") setPinStatus("idle");
+                }}
+                placeholder="Enter 6-digit delivery PIN"
+                className="flex-1 bg-white border border-[#E9E3D9] rounded-lg px-3 py-1.5 text-xs placeholder-[#77716A] focus:outline-none focus:border-[#701619] text-[#24211E]"
+              />
+              <button
+                type="submit"
+                disabled={pinStatus === "loading"}
+                className="bg-[#4E1013] hover:bg-[#701619] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+              >
+                {pinStatus === "loading" ? "Checking..." : "Check"}
+              </button>
+            </form>
+
+            {pinStatus === "success" && (
+              <p className="text-xs font-medium text-[#16794B] flex items-center gap-1 pt-0.5">
+                <Check className="w-3.5 h-3.5" /> {pinMessage}
+              </p>
+            )}
+            {pinStatus === "fallback" && (
+              <p className="text-xs text-[#77716A] pt-0.5">
+                {pinMessage}
+              </p>
+            )}
+          </div>
+
+          {/* ═══ SECTION 10: Compact Coupon Component ═══ */}
+          <div className="border border-dashed border-[#D6A53B] bg-[#FAF8F2] rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3">
+            <div className="text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-[#4E1013]">
+                <Sparkles className="w-3.5 h-3.5 text-[#D6A53B]" />
+                <span>Special Offer:</span>
+                <span className="font-mono bg-white border border-[#D6A53B]/60 px-1.5 py-0.2 rounded text-[11px] text-[#4E1013]">
+                  NAMO10
+                </span>
+              </div>
+              <p className="text-[11px] text-[#77716A] mt-0.5">
+                10% extra discount on eligible prepaid orders
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyCoupon("NAMO10")}
+              className="text-xs font-semibold bg-white border border-[#E9E3D9] hover:border-[#701619] text-[#4E1013] px-3 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer active:scale-95 shrink-0 shadow-2xs"
             >
-              {isAdding ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+              {couponCopied ? (
+                <>
+                  <Check className="w-3 h-3 text-[#16794B]" />
+                  <span className="text-[#16794B]">Copied</span>
+                </>
               ) : (
                 <>
-                  <Zap className="w-4 h-4 fill-current text-stone-950" />
-                  <span>Buy Now</span>
+                  <Copy className="w-3 h-3 text-[#77716A]" />
+                  <span>Copy Code</span>
                 </>
               )}
             </button>
           </div>
+
+          {/* ═══ SECTION 11 & 12: Quantity Selector & Primary Purchase CTAs ═══ */}
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center gap-2.5">
+              {/* Stepper (Section 11) */}
+              <div className="flex items-center bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl h-12 px-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  className="w-8 h-full flex items-center justify-center text-[#701619] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <span className="w-8 text-center font-bold text-sm text-[#4E1013]">
+                  {qty}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQty(qty + 1)}
+                  className="w-8 h-full flex items-center justify-center text-[#701619] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Primary CTA: Add to Cart (Section 12) */}
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={!variant?.available}
+                className="flex-1 bg-[#701619] hover:bg-[#4E1013] text-white font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-2 text-sm uppercase tracking-wide cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                <span>Add to Cart</span>
+              </button>
+
+              {/* Secondary CTA: Buy Now (Section 12) */}
+              <button
+                type="button"
+                id="product-buy-now-btn"
+                onClick={handleBuyNow}
+                disabled={!variant?.available || isAdding}
+                className="flex-1 bg-[#FAF8F2] hover:bg-amber-100/60 border border-[#D6A53B] text-[#4E1013] font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-1.5 text-sm uppercase tracking-wide cursor-pointer disabled:opacity-50"
+              >
+                {isAdding ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-[#4E1013]" />
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 text-[#D6A53B] fill-current" />
+                    <span>Buy Now — ₹{((price * qty) / 100).toLocaleString("en-IN")}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Supported Payment Logos & Security Strip (Section 12 & 16) */}
+            <div className="pt-2 border-t border-[#E9E3D9]/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#77716A]">
+              <div className="flex items-center gap-1.5 font-medium text-[#16794B]">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>100% Secure Prepaid Payment (No COD)</span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={48} height={14} className="h-2.5 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/gpay.png" alt="Google Pay" width={36} height={12} className="h-2.5 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/paytm.png" alt="Paytm" width={32} height={11} className="h-2 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/upi.png" alt="UPI" width={32} height={11} className="h-2 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/visa.png" alt="Visa" width={28} height={10} className="h-2 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/mastercard.svg" alt="Mastercard" width={18} height={12} className="h-2.5 w-auto object-contain" />
+                </div>
+                <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
+                  <Image src="/assets/payments/rupay.svg" alt="RuPay" width={30} height={10} className="h-2 w-auto object-contain" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ SECTION 9: Consistent Trust & Quality Cards ═══ */}
+          <div className="grid grid-cols-3 gap-2 pt-2">
+            <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+                <Leaf className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                  Gir Cow Sourcing
+                </span>
+                <span className="text-[10px] text-[#77716A] leading-tight block mt-0.5 hidden sm:block">
+                  A2 Ahimsa Milking
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                  Laboratory Tested
+                </span>
+                <span className="text-[10px] text-[#77716A] leading-tight block mt-0.5 hidden sm:block">
+                  0% Adulteration
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+                <Award className="w-3.5 h-3.5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                  FSSAI Licensed
+                </span>
+                <span className="text-[10px] text-[#77716A] font-mono leading-tight block mt-0.5 hidden sm:block">
+                  10823999000412
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 100% Vedic Purity Refund Guarantee */}
+          <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-3 flex items-start gap-2.5 text-xs">
+            <ShieldCheck className="w-4 h-4 text-[#701619] shrink-0 mt-0.5" />
+            <div className="text-[11px] leading-relaxed text-[#77716A]">
+              <strong className="text-[#4E1013] font-semibold">100% Vedic Purity Guarantee:</strong>{" "}
+              Authentic bilona ghee slow-churned from cultured curd. If not genuine, receive an instant 100% refund.
+            </div>
+          </div>
+
         </div>
+      </div>
 
-        {/* Delivery & Pincode Reassurance */}
-        <div className="mb-6 p-4 bg-[#FCFAF5] rounded-xl border border-amber-200/60 space-y-2 text-xs">
-          <div className="flex items-center gap-2 font-bold text-[#5E0B10]">
-            <Truck className="w-4 h-4 text-[#8A1B14]" />
-            <span>Estimated Delivery: <strong className="text-[#8A1B14]">{deliveryDateStr}</strong></span>
+      {/* ═══ SECTION 13: Compact Mobile Sticky Purchase Bar ═══ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/98 backdrop-blur-md border-t border-[#E9E3D9] px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-bold text-[#4E1013]">
+                ₹{((price * qty) / 100).toLocaleString("en-IN")}
+              </span>
+              {compareAt && compareAt > price && (
+                <span className="text-xs text-stone-400 line-through">
+                  ₹{((compareAt * qty) / 100).toLocaleString("en-IN")}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] font-medium text-[#77716A] truncate">
+              {variant?.title ?? "1 Litre"} • Free Delivery {giftData.hasGift ? "• Free Gift" : ""}
+            </span>
           </div>
-          <p className="text-gray-600 pl-6">
-            Dispatches from our farm within <strong>24 hours</strong>. Free Express Delivery across 19,000+ Indian pincodes.
-          </p>
-          <div className="flex items-center gap-2 text-gray-700 font-medium pt-1 border-t border-amber-200/50 pl-6">
-            <Lock className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-            <span>100% Safe &amp; Secure Checkout via UPI, Google Pay, PhonePe, Cards &amp; NetBanking</span>
-          </div>
+
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!variant?.available}
+            className="bg-[#701619] hover:bg-[#4E1013] active:scale-95 text-white font-bold h-11 px-5 rounded-xl shadow-xs flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
+          >
+            <span>Add to Cart →</span>
+          </button>
         </div>
+      </div>
 
-        {/* Trust Guarantees Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-6 pb-6 border-t border-gray-200">
-          <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
-              <Truck className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-bold text-[#5E0B10] leading-tight">Free Express Shipping</span>
-            <span className="text-[10px] text-gray-500 mt-0.5">Pan India</span>
-          </div>
+      {/* ═══ BELOW-FOLD: Comparison Table & Descriptions ═══ */}
+      <div className="mt-12 space-y-10">
 
-          <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
-              <Factory className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-bold text-[#5E0B10] leading-tight">Vedic Bilona Churned</span>
-            <span className="text-[10px] text-gray-500 mt-0.5">From Whole Curd</span>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-bold text-[#5E0B10] leading-tight">100% Purity Guarantee</span>
-            <span className="text-[10px] text-gray-500 mt-0.5">Or Full Refund</span>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-3 bg-white rounded-xl border border-gray-100 shadow-2xs">
-            <div className="w-10 h-10 rounded-full bg-[#FDF6E8] flex items-center justify-center text-[#8A1B14] mb-1.5">
-              <Award className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-bold text-[#5E0B10] leading-tight">NABL Lab Certified</span>
-            <span className="text-[10px] text-gray-500 mt-0.5">0% Adulteration</span>
-          </div>
-        </div>
-
-        {/* Why 24,000+ Families Choose Us Comparison Table */}
-        <div className="mb-8 p-4 sm:p-5 bg-[#FAF9F5] rounded-2xl border border-amber-200/60">
-          <h3 className="font-serif font-bold text-lg text-[#5E0B10] mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#C38936]" />
-            Why Families Choose Namo Narayana vs Commercial Ghee
-          </h3>
-          <div className="overflow-x-auto text-xs">
+        {/* Why Families Choose Namo Narayana vs Commercial Ghee */}
+        <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-2xl p-5 sm:p-6">
+          <h2 className="font-serif font-bold text-lg sm:text-xl text-[#4E1013] mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#D6A53B]" />
+            <span>Why Families Choose Namo Narayana vs Commercial Ghee</span>
+          </h2>
+          <div className="overflow-x-auto text-xs sm:text-sm">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="py-2 pr-2 text-gray-500 font-semibold">Criteria</th>
-                  <th className="py-2 px-2 text-[#8A1B14] font-extrabold bg-amber-100/70 rounded-t-lg">Namo Narayana</th>
-                  <th className="py-2 pl-2 text-gray-400 font-semibold">Store-Bought Ghee</th>
+                <tr className="border-b border-[#E9E3D9]">
+                  <th className="py-2.5 pr-3 text-[#77716A] font-medium">Criteria</th>
+                  <th className="py-2.5 px-3 text-[#701619] font-bold bg-[#E9E3D9]/40 rounded-t-lg">
+                    Namo Narayana
+                  </th>
+                  <th className="py-2.5 pl-3 text-[#77716A] font-medium">Commercial Store Ghee</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200/60">
+              <tbody className="divide-y divide-[#E9E3D9]/60">
                 <tr>
-                  <td className="py-2 pr-2 font-medium text-gray-700">Source</td>
-                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">100% Indigenous Gir Cows</td>
-                  <td className="py-2 pl-2 text-gray-500">Commercial Buffalo/Jersey Milk</td>
+                  <td className="py-2.5 pr-3 font-medium text-[#24211E]">Milk Source</td>
+                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">100% Indigenous Gir Cows</td>
+                  <td className="py-2.5 pl-3 text-[#77716A]">Commercial Buffalo / Mixed Breeds</td>
                 </tr>
                 <tr>
-                  <td className="py-2 pr-2 font-medium text-gray-700">Churning</td>
-                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Hand-churned Curd (Bilona)</td>
-                  <td className="py-2 pl-2 text-gray-500">Machine cream separator</td>
+                  <td className="py-2.5 pr-3 font-medium text-[#24211E]">Churning Method</td>
+                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Hand-churned Curd (Vedic Bilona)</td>
+                  <td className="py-2.5 pl-3 text-[#77716A]">Industrial Cream Separator</td>
                 </tr>
                 <tr>
-                  <td className="py-2 pr-2 font-medium text-gray-700">Digestibility</td>
-                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Easy on Gut (A2 Protein)</td>
-                  <td className="py-2 pl-2 text-gray-500">Heavy, bloating (A1 Protein)</td>
+                  <td className="py-2.5 pr-3 font-medium text-[#24211E]">Digestibility</td>
+                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Gentle on gut (A2 Beta-Casein)</td>
+                  <td className="py-2.5 pl-3 text-[#77716A]">Heavy, contains A1 protein</td>
                 </tr>
                 <tr>
-                  <td className="py-2 pr-2 font-medium text-gray-700">Aroma & Texture</td>
-                  <td className="py-2 px-2 text-[#5E0B10] font-bold bg-amber-50/50">Rich Danedar & Sweet Aroma</td>
-                  <td className="py-2 pl-2 text-gray-500">Artificial essence added</td>
+                  <td className="py-2.5 pr-3 font-medium text-[#24211E]">Texture & Aroma</td>
+                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Grainy (Danedar) & Nutty Aroma</td>
+                  <td className="py-2.5 pl-3 text-[#77716A]">Waxy or Artificial Aroma</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Product Description */}
-        <div className="mb-8">
-          <h2 className="text-sm font-bold text-[#5E0B10] uppercase tracking-wider mb-3">Product Description & Benefits</h2>
-          <div className="prose prose-sm max-w-none text-gray-800 marker:text-[#8A1B14]" dangerouslySetInnerHTML={{ __html: product.description }} />
+        {/* Product Description & Heritage */}
+        <div className="space-y-3">
+          <h2 className="text-xs font-bold text-[#4E1013] uppercase tracking-wider">
+            Product Description &amp; Health Benefits
+          </h2>
+          <div
+            className="prose prose-sm max-w-none text-[#24211E] marker:text-[#701619] leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
+        </div>
+
+        {/* Product Journey Component */}
+        <div className="w-full">
+          <ProductJourney />
+        </div>
+
+        {/* Customer Reviews Section */}
+        <div id="product-reviews-section" className="pt-6 border-t border-[#E9E3D9]">
+          <ProductReviews
+            reviews={PRODUCT_REVIEWS_MAP[product.slug] || PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"]}
+            totalReviews={reviewStats?.total || 1688}
+            averageRating={reviewStats?.average || 4.9}
+          />
         </div>
 
       </div>
-
-      {/* Product Journey Section */}
-      <div className="col-span-1 md:col-span-2 w-[100vw] relative left-1/2 -translate-x-1/2 mt-10 md:mt-20">
-        <ProductJourney />
-      </div>
-
-      {/* Customer Reviews Section */}
-      <div id="product-reviews-section" className="col-span-1 md:col-span-2 mt-10 pt-8 border-t border-gray-200">
-        <ProductReviews 
-          reviews={PRODUCT_REVIEWS_MAP[product.slug] || PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"]} 
-          totalReviews={reviewStats?.total || 1688} 
-          averageRating={reviewStats?.average || 4.9} 
-        />
-      </div>
-
-      {/* Diwali Special Deal Floating Gift Toast */}
-      <DiwaliGiftToast currentSlug={product.slug} onClaim={handleBuyNow} />
     </div>
   );
 }

@@ -460,12 +460,29 @@ export default function CartDrawer() {
                  </Link>
                </div>
                
-               <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-500 pt-1">
-                 Secure Payments: 
-                 <div className="flex gap-1 items-center ml-1">
-                   <span className="bg-white border border-gray-200 text-gray-400 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider">UPI</span>
-                   <span className="bg-white border border-gray-200 text-blue-800 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider italic">VISA</span>
-                   <span className="bg-white border border-gray-200 text-orange-500 font-extrabold px-1.5 py-0.5 rounded text-[8px] tracking-wider">MC</span>
+               <div className="flex flex-col items-center justify-center gap-1.5 pt-1 text-center">
+                 <p className="text-[11px] font-semibold text-stone-600">
+                   Pay securely online to complete your order
+                 </p>
+                 <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={44} height={12} className="h-2.5 w-auto object-contain" />
+                   </div>
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/gpay.png" alt="Google Pay" width={32} height={11} className="h-2.5 w-auto object-contain" />
+                   </div>
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/paytm.png" alt="Paytm" width={30} height={10} className="h-2 w-auto object-contain" />
+                   </div>
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/upi.png" alt="UPI" width={30} height={10} className="h-2 w-auto object-contain" />
+                   </div>
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/visa.png" alt="Visa" width={26} height={9} className="h-2 w-auto object-contain" />
+                   </div>
+                   <div className="h-4 px-1 py-0.5 bg-white rounded border border-gray-200 flex items-center justify-center">
+                     <Image src="/assets/payments/mastercard.svg" alt="Mastercard" width={18} height={11} className="h-2.5 w-auto object-contain" />
+                   </div>
                  </div>
                </div>
                <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-[#7A4A3B]">
