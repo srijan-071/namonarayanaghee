@@ -1,4 +1,6 @@
 import type { CartItem } from "@/lib/types";
+import { db } from "./firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore/lite";
 
 export type CartRecoveryStatus = 'active' | 'pending' | 'failed' | 'abandoned' | 'recovered' | 'paid';
 
@@ -29,8 +31,6 @@ export async function logAbandonedCart(data: {
   const identifier = (data.phone || data.email || "").trim();
   if (!identifier) return;
   try {
-    const { db } = await import("./firebase");
-    const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
     const cartRef = doc(db, "abandoned_carts", identifier);
     
     await setDoc(cartRef, {
@@ -56,8 +56,6 @@ export async function updateAbandonedCartStatus(
 ) {
   if (!identifier) return;
   try {
-    const { db } = await import("./firebase");
-    const { doc, setDoc, serverTimestamp } = await import("firebase/firestore/lite");
     const cartRef = doc(db, "abandoned_carts", identifier);
     
     const updatePayload: Record<string, any> = {

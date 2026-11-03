@@ -36,8 +36,8 @@ export async function POST(req: Request) {
 
     const orderData = snap.data();
 
-    // Idempotency: Prevent duplicate notifications if customer refreshes the Thank You page
-    if (orderData.thankYouPageReached && orderData.paymentStatus === "paid") {
+    // Idempotency: Only skip if BOTH thank-you page has been reached AND notifications have already been sent
+    if (orderData.thankYouPageReached && orderData.notificationsSent && (orderData.paymentStatus === "paid" || orderData.paymentStatus === "advance_paid")) {
       return NextResponse.json({
         success: true,
         alreadyConfirmed: true,
@@ -71,6 +71,36 @@ export async function POST(req: Request) {
     const advancePaid = isCod ? (orderData.amountToPay || 25000) : 0;
     const balanceDueOnDelivery = isCod ? (orderData.amountRemaining || 0) : 0;
 
+    // Helper to deeply sanitize data so Firestore updateDoc never throws:
+    // "Unsupported field value: undefined"
+    const sanitizeFirestoreData = (data: any): any => {
+      if (data === undefined) return null;
+      if (data === null || typeof data !== "object") return data;
+      if (data instanceof Date) return data;
+      if (Array.isArray(data)) return data.map(sanitizeFirestoreData);
+      const cleaned: Record<string, any> = {};
+      for (const [k, v] of Object.entries(data)) {
+        if (v !== undefined) {
+          cleaned[k] = sanitizeFirestoreData(v);
+        }
+      }
+      return cleaned;
+    };
+
+    const cleanPaymentDetails: Record<string, any> = {
+      ...(orderData.paymentDetails || {}),
+      razorpay_payment_id: paymentId,
+      razorpay_order_id: razorpay_order_id || orderData.paymentDetails?.razorpay_order_id || null,
+      razorpay_signature: razorpay_signature || orderData.paymentDetails?.razorpay_signature || null,
+      signatureVerified: signatureVerified ?? orderData.paymentDetails?.signatureVerified ?? null,
+      gateway: gateway || orderData.paymentDetails?.gateway || "razorpay",
+      proxyDomain: "potter-world.com",
+      paidAt: orderData.paymentDetails?.paidAt || nowIso,
+      thankYouPageReachedAt: nowIso,
+      advancePaidAmount: isCod ? advancePaid : 0,
+      balanceDueAmount: isCod ? balanceDueOnDelivery : 0,
+    };
+
     // 1. Mark order as PAID / ADVANCE_PAID in Firestore now that user has reached the Thank You page
     const updatedFields: Record<string, any> = {
       paymentStatus,
@@ -78,19 +108,7 @@ export async function POST(req: Request) {
       advancePaid,
       balanceDueOnDelivery,
       paymentSessionId: paymentId !== "verified" ? paymentId : (orderData.paymentSessionId || paymentId),
-      paymentDetails: {
-        ...(orderData.paymentDetails || {}),
-        razorpay_payment_id: paymentId,
-        razorpay_order_id: razorpay_order_id || orderData.paymentDetails?.razorpay_order_id || null,
-        razorpay_signature: razorpay_signature || orderData.paymentDetails?.razorpay_signature || null,
-        signatureVerified: signatureVerified ?? orderData.paymentDetails?.signatureVerified ?? null,
-        gateway: gateway || orderData.paymentDetails?.gateway || "razorpay",
-        proxyDomain: "potter-world.com",
-        paidAt: orderData.paymentDetails?.paidAt || nowIso,
-        thankYouPageReachedAt: nowIso,
-        advancePaidAmount: isCod ? advancePaid : undefined,
-        balanceDueAmount: isCod ? balanceDueOnDelivery : undefined,
-      },
+      paymentDetails: cleanPaymentDetails,
       statusHistory: [
         ...(orderData.statusHistory || []),
         {
@@ -102,11 +120,10 @@ export async function POST(req: Request) {
         }
       ],
       thankYouPageReached: true,
-      notificationsSent: true,
       updatedAt: new Date()
     };
 
-    await updateDoc(orderRef, updatedFields);
+    await updateDoc(orderRef, sanitizeFirestoreData(updatedFields));
 
     const mergedOrder = {
       ...orderData,
@@ -163,15 +180,17 @@ export async function POST(req: Request) {
 
     const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
 
-    await Promise.allSettled([
+    const [telegramRes, emailRes] = await Promise.allSettled([
       sendTelegramNotification(cleanOrderId, orderWithGeo, "success").catch((err) => {
         console.error("Telegram notification error on thank-you page:", err);
+        throw err;
       }),
       customerEmail
         ? sendOrderEmail(cleanOrderId, customerEmail, customerName, orderTotal, mergedOrder).catch((err) => {
             console.error("Customer confirmation email error on thank-you page:", err);
+            throw err;
           })
-        : Promise.resolve(),
+        : Promise.resolve(true),
       // Transition abandoned-cart lead to 'paid' / recovered across both phone and email
       customerPhone
         ? updateAbandonedCartStatus(customerPhone.replace(/\D/g, ""), "paid", { orderId: cleanOrderId }).catch(() => {})
@@ -180,6 +199,20 @@ export async function POST(req: Request) {
         ? updateAbandonedCartStatus(customerEmail, "paid", { orderId: cleanOrderId }).catch(() => {})
         : Promise.resolve()
     ]);
+
+    const telegramSent = telegramRes.status === "fulfilled";
+    const emailSent = emailRes.status === "fulfilled";
+
+    console.log(`[ORDER_CONFIRMATION_DISPATCH] Order #${cleanOrderId} - Telegram: ${telegramSent ? "SUCCESS" : "FAILED"}, Email: ${emailSent ? "SUCCESS" : "FAILED"}`);
+
+    if (telegramSent || emailSent) {
+      try {
+        await updateDoc(orderRef, { notificationsSent: true });
+        (mergedOrder as any).notificationsSent = true;
+      } catch (saveErr) {
+        console.error("Failed to mark notificationsSent in Firestore:", saveErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,
