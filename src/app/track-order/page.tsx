@@ -229,19 +229,21 @@ function TrackOrderContent() {
               <div className="p-8">
                 {/* Payment & Delivery Breakdown Banner */}
                 {order.paymentMethod === "cod" ? (
-                  <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-8 text-xs sm:text-sm text-amber-950">
-                    <div className="flex items-center gap-2 font-bold text-sm text-[#8A1B14] mb-1">
-                      <span>📦 Cash on Delivery Order</span>
-                      <span className="bg-amber-200 text-amber-900 text-[10px] px-2 py-0.5 rounded-full uppercase">Advance Verified</span>
+                  <div className="bg-[#FAF8F5] border border-[#EAD7BC] rounded-xl p-3.5 mb-8 text-xs sm:text-sm text-[#4E1013] flex items-center justify-between gap-3">
+                    <div>
+                      <strong className="block text-sm font-bold text-[#8A1B14]">Cash on Delivery Order</strong>
+                      <span className="text-stone-600 text-xs">
+                        ₹250 advance verified • Balance <strong>{formatPrice(order.balanceDueOnDelivery || order.amountRemaining || order.subtotal)}</strong> payable at delivery
+                      </span>
                     </div>
-                    <p className="leading-relaxed">
-                      Advance booking fee of <strong>{formatPrice(order.advancePaid || order.amountToPay || 25000)}</strong> has been received online. Please keep <strong>{formatPrice(order.balanceDueOnDelivery || order.amountRemaining || order.subtotal)}</strong> ready in Cash or UPI at the time of doorstep delivery.
-                    </p>
+                    <span className="text-[11px] font-bold bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300 shrink-0">
+                      COD Confirmed
+                    </span>
                   </div>
                 ) : (
-                  <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 mb-8 text-xs sm:text-sm text-emerald-950 flex items-center gap-2">
-                    <span className="font-bold text-emerald-800">✅ 100% Fully Paid Online:</span>
-                    <span>No further payment required upon delivery. Express insured dispatch active.</span>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-8 text-xs sm:text-sm text-emerald-950 flex items-center gap-2">
+                    <span className="font-bold text-emerald-800">✅ Fully Paid Online:</span>
+                    <span>No payment required on delivery. Express insured dispatch active.</span>
                   </div>
                 )}
 

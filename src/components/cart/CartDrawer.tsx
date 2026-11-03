@@ -436,9 +436,9 @@ export default function CartDrawer() {
              )}
 
              <div className="p-4 flex flex-col gap-2.5">
-               {/* Pan-India COD micro-banner */}
-               <div className="bg-[#FAF6EE] border border-[#EAD7BC] rounded-lg py-1.5 px-3 text-center text-[11px] text-[#5E0B10]">
-                 <span className="font-bold">🚚 Pan-India COD Available (Advance ₹250)</span> • <span className="text-emerald-700 font-bold">Or Pay Online to Save ₹350!</span>
+               {/* COD & Prepaid Micro-Banner */}
+               <div className="bg-[#FAF8F5] border border-[#EAD7BC] rounded-lg py-1.5 px-3 text-center text-[11px] text-[#5E0B10]">
+                 <span className="font-semibold">🚚 Cash on Delivery Available</span> • <span className="text-emerald-700 font-semibold">Extra ₹100 OFF on Prepaid</span>
                </div>
 
                <div className="flex items-center justify-between gap-4">

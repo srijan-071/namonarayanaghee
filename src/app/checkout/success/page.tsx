@@ -359,13 +359,20 @@ function SuccessContent() {
                 
                 {/* Payment status badge */}
                 {orderData.paymentMethod === "cod" ? (
-                  <div className="bg-amber-50 border border-amber-300 rounded-xl p-3.5 my-3 text-xs text-amber-950">
-                    <span className="font-bold block text-sm text-[#8A1B14] mb-0.5">📦 Cash on Delivery Order Confirmed</span>
-                    Advance booking fee of <strong>{formatPrice(orderData.amountToPay || 25000)}</strong> received. Balance <strong>{formatPrice(orderData.amountRemaining || orderData.balanceDueOnDelivery || orderData.subtotal)}</strong> is payable upon delivery via Cash or UPI.
+                  <div className="bg-[#FAF8F5] border border-[#EAD7BC] rounded-xl p-3 my-3 text-xs text-[#4E1013] flex items-center justify-between gap-3">
+                    <div>
+                      <strong className="block text-sm font-bold text-[#8A1B14]">Cash on Delivery Order</strong>
+                      <span className="text-stone-600">
+                        ₹250 advance verified • Balance <strong>{formatPrice(orderData.amountRemaining || orderData.balanceDueOnDelivery || orderData.subtotal)}</strong> payable at delivery
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 shrink-0">
+                      COD Confirmed
+                    </span>
                   </div>
                 ) : (
-                  <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 my-3 text-xs text-emerald-950">
-                    <span className="font-bold text-emerald-800">✅ 100% Fully Paid Online:</span> You saved ₹350 with Flat ₹100 Prepaid Discount &amp; Free COD Courier Handling.
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 my-3 text-xs text-emerald-950">
+                    <span className="font-bold text-emerald-800">✅ 100% Paid Online:</span> No payment required on delivery.
                   </div>
                 )}
 

@@ -268,7 +268,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           const city = po.District || po.Block || "Your Area";
           const state = po.State || "";
           setPinStatus("success");
-          setPinMessage(`Cash on Delivery & Express Prepaid Delivery Available to ${city}${state ? `, ${state}` : ""} (3–5 Days).`);
+          setPinMessage(`Delivery available to ${city}${state ? `, ${state}` : ""} · COD available (3–5 days).`);
           return;
         }
       }
@@ -278,7 +278,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
     // Graceful non-blocking fallback
     setPinStatus("fallback");
-    setPinMessage("Cash on Delivery & Express Prepaid Delivery Available Pan-India (3–5 Days).");
+    setPinMessage("Delivery available pan-India · COD available (3–5 days).");
   };
 
   // Diwali Reward Promotion
@@ -590,18 +590,14 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#77716A] pt-1">
-              <span className="text-[#16794B] font-bold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Free pan-India delivery
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#77716A] pt-1">
+              <span className="text-[#16794B] font-medium flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 text-[#16794B]" /> Free Pan-India Delivery
               </span>
               <span>•</span>
-              <span className="text-[#701619] font-bold bg-amber-50 border border-amber-300/80 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Truck className="w-3.5 h-3.5 text-[#701619]" /> Cash on Delivery (COD) Available All India
-              </span>
+              <span className="font-medium text-[#24211E]">Cash on Delivery Available</span>
               <span>•</span>
-              <span className="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5 text-emerald-700 fill-current" /> Pay Online & Save ₹350 (Flat ₹100 OFF + Free COD)
-              </span>
+              <span className="text-emerald-700 font-medium">Extra ₹100 OFF on Prepaid</span>
             </div>
           </div>
 
@@ -802,9 +798,9 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
             {/* Supported Payment Logos & Security Strip (Section 12 & 16) */}
             <div className="pt-2 border-t border-[#E9E3D9]/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#77716A]">
-              <div className="flex items-center gap-1.5 font-medium text-[#701619]">
-                <Truck className="w-3.5 h-3.5" />
-                <span>Pan-India COD Available (Advance ₹250) • Instant UPI / Cards</span>
+              <div className="flex items-center gap-1.5 font-medium text-[#4E1013]">
+                <Truck className="w-3.5 h-3.5 text-[#701619]" />
+                <span>Cash on Delivery &amp; Instant UPI Available</span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap justify-center">
                 <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">
