@@ -1417,12 +1417,12 @@ export default function CheckoutPage() {
                             <span className="text-sm font-bold text-[#5E0B10]">
                               Pay Online (UPI, Cards, NetBanking)
                             </span>
-                            <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200">
-                              SAVE ₹350
+                            <span className="text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-700">
+                              SAVE ₹350 NOW
                             </span>
                           </div>
-                          <p className="text-xs text-stone-500 mt-0.5">
-                            Extra ₹100 instant discount • Free delivery (₹0 COD fee)
+                          <p className="text-xs text-stone-600 mt-1 font-medium">
+                            <span className="text-emerald-700">₹100 Instant Discount</span> + <span className="text-emerald-700">₹250 COD Fee Waived</span>
                           </p>
                         </div>
                       </div>
@@ -1469,15 +1469,17 @@ export default function CheckoutPage() {
                           paymentMethod === "cod" ? "border-[#5E0B10] bg-white" : "border-stone-300 bg-white"
                         }`} />
                         <div>
-                          <span className="text-sm font-bold text-[#5E0B10]">
-                            Cash on Delivery (COD)
-                          </span>
-                          <p className="text-xs text-stone-500 mt-0.5">
-                            Pay ₹250 booking advance online • Pay balance {formatPrice(pricing.amountRemaining)} on delivery
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#5E0B10]">
+                              Cash on Delivery (COD)
+                            </span>
+                          </div>
+                          <p className="text-xs text-stone-600 mt-1 font-medium">
+                            Pay ₹250 booking advance to confirm • Balance {formatPrice(pricing.amountRemaining)} on delivery
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full shrink-0">
+                      <span className="text-[10px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded-full shrink-0 border border-red-100">
                         +₹250 COD FEE
                       </span>
                     </div>
