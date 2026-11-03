@@ -59,8 +59,8 @@ import { VALID_COUPONS } from "./cart";
 export function calculateCheckoutPricing(
   cartItems: CartItem[],
   subtotal: number,
-  paymentMethod: string,
-  email: string,
+  paymentMethod: string = "prepaid",
+  email: string = "",
   couponCode?: string
 ) {
   let discount = 0;
@@ -77,22 +77,52 @@ export function calculateCheckoutPricing(
     }
   }
 
-  // Cap discount at subtotal
+  // Cap coupon discount at subtotal
   if (discount > subtotal) {
     discount = subtotal;
   }
 
-  const amountAfterDiscount = subtotal - discount;
+  const isCod = paymentMethod === "cod";
+  const codFee = isCod ? 25000 : 0; // ₹250 in paise
+  const prepaidDiscount = isCod ? 0 : 10000; // Flat ₹100 instant prepaid discount (10,000 paise)
+  const amountAfterCoupon = Math.max(0, subtotal - discount);
 
-  // Prepaid: full amount
-  return {
-    subtotal,
-    discount,
-    discountPercent,
-    amountAfterDiscount,
-    amountToPay: amountAfterDiscount,
-    amountRemaining: 0,
-  };
+  if (isCod) {
+    // COD: Customer pays ₹250 online advance now, remaining product subtotal at delivery
+    const totalAmount = amountAfterCoupon + codFee;
+    const amountToPay = 25000; // ₹250 online advance confirmation fee
+    const amountRemaining = amountAfterCoupon; // Remaining product amount payable upon delivery
+
+    return {
+      subtotal,
+      discount,
+      discountPercent,
+      codFee,
+      prepaidDiscount: 0,
+      amountAfterDiscount: amountAfterCoupon,
+      totalAmount,
+      amountToPay,
+      amountRemaining,
+      paymentMethod: "cod"
+    };
+  } else {
+    // Prepaid: Customer pays online, receives ₹100 flat discount + saves ₹250 COD fee
+    const totalAmount = Math.max(0, amountAfterCoupon - prepaidDiscount);
+    const amountToPay = totalAmount;
+
+    return {
+      subtotal,
+      discount,
+      discountPercent,
+      codFee: 0,
+      prepaidDiscount: 10000,
+      amountAfterDiscount: totalAmount,
+      totalAmount,
+      amountToPay,
+      amountRemaining: 0,
+      paymentMethod: "prepaid"
+    };
+  }
 }
 
 import type { FreeGift } from "./gifts";
@@ -144,13 +174,17 @@ export async function createOrder(
     }
   }
 
+  const selectedPaymentMethod = data?.paymentMethod || pricing?.paymentMethod || "prepaid";
+  const isCod = selectedPaymentMethod === "cod";
+  const codFee = Number(pricing?.codFee ?? (isCod ? 25000 : 0));
+  const prepaidDiscount = Number(pricing?.prepaidDiscount ?? (isCod ? 0 : 10000));
   const resolvedSubtotal = Number(pricing?.subtotal ?? subtotal) || 0;
   const resolvedDiscount = Number(pricing?.discount) || 0;
   const resolvedDiscountPercent = Number(pricing?.discountPercent) || 0;
   const resolvedAmountAfterDiscount = Number(pricing?.amountAfterDiscount ?? (resolvedSubtotal - resolvedDiscount)) || 0;
-  const resolvedTotalAmount = resolvedAmountAfterDiscount;
-  const resolvedAmountToPay = Number(pricing?.amountToPay ?? resolvedAmountAfterDiscount) || 0;
-  const resolvedAmountRemaining = Number(pricing?.amountRemaining) || 0;
+  const resolvedTotalAmount = Number(pricing?.totalAmount ?? (isCod ? (resolvedAmountAfterDiscount + codFee) : resolvedAmountAfterDiscount)) || 0;
+  const resolvedAmountToPay = Number(pricing?.amountToPay ?? (isCod ? 25000 : resolvedTotalAmount)) || 0;
+  const resolvedAmountRemaining = Number(pricing?.amountRemaining ?? (isCod ? resolvedAmountAfterDiscount : 0)) || 0;
 
   const shippingCost = 0;
   const tax = 0;
@@ -209,6 +243,10 @@ export async function createOrder(
     totalAmount: resolvedTotalAmount,
     discount: resolvedDiscount,
     discountPercent: resolvedDiscountPercent,
+    codFee,
+    prepaidDiscount,
+    advancePaid: isCod ? resolvedAmountToPay : 0,
+    balanceDueOnDelivery: isCod ? resolvedAmountRemaining : 0,
     couponCode: data?.couponCode || null,
     amountToPay: resolvedAmountToPay,
     amountRemaining: resolvedAmountRemaining,
@@ -226,7 +264,7 @@ export async function createOrder(
     customerEmail: data?.email || "",
     customerPhone: data?.phone || "",
     source: "web_checkout",
-    paymentMethod: data?.paymentMethod || "prepaid",
+    paymentMethod: selectedPaymentMethod,
     paymentStatus: "pending",
     paymentSessionId: null,
     status: "pending",

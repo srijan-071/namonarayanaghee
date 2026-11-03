@@ -95,6 +95,31 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
     </div>
   ` : "";
 
+  const isCod = orderData?.paymentMethod === "cod";
+  const remainingPaise = orderData?.balanceDueOnDelivery ?? orderData?.amountRemaining ?? 0;
+  const formattedRemaining = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(remainingPaise / 100);
+
+  const paymentStatusHtml = isCod ? `
+    <div style="background-color: #FFF9E6; border: 1.5px solid #D4A017; border-radius: 10px; padding: 14px 16px; margin: 15px 0; text-align: center;">
+      <span style="color: #8A1B14; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">Cash on Delivery Order Confirmed</span>
+      <div style="font-size: 14px; font-weight: bold; color: #2e7d32;">✓ Advance Booking Fee Paid Online: ${formattedAmount}</div>
+      <div style="font-size: 15px; font-weight: 800; color: #8A1B14; margin-top: 6px; border-top: 1px dashed #D4A017; padding-top: 6px;">
+        Balance to Pay on Delivery: ${formattedRemaining}
+      </div>
+      <p style="margin: 4px 0 0 0; font-size: 11px; color: #7A4A3B;">Please keep ${formattedRemaining} ready in Cash or UPI at your doorstep upon arrival.</p>
+    </div>
+  ` : `
+    <div style="background-color: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 10px; padding: 10px 14px; margin-top: 10px; text-align: center;">
+      <span style="color: #2e7d32; font-size: 12px; font-weight: 800;">✓ 100% Fully Paid Online • Zero Balance on Delivery</span>
+      <p style="margin: 4px 0 0 0; font-size: 11px; color: #1e4620;">You saved ₹350 with Flat ₹100 Prepaid Discount &amp; Free COD Handling!</p>
+    </div>
+  `;
+
   const htmlContent = `
     <!DOCTYPE html>
     <html lang="en">
@@ -136,9 +161,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
             <span style="color: #7A4A3B; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Order Reference ID</span>
             <div style="font-size: 20px; color: #5E0B10; font-weight: 800; font-family: monospace; margin: 4px 0;">#${orderId}</div>
             <div class="amount">${formattedAmount}</div>
-            <span style="display: inline-block; background-color: #E8F5E9; color: #2e7d32; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; border: 1px solid #C8E6C9; margin-top: 6px;">
-              ✓ Payment Verified &amp; Confirmed
-            </span>
+            ${paymentStatusHtml}
           </div>
 
           <!-- ─── Visual Order Progress Tracker ─── -->

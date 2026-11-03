@@ -66,12 +66,16 @@ export default function Header() {
     <>
       {/* Compact Single-Line Announcement Bar (Section 4, Section A) */}
       <div className="bg-[#4E1013] text-[#FAF8F2] text-xs h-9 px-3 sm:px-4 font-medium tracking-wide border-b border-[#701619]/40 relative z-40 flex items-center justify-center select-none">
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center text-[12px] sm:text-[13px] truncate">
-          <span>10% OFF with</span>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center text-[11px] sm:text-[13px] truncate">
+          <span className="font-bold text-amber-300">🚚 Pan-India COD Available</span>
+          <span className="text-[#FAF8F2]/60">·</span>
+          <span className="text-emerald-300 font-semibold">Flat ₹100 OFF on Prepaid</span>
+          <span className="text-[#FAF8F2]/60">·</span>
+          <span className="hidden sm:inline">10% OFF with</span>
           <button
             type="button"
             onClick={handleCopyAnnouncementCoupon}
-            className="inline-flex items-center gap-1 font-mono font-bold bg-[#FAF8F2] text-[#4E1013] px-2 py-0.5 rounded text-[11px] hover:bg-white active:scale-95 transition-all cursor-pointer shadow-2xs"
+            className="inline-flex items-center gap-1 font-mono font-bold bg-[#FAF8F2] text-[#4E1013] px-2 py-0.5 rounded text-[10px] sm:text-[11px] hover:bg-white active:scale-95 transition-all cursor-pointer shadow-2xs"
             title="Click to copy coupon code"
           >
             <span>NAMO10</span>
@@ -81,8 +85,6 @@ export default function Header() {
               <span className="text-[9px] text-[#701619]/70 font-sans uppercase">Copy</span>
             )}
           </button>
-          <span className="text-[#FAF8F2]/60">·</span>
-          <span>Free Delivery Pan-India</span>
         </div>
       </div>
 

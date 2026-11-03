@@ -141,12 +141,39 @@ ${(utmSource || fbclid) ? `🎯 Traffic Source: ${utmSource || (fbclid ? "Meta A
       const deviceStr = geo.deviceSummary || orderData.deviceSummary;
       const visitorId = orderData?.visitor?.visitorId || orderData?.visitorId;
 
+      const isCod = orderData.paymentMethod === "cod";
+      const codFeePaise = orderData.codFee ?? (isCod ? 25000 : 0);
+      const prepaidDiscountPaise = orderData.prepaidDiscount ?? (isCod ? 0 : 10000);
+      const remainingPaise = orderData.balanceDueOnDelivery ?? orderData.amountRemaining ?? (isCod ? (orderData.subtotal - (orderData.discount || 0)) : 0);
+
+      const headerTitle = isCod
+        ? "🚚 2. COD PAYMENT INITIATED (Advance Booking) 🚚"
+        : "⚡ 2. PREPAID PAYMENT INITIATED (Save ₹350) ⚡";
+
+      const methodTitle = isCod
+        ? "CASH ON DELIVERY (Pay ₹250 Advance Online)"
+        : "PREPAID (Flat ₹100 Instant Discount Applied)";
+
+      const pricingBreakdownText = isCod
+        ? `Subtotal: ${formatTelegramPrice(orderData.subtotal)}
+Discount: ${formatTelegramPrice(orderData.discount || 0)}
+COD Courier Handling: +${formatTelegramPrice(codFeePaise)}
+Total COD Order Value: ${formatTelegramPrice(orderData.totalAmount)}
+👉 Advance Due Online Now: ${formatTelegramPrice(orderData.amountToPay || 25000)}
+💵 BALANCE TO COLLECT ON DELIVERY: ${formatTelegramPrice(remainingPaise)}`
+        : `Subtotal: ${formatTelegramPrice(orderData.subtotal)}
+Discount: ${formatTelegramPrice(orderData.discount || 0)}
+⚡ Instant Prepaid Discount: -${formatTelegramPrice(prepaidDiscountPaise)}
+COD Fee Waived: Saved Rs. 250.00
+Total Payable Now: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmount)}
+Balance on Delivery: Rs. 0.00`;
+
       finalMessage = `
-🟡 2. PAYMENT INITIATED (Pending) 🟡
+${headerTitle}
 ------------------------------
 Order ID: #${orderId}
 Status: ⏳ PENDING GATEWAY PAYMENT
-Payment Method: PREPAID (Razorpay UPI / Cards)
+Payment Method: ${methodTitle}
 Gateway Domain: potter-world.com
 
 👤 Customer Details:
@@ -165,9 +192,7 @@ ${ipStr ? `🌐 IP Address: ${ipStr}${ispStr ? ` (${ispStr})` : ""}\n` : ""}${lo
 ${itemsText}${giftsText}
 
 💰 Pricing Breakdown:
-Subtotal: ${formatTelegramPrice(orderData.subtotal)}
-Discount: ${formatTelegramPrice(orderData.discount || 0)}
-Total Payable: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmount)}
+${pricingBreakdownText}
 
 ⏰ Time: ${nowIST}
 ------------------------------
@@ -212,13 +237,33 @@ Total Payable: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmo
       const ipStr = geo.ip || orderData.clientIp;
       const ispStr = geo.isp || orderData.isp;
 
+      const isCod = orderData.paymentMethod === "cod";
+      const remainingPaise = orderData.balanceDueOnDelivery ?? orderData.amountRemaining ?? 0;
+
+      const successHeader = isCod
+        ? "🚚 3. COD ORDER CONFIRMED (₹250 ADVANCE PAID) 🚚"
+        : "🟢 3. PAYMENT SUCCESSFUL (100% PREPAID) 🟢";
+
+      const successStatus = isCod
+        ? "✅ ADVANCE PAID (PREPARING COD DISPATCH)"
+        : "✅ 100% PAID & VERIFIED";
+
+      const pricingSummaryText = isCod
+        ? `Total Order Value: ${formatTelegramPrice(orderData.totalAmount || (orderData.subtotal + 25000))}
+Advance Paid Online: ${formatTelegramPrice(orderData.advancePaid || orderData.amountToPay || 25000)}
+💵 BALANCE TO COLLECT ON DELIVERY (Cash/UPI): ${formatTelegramPrice(remainingPaise)}`
+        : `Total Amount: ${formatTelegramPrice(orderData.totalAmount || orderData.amountToPay)}
+Amount Paid: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmount)}
+Remaining: Rs. 0.00 (Customer Saved ₹350 Total)`;
+
       finalMessage = `
-🟢 3. PAYMENT SUCCESSFUL (Order Confirmed) 🟢
+${successHeader}
 ------------------------------
 Order ID: #${orderId}
 Payment ID: ${paymentId}
-Status: ✅ PAID & VERIFIED
+Status: ${successStatus}
 Payment Gateway: Razorpay (potter-world.com)
+Payment Mode: ${isCod ? "CASH ON DELIVERY (Advance Booking)" : "100% PREPAID"}
 
 👤 Customer Details:
 Name: ${shipping.name || contact.name || "N/A"}
@@ -234,9 +279,7 @@ ${ipStr ? `🌐 Verified IP: ${ipStr}${ispStr ? ` (${ispStr})` : ""}\n` : ""}�
 ${itemsText}${giftsText}
 
 💰 Pricing Summary:
-Total Amount: ${formatTelegramPrice(orderData.totalAmount || orderData.amountToPay)}
-Amount Paid: ${formatTelegramPrice(orderData.amountToPay || orderData.totalAmount)}
-Remaining: Rs. 0.00
+${pricingSummaryText}
 
 📧 Brevo Confirmation Email: Dispatched to ${contact.email || "Customer"}
 ⏰ Time: ${nowIST}

@@ -66,10 +66,17 @@ export async function POST(req: Request) {
       }
     }
 
-    // 1. Mark order as PAID in Firestore now that user has officially reached the Thank You page
+    const isCod = orderData.paymentMethod === "cod";
+    const paymentStatus = isCod ? "advance_paid" : "paid";
+    const advancePaid = isCod ? (orderData.amountToPay || 25000) : 0;
+    const balanceDueOnDelivery = isCod ? (orderData.amountRemaining || 0) : 0;
+
+    // 1. Mark order as PAID / ADVANCE_PAID in Firestore now that user has reached the Thank You page
     const updatedFields: Record<string, any> = {
-      paymentStatus: "paid",
+      paymentStatus,
       status: "processing",
+      advancePaid,
+      balanceDueOnDelivery,
       paymentSessionId: paymentId !== "verified" ? paymentId : (orderData.paymentSessionId || paymentId),
       paymentDetails: {
         ...(orderData.paymentDetails || {}),
@@ -81,7 +88,19 @@ export async function POST(req: Request) {
         proxyDomain: "potter-world.com",
         paidAt: orderData.paymentDetails?.paidAt || nowIso,
         thankYouPageReachedAt: nowIso,
+        advancePaidAmount: isCod ? advancePaid : undefined,
+        balanceDueAmount: isCod ? balanceDueOnDelivery : undefined,
       },
+      statusHistory: [
+        ...(orderData.statusHistory || []),
+        {
+          status: paymentStatus,
+          timestamp: nowIso,
+          notes: isCod
+            ? `Advance ₹${(advancePaid / 100).toFixed(0)} received online. Balance ₹${(balanceDueOnDelivery / 100).toFixed(0)} to be collected on delivery.`
+            : "100% prepaid order verified via gateway."
+        }
+      ],
       thankYouPageReached: true,
       notificationsSent: true,
       updatedAt: new Date()

@@ -227,6 +227,24 @@ function TrackOrderContent() {
               </div>
 
               <div className="p-8">
+                {/* Payment & Delivery Breakdown Banner */}
+                {order.paymentMethod === "cod" ? (
+                  <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 mb-8 text-xs sm:text-sm text-amber-950">
+                    <div className="flex items-center gap-2 font-bold text-sm text-[#8A1B14] mb-1">
+                      <span>📦 Cash on Delivery Order</span>
+                      <span className="bg-amber-200 text-amber-900 text-[10px] px-2 py-0.5 rounded-full uppercase">Advance Verified</span>
+                    </div>
+                    <p className="leading-relaxed">
+                      Advance booking fee of <strong>{formatPrice(order.advancePaid || order.amountToPay || 25000)}</strong> has been received online. Please keep <strong>{formatPrice(order.balanceDueOnDelivery || order.amountRemaining || order.subtotal)}</strong> ready in Cash or UPI at the time of doorstep delivery.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 mb-8 text-xs sm:text-sm text-emerald-950 flex items-center gap-2">
+                    <span className="font-bold text-emerald-800">✅ 100% Fully Paid Online:</span>
+                    <span>No further payment required upon delivery. Express insured dispatch active.</span>
+                  </div>
+                )}
+
                 <div className="flex flex-col md:flex-row gap-8 justify-between border-b border-[#EAD7BC] pb-8 mb-8">
                   <div>
                     <p className="text-xs text-[#8C988B] uppercase tracking-wider mb-1">Order ID</p>

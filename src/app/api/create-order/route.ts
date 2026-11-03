@@ -115,8 +115,26 @@ export async function POST(req: Request) {
     }
 
     const amountAfterDiscount = serverSubtotal - discount;
+    const paymentMethod = checkoutData.paymentMethod === "cod" ? "cod" : "prepaid";
+    const isCod = paymentMethod === "cod";
+    const codFee = isCod ? 25000 : 0;
+    const prepaidDiscount = isCod ? 0 : 10000;
+
+    let totalAmount = 0;
+    let amountToPay = 0;
+    let amountRemaining = 0;
+
     const isAdmin = ['hurkinds@gmail.com', 'littlecodr@gmail.com'].includes(customerEmail.toLowerCase().trim());
-    const amountToPay = isAdmin ? 100 : amountAfterDiscount; // 100 paise = ₹1.00 for admin test
+
+    if (isCod) {
+      totalAmount = amountAfterDiscount + codFee;
+      amountToPay = isAdmin ? 100 : 25000; // ₹250 online advance booking fee (₹1 for admin)
+      amountRemaining = amountAfterDiscount;
+    } else {
+      totalAmount = Math.max(0, amountAfterDiscount - prepaidDiscount);
+      amountToPay = isAdmin ? 100 : Math.max(100, totalAmount);
+      amountRemaining = 0;
+    }
 
     const orderId = crypto.randomUUID().replace(/-/g, "").slice(0, 20);
 
@@ -127,12 +145,16 @@ export async function POST(req: Request) {
       subtotal: serverSubtotal,
       shippingCost: 0,
       tax: 0,
-      totalAmount: amountAfterDiscount,
+      totalAmount,
       discount,
       discountPercent,
+      codFee,
+      prepaidDiscount,
+      advancePaid: isCod ? amountToPay : 0,
+      balanceDueOnDelivery: isCod ? amountRemaining : 0,
       couponCode: couponCode || null,
       amountToPay,
-      amountRemaining: 0,
+      amountRemaining,
       shippingAddress: checkoutData.shippingAddress || null,
       billingAddress: checkoutData.billingAddress || null,
       gstDetails: checkoutData.gstDetails || null,
@@ -144,7 +166,7 @@ export async function POST(req: Request) {
       customerEmail: customerEmail,
       customerPhone: cleanPhone,
       source: "web_checkout",
-      paymentMethod: "prepaid",
+      paymentMethod,
       paymentStatus: "pending",
       paymentSessionId: null,
       status: "pending",

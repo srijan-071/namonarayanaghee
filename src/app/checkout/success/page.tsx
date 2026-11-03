@@ -287,8 +287,15 @@ function SuccessContent() {
               </div>
               {orderData && (
                 <div className="text-right">
-                  <p className="text-[#4A352F] text-xs uppercase tracking-wider font-bold mb-1">Total Paid</p>
+                  <p className="text-[#4A352F] text-xs uppercase tracking-wider font-bold mb-1">
+                    {orderData.paymentMethod === "cod" ? "Advance Paid Online" : "Total Paid"}
+                  </p>
                   <p className="text-[#8A1B14] font-bold text-lg">{formatPrice(orderData.amountToPay || orderData.totalAmount)}</p>
+                  {orderData.paymentMethod === "cod" && (
+                    <span className="text-[11px] font-bold text-amber-900 block mt-0.5">
+                      + {formatPrice(orderData.amountRemaining || orderData.balanceDueOnDelivery)} Due at Doorstep
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -350,6 +357,18 @@ function SuccessContent() {
                   )}
                 </div>
                 
+                {/* Payment status badge */}
+                {orderData.paymentMethod === "cod" ? (
+                  <div className="bg-amber-50 border border-amber-300 rounded-xl p-3.5 my-3 text-xs text-amber-950">
+                    <span className="font-bold block text-sm text-[#8A1B14] mb-0.5">📦 Cash on Delivery Order Confirmed</span>
+                    Advance booking fee of <strong>{formatPrice(orderData.amountToPay || 25000)}</strong> received. Balance <strong>{formatPrice(orderData.amountRemaining || orderData.balanceDueOnDelivery || orderData.subtotal)}</strong> is payable upon delivery via Cash or UPI.
+                  </div>
+                ) : (
+                  <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 my-3 text-xs text-emerald-950">
+                    <span className="font-bold text-emerald-800">✅ 100% Fully Paid Online:</span> You saved ₹350 with Flat ₹100 Prepaid Discount &amp; Free COD Courier Handling.
+                  </div>
+                )}
+
                 <div className="mt-4 pt-4 border-t border-[#EAD7BC]">
                   <h4 className="text-sm font-bold text-[#5E0B10] mb-2">Shipping Details</h4>
                   <p className="text-sm text-[#7A4A3B]">
