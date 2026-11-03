@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { formatPrice, discountPercent } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
+import { trackAdLeadAction } from "@/lib/visitor";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import {
@@ -193,6 +194,16 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
     open();
 
+    // If customer came from a Meta Ad link, notify ad bot
+    trackAdLeadAction("add_to_cart", {
+      itemTitle: product.title,
+      variantTitle: variant.title,
+      price: price,
+      quantity: qty,
+      cartTotal: price * qty,
+      freeGift: giftData.hasGift ? giftData.giftText : null,
+    });
+
     if (giftData.hasGift) {
       toast.success(`Added ${product.title} to cart · Complimentary gift included!`);
     } else {
@@ -227,6 +238,15 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           price: price,
         },
       ],
+    });
+
+    trackAdLeadAction("add_to_cart", {
+      itemTitle: product.title,
+      variantTitle: variant.title,
+      price: price,
+      quantity: qty,
+      cartTotal: price * qty,
+      freeGift: giftData.hasGift ? giftData.giftText : null,
     });
 
     router.push("/checkout");
@@ -267,8 +287,13 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           const po = data[0].PostOffice[0];
           const city = po.District || po.Block || "Your Area";
           const state = po.State || "";
+          const statusText = `Delivery available to ${city}${state ? `, ${state}` : ""} · COD available (3–5 days).`;
           setPinStatus("success");
-          setPinMessage(`Delivery available to ${city}${state ? `, ${state}` : ""} · COD available (3–5 days).`);
+          setPinMessage(statusText);
+          trackAdLeadAction("pincode_checked", {
+            pincode: cleanPin,
+            pincodeStatus: statusText,
+          });
           return;
         }
       }
@@ -515,6 +540,11 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                       type="button"
                       onClick={() => {
                         if (!isSelected) {
+                          trackAdLeadAction("pack_selected", {
+                            packTitle: pack.title,
+                            packPrice: formatPrice(pack.price),
+                            previousPack: product.title,
+                          });
                           setNavigatingSlug(pack.slug);
                           router.push(`/products/${pack.slug}`);
                         }

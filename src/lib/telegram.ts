@@ -324,6 +324,7 @@ export async function sendVisitNotification(visitData: any) {
     hour12: true,
   });
 
+  const event = visitData?.event || "page_visit";
   const visitor = visitData?.visitor || visitData || {};
   const geo = visitData?.geo || {};
 
@@ -360,11 +361,123 @@ export async function sendVisitNotification(visitData: any) {
   const referrer = visitor.referrer || visitData.referrer;
   const pageStr = visitor.pageUrl || visitData.pageUrl || visitor.currentPage || visitData.currentPage || "/";
 
-  const headerTitle = isRepeat
-    ? "🔄 RETURNING AD VISITOR 🔄"
-    : "👀 NEW AD LINK VISITOR OPENED 👀";
+  let message = "";
 
-  const message = `
+  if (event === "ad_sale_converted") {
+    // 🚨 BIG HIGHLIGHTED EMOJIS FOR COMPLETED META AD SALE
+    const order = visitData.order || visitData;
+    const isCod = order.paymentMethod === "cod";
+    const totalFormatted = formatTelegramPrice(order.amountToPay || order.totalAmount);
+    const shipping = order.shippingAddress || {};
+    const contact = order.contactInfo || {};
+
+    const itemsText = order.items
+      ?.map((i: any) => `• ${i.quantity}x ${i.name || i.title} ${i.variantTitle ? `(${i.variantTitle})` : ""}`)
+      .join("\n") || "1x Pure A2 Gir Cow Ghee";
+
+    const giftsText = order.freeGifts && order.freeGifts.length > 0
+      ? `\n🎁 Gifts: ${order.freeGifts.map((g: any) => (typeof g === "string" ? g : g.name)).join(", ")}`
+      : "";
+
+    message = `
+🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
+💰💰💰 META ADS SALE CONVERTED! 💰💰💰
+🎉🎉🎉 REVENUE: ${totalFormatted} PAID 🎉🎉🎉
+🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
+🔥🔥🔥 REAL META AD PURCHASE 🔥🔥🔥
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+📢 Source: ${utmSource || "Meta Ads (Instagram/FB)"}${utmMedium ? ` (${utmMedium})` : ""}
+${utmContent ? `📝 Ad Creative: ${utmContent}\n` : ""}🆔 Order ID: #${order.id || order.orderId || "N/A"}
+💳 Payment: ${isCod ? "COD (₹250 Advance Paid)" : "100% PREPAID (Razorpay)"}
+💰 Amount Collected: ${totalFormatted}
+
+👤 Customer Details:
+👤 Name: ${shipping.name || contact.name || "Customer"}
+📞 Phone: ${contact.phone || "N/A"}
+📍 Delivery: ${shipping.address || ""}, ${shipping.city || ""}, ${shipping.state || ""} ${shipping.pincode || ""}
+
+📦 Order Items:
+${itemsText}${giftsText}
+
+🌐 Ad Lead Journey:
+🆔 Visitor ID: ${visitorId}
+📱 Device: ${deviceStr}
+🌐 IP: ${ipStr}${ispStr ? ` (${ispStr})` : ""}
+${fbclid ? `🔗 Meta Click ID: ${String(fbclid).substring(0, 36)}...\n` : ""}⏰ Time: ${nowIST}
+------------------------------
+🏆 META AD SPEND CONVERTED TO SALE! 🏆
+    `.trim();
+  } else if (event === "pack_selected") {
+    message = `
+📦 AD VISITOR SELECTED PACK 📦
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+📦 Selected Pack: ${visitData.packTitle || "Pack"} (${visitData.packPrice || ""})
+${visitData.previousPack ? `🔄 Changed From: ${visitData.previousPack}\n` : ""}📄 Page: ${pageStr}
+
+👤 Visitor Activity:
+🆔 Visitor ID: ${visitorId}
+🏠 Location: ${locationStr}
+📱 Device: ${deviceStr}${screenStr ? ` (${screenStr})` : ""}
+⏰ Time: ${nowIST}
+------------------------------
+    `.trim();
+  } else if (event === "pincode_checked") {
+    message = `
+📍 AD VISITOR CHECKED DELIVERY PIN 📍
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+📍 PIN Checked: ${visitData.pincode || "N/A"}
+🚚 Status: ${visitData.pincodeStatus || "COD & Prepaid Available (3-5 Days)"}
+📄 Page: ${pageStr}
+
+👤 Visitor Activity:
+🆔 Visitor ID: ${visitorId}
+🏠 Detected Location: ${locationStr}
+🌐 IP: ${ipStr}${ispStr ? ` (${ispStr})` : ""}
+📱 Device: ${deviceStr}
+⏰ Time: ${nowIST}
+------------------------------
+    `.trim();
+  } else if (event === "add_to_cart") {
+    message = `
+🛒 AD VISITOR ADDED TO CART 🛒
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+📦 Item: ${visitData.itemTitle || "Product"} ${visitData.variantTitle ? `(${visitData.variantTitle})` : ""} (x${visitData.quantity || 1})
+💵 Item Price: ${formatTelegramPrice(visitData.price)}
+💰 Cart Total: ${formatTelegramPrice(visitData.cartTotal)}
+${visitData.freeGift ? `🎁 Free Gift: ${visitData.freeGift}\n` : ""}
+👤 Visitor Activity:
+🆔 Visitor ID: ${visitorId}
+🏠 Location: ${locationStr}
+📱 Device: ${deviceStr}
+⏰ Time: ${nowIST}
+------------------------------
+    `.trim();
+  } else if (event === "checkout_step") {
+    message = `
+⚡ AD VISITOR AT CHECKOUT ⚡
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+🛒 Order Value: ${formatTelegramPrice(visitData.cartTotal || visitData.totalAmount)}
+👉 Step: ${visitData.step || "Step 2: Payment"}
+${visitData.paymentMethod ? `💳 Selected Method: ${visitData.paymentMethod.toUpperCase()}\n` : ""}
+👤 Visitor Activity:
+🆔 Visitor ID: ${visitorId}
+🏠 Location: ${locationStr}
+📱 Device: ${deviceStr}
+⏰ Time: ${nowIST}
+------------------------------
+    `.trim();
+  } else {
+    // Default: page_visit
+    const headerTitle = isRepeat
+      ? "🔄 RETURNING AD VISITOR 🔄"
+      : "👀 NEW AD LINK VISITOR OPENED 👀";
+
+    message = `
 ${headerTitle}
 ------------------------------
 🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
@@ -383,7 +496,8 @@ ${ispStr ? `🏢 Carrier / ISP: ${ispStr}\n` : ""}📱 Device: ${deviceStr}${scr
 
 🔗 Attribution & Tracking:
 ${fbclid ? `🔗 Meta Click ID: ${String(fbclid).substring(0, 36)}...\n` : ""}${refCode ? `🏷️ Tracking Tag: ${refCode}\n` : ""}${referrer ? `🔗 Referrer: ${referrer}\n` : ""}------------------------------
-  `.trim();
+    `.trim();
+  }
 
   const telegramUrl = `https://api.telegram.org/bot${VISIT_TELEGRAM_BOT_TOKEN}/sendMessage`;
   const response = await fetch(telegramUrl, {

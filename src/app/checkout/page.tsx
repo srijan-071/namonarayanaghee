@@ -37,7 +37,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateCheckoutPricing, CheckoutData, GstDetails } from "@/lib/orders";
 import { getFreeGiftsForCart } from "@/lib/gifts";
-import { getVisitorAttribution } from "@/lib/visitor";
+import { getVisitorAttribution, trackAdLeadAction } from "@/lib/visitor";
 
 // Indian States list for dropdown selection
 const INDIAN_STATES = [
@@ -122,6 +122,15 @@ export default function CheckoutPage() {
 
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [isIframeOpen, setIsIframeOpen] = useState(false);
+
+  // Notify ad bot if customer reached checkout from Meta Ad
+  useEffect(() => {
+    trackAdLeadAction("checkout_step", {
+      step: "Checkout Page Opened",
+      cartTotal: cart.subtotal,
+      paymentMethod,
+    });
+  }, []);
 
   // Listen for message events from secure embedded payment gateway (potter-world.com)
   useEffect(() => {
@@ -1400,7 +1409,14 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   {/* Option 1: Online Prepaid (Recommended) */}
                   <div
-                    onClick={() => setPaymentMethod("prepaid")}
+                    onClick={() => {
+                      setPaymentMethod("prepaid");
+                      trackAdLeadAction("checkout_step", {
+                        step: "Selected Online Prepaid (Save ₹350)",
+                        paymentMethod: "prepaid",
+                        cartTotal: pricing.subtotal,
+                      });
+                    }}
                     className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
                       paymentMethod === "prepaid"
                         ? "bg-[#FAF9F5] border-[#5E0B10] shadow-2xs"
@@ -1456,7 +1472,14 @@ export default function CheckoutPage() {
 
                   {/* Option 2: Cash on Delivery */}
                   <div
-                    onClick={() => setPaymentMethod("cod")}
+                    onClick={() => {
+                      setPaymentMethod("cod");
+                      trackAdLeadAction("checkout_step", {
+                        step: "Selected Cash on Delivery (Advance ₹250)",
+                        paymentMethod: "cod",
+                        cartTotal: pricing.subtotal,
+                      });
+                    }}
                     className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
                       paymentMethod === "cod"
                         ? "bg-[#FAF9F5] border-[#5E0B10] shadow-2xs"

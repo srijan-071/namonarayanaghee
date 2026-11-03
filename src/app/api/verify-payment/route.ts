@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { sendOrderEmail } from "@/lib/email";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTelegramNotification, sendVisitNotification } from "@/lib/telegram";
 import { resolveClientGeo } from "@/lib/server-geo";
 
 export async function POST(req: Request) {
@@ -180,11 +180,40 @@ export async function POST(req: Request) {
 
     const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
 
+    const isMetaAdSale = Boolean(
+      orderData.visitor?.utmSource ||
+      orderData.visitor?.utmCampaign ||
+      orderData.visitor?.fbclid ||
+      orderData.visitor?.refCode ||
+      orderData.source === "meta" ||
+      orderData.utmSource ||
+      orderData.utmCampaign ||
+      orderData.fbclid
+    );
+
     const [telegramRes, emailRes] = await Promise.allSettled([
       sendTelegramNotification(cleanOrderId, orderWithGeo, "success").catch((err) => {
         console.error("Telegram notification error on thank-you page:", err);
         throw err;
       }),
+      // If the sale originated from a Meta Ad / tracked campaign, send the big-emoji alert to the dedicated ad bot!
+      isMetaAdSale
+        ? sendVisitNotification({
+            event: "ad_sale_converted",
+            order: mergedOrder,
+            visitor: orderData.visitor,
+            geo: geoInfo,
+            clientIp: geoInfo.ip,
+            isp: geoInfo.isp,
+            deviceSummary: geoInfo.deviceSummary,
+            utmSource: orderData.visitor?.utmSource || orderData.utmSource,
+            utmCampaign: orderData.visitor?.utmCampaign || orderData.utmCampaign,
+            utmMedium: orderData.visitor?.utmMedium || orderData.utmMedium,
+            utmContent: orderData.visitor?.utmContent || orderData.utmContent,
+            fbclid: orderData.visitor?.fbclid || orderData.fbclid,
+            refCode: orderData.visitor?.refCode,
+          }).catch((adErr) => console.error("Ad sale notification error:", adErr))
+        : Promise.resolve(true),
       customerEmail
         ? sendOrderEmail(cleanOrderId, customerEmail, customerName, orderTotal, mergedOrder).catch((err) => {
             console.error("Customer confirmation email error on thank-you page:", err);

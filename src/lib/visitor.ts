@@ -191,6 +191,7 @@ export function recordAndGetVisit(pathname: string, search = ""): {
     const referrer = document.referrer || base.referrer || "";
 
     // Determine if this visit comes from a trackable ad link or campaign
+    // Normal organic links without UTMs or ad tracking parameters will return FALSE
     const isTrackedCampaign = Boolean(
       utmSource ||
       utmCampaign ||
@@ -200,9 +201,14 @@ export function recordAndGetVisit(pathname: string, search = ""): {
       refCode ||
       referrer.includes("instagram.com") ||
       referrer.includes("facebook.com") ||
-      referrer.includes("fb.me") ||
-      pathname.includes("pure-desi-cow-ghee-1-litre")
+      referrer.includes("fb.me")
     );
+
+    // If verified as an ad campaign visitor, persist ad lead status for this session
+    if (isTrackedCampaign) {
+      sessionStorage.setItem("nn_is_ad_lead", "true");
+      localStorage.setItem("nn_is_ad_lead", "true");
+    }
 
     // Track session and lifetime visit counts
     if (!sessionStorage.getItem("nn_session_visit_counted")) {
@@ -259,5 +265,43 @@ export function recordAndGetVisit(pathname: string, search = ""): {
       isTrackedCampaign: false,
     };
   }
+}
+
+/**
+ * Returns true if the visitor originated from a trackable Meta ad / UTM campaign.
+ * Normal organic visitors will return false.
+ */
+export function isAdLead(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return (
+      sessionStorage.getItem("nn_is_ad_lead") === "true" ||
+      localStorage.getItem("nn_is_ad_lead") === "true"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Dispatches an event to the dedicated ad bot if (and only if) the visitor
+ * came from a trackable ad campaign. Normal visitors are completely ignored.
+ */
+export function trackAdLeadAction(event: string, data: Record<string, any> = {}) {
+  if (typeof window === "undefined") return;
+  if (!isAdLead()) return;
+
+  try {
+    const attribution = getVisitorAttribution();
+    fetch("/api/track-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event,
+        ...data,
+        visitor: attribution,
+      }),
+    }).catch(() => {});
+  } catch {}
 }
 
