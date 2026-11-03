@@ -3,6 +3,7 @@
 import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
+import { recordAndGetVisit } from "@/lib/visitor";
 import Script from "next/script";
 
 function AnalyticsTracker() {
@@ -11,10 +12,12 @@ function AnalyticsTracker() {
 
   useEffect(() => {
     if (pathname) {
+      const searchStr = searchParams?.toString() || "";
       // 1. UTM Parameters
       const source = searchParams?.get("utm_source") || searchParams?.get("source");
       const medium = searchParams?.get("utm_medium") || searchParams?.get("medium");
       const campaign = searchParams?.get("utm_campaign") || searchParams?.get("campaign");
+      const content = searchParams?.get("utm_content");
       
       // 2. Referrer Tracking
       let referrer = "";
@@ -24,12 +27,41 @@ function AnalyticsTracker() {
 
       trackEvent("page_view", {
         page_path: pathname,
-        page_search: searchParams?.toString() || "",
+        page_search: searchStr,
         page_referrer: referrer,
         ...(source && { source }),
         ...(medium && { medium }),
         ...(campaign && { campaign }),
+        ...(content && { content }),
       });
+
+      // Special product view tracking for 1 Litre
+      if (pathname.includes("pure-desi-cow-ghee-1-litre")) {
+        trackEvent("view_item", {
+          content_type: "product",
+          content_ids: ["9545146237096"],
+          content_name: "Pure A2 Gir Cow Ghee 1 Litre",
+          currency: "INR",
+          value: 949,
+        });
+      }
+
+      // 3. Tracked Link & Meta Ad Visit Notification to Telegram Bot
+      try {
+        const { attribution, shouldNotify } = recordAndGetVisit(pathname, searchStr);
+
+        if (shouldNotify) {
+          fetch("/api/track-visit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(attribution),
+          }).catch((err) => {
+            console.error("Visit notification dispatch error:", err);
+          });
+        }
+      } catch (err) {
+        console.error("Visit tracking evaluation error:", err);
+      }
     }
   }, [pathname, searchParams]);
 

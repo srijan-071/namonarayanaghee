@@ -309,3 +309,97 @@ ${pricingSummaryText}
 
   return true;
 }
+
+export const VISIT_TELEGRAM_BOT_TOKEN = "7138165488:AAFgoYS-gTJl4QPO0aUX0Ui4onlhCG_vw0U";
+export const VISIT_TELEGRAM_CHAT_ID = "5804733110";
+
+export async function sendVisitNotification(visitData: any) {
+  const nowIST = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const visitor = visitData?.visitor || visitData || {};
+  const geo = visitData?.geo || {};
+
+  const visitorId = visitor.visitorId || "N/A";
+  const sessionCount = visitor.sessionVisitCount ?? 1;
+  const lifetimeCount = visitor.lifetimeVisitCount ?? 1;
+  const isRepeat = visitor.isRepeat ?? (sessionCount > 1 || lifetimeCount > 1);
+
+  let activityLabel = "✨ 1st time visitor from Ad (New Lead)";
+  if (sessionCount > 1) {
+    activityLabel = `⚠️ REPEAT VISIT #${sessionCount} in this session (Lifetime: ${lifetimeCount} visits)`;
+  } else if (lifetimeCount > 1) {
+    activityLabel = `🔁 RETURNING VISITOR (Session #${sessionCount}, Lifetime: ${lifetimeCount} visits)`;
+  }
+
+  const locationParts = [
+    geo.city || visitData.city,
+    geo.region || visitData.region,
+    geo.country || visitData.country,
+  ].filter(Boolean);
+  const locationStr = locationParts.length > 0 ? locationParts.join(", ") : "Location Unknown";
+  const zipStr = geo.zip || visitData.zip;
+  const ipStr = geo.ip || visitData.clientIp || "N/A";
+  const ispStr = geo.isp || visitData.isp;
+  const deviceStr = geo.deviceSummary || visitData.deviceSummary || "Mobile/Desktop";
+  const screenStr = visitor.screenResolution || visitData.screenResolution;
+
+  const utmSource = visitor.utmSource || visitData.utmSource;
+  const utmMedium = visitor.utmMedium || visitData.utmMedium;
+  const utmCampaign = visitor.utmCampaign || visitData.utmCampaign;
+  const utmContent = visitor.utmContent || visitData.utmContent;
+  const fbclid = visitor.fbclid || visitData.fbclid;
+  const refCode = visitor.refCode || visitData.refCode;
+  const referrer = visitor.referrer || visitData.referrer;
+  const pageStr = visitor.pageUrl || visitData.pageUrl || visitor.currentPage || visitData.currentPage || "/";
+
+  const headerTitle = isRepeat
+    ? "🔄 RETURNING AD VISITOR 🔄"
+    : "👀 NEW AD LINK VISITOR OPENED 👀";
+
+  const message = `
+${headerTitle}
+------------------------------
+🎯 Campaign: ${utmCampaign || refCode || "Meta Ad Campaign"}
+📢 Source: ${utmSource || (fbclid ? "Meta Ads (Instagram/FB)" : "Direct / Link")}${utmMedium ? ` (${utmMedium})` : ""}
+${utmContent ? `📝 Ad Content / Creative: ${utmContent}\n` : ""}📄 Page Opened: ${pageStr}
+
+👤 Visitor Activity:
+✨ Status: ${activityLabel}
+🆔 Visitor ID: ${visitorId}
+⏰ Time: ${nowIST}
+
+📍 Location & Network:
+🏠 Location: ${locationStr}${zipStr ? ` (PIN: ${zipStr})` : ""}
+🌐 IP Address: ${ipStr}
+${ispStr ? `🏢 Carrier / ISP: ${ispStr}\n` : ""}📱 Device: ${deviceStr}${screenStr ? ` (${screenStr})` : ""}
+
+🔗 Attribution & Tracking:
+${fbclid ? `🔗 Meta Click ID: ${String(fbclid).substring(0, 36)}...\n` : ""}${refCode ? `🏷️ Tracking Tag: ${refCode}\n` : ""}${referrer ? `🔗 Referrer: ${referrer}\n` : ""}------------------------------
+  `.trim();
+
+  const telegramUrl = `https://api.telegram.org/bot${VISIT_TELEGRAM_BOT_TOKEN}/sendMessage`;
+  const response = await fetch(telegramUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: VISIT_TELEGRAM_CHAT_ID,
+      text: message,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Visit Telegram API error:", errorText);
+    throw new Error("Failed to send visit telegram message");
+  }
+
+  return true;
+}
