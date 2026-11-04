@@ -67,18 +67,27 @@ export async function POST(req: Request) {
     // Record recovery status in Firestore
     const nowIso = new Date().toISOString();
 
-    // 1. If abandoned_cart doc exists
-    try {
-      const cartRef = doc(db, "abandoned_carts", email);
-      const cartSnap = await getDoc(cartRef);
-      if (cartSnap.exists()) {
-        await updateDoc(cartRef, {
-          recoveryEmailSent: true,
-          recoverySentAt: nowIso,
-          recoveryCoupon: couponCode,
-        });
-      }
-    } catch {}
+    // 1. If abandoned_cart doc exists (check email, phone, and docId)
+    const identifiersToUpdate = [
+      email?.toLowerCase().trim(),
+      finalPhone?.replace(/\D/g, "").slice(-10),
+      body.cartId
+    ].filter(Boolean);
+
+    for (const id of identifiersToUpdate) {
+      try {
+        const cartRef = doc(db, "abandoned_carts", id);
+        const cartSnap = await getDoc(cartRef);
+        if (cartSnap.exists()) {
+          await updateDoc(cartRef, {
+            recoveryEmailSent: true,
+            recoverySentAt: nowIso,
+            recoveryCoupon: couponCode,
+            notified: true
+          });
+        }
+      } catch {}
+    }
 
     // 2. If order exists
     if (orderId) {

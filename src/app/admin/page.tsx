@@ -305,6 +305,8 @@ export default function AdminPage() {
   const [abandonedCarts, setAbandonedCarts] = useState<any[]>([]);
   const [isLoadingCarts, setIsLoadingCarts] = useState(false);
   const [recoveringEmail, setRecoveringEmail] = useState<string | null>(null);
+  const [cartSearchQuery, setCartSearchQuery] = useState("");
+  const [cartStatusFilter, setCartStatusFilter] = useState<"unrecovered" | "all" | "recovered">("unrecovered");
 
   // Filters State
   const [timeFilter, setTimeFilter] = useState<"all" | "today" | "yesterday" | "27_28" | "7days" | "30days">("all");
@@ -371,60 +373,179 @@ export default function AdminPage() {
       const { db } = await import("@/lib/firebase");
       const { collection, getDocs } = await import("firebase/firestore/lite");
 
-      const cartSnap = await getDocs(collection(db, "abandoned_carts"));
-      const rawCarts = cartSnap.docs.map((d) => {
-        const data = d.data();
-        const dateObj = parseAnyDate(data.lastActive || data.updatedAt || data.createdAt);
-        // data.subtotal in abandoned_carts is stored in PAISE (e.g. 115150 paise -> 1151.50 rupees)
-        const subtotalInRupees = toRupees(data.subtotal);
+      const [cartSnap, orderSnap] = await Promise.all([
+        getDocs(collection(db, "abandoned_carts")),
+        orders.length > 0 ? Promise.resolve(null) : getDocs(collection(db, "orders")),
+      ]);
 
-        const phone = data.phone || (/^\d{10}$/.test(d.id) ? d.id : "");
-        return {
-          id: d.id,
-          ...data,
-          phone,
-          subtotal: subtotalInRupees,
-          dateObj,
-          lastActive: dateObj.toISOString(),
-          source: "cart_abandoned",
-        };
-      });
+      const sourceOrders = orders.length > 0
+        ? orders
+        : (orderSnap ? orderSnap.docs.map(d => ({ id: d.id, ...d.data() })) : []);
 
-      // Also grab pending orders from orders collection that did not complete payment
-      const pendingFromOrders = orders
-        .filter((o) => (o.paymentStatus === "pending" || !o.paymentStatus) && !isTestOrder(o))
-        .map((o) => {
-          const dateObj = getOrderDate(o);
-          const amounts = getOrderAmounts(o);
-          return {
-            id: o.id,
-            orderId: o.orderId || o.id,
-            email: o.contactInfo?.email || o.shippingAddress?.email,
-            phone: o.contactInfo?.phone,
-            name: o.shippingAddress?.name || o.contactInfo?.name || "Customer",
-            subtotal: amounts.total, // Already in clean Rupees!
-            cartItems: o.items || [],
-            dateObj,
-            lastActive: dateObj.toISOString(),
-            notified: Boolean(o.recoveryEmailSent),
-            source: "order_pending",
-          };
-        });
+      // Build customer maps for paid/confirmed check & order enrichment
+      const paidPhones = new Set<string>();
+      const paidEmails = new Set<string>();
+      const orderMapById = new Map<string, any>();
 
-      // Combine and deduplicate by email
-      const cartMap = new Map<string, any>();
+      const isRealEmail = (e: any) => {
+        if (!e || typeof e !== "string") return false;
+        const clean = e.trim().toLowerCase();
+        return clean.includes("@") && !clean.endsWith("@customer.namonarayanaghee.store");
+      };
 
-      rawCarts.forEach((c: any) => {
-        const email = (c.email || c.id || "").toLowerCase().trim();
-        if (email && email.includes("@")) {
-          cartMap.set(email, c);
+      const cleanPhoneDigits = (val: any) => {
+        if (!val) return "";
+        const digits = String(val).replace(/\D/g, "");
+        return digits.length >= 10 ? digits.slice(-10) : "";
+      };
+
+      sourceOrders.forEach((o) => {
+        if (o.id) orderMapById.set(o.id, o);
+        if (o.orderId) orderMapById.set(o.orderId, o);
+
+        const p = cleanPhoneDigits(o.contactInfo?.phone || o.shippingAddress?.phone || o.phone);
+        const e = (o.contactInfo?.email || o.shippingAddress?.email || o.email || "").trim().toLowerCase();
+
+        const isPaidOrConfirmed =
+          o.paymentStatus === "paid" ||
+          (o.paymentMethod === "cod" && !["cancelled", "failed"].includes(o.status?.toLowerCase())) ||
+          ["processing", "shipped", "out_for_delivery", "delivered"].includes(o.status?.toLowerCase());
+
+        if (isPaidOrConfirmed) {
+          if (p) paidPhones.add(p);
+          if (isRealEmail(e)) paidEmails.add(e);
         }
       });
 
-      pendingFromOrders.forEach((p: any) => {
-        const email = (p.email || "").toLowerCase().trim();
-        if (email && email.includes("@") && !cartMap.has(email)) {
-          cartMap.set(email, p);
+      const cartMap = new Map<string, any>();
+
+      // 1. Process abandoned_carts documents
+      cartSnap.docs.forEach((d) => {
+        const data = d.data();
+        const dateObj = parseAnyDate(data.lastActive || data.updatedAt || data.createdAt);
+
+        const rawPhone = cleanPhoneDigits(data.phone || (!d.id.includes("@") ? d.id : ""));
+        const rawEmail = (data.email || (d.id.includes("@") ? d.id : "")).trim().toLowerCase();
+        const hasRealEmail = isRealEmail(rawEmail);
+
+        // Primary key prioritizes 10-digit phone, then email, then doc ID
+        const key = rawPhone ? `p_${rawPhone}` : hasRealEmail ? `e_${rawEmail}` : `id_${d.id}`;
+
+        let items = Array.isArray(data.cartItems) ? data.cartItems : [];
+        let name = data.name || "";
+        let subtotal = toRupees(data.subtotal);
+
+        // Enrich from order if cartItems or name missing
+        if (data.orderId && orderMapById.has(data.orderId)) {
+          const ord = orderMapById.get(data.orderId);
+          if (items.length === 0 && ord.items) items = ord.items;
+          if (!name || name === "Customer") name = ord.shippingAddress?.name || ord.contactInfo?.name || "";
+          if (subtotal <= 0) {
+            const ordAmounts = getOrderAmounts(ord);
+            subtotal = ordAmounts.total;
+          }
+        }
+
+        // If subtotal is still 0, calculate from items
+        if (subtotal <= 0 && items.length > 0) {
+          subtotal = items.reduce((sum: number, it: any) => sum + (toRupees(it.price) * (it.quantity || 1)), 0);
+        }
+
+        const isPaid = Boolean(
+          data.status === "paid" ||
+          data.recovered === true ||
+          (rawPhone && paidPhones.has(rawPhone)) ||
+          (hasRealEmail && paidEmails.has(rawEmail))
+        );
+
+        const existing = cartMap.get(key);
+        if (existing) {
+          cartMap.set(key, {
+            ...existing,
+            ...data,
+            id: d.id,
+            cartId: d.id,
+            phone: rawPhone || existing.phone,
+            email: hasRealEmail ? rawEmail : existing.email,
+            name: (name && name !== "Customer") ? name : existing.name,
+            cartItems: items.length > 0 ? items : existing.cartItems,
+            subtotal: subtotal > 0 ? subtotal : existing.subtotal,
+            isPaid: isPaid || existing.isPaid,
+            status: (isPaid || existing.isPaid) ? "recovered" : (data.status || existing.status || "abandoned"),
+            notified: Boolean(data.notified || data.recoveryEmailSent || existing.notified),
+            dateObj: dateObj.getTime() > (existing.dateObj?.getTime() || 0) ? dateObj : existing.dateObj,
+            lastActive: (dateObj.getTime() > (existing.dateObj?.getTime() || 0) ? dateObj : existing.dateObj).toISOString(),
+            source: "abandoned_cart",
+          });
+        } else {
+          cartMap.set(key, {
+            id: d.id,
+            cartId: d.id,
+            ...data,
+            phone: rawPhone,
+            email: hasRealEmail ? rawEmail : "",
+            name: name || "Customer",
+            cartItems: items,
+            subtotal,
+            dateObj,
+            lastActive: dateObj.toISOString(),
+            isPaid,
+            status: isPaid ? "recovered" : (data.status || "abandoned"),
+            notified: Boolean(data.notified || data.recoveryEmailSent),
+            source: "abandoned_cart",
+          });
+        }
+      });
+
+      // 2. Process abandoned checkout attempts from orders collection
+      sourceOrders.forEach((o) => {
+        if (isTestOrder(o)) return;
+        if (o.paymentStatus === "paid") return;
+        if (["processing", "shipped", "delivered", "out_for_delivery"].includes(o.status?.toLowerCase())) return;
+        if (o.paymentMethod === "cod" && !["cancelled", "failed"].includes(o.status?.toLowerCase())) return;
+
+        const p = cleanPhoneDigits(o.contactInfo?.phone || o.shippingAddress?.phone || o.phone);
+        const e = (o.contactInfo?.email || o.shippingAddress?.email || o.email || "").trim().toLowerCase();
+        const hasRealEmail = isRealEmail(e);
+
+        // Skip if customer already paid in another order
+        if (p && paidPhones.has(p)) return;
+        if (hasRealEmail && paidEmails.has(e)) return;
+
+        const key = p ? `p_${p}` : hasRealEmail ? `e_${e}` : `ord_${o.id}`;
+        const dateObj = getOrderDate(o);
+        const amounts = getOrderAmounts(o);
+
+        const existing = cartMap.get(key);
+        if (!existing) {
+          cartMap.set(key, {
+            id: o.id,
+            orderId: o.orderId || o.id,
+            phone: p,
+            email: hasRealEmail ? e : "",
+            name: o.shippingAddress?.name || o.contactInfo?.name || "Customer",
+            subtotal: amounts.total,
+            cartItems: o.items || [],
+            dateObj,
+            lastActive: dateObj.toISOString(),
+            isPaid: false,
+            status: "abandoned",
+            notified: Boolean(o.recoveryEmailSent),
+            source: "order_pending",
+          });
+        } else {
+          if (!existing.phone && p) existing.phone = p;
+          if (!existing.email && hasRealEmail) existing.email = e;
+          if ((!existing.name || existing.name === "Customer") && o.shippingAddress?.name) {
+            existing.name = o.shippingAddress.name;
+          }
+          if ((!existing.cartItems || existing.cartItems.length === 0) && o.items) {
+            existing.cartItems = o.items;
+          }
+          if ((!existing.subtotal || existing.subtotal <= 0) && amounts.total > 0) {
+            existing.subtotal = amounts.total;
+          }
+          if (!existing.orderId) existing.orderId = o.orderId || o.id;
         }
       });
 
@@ -597,6 +718,46 @@ export default function AdminPage() {
       return true;
     });
   }, [orders, timeFilter, statusFilter, searchQuery, excludeAdminTests]);
+
+  // Computed Abandoned Carts Metrics & Filtering
+  const unrecoveredCarts = useMemo(
+    () => abandonedCarts.filter((c) => !c.isPaid),
+    [abandonedCarts]
+  );
+  const recoveredCarts = useMemo(
+    () => abandonedCarts.filter((c) => c.isPaid),
+    [abandonedCarts]
+  );
+  const revenueAtRisk = useMemo(
+    () => unrecoveredCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0),
+    [unrecoveredCarts]
+  );
+  const recoveredRevenue = useMemo(
+    () => recoveredCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0),
+    [recoveredCarts]
+  );
+
+  const displayedAbandonedCarts = useMemo(() => {
+    return abandonedCarts.filter((cart) => {
+      // 1. Status Filter
+      if (cartStatusFilter === "unrecovered" && cart.isPaid) return false;
+      if (cartStatusFilter === "recovered" && !cart.isPaid) return false;
+
+      // 2. Search Query
+      if (cartSearchQuery.trim()) {
+        const q = cartSearchQuery.trim().toLowerCase();
+        const nameMatch = (cart.name || "").toLowerCase().includes(q);
+        const phoneMatch = (cart.phone || "").includes(q);
+        const emailMatch = (cart.email || "").toLowerCase().includes(q);
+        const itemMatch = (cart.cartItems || []).some((it: any) =>
+          (it.name || it.title || "").toLowerCase().includes(q)
+        );
+        if (!nameMatch && !phoneMatch && !emailMatch && !itemMatch) return false;
+      }
+
+      return true;
+    });
+  }, [abandonedCarts, cartStatusFilter, cartSearchQuery]);
 
   // Live Counts for each Status Filter Button
   const statusCounts = useMemo(() => {
@@ -839,6 +1000,10 @@ export default function AdminPage() {
 
   // Send Abandoned Cart Recovery Email
   const handleSendRecoveryEmail = async (cart: any) => {
+    if (!cart.email) {
+      toast.error("This lead does not have an email address. Use the WhatsApp button for outreach!");
+      return;
+    }
     setRecoveringEmail(cart.email);
     try {
       const res = await fetch("/api/admin/recover-cart", {
@@ -849,6 +1014,7 @@ export default function AdminPage() {
           name: cart.name,
           phone: cart.phone,
           orderId: cart.orderId,
+          cartId: cart.cartId || cart.id,
           items: cart.cartItems,
           subtotal: cart.subtotal,
           couponCode: "DIWALI",
@@ -860,9 +1026,13 @@ export default function AdminPage() {
 
       toast.success(`Recovery email sent to ${cart.email} with 10% OFF code DIWALI!`);
 
-      // Update cart local status
+      // Update cart local status across matching email or phone
       setAbandonedCarts((prev) =>
-        prev.map((c) => (c.email === cart.email ? { ...c, notified: true, recoveryEmailSent: true } : c))
+        prev.map((c) =>
+          (c.email && c.email === cart.email) || (c.phone && cart.phone && c.phone === cart.phone)
+            ? { ...c, notified: true, recoveryEmailSent: true }
+            : c
+        )
       );
     } catch (e: any) {
       console.error("Recovery email error:", e);
@@ -1152,7 +1322,7 @@ export default function AdminPage() {
               }`}
             >
               <ShoppingBag className="w-3.5 h-3.5" />
-              Abandoned ({abandonedCarts.length})
+              Abandoned ({unrecoveredCarts.length})
             </button>
             <button
               onClick={() => setActiveTab("promo")}
@@ -1754,12 +1924,12 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                  Incomplete Checkouts
+                  Active Dropped Leads
                 </span>
                 <div className="text-2xl font-serif font-extrabold text-[#5E0B10]">
-                  {abandonedCarts.length}
+                  {unrecoveredCarts.length}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">Pending payments and dropped carts</p>
+                <p className="text-[11px] text-gray-400 mt-1">Pending recovery outreach (unpaid)</p>
               </div>
 
               <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
@@ -1767,45 +1937,120 @@ export default function AdminPage() {
                   Revenue at Risk
                 </span>
                 <div className="text-2xl font-serif font-extrabold text-[#8A1B14]">
-                  {formatINR(abandonedCarts.reduce((acc, c) => acc + (Number(c.subtotal) || 0), 0))}
+                  {formatINR(revenueAtRisk)}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">Potential gross order value</p>
+                <p className="text-[11px] text-gray-400 mt-1">Gross potential value of dropped carts</p>
               </div>
 
               <div className="bg-white p-5 rounded-2xl border border-nn-hairline shadow-xs">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                  Recovery Strategy
+                  Recovered Sales
                 </span>
                 <div className="text-2xl font-serif font-extrabold text-emerald-700">
-                  Brevo + WhatsApp
+                  {recoveredCarts.length} ({formatINR(recoveredRevenue)})
                 </div>
                 <p className="text-[11px] text-emerald-600 font-semibold mt-1">
-                  100% Primary Inbox Landing • Code DIWALI
+                  Successfully converted to completed orders
                 </p>
               </div>
             </div>
 
             {/* Abandoned Cart Directory Table */}
             <div className="bg-white rounded-2xl border border-nn-hairline shadow-xs overflow-hidden">
-              <div className="p-4 bg-[#FAF6EE] border-b border-nn-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 bg-[#FAF6EE] border-b border-nn-hairline flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-bold text-nn-forest-deep uppercase tracking-wider flex items-center gap-1.5">
                     <ShoppingBag className="w-4 h-4 text-[#8A1B14]" /> Abandoned Carts Directory
                   </h3>
-                  <p className="text-xs text-gray-400">1-click automated outreach with festive incentive</p>
+                  <p className="text-xs text-gray-400">1-click WhatsApp & Brevo outreach with festive discount incentive</p>
                 </div>
                 <button
                   onClick={() => {
                     fetchAbandonedCarts();
                     toast.success("Refreshed abandoned carts");
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-nn-cream border border-nn-hairline text-xs font-bold text-nn-forest-deep transition flex items-center gap-1.5 shadow-xs"
+                  className="self-start md:self-auto px-3 py-1.5 rounded-xl bg-white hover:bg-nn-cream border border-nn-hairline text-xs font-bold text-nn-forest-deep transition flex items-center gap-1.5 shadow-xs"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isLoadingCarts ? "animate-spin" : ""}`} />
                   Refresh List
                 </button>
               </div>
 
+              {/* Sub-Filters and Search Toolbar */}
+              <div className="p-4 border-b border-nn-hairline bg-[#FCFAF5] flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                {/* Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  <button
+                    onClick={() => setCartStatusFilter("unrecovered")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap ${
+                      cartStatusFilter === "unrecovered"
+                        ? "bg-[#5E0B10] text-white shadow-xs"
+                        : "bg-white text-gray-600 border border-nn-hairline hover:bg-gray-50"
+                    }`}
+                  >
+                    <span>Needs Recovery</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                      cartStatusFilter === "unrecovered" ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
+                    }`}>
+                      {unrecoveredCarts.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setCartStatusFilter("all")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap ${
+                      cartStatusFilter === "all"
+                        ? "bg-[#5E0B10] text-white shadow-xs"
+                        : "bg-white text-gray-600 border border-nn-hairline hover:bg-gray-50"
+                    }`}
+                  >
+                    <span>All Leads</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                      cartStatusFilter === "all" ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
+                    }`}>
+                      {abandonedCarts.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setCartStatusFilter("recovered")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap ${
+                      cartStatusFilter === "recovered"
+                        ? "bg-emerald-700 text-white shadow-xs"
+                        : "bg-white text-gray-600 border border-nn-hairline hover:bg-gray-50"
+                    }`}
+                  >
+                    <span>Recovered / Paid</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                      cartStatusFilter === "recovered" ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-800"
+                    }`}>
+                      {recoveredCarts.length}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative sm:w-72">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={cartSearchQuery}
+                    onChange={(e) => setCartSearchQuery(e.target.value)}
+                    placeholder="Search name, phone, email, product..."
+                    className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl border border-nn-hairline bg-white focus:outline-none focus:ring-1 focus:ring-[#8A1B14]"
+                  />
+                  {cartSearchQuery && (
+                    <button
+                      onClick={() => setCartSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Table */}
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-[#FCFAF5] text-nn-forest-deep uppercase text-[11px] font-bold border-b border-nn-hairline tracking-wider">
@@ -1814,25 +2059,34 @@ export default function AdminPage() {
                       <th className="py-3 px-4">Cart Items</th>
                       <th className="py-3 px-4">Cart Value</th>
                       <th className="py-3 px-4">Elapsed Time</th>
-                      <th className="py-3 px-4">Recovery Status</th>
+                      <th className="py-3 px-4">Status</th>
                       <th className="py-3 px-4 text-center">Outreach Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-nn-hairline">
-                    {abandonedCarts.length === 0 ? (
+                    {displayedAbandonedCarts.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="py-12 text-center text-gray-400">
-                          No abandoned carts found in recent records.
+                          {cartSearchQuery
+                            ? `No abandoned carts matching "${cartSearchQuery}".`
+                            : "No abandoned carts found in this filter."}
                         </td>
                       </tr>
                     ) : (
-                      abandonedCarts.map((cart, idx) => {
+                      displayedAbandonedCarts.map((cart, idx) => {
                         const dateObj = cart.dateObj instanceof Date && !isNaN(cart.dateObj.getTime())
                           ? cart.dateObj
                           : parseAnyDate(cart.lastActive || cart.updatedAt || cart.createdAt);
                         const { formatted, relative } = formatDateTime(dateObj);
 
                         const cleanPhone = (cart.phone || "").replace(/[^0-9]/g, "").slice(-10);
+                        const hasRealEmail = Boolean(cart.email && cart.email.includes("@") && !cart.email.endsWith("@customer.namonarayanaghee.store"));
+
+                        // Build personalized WhatsApp text
+                        const firstItemName = cart.cartItems?.[0]?.name || cart.cartItems?.[0]?.title || "Pure Vedic A2 Gir Cow Ghee";
+                        const waText = encodeURIComponent(
+                          `Namaste ${cart.name || "Ji"}, we noticed you were looking at ${firstItemName} on Namo Narayana. You can complete your order now with 10% OFF using coupon code DIWALI (+ complimentary festive gift) at https://www.namonarayanaghee.store/checkout${cart.orderId ? `?restoreOrder=${cart.orderId}` : ""}`
+                        );
 
                         return (
                           <tr key={idx} className="hover:bg-[#FFFDF9] transition">
@@ -1840,26 +2094,53 @@ export default function AdminPage() {
                               <span className="font-bold text-nn-forest-deep block">
                                 {cart.name || "Customer"}
                               </span>
-                              <span className="text-[11px] text-gray-500 block">
-                                {cart.email || "No email"}
-                              </span>
-                              {cleanPhone && (
-                                <span className="text-[10px] text-gray-400 block font-mono">
-                                  +91 {cleanPhone}
+                              {hasRealEmail ? (
+                                <span className="text-[11px] text-gray-500 block truncate max-w-[200px]" title={cart.email}>
+                                  {cart.email}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-gray-400 italic block">
+                                  No email provided
                                 </span>
                               )}
+                              {cleanPhone && (
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-[10px] text-gray-600 font-mono font-bold">
+                                    +91 {cleanPhone}
+                                  </span>
+                                  <button
+                                    onClick={() => copyToClipboard(`+91${cleanPhone}`, `ph_${idx}`, "Phone number copied!")}
+                                    className="text-gray-400 hover:text-gray-700"
+                                    title="Copy phone"
+                                  >
+                                    {copiedKey === `ph_${idx}` ? (
+                                      <Check className="w-3 h-3 text-emerald-600" />
+                                    ) : (
+                                      <Copy className="w-3 h-3" />
+                                    )}
+                                  </button>
+                                </div>
+                              )}
+                              <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                                {cart.source === "order_pending" ? "Checkout Drop" : "Cart Drop"}
+                              </span>
                             </td>
 
                             <td className="py-3.5 px-4 max-w-xs">
                               <div className="space-y-0.5">
-                                {(cart.cartItems || []).slice(0, 2).map((it: any, i: number) => (
-                                  <div key={i} className="text-[11px] text-gray-700 truncate">
-                                    • {it.quantity || 1}x {it.name || it.title || "A2 Gir Cow Ghee"}
-                                  </div>
-                                ))}
+                                {(cart.cartItems || []).length === 0 ? (
+                                  <span className="text-[11px] text-gray-400 italic">Pure A2 Gir Cow Ghee</span>
+                                ) : (
+                                  (cart.cartItems || []).slice(0, 2).map((it: any, i: number) => (
+                                    <div key={i} className="text-[11px] text-gray-700 truncate">
+                                      • {it.quantity || 1}x {it.name || it.title || "A2 Gir Cow Ghee"}
+                                      {it.variantTitle ? ` (${it.variantTitle})` : ""}
+                                    </div>
+                                  ))
+                                )}
                                 {(cart.cartItems || []).length > 2 && (
-                                  <span className="text-[10px] text-[#8A1B14] font-semibold">
-                                    +{(cart.cartItems || []).length - 2} more
+                                  <span className="text-[10px] text-[#8A1B14] font-semibold block">
+                                    +{(cart.cartItems || []).length - 2} more items
                                   </span>
                                 )}
                               </div>
@@ -1881,44 +2162,68 @@ export default function AdminPage() {
                             </td>
 
                             <td className="py-3.5 px-4">
-                              {cart.notified || cart.recoveryEmailSent ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                  <CheckCheck className="w-3 h-3 text-emerald-600" /> Email Sent
+                              {cart.isPaid ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  <CheckCheck className="w-3 h-3 text-emerald-600" /> Converted / Paid
+                                </span>
+                              ) : cart.notified || cart.recoveryEmailSent ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                                  <CheckCheck className="w-3 h-3 text-blue-600" /> Email Sent
                                 </span>
                               ) : (
-                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200">
-                                  Pending Outreach
+                                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                  ⏳ Needs Outreach
                                 </span>
                               )}
                             </td>
 
                             <td className="py-3.5 px-4 text-center">
                               <div className="flex items-center justify-center gap-2">
-                                <button
-                                  onClick={() => handleSendRecoveryEmail(cart)}
-                                  disabled={recoveringEmail === cart.email}
-                                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-xs font-bold hover:opacity-95 transition disabled:opacity-50 flex items-center gap-1 shadow-xs"
-                                >
-                                  {recoveringEmail === cart.email ? (
-                                    <RotateCw className="w-3 h-3 animate-spin" />
-                                  ) : (
-                                    <Send className="w-3 h-3" />
-                                  )}
-                                  Recover via Brevo
-                                </button>
+                                {hasRealEmail ? (
+                                  <button
+                                    onClick={() => handleSendRecoveryEmail(cart)}
+                                    disabled={recoveringEmail === cart.email}
+                                    className="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-xs font-bold hover:opacity-95 transition disabled:opacity-50 flex items-center gap-1 shadow-xs"
+                                    title="Send Brevo recovery email with 10% OFF code"
+                                  >
+                                    {recoveringEmail === cart.email ? (
+                                      <RotateCw className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <Send className="w-3 h-3" />
+                                    )}
+                                    Brevo Email
+                                  </button>
+                                ) : (
+                                  <button
+                                    disabled
+                                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-medium cursor-not-allowed"
+                                    title="No email provided by customer"
+                                  >
+                                    No Email
+                                  </button>
+                                )}
 
                                 {cleanPhone && (
-                                  <a
-                                    href={`https://wa.me/91${cleanPhone}?text=Namaste%20${encodeURIComponent(
-                                      cart.name || "Customer"
-                                    )}%2C%20we%20noticed%20you%20were%20ordering%20pure%20Vedic%20Gir%20Cow%20Bilona%20Ghee%20at%20Namo%20Narayana.%20Use%20code%20DIWALI%20for%20an%20extra%2010%25%20OFF%20at%20namonarayanaghee.store`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
-                                    title="WhatsApp Recovery"
-                                  >
-                                    <MessageSquare className="w-4 h-4" />
-                                  </a>
+                                  <>
+                                    <a
+                                      href={`https://wa.me/91${cleanPhone}?text=${waText}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs"
+                                      title="Open WhatsApp chat with recovery message"
+                                    >
+                                      <MessageSquare className="w-3.5 h-3.5" />
+                                      WhatsApp
+                                    </a>
+
+                                    <a
+                                      href={`tel:+91${cleanPhone}`}
+                                      className="p-1.5 text-[#5E0B10] hover:bg-[#FAF6EE] border border-nn-hairline rounded-lg transition"
+                                      title={`Call customer at +91 ${cleanPhone}`}
+                                    >
+                                      <Phone className="w-3.5 h-3.5" />
+                                    </a>
+                                  </>
                                 )}
                               </div>
                             </td>
