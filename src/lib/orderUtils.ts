@@ -13,6 +13,10 @@ export function getDynamicOrderStatus(
     return dbStatus.charAt(0).toUpperCase() + dbStatus.slice(1);
   }
 
+  if (['under_hold', 'on_hold', 'hold'].includes(dbStatus?.toLowerCase())) {
+    return "Under Hold (Reprocessing Shipment)";
+  }
+
   if (paymentStatus === "pending" && paymentMethod?.toLowerCase() !== "cod") {
     return "Payment Pending";
   }
