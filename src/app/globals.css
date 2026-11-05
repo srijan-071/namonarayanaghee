@@ -277,6 +277,36 @@
   will-change: transform, opacity;
 }
 
+@keyframes kandilSwayLeft {
+  0%, 100% {
+    transform: rotate(-3.5deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+@keyframes kandilSwayRight {
+  0%, 100% {
+    transform: rotate(3deg);
+  }
+  50% {
+    transform: rotate(-3deg);
+  }
+}
+
+.animate-kandil-sway-left {
+  animation: kandilSwayLeft 5.5s ease-in-out infinite;
+  transform-origin: top center;
+  will-change: transform;
+}
+
+.animate-kandil-sway-right {
+  animation: kandilSwayRight 6s ease-in-out infinite;
+  transform-origin: top center;
+  will-change: transform;
+}
+
 /* ─── Reduce motion ──────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
