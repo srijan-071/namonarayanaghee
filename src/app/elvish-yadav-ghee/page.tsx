@@ -1,85 +1,168 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/lib/config";
 import { absoluteUrl } from "@/lib/seo";
-import Bestsellers from "@/components/home/Bestsellers";
+import ElvishYadavGheeContent from "@/components/seo/ElvishYadavGheeContent";
 
 export const metadata: Metadata = {
-  title: `Elvish Yadav Ghee - Namo Narayana Association`,
-  description: "Learn about the factual relationship between Elvish Yadav and the Namo Narayana brand. Elvish Yadav launched the Namo Narayana brand in July 2026.",
+  title: `Elvish Yadav & Namo Narayana Ghee: Official Association & Prices`,
+  description:
+    "The official story of Elvish Yadav and Namo Narayana Ghee. Verified co-founder role, July 2026 brand launch, authentic prices, and official store details.",
   alternates: {
     canonical: absoluteUrl("/elvish-yadav-ghee"),
   },
   openGraph: {
-    title: "Elvish Yadav and Namo Narayana Ghee",
-    description: "Learn about the factual relationship between Elvish Yadav and the Namo Narayana brand.",
+    title: "Elvish Yadav & Namo Narayana Ghee: Official Story & Prices",
+    description:
+      "Learn about the verified relationship between Elvish Yadav and Namo Narayana Ghee. Official launch, FSSAI lab standards, and authentic rates.",
     url: absoluteUrl("/elvish-yadav-ghee"),
     type: "article",
+    images: [
+      {
+        url: absoluteUrl("/assets/product_Elvish_slide.webp"),
+        width: 1200,
+        height: 630,
+        alt: "Elvish Yadav presenting Namo Narayana Pure A2 Gir Cow Ghee",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elvish Yadav & Namo Narayana Ghee: Official Association",
+    description:
+      "Verified details on Elvish Yadav's launch of Namo Narayana Pure A2 Gir Cow Bilona Ghee.",
+    images: [absoluteUrl("/assets/product_Elvish_slide.webp")],
   },
 };
 
 export default function ElvishYadavPage() {
+  const pageUrl = absoluteUrl("/elvish-yadav-ghee");
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
+    "@graph": [
       {
-        "@type": "Question",
-        "name": "How is Elvish Yadav related to Namo Narayana Ghee?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Elvish Yadav launched the Namo Narayana brand in July 2026. He is a promoter and co-founder of the brand."
-        }
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": "Elvish Yadav & Namo Narayana Ghee: Official Association & Prices",
+        "description":
+          "The official story behind Elvish Yadav's launch of Namo Narayana Ghee in July 2026, authentic products, and verified rates.",
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": `${siteConfig.url}/#website`,
+          "name": siteConfig.name,
+          "url": siteConfig.url,
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "@id": `${pageUrl}#breadcrumb`,
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": siteConfig.url,
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Elvish Yadav Ghee",
+              "item": pageUrl,
+            },
+          ],
+        },
       },
       {
-        "@type": "Question",
-        "name": "Does Elvish Yadav own Namo Narayana?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, Elvish Yadav is a co-founder and promoter of the Namo Narayana brand, which was officially launched in July 2026."
-        }
-      }
-    ]
+        "@type": "Article",
+        "@id": `${pageUrl}#article`,
+        "isPartOf": { "@id": `${pageUrl}#webpage` },
+        "headline": "Namo Narayana Ghee and Elvish Yadav: Verified Brand Association & Official Story",
+        "description":
+          "The official story behind Elvish Yadav's launch of Namo Narayana Ghee in July 2026, authentic products, and verified rates.",
+        "image": [
+          absoluteUrl("/assets/product_Elvish_slide.webp"),
+          absoluteUrl("/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"),
+        ],
+        "datePublished": "2026-07-28T12:00:00+05:30",
+        "dateModified": "2026-11-05T20:00:00+05:30",
+        "author": {
+          "@type": "Organization",
+          "name": "Namo Narayana Editorial Desk",
+          "url": siteConfig.url,
+        },
+        "publisher": {
+          "@type": "Organization",
+          "@id": `${siteConfig.url}/#organization`,
+          "name": "Namo Narayana",
+          "url": siteConfig.url,
+          "logo": {
+            "@type": "ImageObject",
+            "url": absoluteUrl("/assets/logo.png"),
+          },
+        },
+        "mainEntityOfPage": pageUrl,
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${pageUrl}#faq`,
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is Elvish Yadav related to Namo Narayana Ghee?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "Elvish Yadav is the official co-founder and chief brand promoter of Namo Narayana Ghee, having launched the brand on July 28, 2026, to provide Indian consumers with authentic, unadulterated A2 Gir Cow Bilona Ghee.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Does Elvish Yadav personally use and endorse this ghee?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "Yes. Elvish Yadav has frequently shared on his official media channels that Namo Narayana Ghee was created to mirror the pure, traditional dairy his family consumed in Haryana, emphasizing the traditional curd-churning Bilona process and indigenous Gir cow milk.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "What is the official price of Elvish Yadav's Ghee?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "On the official store (namonarayanaghee.store), the verified rates are: 500ml at ₹599, 1 Litre flagship at ₹949, 2.5 Litres at ₹2,099, and 5 Litres at ₹3,499. All orders include complimentary pan-India delivery.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "How can I make sure I am ordering the genuine product?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "Always ensure your web browser is on https://www.namonarayanaghee.store/. Do not place orders via unverified third-party websites or informal social media payment links. Every authentic parcel is shipped with tamper-evident holographic seals and FSSAI Lic. No. 20824005000185.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Can I pay via Cash on Delivery (COD)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "Yes, COD is available pan-India. A nominal ₹250 booking advance is collected online to confirm genuine intent, and the remaining balance is paid directly to the courier executive upon doorstep parcel arrival.",
+            },
+          },
+        ],
+      },
+    ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <main className="bg-white">
-        <div className="pt-24 pb-12 bg-nn-cream text-center">
-          <div className="nn-container max-w-3xl">
-            <h1 className="nn-title text-4xl md:text-5xl lg:text-6xl mb-6">
-              Elvish Yadav & Namo Narayana
-            </h1>
-            <p className="nn-sub text-lg">
-              The official story behind the brand's launch.
-            </p>
-          </div>
-        </div>
-
-        <div className="nn-container max-w-4xl py-16 prose prose-lg md:prose-xl text-nn-bark">
-          <h2>The Launch of Namo Narayana</h2>
-          <p>
-            Namo Narayana is a premium D2C brand focused on traditional Indian goods. The brand was officially launched by <strong>Elvish Yadav</strong> in <strong>July 2026</strong>. 
-          </p>
-          <p>
-            As a promoter and co-founder, Elvish Yadav has been instrumental in bringing the vision of pure, traditional products to the market. We believe in transparency and authenticity, which is why we clearly state the relationship between our brand and its founders.
-          </p>
-          
-          <h2>Frequently Asked Questions</h2>
-          <div className="not-prose mt-8 space-y-6">
-            <div className="bg-nn-cream p-6 rounded-lg">
-              <h3 className="text-xl font-bold font-heading mb-2">How is Elvish Yadav related to Namo Narayana Ghee?</h3>
-              <p className="text-nn-bark">Elvish Yadav launched the Namo Narayana brand in July 2026. He is a promoter and co-founder of the brand.</p>
-            </div>
-            <div className="bg-nn-cream p-6 rounded-lg">
-              <h3 className="text-xl font-bold font-heading mb-2">Does Elvish Yadav own Namo Narayana?</h3>
-              <p className="text-nn-bark">Yes, Elvish Yadav is a co-founder and promoter of the Namo Narayana brand, working alongside dedicated farmers to provide authentic products.</p>
-            </div>
-          </div>
-        </div>
-
-        <Bestsellers />
-      </main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ElvishYadavGheeContent />
     </>
   );
 }

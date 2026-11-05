@@ -87,10 +87,11 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-bold text-sm tracking-widest mb-6 text-amber-400 uppercase drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">Company</h4>
             <ul className="space-y-4 text-sm text-white/90 font-medium drop-shadow-md [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
-              <li><Link href="/pages/our-story" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Our Story</Link></li>
-              <li><Link href="/pages/farm-to-fork" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Farm to Fork</Link></li>
+              <li><Link href="/pages/about-us" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">About Us</Link></li>
+              <li><Link href="/pages/namo-narayana-ghee-price-buying-guide" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Price Guide</Link></li>
+              <li><Link href="/elvish-yadav-ghee" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Elvish Yadav Ghee</Link></li>
+              <li><Link href="/a2-ghee-guide" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">A2 Ghee Guide</Link></li>
               <li><Link href="/pages/certifications" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Certifications</Link></li>
-              <li><Link href="/pages/careers" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Careers</Link></li>
               <li><Link href="/pages/contact" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">Contact Us</Link></li>
             </ul>
           </div>

@@ -44,10 +44,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     {
+      url: `${base}/pages/namo-narayana-ghee-price-buying-guide`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${base}/elvish-yadav-ghee`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.85,
+      priority: 0.9,
     },
     {
       url: `${base}/our-story`,
