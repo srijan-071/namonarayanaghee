@@ -409,7 +409,7 @@ export default function AdminPage() {
         const isPaidOrConfirmed =
           o.paymentStatus === "paid" ||
           (o.paymentMethod === "cod" && !["cancelled", "failed"].includes(o.status?.toLowerCase())) ||
-          ["processing", "shipped", "out_for_delivery", "delivered"].includes(o.status?.toLowerCase());
+          ["processing", "shipped", "out_for_delivery", "delivered", "delivery_failed"].includes(o.status?.toLowerCase());
 
         if (isPaidOrConfirmed) {
           if (p) paidPhones.add(p);
@@ -501,7 +501,7 @@ export default function AdminPage() {
       sourceOrders.forEach((o) => {
         if (isTestOrder(o)) return;
         if (o.paymentStatus === "paid") return;
-        if (["processing", "shipped", "delivered", "out_for_delivery"].includes(o.status?.toLowerCase())) return;
+        if (["processing", "shipped", "delivered", "out_for_delivery", "delivery_failed", "cancelled"].includes(o.status?.toLowerCase())) return;
         if (o.paymentMethod === "cod" && !["cancelled", "failed"].includes(o.status?.toLowerCase())) return;
 
         const p = cleanPhoneDigits(o.contactInfo?.phone || o.shippingAddress?.phone || o.phone);
@@ -677,10 +677,12 @@ export default function AdminPage() {
       const pMethod = (order.paymentMethod || "").toLowerCase();
 
       if (statusFilter === "paid") {
+        if (sStatus === "delivery_failed" || sStatus === "cancelled") return false;
         if (pStatus !== "paid" && sStatus !== "paid") return false;
       } else if (statusFilter === "processing") {
         if (sStatus !== "processing") return false;
       } else if (statusFilter === "shipped") {
+        if (sStatus === "delivery_failed" || sStatus === "cancelled") return false;
         if (sStatus !== "shipped" && order.shippingStatus !== "shipped") return false;
       } else if (statusFilter === "out_for_delivery") {
         if (sStatus !== "out_for_delivery") return false;
@@ -689,7 +691,7 @@ export default function AdminPage() {
       } else if (statusFilter === "delivered") {
         if (sStatus !== "delivered") return false;
       } else if (statusFilter === "pending") {
-        if (pStatus === "paid" || sStatus === "shipped" || sStatus === "paid" || sStatus === "processing") return false;
+        if (pStatus === "paid" || sStatus === "shipped" || sStatus === "paid" || sStatus === "processing" || sStatus === "delivery_failed" || sStatus === "cancelled") return false;
       } else if (statusFilter === "cod") {
         if (pMethod !== "cod") return false;
       }
@@ -802,11 +804,11 @@ export default function AdminPage() {
       const pStatus = (order.paymentStatus || "").toLowerCase();
       const sStatus = (order.status || "").toLowerCase();
 
-      if (sStatus === "processing") counts.processing++;
+      if (sStatus === "delivery_failed") counts.delivery_failed++;
+      else if (sStatus === "processing") counts.processing++;
       else if (sStatus === "shipped" || order.shippingStatus === "shipped") counts.shipped++;
       else if (sStatus === "out_for_delivery") counts.out_for_delivery++;
       else if (sStatus === "delivered") counts.delivered++;
-      else if (sStatus === "delivery_failed") counts.delivery_failed++;
       else if (sStatus === "paid" || pStatus === "paid") counts.paid++;
       else counts.pending++;
     });
@@ -1856,6 +1858,11 @@ export default function AdminPage() {
                                 <span className={`w-2 h-2 rounded-full shrink-0 ${stConfig.dotClass}`} />
                                 {stConfig.label}
                               </span>
+                              {stConfig.key === "delivery_failed" && (
+                                <span className="block text-[10px] text-rose-700 font-bold mt-1 tracking-tight">
+                                  14d Refund Scheduled
+                                </span>
+                              )}
                             </td>
 
                             <td className="py-3.5 px-4">
@@ -2377,6 +2384,23 @@ export default function AdminPage() {
 
             {/* Drawer Body Content */}
             <div className="p-6 space-y-6 flex-1 bg-white">
+              {selectedOrder.status === "delivery_failed" && (
+                <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-950 flex items-start gap-3 shadow-2xs">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0 mt-1 animate-pulse" />
+                  <div>
+                    <strong className="block font-bold text-rose-900 text-sm">
+                      Delivery Failed • Logistics Transit Issue
+                    </strong>
+                    <span className="text-rose-800 text-xs block mt-0.5">
+                      {selectedOrder.deliveryFailureReason || "Logistics partner network transit failure - consignment returned to origin."}
+                    </span>
+                    <div className="text-[11px] text-rose-700 mt-1 font-bold">
+                      100% full refund scheduled within {selectedOrder.refundExpectedWithinDays || 14} banking days. Customer notified via Brevo.
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* 1. ORDER STATUS & EMAIL TRIGGER CONTROL HUB */}
               <div className="bg-gradient-to-br from-[#FFFDF9] to-[#FAF6EE] p-5 rounded-2xl border border-nn-hairline shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
