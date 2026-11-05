@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { doc, setDoc, getDoc, collection, serverTimestamp } from "firebase/firestore/lite";
+import { doc, setDoc, getDoc, updateDoc, collection, serverTimestamp } from "firebase/firestore/lite";
 
 export async function generateDiwaliCoupon(email: string, phone: string, amount: number): Promise<string> {
   const code = `DIWALI${amount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -50,4 +50,20 @@ export async function validateCoupon(code: string, email?: string): Promise<{ va
   }
 
   return { valid: false };
+}
+
+export async function markCouponUsed(code: string, orderId: string) {
+  if (!code) return;
+  const cleanCode = code.trim().toUpperCase();
+  try {
+    const couponRef = doc(db, "coupons", cleanCode);
+    await updateDoc(couponRef, {
+      used: true,
+      usedInOrderId: orderId,
+      usedAt: serverTimestamp()
+    });
+  } catch (e) {
+    // Non-fatal if coupon is not in firestore (e.g., fallback codes or static promo codes)
+    console.log(`markCouponUsed note for ${cleanCode}:`, e);
+  }
 }

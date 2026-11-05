@@ -125,6 +125,14 @@ export async function POST(req: Request) {
 
     await updateDoc(orderRef, sanitizeFirestoreData(updatedFields));
 
+    // If a promo/reward coupon was redeemed on this order, mark it used in Firestore
+    const appliedCoupon = orderData.couponCode;
+    if (appliedCoupon) {
+      import("@/lib/coupons").then(({ markCouponUsed }) => {
+        markCouponUsed(appliedCoupon, cleanOrderId);
+      }).catch(() => {});
+    }
+
     const mergedOrder = {
       ...orderData,
       ...updatedFields,
