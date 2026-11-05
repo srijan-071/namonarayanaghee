@@ -703,3 +703,247 @@ Namo Narayana Vedic Farm • Bharat
     return { success: false, error: err?.message || "Unknown error" };
   }
 }
+
+export interface PrepaidConversionEmailOptions {
+  orderId: string;
+  email: string;
+  name: string;
+  phone?: string;
+  amountPaidPaise: number;
+  discountSavedPaise: number;
+  paymentId?: string;
+  orderData?: any;
+}
+
+/**
+ * Dispatches a high-trust Full Payment & COD-to-Prepaid Conversion confirmation email
+ */
+export async function sendPrepaidConversionEmail(options: PrepaidConversionEmailOptions): Promise<EmailDispatchResult> {
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || "care@namonarayanaghee.store";
+
+  if (!brevoApiKey) {
+    console.error("[BREVO_ERROR] BREVO_API_KEY is not defined.");
+    return { success: false, error: "Missing API key" };
+  }
+
+  const { orderId, email, name, phone, amountPaidPaise, discountSavedPaise, paymentId, orderData } = options;
+  const cleanOrderId = (orderId || "").replace(/^#/, "").trim();
+
+  // Skip synthetic fallback emails
+  if (!email || email.toLowerCase().endsWith("@customer.namonarayanaghee.store")) {
+    console.log(`[EMAIL_SKIPPED] Order ${cleanOrderId} has no real email address.`);
+    return { success: true };
+  }
+
+  const paidRupees = formatRupees(amountPaidPaise);
+  const savedRupees = formatRupees(discountSavedPaise);
+  const customerName = name || "Valued Customer";
+  const items = orderData?.items || [];
+  const shippingAddress = orderData?.shippingAddress;
+
+  const subject = `Payment Confirmed: Order #${cleanOrderId} is 100% Fully Paid (Doorstep Balance: ₹0.00)`;
+
+  const itemsHtml = items.length > 0 ? `
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 15px 0; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr style="background-color: #FAF6EE; color: #5E0B10; text-align: left;">
+          <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Item</th>
+          <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; text-align: center; font-size: 11px; text-transform: uppercase;">Qty</th>
+          <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; text-align: right; font-size: 11px; text-transform: uppercase;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map((i: any) => `
+          <tr>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #F0E6D6; color: #2A1612;">
+              <strong>${i.name || i.title || "Pure A2 Gir Cow Ghee"}</strong>
+              ${i.variantTitle ? `<br/><span style="font-size: 11px; color: #7A4A3B;">Size: ${i.variantTitle}</span>` : ""}
+              ${i.isGift || i.price === 0 ? `<br/><span style="display: inline-block; margin-top: 3px; font-size: 10px; font-weight: bold; color: #1B5E20; background-color: #E8F5E9; padding: 1px 6px; border-radius: 4px; border: 1px solid #C8E6C9;">🎁 FREE GIFT</span>` : ""}
+            </td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #F0E6D6; text-align: center; font-weight: bold; color: #4A352F;">
+              ${i.quantity || 1}
+            </td>
+            <td style="padding: 10px 12px; border-bottom: 1px solid #F0E6D6; text-align: right; color: #1B5E20; font-weight: bold; font-size: 12px;">
+              Paid Online
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  ` : "";
+
+  const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #FAF8F2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #24211E;">
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FAF8F2" style="padding: 25px 12px;">
+    <tr>
+      <td align="center">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #EAD7BC; box-shadow: 0 4px 20px rgba(94, 11, 16, 0.06);">
+          
+          <!-- Header -->
+          <tr>
+            <td bgcolor="#5E0B10" style="background: linear-gradient(135deg, #5E0B10 0%, #8A1B14 100%); padding: 30px 24px; text-align: center; border-bottom: 4px solid #D4A017;">
+              <h1 style="color: #FFFFFF; font-size: 22px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: 1px; text-transform: uppercase;">
+                NAMO NARAYANA
+              </h1>
+              <p style="color: #F5BD47; font-size: 11px; font-weight: 600; margin: 0; letter-spacing: 2px; text-transform: uppercase;">
+                Payment Receipt & Doorstep Zero-Cash Guarantee
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 30px 24px; font-size: 14px; line-height: 1.7; color: #332B27;">
+              <p style="margin-top: 0; font-size: 15px;">
+                Namaste <strong>${customerName}</strong>,
+              </p>
+
+              <p>
+                We have successfully received your online balance payment for <strong>Order #${cleanOrderId}</strong>. Your order has been upgraded to <strong>100% Fully Paid Online</strong>!
+              </p>
+
+              <!-- Payment Success Card -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #F8FBF8; border: 2px solid #2E7D32; border-radius: 10px; margin: 20px 0;">
+                <tr>
+                  <td style="padding: 16px 20px;">
+                    <div style="color: #1B5E20; font-weight: 800; font-size: 15px; margin-bottom: 8px;">
+                      ✅ FULL PAYMENT RECEIVED & VERIFIED
+                    </div>
+                    <div style="font-size: 13px; color: #2E7D32; line-height: 1.8;">
+                      • <strong>Amount Paid Online:</strong> ${paidRupees}<br/>
+                      • <strong>Total Discount Unlocked:</strong> ${savedRupees} (₹250 COD Fee Waived + 10% Prepay Discount)<br/>
+                      • <strong>Outstanding Balance Due at Doorstep:</strong> <span style="font-size: 14px; font-weight: bold; color: #1B5E20; background: #E8F5E9; padding: 2px 8px; border-radius: 4px;">₹0.00 (ZERO CASH)</span><br/>
+                      • <strong>Transaction Ref ID:</strong> ${paymentId || "Online Gateway Verified"}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Delivery Instruction Notice -->
+              <div style="background-color: #FAF6EE; border-left: 4px solid #D4A017; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 13px; color: #5E0B10;">
+                <strong>📦 Important Doorstep Delivery Note:</strong><br/>
+                We have updated our logistics courier manifest for your consignment. <strong>You DO NOT need to arrange cash, OTP, or change at your doorstep.</strong> Your delivery executive will hand over your pure A2 Gir Cow Ghee package directly with priority contactless delivery.
+              </div>
+
+              <!-- Items Breakdown -->
+              <h4 style="color: #5E0B10; margin: 25px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Consignment Details:
+              </h4>
+              ${itemsHtml}
+
+              ${shippingAddress ? `
+              <div style="background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 8px; padding: 14px 18px; margin: 20px 0; font-size: 12px; color: #4A352F;">
+                <strong style="color: #5E0B10; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 11px;">Delivery Address:</strong>
+                ${shippingAddress.name || customerName}<br/>
+                ${shippingAddress.address || ""}<br/>
+                ${shippingAddress.city ? `${shippingAddress.city}, ` : ""}${shippingAddress.state ? `${shippingAddress.state} ` : ""}${shippingAddress.pincode || ""}
+              </div>` : ""}
+
+              <!-- Live Tracking Button -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 25px 0 10px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="${STORE_URL}/track-order?orderId=${encodeURIComponent(cleanOrderId)}" style="display: inline-block; background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%); color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 14px 28px; border-radius: 8px; box-shadow: 0 4px 12px rgba(94, 11, 16, 0.2);">
+                      Track Your Shipment Live &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin-top: 25px; margin-bottom: 0; font-size: 13px; color: #4A352F;">
+                Warm regards,<br/>
+                <strong>Fulfillment & Care Team</strong><br/>
+                <em>Namo Narayana Ghee & Traditional Foods</em><br/>
+                <span style="font-size: 11px; color: #7A4A3B;">Email: care@namonarayanaghee.store | Website: www.namonarayanaghee.store</span>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td bgcolor="#FAF6EE" style="padding: 16px 20px; text-align: center; font-size: 11px; color: #7A4A3B; border-top: 1px solid #EAD7BC;">
+              This is an official payment confirmation for Order #${cleanOrderId}.<br/>
+              © 2026 Namo Narayana. All rights reserved.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  const textContent = `
+NAMO NARAYANA - FULL PAYMENT CONFIRMATION
+==================================================
+Namaste ${customerName},
+
+We have received your online payment of ${paidRupees} for Order #${cleanOrderId}.
+Your order is now 100% Fully Paid Online!
+
+PAYMENT DETAILS:
+- Order ID: #${cleanOrderId}
+- Amount Paid: ${paidRupees}
+- Discount Saved: ${savedRupees} (₹250 COD Fee Waived + 10% Prepay Discount)
+- Doorstep Balance Due: ₹0.00 (ZERO CASH)
+- Transaction ID: ${paymentId || "Online Gateway"}
+
+IMPORTANT DELIVERY NOTE:
+We have officially updated your consignment manifest with our courier delivery network.
+You DO NOT need to keep cash, OTP, or change ready at your doorstep.
+Your delivery partner will hand over your package without collecting any cash.
+
+Track your package live:
+${STORE_URL}/track-order?orderId=${encodeURIComponent(cleanOrderId)}
+
+Warm regards,
+Namo Narayana Fulfillment Team
+care@namonarayanaghee.store | www.namonarayanaghee.store
+==================================================
+  `.trim();
+
+  try {
+    const res = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": brevoApiKey,
+      },
+      body: JSON.stringify({
+        sender: { name: "Namo Narayana Care", email: senderEmail },
+        to: [{ email, name: customerName }],
+        bcc: [{ email: "littlecodr@gmail.com", name: "Admin (Verification)" }],
+        replyTo: { name: "Namo Narayana Support", email: SUPPORT_EMAIL },
+        subject,
+        htmlContent,
+        textContent,
+        headers: {
+          "X-Mailin-Tag": "prepaid-conversion",
+          "Auto-Submitted": "auto-generated",
+          "List-Unsubscribe": `<mailto:${SUPPORT_EMAIL}?subject=unsubscribe>`,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error(`[BREVO_CONVERSION_ERROR] ${email}: ${errText}`);
+      return { success: false, error: errText };
+    }
+
+    const data = await res.json().catch(() => ({}));
+    console.log(`[BREVO_CONVERSION_SUCCESS] Sent full payment confirmation email to ${email}`);
+    return { success: true, messageId: data?.messageId };
+  } catch (err: any) {
+    console.error(`[BREVO_CONVERSION_EXCEPTION] ${email}:`, err);
+    return { success: false, error: err?.message || "Unknown error" };
+  }
+}

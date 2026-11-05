@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { sendTelegramNotification } from "@/lib/telegram";
+import { sendPrepaidConversionEmail } from "@/lib/transactional-emails";
 
 export async function POST(req: Request) {
   try {
@@ -54,10 +55,19 @@ export async function POST(req: Request) {
     const paidInRupees = amountPaidPaise > 0 ? (amountPaidPaise / 100).toFixed(0) : "Paid Online";
     const savedInRupees = discountPaise > 0 ? (discountPaise / 100).toFixed(0) : "0";
 
+    // Advance lifecycle status: if order was pending, advance to processing; if already shipped, preserve it!
+    const currentStatus = (orderData.status || "processing").toLowerCase();
+    const nextStatus = currentStatus === "pending" ? "processing" : currentStatus;
+
+    const totalOrderAmount = orderData.totalAmount || orderData.subtotal || amountPaidPaise;
+
     const updatePayload: Record<string, any> = {
+      status: nextStatus,
       paymentStatus: "paid",
       balanceDueOnDelivery: 0,
       amountRemaining: 0,
+      advancePaid: totalOrderAmount,
+      advancePaidAmount: totalOrderAmount,
       codConvertedToPrepaid: true,
       prepayConvertedAt: nowIso,
       prepayPaymentId: razorpay_payment_id || "verified_online",
@@ -70,7 +80,7 @@ export async function POST(req: Request) {
         {
           status: "paid",
           timestamp: nowIso,
-          notes: `Customer converted COD to Prepaid on Track Order page. Paid ₹${paidInRupees} online with ₹250 COD fee waiver + 10% discount. Balance to collect on delivery is ₹0.`,
+          notes: `Customer converted COD to Prepaid on Track Order page. Paid ₹${paidInRupees} online with ₹250 COD fee waiver + 10% discount. Doorstep balance is ₹0.`,
           prepayPaymentId: razorpay_payment_id || "verified"
         }
       ]
@@ -84,12 +94,44 @@ export async function POST(req: Request) {
       id: cleanOrderId
     };
 
-    // Send instant Telegram notification to store owners
-    try {
-      const customerName = orderData.shippingAddress?.name || orderData.contactInfo?.name || "Customer";
-      const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || "N/A";
-      const cleanPhone = customerPhone.replace(/\D/g, "").slice(-10);
+    const customerEmail = (
+      orderData.contactInfo?.email ||
+      orderData.email ||
+      orderData.customerEmail ||
+      orderData.shippingAddress?.email
+    )?.trim();
 
+    const customerName = orderData.shippingAddress?.name || orderData.contactInfo?.name || "Customer";
+    const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || "";
+    const cleanPhone = customerPhone.replace(/\D/g, "").slice(-10);
+
+    // 1. Dispatch Branded Full Payment Confirmation Email to Customer + Admin Verification Copy
+    if (customerEmail && customerEmail.includes("@") && !customerEmail.endsWith("@customer.namonarayanaghee.store")) {
+      sendPrepaidConversionEmail({
+        orderId: cleanOrderId,
+        email: customerEmail,
+        name: customerName,
+        phone: cleanPhone,
+        amountPaidPaise,
+        discountSavedPaise: discountPaise,
+        paymentId: razorpay_payment_id || "Verified Online",
+        orderData: updatedOrder
+      }).catch((emailErr) => {
+        console.error("Failed to dispatch prepay confirmation email:", emailErr);
+      });
+    }
+
+    // 2. Mark corresponding abandoned cart records as paid / recovered
+    try {
+      const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
+      if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "paid", { orderId: cleanOrderId }).catch(() => {});
+      if (customerEmail) updateAbandonedCartStatus(customerEmail, "paid", { orderId: cleanOrderId }).catch(() => {});
+    } catch (cartErr) {
+      console.warn("Failed to update abandoned cart on prepay conversion:", cartErr);
+    }
+
+    // 3. Send Telegram Notification to Store Admins
+    try {
       const telegramMsg = `
 🔥⚡ COD CONVERTED TO PREPAID! ⚡🔥
 -----------------------------------------
@@ -129,6 +171,9 @@ export async function GET(req: Request) {
     const razorpayOrderId = url.searchParams.get("razorpay_order_id") || "";
     const razorpaySignature = url.searchParams.get("razorpay_signature") || "";
     const status = url.searchParams.get("status") || "success";
+    const amountStr = url.searchParams.get("amount") || "0";
+    const amountPaidRupees = Number(amountStr) || 0;
+    const amountPaidPaise = amountPaidRupees * 100;
 
     const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "namonarayanaghee.store";
     const proto = req.headers.get("x-forwarded-proto") || "https";
@@ -139,17 +184,67 @@ export async function GET(req: Request) {
         const orderRef = doc(db, "orders", orderId);
         const snap = await getDoc(orderRef);
         if (snap.exists()) {
+          const orderData = snap.data();
           const nowIso = new Date().toISOString();
-          await updateDoc(orderRef, {
+          const currentStatus = (orderData.status || "processing").toLowerCase();
+          const nextStatus = currentStatus === "pending" ? "processing" : currentStatus;
+          const totalOrderAmount = orderData.totalAmount || orderData.subtotal || amountPaidPaise;
+
+          const updatePayload: Record<string, any> = {
+            status: nextStatus,
             paymentStatus: "paid",
             balanceDueOnDelivery: 0,
             amountRemaining: 0,
+            advancePaid: totalOrderAmount,
+            advancePaidAmount: totalOrderAmount,
             codConvertedToPrepaid: true,
             prepayConvertedAt: nowIso,
             prepayPaymentId: razorpayPaymentId || "verified_online",
+            prepayAmountPaid: amountPaidPaise,
             courierDeliveryNote: "PREPAID ORDER - DO NOT COLLECT CASH AT DOORSTEP (COLLECT ₹0)",
-            updatedAt: new Date()
-          });
+            updatedAt: new Date(),
+            statusHistory: [
+              ...(orderData.statusHistory || []),
+              {
+                status: "paid",
+                timestamp: nowIso,
+                notes: `Customer converted COD to Prepaid via gateway callback. Balance to collect on delivery is ₹0.`,
+                prepayPaymentId: razorpayPaymentId || "verified"
+              }
+            ]
+          };
+
+          await updateDoc(orderRef, updatePayload);
+
+          const updatedOrder = { ...orderData, ...updatePayload, id: orderId };
+          const customerEmail = (
+            orderData.contactInfo?.email ||
+            orderData.email ||
+            orderData.customerEmail ||
+            orderData.shippingAddress?.email
+          )?.trim();
+          const customerName = orderData.shippingAddress?.name || orderData.contactInfo?.name || "Customer";
+          const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || "";
+          const cleanPhone = customerPhone.replace(/\D/g, "").slice(-10);
+
+          if (customerEmail && customerEmail.includes("@") && !customerEmail.endsWith("@customer.namonarayanaghee.store")) {
+            sendPrepaidConversionEmail({
+              orderId,
+              email: customerEmail,
+              name: customerName,
+              phone: cleanPhone,
+              amountPaidPaise,
+              discountSavedPaise: 0,
+              paymentId: razorpayPaymentId || "Verified Online",
+              orderData: updatedOrder
+            }).catch(console.error);
+          }
+
+          try {
+            const { updateAbandonedCartStatus } = await import("@/lib/abandoned-cart");
+            if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "paid", { orderId }).catch(() => {});
+            if (customerEmail) updateAbandonedCartStatus(customerEmail, "paid", { orderId }).catch(() => {});
+          } catch {}
         }
       } catch (dbErr) {
         console.error("Failed to update order on GET callback:", dbErr);

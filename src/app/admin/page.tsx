@@ -1877,9 +1877,15 @@ export default function AdminPage() {
                               <span className="font-bold text-[#8A1B14] block">
                                 ₹{amounts.total.toFixed(2)}
                               </span>
-                              <span className="text-[10px] text-gray-400 uppercase font-semibold">
-                                {order.paymentMethod || "Prepaid"}
-                              </span>
+                              {order.codConvertedToPrepaid ? (
+                                <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[9px] font-extrabold bg-emerald-100 text-emerald-800 rounded border border-emerald-300">
+                                  COD → PREPAID
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                  {order.paymentMethod || "Prepaid"}
+                                </span>
+                              )}
                             </td>
 
                             <td className="py-3.5 px-4 text-center">
@@ -2653,7 +2659,9 @@ export default function AdminPage() {
                 <div className="grid grid-cols-2 gap-2 text-gray-600">
                   <div>
                     <span className="text-gray-400 block text-[11px]">Payment Method:</span>
-                    <strong className="text-gray-900 uppercase">{selectedOrder.paymentMethod || "Prepaid"}</strong>
+                    <strong className="text-gray-900 uppercase">
+                      {selectedOrder.codConvertedToPrepaid ? "COD → PREPAID (UPGRADED)" : (selectedOrder.paymentMethod || "Prepaid")}
+                    </strong>
                   </div>
                   <div>
                     <span className="text-gray-400 block text-[11px]">Payment Status:</span>
@@ -2661,8 +2669,17 @@ export default function AdminPage() {
                       {selectedOrder.paymentStatus || "Verified"}
                     </span>
                   </div>
+                  {selectedOrder.codConvertedToPrepaid && (
+                    <div className="col-span-2 bg-emerald-50 border border-emerald-200 p-2.5 rounded-lg text-xs text-emerald-950">
+                      <strong className="block font-bold text-emerald-900">🎉 Upgraded from COD to 100% Prepaid Online</strong>
+                      <span>Doorstep balance to collect: <strong className="text-emerald-900">₹0.00 (DO NOT COLLECT CASH)</strong></span>
+                      {selectedOrder.prepayPaymentId && (
+                        <span className="block font-mono text-[10px] text-emerald-700 mt-0.5">Prepay ID: {selectedOrder.prepayPaymentId}</span>
+                      )}
+                    </div>
+                  )}
                   <div className="col-span-2 pt-1 font-mono text-[11px] text-gray-500">
-                    Payment ID: {selectedOrder.paymentSessionId || selectedOrder.paymentDetails?.razorpay_payment_id || "None"}
+                    Payment ID: {selectedOrder.prepayPaymentId || selectedOrder.paymentSessionId || selectedOrder.paymentDetails?.razorpay_payment_id || "None"}
                   </div>
                 </div>
               </div>
