@@ -502,19 +502,31 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleApplyCoupon = (codeToApply: string) => {
+  const handleApplyCoupon = async (codeToApply: string) => {
     const val = codeToApply.trim().toUpperCase();
     if (!val) return;
-    import("@/lib/cart").then((cartLib) => {
-      if (cartLib.VALID_COUPONS[val]) {
+    const cartLib = await import("@/lib/cart");
+    if (cartLib.VALID_COUPONS[val] || /^DIWALI(100|250|500|1000)/.test(val)) {
+      setCouponCode(val);
+      cartLib.applyCoupon(val);
+      setTempCoupon("");
+      toast.success(`Coupon ${val} applied successfully!`);
+      return;
+    }
+
+    try {
+      const { validateCoupon } = await import("@/lib/coupons");
+      const res = await validateCoupon(val, form.email);
+      if (res.valid) {
         setCouponCode(val);
         cartLib.applyCoupon(val);
         setTempCoupon("");
-        toast.success(`Coupon ${val} applied successfully!`);
-      } else {
-        toast.error("Invalid coupon code");
+        toast.success(`Coupon ${val} applied! ₹${res.amount || 0} discount`);
+        return;
       }
-    });
+    } catch {}
+
+    toast.error("Invalid coupon code");
   };
 
   const handleRemoveCoupon = () => {

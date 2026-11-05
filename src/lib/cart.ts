@@ -60,8 +60,8 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
       } else if (coupon.type === 'fixed') {
         discountAmount = coupon.value * 100;
       }
-    } else if (/^DIWALI(100|250|500|1000)/.test(code)) {
-      const match = code.match(/^DIWALI(\d+)/);
+    } else if (/^DIWALI(1000|500|250|100)/.test(code)) {
+      const match = code.match(/^DIWALI(1000|500|250|100)/);
       if (match) {
         const val = parseInt(match[1], 10);
         validCode = code;

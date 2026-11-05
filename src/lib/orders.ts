@@ -73,7 +73,13 @@ export function calculateCheckoutPricing(
       discount += Math.round(subtotal * (coupon.value / 100));
       discountPercent += coupon.value;
     } else if (coupon.type === 'fixed') {
-      discount += coupon.value;
+      discount += coupon.value * 100; // Value is in rupees, subtotal is in paise
+    }
+  } else if (normalizedCode && /^DIWALI(1000|500|250|100)/.test(normalizedCode)) {
+    const match = normalizedCode.match(/^DIWALI(1000|500|250|100)/);
+    if (match) {
+      const val = parseInt(match[1], 10);
+      discount += val * 100; // Convert rupee reward into paise
     }
   }
 

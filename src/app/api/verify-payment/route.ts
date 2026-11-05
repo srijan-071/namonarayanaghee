@@ -135,32 +135,49 @@ export async function POST(req: Request) {
     const items = orderData.items || [];
     let gheeVolume = 0;
     items.forEach((item: any) => {
-      const title = (item.name || item.title || "").toLowerCase();
-      if (title.includes("500 ml") || title.includes("500ml")) gheeVolume += 0.5;
-      else if (title.includes("1 litre") || title.includes("1l")) gheeVolume += 1;
-      else if (title.includes("2.5 litre") || title.includes("2.5")) gheeVolume += 2.5;
-      else if (title.includes("5 litre") || title.includes("5l")) gheeVolume += 5;
+      const qty = Number(item.quantity) || 1;
+      const title = `${item.name || ""} ${item.title || ""} ${item.variantTitle || ""} ${item.slug || ""}`.toLowerCase();
+      if (title.includes("500 ml") || title.includes("500ml")) gheeVolume += 0.5 * qty;
+      else if (title.includes("2.5 litre") || title.includes("2.5l") || title.includes("2.5")) gheeVolume += 2.5 * qty;
+      else if (title.includes("5 litre") || title.includes("5l") || title.includes("5")) gheeVolume += 5 * qty;
+      else if (title.includes("1 litre") || title.includes("1l") || title.includes("1 kg")) gheeVolume += 1 * qty;
     });
 
-    let rewardAmount = 0;
+    let rewardAmount = orderData.rewardAmount || 0;
     if (gheeVolume >= 5) rewardAmount = 1000;
     else if (gheeVolume >= 2.5) rewardAmount = 500;
     else if (gheeVolume >= 1) rewardAmount = 250;
     else if (gheeVolume >= 0.5) rewardAmount = 100;
+    else {
+      // Dynamic fallback based on order total if volume title didn't match
+      const orderTotalRupees = (orderData.amountToPay || orderData.totalAmount || 0) / 100;
+      if (orderTotalRupees >= 3000) rewardAmount = 1000;
+      else if (orderTotalRupees >= 1700) rewardAmount = 500;
+      else if (orderTotalRupees >= 700) rewardAmount = 250;
+      else rewardAmount = 100;
+    }
 
-    let couponCode = "";
-    if (rewardAmount > 0) {
+    let couponCode = orderData.diwaliCoupon || "";
+    if (!couponCode && rewardAmount > 0) {
       try {
         const { generateDiwaliCoupon } = await import("@/lib/coupons");
-        const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || "";
-        const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || "";
+        const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || orderData.customerEmail || "";
+        const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || orderData.customerPhone || "";
         couponCode = await generateDiwaliCoupon(customerEmail, customerPhone, rewardAmount);
-        await updateDoc(orderRef, { diwaliCoupon: couponCode, rewardAmount });
-        (mergedOrder as any).diwaliCoupon = couponCode;
-        (mergedOrder as any).rewardAmount = rewardAmount;
       } catch (couponErr) {
-        console.error("Failed to generate Diwali coupon:", couponErr);
+        console.error("Failed to generate Diwali coupon in Firestore, using code fallback:", couponErr);
+        couponCode = `DIWALI${rewardAmount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       }
+    }
+
+    if (couponCode) {
+      try {
+        await updateDoc(orderRef, { diwaliCoupon: couponCode, rewardAmount });
+      } catch (upErr) {
+        console.error("Failed to save coupon to order doc:", upErr);
+      }
+      (mergedOrder as any).diwaliCoupon = couponCode;
+      (mergedOrder as any).rewardAmount = rewardAmount;
     }
 
     const geoInfo = await resolveClientGeo(req);

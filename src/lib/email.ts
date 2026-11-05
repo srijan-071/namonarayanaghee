@@ -29,18 +29,34 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   const items = orderData?.items || [];
 
   // Diwali Coupon section
-  const diwaliCoupon = orderData?.diwaliCoupon;
-  const rewardAmount = orderData?.rewardAmount;
-  const diwaliCouponHtml = diwaliCoupon ? `
-    <div style="background: linear-gradient(135deg, #FDF6E8 0%, #FAF0D7 100%); border: 2px dashed #D4A017; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
-      <h3 style="color: #8A1B14; margin: 0 0 10px 0; font-size: 16px;">✨ Special Diwali Reward Unlocked!</h3>
-      <p style="margin: 0 0 15px 0; font-size: 13px; color: #5E0B10;">Because you chose Namo Narayana, we've gifted you a <strong>₹${rewardAmount} Diwali Gift Card</strong> for your next purchase.</p>
-      <div style="background-color: #ffffff; padding: 10px 20px; border-radius: 6px; font-family: monospace; font-size: 20px; font-weight: bold; color: #5E0B10; display: inline-block; border: 1px solid #EAD7BC; letter-spacing: 2px;">
+  let diwaliCoupon = orderData?.diwaliCoupon;
+  let rewardAmount = orderData?.rewardAmount;
+
+  // Resilient fallback: ensure customer ALWAYS gets their Diwali reward coupon in the email!
+  if (!diwaliCoupon) {
+    const rawTotal = (amount || 0) / 100;
+    const fallbackReward = rawTotal >= 3000 ? 1000 : rawTotal >= 1700 ? 500 : rawTotal >= 700 ? 250 : 100;
+    rewardAmount = fallbackReward;
+    diwaliCoupon = `DIWALI${fallbackReward}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  }
+
+  const diwaliCouponHtml = `
+    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 14px; padding: 22px 20px; margin: 24px 0; text-align: center; box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);">
+      <div style="display: inline-block; background-color: #8A1B14; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+        🪔 Exclusive Festive Gift Card
+      </div>
+      <h3 style="color: #5E0B10; margin: 0 0 8px 0; font-size: 18px; font-weight: 800;">Special ₹${rewardAmount} Diwali Reward Unlocked!</h3>
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: #5E0B10; line-height: 1.5;">
+        As our humble gratitude for choosing pure Vedic Gir Cow Ghee, we have gifted you a <strong>₹${rewardAmount} instant gift voucher</strong> for your next family purchase.
+      </p>
+      <div style="background-color: #ffffff; padding: 12px 24px; border-radius: 8px; font-family: monospace; font-size: 22px; font-weight: 900; color: #8A1B14; display: inline-block; border: 2px solid #D4A017; letter-spacing: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
         ${diwaliCoupon}
       </div>
-      <p style="margin: 15px 0 0 0; font-size: 11px; color: #7A4A3B;">Use this code at checkout on your next order. Valid until Nov 15th.</p>
+      <p style="margin: 14px 0 0 0; font-size: 11px; color: #7A4A3B;">
+        Apply code <strong style="color: #5E0B10;">${diwaliCoupon}</strong> at checkout on your next order. Valid across our entire pure ghee and cold-pressed oil range until <strong>Nov 15th</strong>.
+      </p>
     </div>
-  ` : "";
+  `;
 
   const itemsTableHtml = items.length > 0 ? `
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px;">
@@ -69,7 +85,6 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
         `).join("")}
       </tbody>
     </table>
-    ${diwaliCouponHtml}
   ` : "";
 
   // Free gifts highlight
@@ -161,6 +176,9 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
             <div class="amount">${formattedAmount}</div>
             ${paymentStatusHtml}
           </div>
+
+          <!-- Special Diwali Reward Voucher -->
+          ${diwaliCouponHtml}
 
           <!-- ─── Visual Order Progress Tracker ─── -->
           <div style="margin: 28px 0; background-color: #FAF6EF; border: 1px solid #EAD7BC; border-radius: 12px; padding: 18px 12px;">

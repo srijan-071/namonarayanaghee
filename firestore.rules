@@ -26,6 +26,14 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     
+    // Coupons for checkout validation and post-order rewards
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if false;
+    }
+    
     // Default deny for all other collections
     match /{document=**} {
       allow read, write: if false;

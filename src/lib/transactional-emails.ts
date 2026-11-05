@@ -375,6 +375,23 @@ export async function sendOrderStatusEmail(
   const freeGiftsHtml = buildFreeGiftsHtml(orderData?.freeGifts || []);
   const shippingHtml = buildShippingAddressHtml(orderData?.shippingAddress, orderData?.contactInfo);
 
+  const diwaliCoupon = orderData?.diwaliCoupon;
+  const rewardAmount = orderData?.rewardAmount || (diwaliCoupon ? (diwaliCoupon.match(/^DIWALI(\d+)/)?.[1] || "250") : null);
+  const diwaliCouponHtml = diwaliCoupon ? `
+    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 12px; padding: 18px 16px; margin: 20px 0; text-align: center;">
+      <span style="display: inline-block; background-color: #8A1B14; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
+        🪔 Unlocked Festive Reward
+      </span>
+      <h3 style="color: #5E0B10; margin: 8px 0 6px 0; font-size: 16px; font-weight: 800;">Your ₹${rewardAmount} Gift Card</h3>
+      <div style="background-color: #ffffff; padding: 8px 18px; border-radius: 6px; font-family: monospace; font-size: 18px; font-weight: 900; color: #8A1B14; display: inline-block; border: 1.5px solid #D4A017; letter-spacing: 2px;">
+        ${diwaliCoupon}
+      </div>
+      <p style="margin: 8px 0 0 0; font-size: 11px; color: #7A4A3B;">
+        Use code at checkout on your next order. Valid until Nov 15th.
+      </p>
+    </div>
+  ` : "";
+
   // ─── HIGH DELIVERABILITY HTML EMAIL TEMPLATE ───
   const htmlContent = `
     <!DOCTYPE html>
@@ -420,6 +437,8 @@ export async function sendOrderStatusEmail(
               Current Status: ${newStatus.toUpperCase().replace(/_/g, " ")}
             </span>
           </div>
+
+          ${diwaliCouponHtml}
 
           <!-- Items Table -->
           ${itemsTableHtml}
