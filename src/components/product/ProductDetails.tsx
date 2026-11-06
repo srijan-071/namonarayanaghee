@@ -915,33 +915,112 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         </div>
       </div>
 
-      {/* ═══ SECTION 13: Compact Mobile Sticky Purchase Bar ═══ */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/98 backdrop-blur-md border-t border-[#E9E3D9] px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
-        <div className="flex items-center justify-between gap-3">
+      {/* ═══ SECTION 13: Compact Mobile Sticky Purchase Bar with Pack Selector ═══ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[#E9E3D9] px-3.5 py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0.75rem))] shadow-[0_-4px_20px_rgba(0,0,0,0.10)]">
+        {/* Sticky Pack Quick Switcher with Live Price */}
+        {gheePacks && gheePacks.length > 0 && (
+          <div className="flex items-center justify-between gap-1.5 pb-2 mb-2 border-b border-[#E9E3D9]/70">
+            <span className="text-[10px] font-bold text-[#77716A] uppercase tracking-wider shrink-0">
+              Pack:
+            </span>
+            <div className="flex items-center gap-1.5 flex-1 justify-end overflow-x-auto scrollbar-hide py-0.5">
+              {gheePacks.map((pack) => {
+                const isSelected =
+                  product.slug === pack.slug ||
+                  (product.slug.includes("500-ml") && pack.slug.includes("500-ml"));
+                const shortName = pack.slug.includes("500-ml")
+                  ? "500ml"
+                  : pack.slug.includes("1-litre")
+                  ? "1L"
+                  : pack.slug.includes("2-5-litre")
+                  ? "2.5L"
+                  : "5L";
+                const shortPrice = `₹${Math.round(pack.price / 100).toLocaleString("en-IN")}`;
+                const isNavigatingThis = navigatingSlug === pack.slug;
+
+                return (
+                  <button
+                    key={pack.id}
+                    type="button"
+                    onClick={() => {
+                      if (!isSelected) {
+                        setNavigatingSlug(pack.slug);
+                        router.push(`/products/${pack.slug}`);
+                      }
+                    }}
+                    className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#701619] text-white shadow-xs ring-1 ring-[#701619]"
+                        : "bg-[#FAF8F2] border border-[#E9E3D9] text-[#24211E] hover:bg-[#F3EFE6] active:scale-95"
+                    }`}
+                  >
+                    {isNavigatingThis ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-[#701619]" />
+                    ) : (
+                      <>
+                        <span>{shortName}</span>
+                        <span
+                          className={`text-[10px] ${
+                            isSelected
+                              ? "text-amber-200 font-semibold"
+                              : "text-[#77716A] font-medium"
+                          }`}
+                        >
+                          ({shortPrice})
+                        </span>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Sticky Price & CTAs Row */}
+        <div className="flex items-center justify-between gap-2.5">
           <div className="flex flex-col min-w-0">
             <div className="flex items-baseline gap-1.5">
               <span className="text-lg font-bold text-[#4E1013]">
                 ₹{((price * qty) / 100).toLocaleString("en-IN")}
               </span>
               {compareAt && compareAt > price && (
-                <span className="text-xs text-stone-400 line-through">
+                <span className="text-xs text-stone-400 line-through font-normal">
                   ₹{((compareAt * qty) / 100).toLocaleString("en-IN")}
                 </span>
               )}
             </div>
-            <span className="text-[11px] font-medium text-[#77716A] truncate">
+            <span className="text-[10px] font-medium text-[#77716A] truncate">
               {variant?.title ?? "1 Litre"} • Free Delivery {giftData.hasGift ? "• Free Gift" : ""}
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!variant?.available}
-            className="bg-[#701619] hover:bg-[#4E1013] active:scale-95 text-white font-bold h-11 px-5 rounded-xl shadow-xs flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
-          >
-            <span>Add to Cart →</span>
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!variant?.available}
+              className="bg-white border border-[#701619] hover:bg-[#FAF8F2] active:scale-95 text-[#701619] font-bold h-10 px-3 rounded-xl shadow-xs flex items-center justify-center text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
+            >
+              <span>Add to Cart</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={!variant?.available || isAdding}
+              className="bg-[#701619] hover:bg-[#4E1013] active:scale-95 text-white font-bold h-10 px-3.5 rounded-xl shadow-xs flex items-center justify-center gap-1 text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
+            >
+              {isAdding ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <>
+                  <Zap className="w-3.5 h-3.5 fill-current text-[#D6A53B]" />
+                  <span>Buy Now</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
