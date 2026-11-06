@@ -919,11 +919,11 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[#E9E3D9] px-3.5 py-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0.75rem))] shadow-[0_-4px_20px_rgba(0,0,0,0.10)]">
         {/* Sticky Pack Quick Switcher with Live Price */}
         {gheePacks && gheePacks.length > 0 && (
-          <div className="flex items-center justify-between gap-1.5 pb-2 mb-2 border-b border-[#E9E3D9]/70">
+          <div className="flex items-center gap-2 pb-2 mb-2 border-b border-[#E9E3D9]/70">
             <span className="text-[10px] font-bold text-[#77716A] uppercase tracking-wider shrink-0">
               Pack:
             </span>
-            <div className="flex items-center gap-1.5 flex-1 justify-end overflow-x-auto scrollbar-hide py-0.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-1 overflow-x-auto scrollbar-hide py-0.5 pl-0.5">
               {gheePacks.map((pack) => {
                 const isSelected =
                   product.slug === pack.slug ||
@@ -948,7 +948,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                         router.push(`/products/${pack.slug}`);
                       }
                     }}
-                    className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                    className={`text-[10.5px] sm:text-[11px] font-extrabold px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                       isSelected
                         ? "bg-[#701619] text-white shadow-xs ring-1 ring-[#701619]"
                         : "bg-[#FAF8F2] border border-[#E9E3D9] text-[#24211E] hover:bg-[#F3EFE6] active:scale-95"
@@ -960,7 +960,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                       <>
                         <span>{shortName}</span>
                         <span
-                          className={`text-[10px] ${
+                          className={`text-[9.5px] sm:text-[10px] ${
                             isSelected
                               ? "text-amber-200 font-semibold"
                               : "text-[#77716A] font-medium"
