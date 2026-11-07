@@ -30,6 +30,10 @@ export const trackEvent = (eventName: string, eventParams?: any) => {
       }
 
       // 2. Meta Pixel
+      if (eventParams?.skipMeta) {
+        return;
+      }
+
       let metaEvent = "CustomEvent";
       let metaParams: Record<string, any> = {};
 

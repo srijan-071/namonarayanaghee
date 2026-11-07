@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 import { recordAndGetVisit } from "@/lib/visitor";
@@ -9,6 +9,7 @@ import Script from "next/script";
 function AnalyticsTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (pathname) {
@@ -25,6 +26,11 @@ function AnalyticsTracker() {
         referrer = document.referrer;
       }
 
+      const isFirst = isFirstRender.current;
+      if (isFirst) {
+        isFirstRender.current = false;
+      }
+
       trackEvent("page_view", {
         page_path: pathname,
         page_search: searchStr,
@@ -33,6 +39,7 @@ function AnalyticsTracker() {
         ...(medium && { medium }),
         ...(campaign && { campaign }),
         ...(content && { content }),
+        skipMeta: isFirst,
       });
 
       // Special product view tracking for 1 Litre
@@ -69,7 +76,7 @@ function AnalyticsTracker() {
 }
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1146624257694761';
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || '2211304739770679';
 
   return (
     <>
@@ -92,6 +99,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
                 s.parentNode.insertBefore(t,s)}(window, document,'script',
                 'https://connect.facebook.net/en_US/fbevents.js');
                 fbq('init', '${pixelId}');
+                fbq('track', 'PageView');
               `,
             }}
           />
