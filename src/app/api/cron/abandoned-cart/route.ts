@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { formatPrice } from "@/lib/utils";
 import { sendAbandonedCartRecoveryEmail } from "@/lib/transactional-emails";
 
-const TELEGRAM_BOT_TOKEN = "8816035157:AAH2fxXvaS8U7DI-HOsqfVKxovz4ojpdQnc";
-const TELEGRAM_CHAT_ID = "5804733110";
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "5804733110";
 
 export async function GET(req: Request) {
   try {

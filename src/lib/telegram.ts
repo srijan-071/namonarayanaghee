@@ -1,5 +1,5 @@
-const TELEGRAM_BOT_TOKEN = "8816035157:AAH2fxXvaS8U7DI-HOsqfVKxovz4ojpdQnc";
-const TELEGRAM_CHAT_ID = "5804733110";
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "5804733110";
 
 function formatTelegramPrice(paise: number | undefined | null): string {
   const amount = (Number(paise) || 0) / 100;
@@ -310,8 +310,8 @@ ${pricingSummaryText}
   return true;
 }
 
-export const VISIT_TELEGRAM_BOT_TOKEN = "7138165488:AAFgoYS-gTJl4QPO0aUX0Ui4onlhCG_vw0U";
-export const VISIT_TELEGRAM_CHAT_ID = "5804733110";
+export const VISIT_TELEGRAM_BOT_TOKEN = process.env.VISIT_TELEGRAM_BOT_TOKEN || "";
+export const VISIT_TELEGRAM_CHAT_ID = process.env.VISIT_TELEGRAM_CHAT_ID || "5804733110";
 
 export async function sendVisitNotification(visitData: any) {
   const nowIST = new Date().toLocaleString("en-IN", {
