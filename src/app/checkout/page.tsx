@@ -1079,7 +1079,7 @@ export default function CheckoutPage() {
                       </p>
                     ) : (
                       <p className="text-[10px] text-stone-500 mt-1 flex items-center gap-1 font-medium">
-                        <span>🔒 Delivery updates via WhatsApp only. No spam calls.</span>
+                        <span>🔒 Order &amp; delivery updates via SMS &amp; Email. No spam calls.</span>
                       </p>
                     )}
                   </div>

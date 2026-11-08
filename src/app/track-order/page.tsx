@@ -21,7 +21,7 @@ import {
   Flame,
   Truck,
   Calendar,
-  MessageCircle,
+  Mail,
   Clock,
   ExternalLink,
 } from "lucide-react";
@@ -1080,28 +1080,30 @@ function TrackOrderContent() {
         )}
       </div>
 
-      {/* ─── Instant WhatsApp Help Floating Pill ─── */}
+      {/* ─── Instant Email Support Floating Pill ─── */}
       <a
-        href={`https://api.whatsapp.com/send/?phone=919999993821&text=${encodeURIComponent(
+        href={`mailto:support@namonarayanaghee.store?subject=${encodeURIComponent(
           order
-            ? `Namaste Namo Narayana Team 🙏 I need help regarding my Order #${String(order.id || order.orderId || "").replace(/^#/, "")}. Customer: ${order.shippingAddress?.name || order.contactInfo?.name || "Customer"}. Status: ${getDynamicOrderStatus(order.createdAt, order.status, order.paymentStatus, order.paymentMethod)}.`
-            : "Namaste Namo Narayana Team 🙏 I have an enquiry regarding my Vedic Ghee order."
+            ? `Order Help #${String(order.id || order.orderId || "").replace(/^#/, "")}`
+            : "Namo Narayana Order & Support Inquiry"
+        )}&body=${encodeURIComponent(
+          order
+            ? `Namaste Namo Narayana Team,\n\nI need assistance with my Order #${String(order.id || order.orderId || "").replace(/^#/, "")}.\nCustomer: ${order.shippingAddress?.name || order.contactInfo?.name || "Customer"}\nStatus: ${getDynamicOrderStatus(order.createdAt, order.status, order.paymentStatus, order.paymentMethod)}\n\nQuery details:\n`
+            : "Namaste Namo Narayana Team,\n\nI have an inquiry regarding my Vedic Ghee order.\n\nQuery details:\n"
         )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-full shadow-2xl hover:shadow-emerald-500/40 transition-all hover:scale-105 active:scale-95 border-2 border-emerald-400/40 group cursor-pointer"
-        aria-label="Chat on WhatsApp Support"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] hover:from-[#730E14] hover:to-[#6B0F15] text-amber-100 rounded-full shadow-2xl hover:shadow-amber-900/40 transition-all hover:scale-105 active:scale-95 border-2 border-amber-400/40 group cursor-pointer"
+        aria-label="Email Customer Support"
       >
         <div className="relative flex items-center justify-center">
-          <MessageCircle className="w-5 h-5 fill-white" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-emerald-700 animate-pulse" />
+          <Mail className="w-5 h-5 text-amber-300" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#5E0B10] animate-pulse" />
         </div>
         <div className="text-left hidden sm:block">
-          <span className="block text-[9px] text-emerald-100 uppercase font-extrabold tracking-wider leading-none">
-            Live Vedic Support
+          <span className="block text-[9px] text-amber-300 uppercase font-extrabold tracking-wider leading-none">
+            Official Support
           </span>
           <span className="block text-xs font-bold text-white leading-tight mt-0.5">
-            {order ? `WhatsApp Help #${String(order.id || "").replace(/^#/, "").slice(0, 8)}...` : "WhatsApp Support"}
+            {order ? `Email Help #${String(order.id || "").replace(/^#/, "").slice(0, 8)}...` : "Email Support"}
           </span>
         </div>
       </a>

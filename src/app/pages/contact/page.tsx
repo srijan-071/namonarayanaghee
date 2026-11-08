@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 import React from "react";
-import { Mail, MessageCircle, MapPin, Send, AlertCircle, Loader2 } from "lucide-react";
+import { Mail, MapPin, Send, AlertCircle, Loader2 } from "lucide-react";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,15 +51,15 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* WhatsApp */}
+              {/* Order Support */}
               <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
-                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#25D366]">
-                  <MessageCircle className="w-6 h-6" />
+                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#8A1B14]">
+                  <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">WhatsApp Chat</h3>
-                  <p className="text-[#4A352F] text-sm mb-2">For quick queries regarding your order or our products.</p>
-                  <a href="https://api.whatsapp.com/send/?phone=919999993821&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">+91 9999993821</a>
+                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Order &amp; Delivery Help</h3>
+                  <p className="text-[#4A352F] text-sm mb-2">For order tracking, delivery status updates, and expedited dispatch.</p>
+                  <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">support@namonarayanaghee.store</a>
                 </div>
               </div>
 

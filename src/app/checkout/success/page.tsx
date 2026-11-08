@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Package, Truck, Phone, ArrowRight, XCircle, RotateCw } from "lucide-react";
+import { CheckCircle2, Package, Truck, Mail, ArrowRight, XCircle, RotateCw } from "lucide-react";
 // Firebase dynamically imported to prevent Cloudflare 1102 errors
 import { formatPrice } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
@@ -403,9 +403,13 @@ function SuccessContent() {
             <p className="text-sm text-[#7A4A3B]">Usually dispatched within 24-48 hours.</p>
           </div>
           <div className="p-5 border border-[#EAD7BC] rounded-xl bg-white">
-            <Phone className="w-6 h-6 text-[#D4A017] mb-3" />
-            <h3 className="font-bold text-[#5E0B10] mb-1">Support</h3>
-            <p className="text-sm text-[#7A4A3B]">Contact us anytime for updates.</p>
+            <Mail className="w-6 h-6 text-[#D4A017] mb-3" />
+            <h3 className="font-bold text-[#5E0B10] mb-1">Email Support</h3>
+            <p className="text-sm text-[#7A4A3B]">
+              <a href="mailto:support@namonarayanaghee.store" className="hover:underline text-[#5E0B10] font-medium">
+                support@namonarayanaghee.store
+              </a>
+            </p>
           </div>
         </div>
 
