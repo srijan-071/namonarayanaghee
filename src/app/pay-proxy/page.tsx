@@ -13,9 +13,17 @@ function PayProxyContent() {
   const firstname = searchParams.get("firstname") || searchParams.get("name") || "Customer";
   const email = searchParams.get("email") || "";
   const phone = searchParams.get("phone") || "";
+  const action = searchParams.get("action") || searchParams.get("type") || "";
+
+  const cleanId = (txnid || "").toString().replace(/^#/, "").trim();
+  const isPrepay = action.toLowerCase() === "prepay" || cleanId.toLowerCase().endsWith("-prepay");
+  const baseOrderId = cleanId.replace(/-PREPAY$/i, "");
 
   const [destinationUrl, setDestinationUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const isAdmin = ["hurkinds@gmail.com", "littlecodr@gmail.com"].includes((email || "").toLowerCase().trim());
+  const effectiveAmount = isAdmin ? "1" : (amount || "0");
 
   useEffect(() => {
     if (!txnid || !amount) {
@@ -23,21 +31,22 @@ function PayProxyContent() {
       return;
     }
 
-    const isAdmin = ["hurkinds@gmail.com", "littlecodr@gmail.com"].includes((email || "").toLowerCase().trim());
-    const effectiveAmount = isAdmin ? "1" : amount;
-
     const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
-    const returnUrl = `${origin}/api/razorpay/callback`;
-    const cancelUrl = `${origin}/cart`;
+    const returnUrl = isPrepay
+      ? `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(baseOrderId)}&amount=${effectiveAmount}`
+      : `${origin}/api/razorpay/callback`;
+    const cancelUrl = isPrepay
+      ? `${origin}/track-order?orderId=${encodeURIComponent(baseOrderId)}`
+      : `${origin}/cart`;
 
     const potterParams = new URLSearchParams();
-    potterParams.set("order_id", txnid);
-    potterParams.set("txnid", txnid);
+    potterParams.set("order_id", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
+    potterParams.set("txnid", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
     potterParams.set("amount", effectiveAmount);
     potterParams.set("firstname", firstname);
     potterParams.set("email", email);
     potterParams.set("phone", phone);
-    potterParams.set("productinfo", productinfo);
+    potterParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId} (COD to Prepaid)` : productinfo);
     potterParams.set("embed", "true");
     potterParams.set("returnUrl", returnUrl);
     potterParams.set("cancelUrl", cancelUrl);
@@ -45,7 +54,7 @@ function PayProxyContent() {
 
     const target = `https://potter-world.com/pay-proxy?${potterParams.toString()}`;
     setDestinationUrl(target);
-  }, [txnid, amount, productinfo, firstname, email, phone]);
+  }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
@@ -55,33 +64,53 @@ function PayProxyContent() {
       if (!data || typeof data !== "object") return;
 
       if (data.type === "RAZORPAY_SUCCESS") {
-        try {
-          await fetch("/api/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: data.orderId,
-              razorpay_payment_id: data.razorpay_payment_id,
-              razorpay_order_id: data.razorpay_order_id,
-              razorpay_signature: data.razorpay_signature,
-            }),
-          });
-        } catch (e) {
-          console.error("Verification error:", e);
-        }
+        if (isPrepay) {
+          try {
+            await fetch("/api/convert-cod-to-prepaid", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: baseOrderId,
+                razorpay_payment_id: data.razorpay_payment_id,
+                razorpay_order_id: data.razorpay_order_id,
+                razorpay_signature: data.razorpay_signature,
+                amountPaidPaise: Math.round(Number(effectiveAmount) * 100),
+              }),
+            });
+          } catch (e) {
+            console.error("Prepay conversion error:", e);
+          }
 
-        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
-        window.location.href = successUrl;
-      } else if (data.type === "RAZORPAY_DISMISSED") {
-        window.location.href = "/checkout";
-      } else if (data.type === "RAZORPAY_FAILED") {
-        window.location.href = "/checkout";
+          window.location.href = `/track-order?orderId=${encodeURIComponent(baseOrderId)}&upgradedPrepaid=true`;
+        } else {
+          try {
+            await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: data.orderId,
+                razorpay_payment_id: data.razorpay_payment_id,
+                razorpay_order_id: data.razorpay_order_id,
+                razorpay_signature: data.razorpay_signature,
+              }),
+            });
+          } catch (e) {
+            console.error("Verification error:", e);
+          }
+
+          const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
+          window.location.href = successUrl;
+        }
+      } else if (data.type === "RAZORPAY_DISMISSED" || data.type === "RAZORPAY_FAILED") {
+        window.location.href = isPrepay
+          ? `/track-order?orderId=${encodeURIComponent(baseOrderId)}`
+          : "/checkout";
       }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [isPrepay, baseOrderId, effectiveAmount]);
 
   if (error) {
     return (
@@ -135,13 +164,13 @@ function PayProxyContent() {
         <div className="bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl p-4 mb-6 text-left w-full space-y-1">
           <div className="flex justify-between text-xs text-[#7A4A3B]">
             <span>Order Reference:</span>
-            <span className="font-mono font-bold text-[#5E0B10]">#{txnid?.slice(0, 12)}</span>
+            <span className="font-mono font-bold text-[#5E0B10]">#{baseOrderId ? baseOrderId.slice(0, 16) : txnid?.slice(0, 12)}</span>
           </div>
           {amount && (
             <div className="flex justify-between text-xs text-[#7A4A3B] pt-1 border-t border-[#EAD7BC]/50">
-              <span>Amount:</span>
+              <span>{isPrepay ? "Discounted Prepay Balance:" : "Amount:"}</span>
               <span className="font-bold text-[#8A1B14] text-sm">
-                ₹{["hurkinds@gmail.com", "littlecodr@gmail.com"].includes(email?.toLowerCase().trim() || "") ? "1.00 (Admin Test)" : parseFloat(amount).toFixed(2)}
+                ₹{isAdmin ? "1.00 (Admin Test)" : parseFloat(amount).toFixed(2)}
               </span>
             </div>
           )}

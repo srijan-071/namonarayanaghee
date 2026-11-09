@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       originalRemainingPaise = 0,
     } = body;
 
-    const cleanOrderId = (orderId || "").toString().replace(/^#/, "").trim();
+    const cleanOrderId = (orderId || "").toString().replace(/^#/, "").replace(/-PREPAY$/i, "").trim();
 
     if (!cleanOrderId) {
       return NextResponse.json({ error: "Missing order ID" }, { status: 400 });
@@ -166,7 +166,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const orderId = (url.searchParams.get("orderId") || url.searchParams.get("txnid") || "").replace(/^#/, "").trim();
+    const orderId = (url.searchParams.get("orderId") || url.searchParams.get("txnid") || "").replace(/^#/, "").replace(/-PREPAY$/i, "").trim();
     const razorpayPaymentId = url.searchParams.get("razorpay_payment_id") || url.searchParams.get("payment_id") || "";
     const razorpayOrderId = url.searchParams.get("razorpay_order_id") || "";
     const razorpaySignature = url.searchParams.get("razorpay_signature") || "";

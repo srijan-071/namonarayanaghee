@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { getDynamicOrderStatus } from "@/lib/orderUtils";
 import { formatPrice } from "@/lib/utils";
@@ -231,6 +231,11 @@ function TrackOrderContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [order, setOrder] = useState<any>(null);
+  const orderRef = useRef<any>(null);
+  useEffect(() => {
+    orderRef.current = order;
+  }, [order]);
+  const hasAutoOpenedPrepay = useRef(false);
 
   // Payment iframe modal state for COD-to-Prepaid conversion
   const [isIframeOpen, setIsIframeOpen] = useState(false);
@@ -444,6 +449,15 @@ function TrackOrderContent() {
     }
   };
 
+  // Auto-initiate prepay modal if prepay=true is in URL and COD order is loaded
+  useEffect(() => {
+    const shouldPrepay = searchParams.get("prepay") === "true";
+    if (shouldPrepay && isCodActive && !isIframeOpen && !hasAutoOpenedPrepay.current) {
+      hasAutoOpenedPrepay.current = true;
+      handleInitiatePrepay();
+    }
+  }, [searchParams, isCodActive, isIframeOpen]);
+
   // Listen for Razorpay postMessage from potter-world payment iframe
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
@@ -457,7 +471,8 @@ function TrackOrderContent() {
         const verifyToastId = toast.loading("Payment received! Upgrading your order to 100% Prepaid...");
 
         try {
-          const cleanOrderId = String(order?.id || order?.orderId || "").replace(/^#/, "");
+          const currentOrder = orderRef.current || order;
+          const cleanOrderId = String(currentOrder?.id || currentOrder?.orderId || data?.orderId || "").replace(/^#/, "").replace(/-PREPAY$/i, "").trim();
           const res = await fetch("/api/convert-cod-to-prepaid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
