@@ -61,15 +61,15 @@ const PRODUCTS_DATA: ProductItem[] = [
     title: "Pure A2 Gir Cow Ghee (1 Litre)",
     variantTitle: "1 Litre",
     packSize: "1 Litre",
-    price: 94900,
-    compareAtPrice: 249900,
+    price: 129900,
+    compareAtPrice: 329900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     badge: "👑 #1 BEST SELLER • MOST POPULAR",
     badgeColor: "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md",
     isPopular: true,
     bestFor: "Ideal for daily household cooking, tadkas, rotis & family immunity",
-    pricePerLitre: "₹949 / Litre",
-    dailyCost: "Approx. ₹31 / day",
+    pricePerLitre: "₹1,299 / Litre",
+    dailyCost: "Approx. ₹43 / day",
     bulletPoints: [
       "Traditional Curd-Churned Vedic Bilona method",
       "100% Pure A2 Gir Cow Milk from native breeds",
@@ -84,14 +84,14 @@ const PRODUCTS_DATA: ProductItem[] = [
     title: "Pure A2 Gir Cow Ghee (2.5 Litre)",
     variantTitle: "2.5 Litre",
     packSize: "2.5 Litre",
-    price: 209900,
-    compareAtPrice: 575000,
+    price: 269900,
+    compareAtPrice: 749900,
     image: "/assets/product_6-2p5_jpg.webp",
     badge: "🔥 BEST VALUE FOR FAMILIES (SAVE 63%)",
     badgeColor: "bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md",
     bestFor: "Families of 3–5 members looking for maximum savings without compromising purity",
-    pricePerLitre: "₹839 / Litre",
-    dailyCost: "Approx. ₹23 / day",
+    pricePerLitre: "₹1,079 / Litre",
+    dailyCost: "Approx. ₹36 / day",
     bulletPoints: [
       "Lowest cost per litre for regular household use",
       "Saves over ₹1,400 compared to individual packs",
@@ -106,14 +106,14 @@ const PRODUCTS_DATA: ProductItem[] = [
     title: "Pure A2 Gir Cow Ghee (500 ml)",
     variantTitle: "500 ml",
     packSize: "500 ml",
-    price: 59900,
-    compareAtPrice: 149900,
+    price: 79900,
+    compareAtPrice: 199900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     badge: "🌱 STARTER / TRIAL PACK",
     badgeColor: "bg-emerald-700 text-white",
     bestFor: "Individuals, first-time buyers sampling taste & aroma, or travel use",
-    pricePerLitre: "₹1,198 / Litre",
-    dailyCost: "Approx. ₹39 / day",
+    pricePerLitre: "₹1,598 / Litre",
+    dailyCost: "Approx. ₹27 / day",
     bulletPoints: [
       "Compact glass jar preserves aroma & natural freshness",
       "Great for tasting authentic Bilona ghee before buying 1L+",
@@ -128,14 +128,14 @@ const PRODUCTS_DATA: ProductItem[] = [
     title: "Pure A2 Gir Cow Ghee (5 Litre)",
     variantTitle: "5 Litre",
     packSize: "5 Litre",
-    price: 349900,
-    compareAtPrice: 1099900,
+    price: 449900,
+    compareAtPrice: 1449900,
     image: "/assets/product_6-5L_jpg.webp",
-    badge: "🏆 ULTIMATE BULK SAVER (₹699/L)",
+    badge: "🏆 ULTIMATE BULK SAVER (₹899/L)",
     badgeColor: "bg-amber-800 text-white",
     bestFor: "Joint families, festive feasts, Ayurvedic panchakarma & pooja ceremonies",
-    pricePerLitre: "₹699 / Litre",
-    dailyCost: "Approx. ₹19 / day",
+    pricePerLitre: "₹899 / Litre",
+    dailyCost: "Approx. ₹30 / day",
     bulletPoints: [
       "Highest discount rate (Save ₹7,500 off MRP)",
       "Long shelf life: Stays fresh up to 12 months at room temperature",
@@ -371,7 +371,7 @@ export default function NamoNarayanaGheeReviewContent() {
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[#231714]">Official Verified Pricing:</strong> 500ml at ₹599, 1 Litre flagship at ₹949, 2.5 Litres at ₹2,099, and 5 Litres at ₹3,499. Includes 100% Free Pan-India Delivery.
+                  <strong className="text-[#231714]">Official Verified Pricing:</strong> 500ml at ₹799, 1 Litre flagship at ₹1,299, 2.5 Litres at ₹2,699, and 5 Litres at ₹4,499. Includes 100% Free Pan-India Delivery.
                 </div>
               </div>
               <div className="flex items-start gap-2.5">
@@ -552,7 +552,7 @@ export default function NamoNarayanaGheeReviewContent() {
               <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 flex items-center gap-3">
                 <Sparkles className="w-6 h-6 shrink-0 text-amber-600" />
                 <div className="text-xs sm:text-sm text-stone-700">
-                  <strong className="text-[#8A1B14]">Editor&apos;s Recommendation:</strong> For a typical Indian household of 3–4 people, the <strong>1 Litre Pack (₹949)</strong> or <strong>2.5 Litre Family Pack (₹2,099)</strong> offers the ideal balance of culinary freshness, daily immunity dosage, and direct farm savings.
+                  <strong className="text-[#8A1B14]">Editor&apos;s Recommendation:</strong> For a typical Indian household of 3–4 people, the <strong>1 Litre Pack (₹1,299)</strong> or <strong>2.5 Litre Family Pack (₹2,699)</strong> offers the ideal balance of culinary freshness, daily immunity dosage, and direct farm savings.
                 </div>
               </div>
             </section>
@@ -1144,7 +1144,7 @@ export default function NamoNarayanaGheeReviewContent() {
                 </div>
                 <div className="p-3 rounded-lg bg-white/10 border border-white/20">
                   <strong className="text-amber-300 block mb-1">✓ Best Value Selection:</strong>
-                  The <strong>1 Litre pack at ₹949</strong> for starters, or the <strong>2.5 Litre can at ₹2,099</strong> for full family savings.
+                  The <strong>1 Litre pack at ₹1,299</strong> for starters, or the <strong>2.5 Litre can at ₹2,699</strong> for full family savings.
                 </div>
               </div>
               <div className="pt-4 flex flex-wrap items-center gap-4">
@@ -1177,7 +1177,7 @@ export default function NamoNarayanaGheeReviewContent() {
                   },
                   {
                     q: "What is the official price of Namo Narayana Ghee in India?",
-                    a: "When ordering directly from the official store (https://www.namonarayanaghee.store), the verified prices are: 500 ml at ₹599 (MRP ₹999), 1 Litre flagship pack at ₹949 (MRP ₹1,599), 2.5 Litres family pack at ₹2,099 (MRP ₹3,499), and 5 Litres bulk pack at ₹3,499 (MRP ₹5,999). All orders include free doorstep delivery across India."
+                    a: "When ordering directly from the official store (https://www.namonarayanaghee.store), the verified prices are: 500 ml at ₹799 (MRP ₹1,299), 1 Litre flagship pack at ₹1,299 (MRP ₹2,099), 2.5 Litres family pack at ₹2,699 (MRP ₹4,499), and 5 Litres bulk pack at ₹4,499 (MRP ₹7,799). All orders include free doorstep delivery across India."
                   },
                   {
                     q: "Is Namo Narayana Ghee made from 100% pure A2 Gir Cow milk?",
@@ -1267,10 +1267,10 @@ export default function NamoNarayanaGheeReviewContent() {
                 <div className="bg-amber-50 p-3 rounded-xl mb-4 flex items-center justify-between">
                   <div>
                     <span className="text-xs text-stone-500 block">Offer Price</span>
-                    <div className="text-2xl font-bold text-[#8A1B14]">₹949</div>
+                    <div className="text-2xl font-bold text-[#8A1B14]">₹1,299</div>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-stone-400 line-through">MRP: ₹1,599</span>
+                    <span className="text-xs text-stone-400 line-through">MRP: ₹3,299</span>
                     <span className="block text-xs font-bold text-emerald-700">Save 40% Today</span>
                   </div>
                 </div>
@@ -1391,7 +1391,7 @@ export default function NamoNarayanaGheeReviewContent() {
               href="/products/pure-desi-cow-ghee-1-litre"
               className="px-8 py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 font-bold text-sm uppercase tracking-wider rounded-xl hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg flex items-center gap-2"
             >
-              <ShoppingCart className="w-4 h-4" /> Shop 1 Litre Flagship Jar (₹949)
+              <ShoppingCart className="w-4 h-4" /> Shop 1 Litre Flagship Jar (₹1,299)
             </Link>
             <Link
               href="/collections/ghee"

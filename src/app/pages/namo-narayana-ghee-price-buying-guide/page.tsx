@@ -6,14 +6,14 @@ import PriceBuyingGuideContent from "@/components/seo/PriceBuyingGuideContent";
 export const metadata: Metadata = {
   title: `Namo Narayana Ghee Price (2026): Pack Sizes, Current Rates & Buying Guide`,
   description:
-    "Official 2026 Namo Narayana Ghee price guide. Compare verified rates: 500ml (₹599), 1L (₹949), 2.5L (₹2,099), 5L (₹3,499). Free shipping, COD & buying tips.",
+    "Official 2026 Namo Narayana Ghee price guide. Compare verified rates: 500ml (₹799), 1L (₹1,299), 2.5L (₹2,699), 5L (₹4,499). Free shipping, COD & buying tips.",
   alternates: {
     canonical: absoluteUrl("/pages/namo-narayana-ghee-price-buying-guide"),
   },
   openGraph: {
     title: "Namo Narayana Ghee Price: Pack Sizes & Buying Guide (2026)",
     description:
-      "Official rates for authentic Namo Narayana A2 Gir Cow Ghee: 500ml (₹599), 1L (₹949), 2.5L (₹2,099), 5L (₹3,499). Free shipping & COD options.",
+      "Official rates for authentic Namo Narayana A2 Gir Cow Ghee: 500ml (₹799), 1L (₹1,299), 2.5L (₹2,699), 5L (₹4,499). Free shipping & COD options.",
     url: absoluteUrl("/pages/namo-narayana-ghee-price-buying-guide"),
     type: "article",
     images: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Namo Narayana Ghee Price (2026): Pack Sizes & Buying Guide",
     description:
-      "Official verified rates for Namo Narayana A2 Gir Cow Ghee. 500ml (₹599), 1L (₹949), 2.5L (₹2,099), 5L (₹3,499).",
+      "Official verified rates for Namo Narayana A2 Gir Cow Ghee. 500ml (₹799), 1L (₹1,299), 2.5L (₹2,699), 5L (₹4,499).",
     images: [absoluteUrl("/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp")],
   },
 };
@@ -118,7 +118,7 @@ export default function PriceBuyingGuidePage() {
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹949.00 on the official store (namonarayanaghee.store). This includes free courier delivery across India.",
+                "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹1,299.00 on the official store (namonarayanaghee.store). This includes free courier delivery across India.",
             },
           },
           {

@@ -23,8 +23,8 @@ const gheeProducts = [
     variantTitle: "500 ml",
     subtitle: "Traditional Bilona Churned • 100% Pure A2",
     size: "500 ml",
-    price: 59900,
-    compareAtPrice: 149900,
+    price: 79900,
+    compareAtPrice: 199900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
   },
   {
@@ -37,8 +37,8 @@ const gheeProducts = [
     variantTitle: "1 Litre",
     subtitle: "Bilona Churned • 1 Free Mustard Oil (250ml)",
     size: "1 Litre",
-    price: 94900,
-    compareAtPrice: 249900,
+    price: 129900,
+    compareAtPrice: 329900,
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
   },
   {
@@ -51,8 +51,8 @@ const gheeProducts = [
     variantTitle: "2.5 Litre",
     subtitle: "Family Pack • 3 Free Cold-Pressed Oils",
     size: "2.5 Litre",
-    price: 209900,
-    compareAtPrice: 575000,
+    price: 269900,
+    compareAtPrice: 749900,
     image: "/assets/product_6-2p5_jpg.webp"
   },
   {
@@ -65,8 +65,8 @@ const gheeProducts = [
     variantTitle: "5 Litre",
     subtitle: "Bulk Savings • 3 Free Cold-Pressed Oils",
     size: "5 Litre",
-    price: 349900,
-    compareAtPrice: 1099900,
+    price: 449900,
+    compareAtPrice: 1449900,
     image: "/assets/product_6-5L_jpg.webp"
   }
 ];

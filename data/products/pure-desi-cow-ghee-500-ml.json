@@ -15,14 +15,14 @@
     "organic",
     "pure"
   ],
-  "price": 59900,
-  "price_min": 59900,
-  "price_max": 59900,
+  "price": 79900,
+  "price_min": 79900,
+  "price_max": 79900,
   "available": true,
   "price_varies": false,
-  "compare_at_price": 99900,
-  "compare_at_price_min": 99900,
-  "compare_at_price_max": 99900,
+  "compare_at_price": 199900,
+  "compare_at_price_min": 199900,
+  "compare_at_price_max": 199900,
   "compare_at_price_varies": false,
   "variants": [
     {
@@ -41,9 +41,9 @@
       "options": [
         "500 ml"
       ],
-      "price": 59900,
+      "price": 79900,
       "weight": 0,
-      "compare_at_price": 99900,
+      "compare_at_price": 199900,
       "inventory_management": "shopify",
       "barcode": null,
       "quantity_rule": {

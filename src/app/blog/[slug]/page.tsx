@@ -97,7 +97,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           name: "What is the price of Namo Narayana Ghee in India?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "On the official store (namonarayanaghee.store), the verified offer prices are: 500 ml at ₹599, 1 Litre flagship pack at ₹949, 2.5 Litres family pack at ₹2,099, and 5 Litres bulk pack at ₹3,499. All packs include free pan-India doorstep delivery."
+            text: "On the official store (namonarayanaghee.store), the verified offer prices are: 500 ml at ₹799, 1 Litre flagship pack at ₹1,299, 2.5 Litres family pack at ₹2,699, and 5 Litres bulk pack at ₹4,499. All packs include free pan-India doorstep delivery."
           }
         },
         {
@@ -168,7 +168,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               "@type": "Offer",
               url: absoluteUrl("/products/pure-desi-cow-ghee-1-litre"),
               priceCurrency: "INR",
-              price: "949.00",
+              price: "1299.00",
               priceValidUntil: "2027-12-31",
               availability: "https://schema.org/InStock",
               itemCondition: "https://schema.org/NewCondition",
@@ -197,7 +197,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               "@type": "Offer",
               url: absoluteUrl("/products/pure-desi-cow-ghee-2-5-litre"),
               priceCurrency: "INR",
-              price: "2099.00",
+              price: "2699.00",
               priceValidUntil: "2027-12-31",
               availability: "https://schema.org/InStock",
               itemCondition: "https://schema.org/NewCondition",
@@ -226,7 +226,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               "@type": "Offer",
               url: absoluteUrl("/products/pure-desi-cow-ghee-500-ml"),
               priceCurrency: "INR",
-              price: "599.00",
+              price: "799.00",
               priceValidUntil: "2027-12-31",
               availability: "https://schema.org/InStock",
               itemCondition: "https://schema.org/NewCondition",
@@ -255,7 +255,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               "@type": "Offer",
               url: absoluteUrl("/products/pure-desi-cow-ghee-5-litre"),
               priceCurrency: "INR",
-              price: "3499.00",
+              price: "4499.00",
               priceValidUntil: "2027-12-31",
               availability: "https://schema.org/InStock",
               itemCondition: "https://schema.org/NewCondition",

@@ -49,7 +49,7 @@ function AnalyticsTracker() {
           content_ids: ["9545146237096"],
           content_name: "Pure A2 Gir Cow Ghee 1 Litre",
           currency: "INR",
-          value: 949,
+          value: 1299,
         });
       }
 

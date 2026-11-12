@@ -55,14 +55,14 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-500-ml",
     title: "Pure A2 Gir Cow Ghee 500 ml",
     size: "500 ml",
-    price: 59900,
-    compareAtPrice: 99900,
-    effectiveRatePerLitre: "₹1,198 / Litre",
+    price: 79900,
+    compareAtPrice: 129900,
+    effectiveRatePerLitre: "₹1,598 / Litre",
     badge: "🌱 STARTER / TRIAL",
     badgeColor: "bg-[#8A1B14]",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     bestFor: "Trial buyers, singles, travel, and sacred daily pooja rituals",
-    dailyCost: "~₹20 / day",
+    dailyCost: "~₹36 / day",
     savings: "40% OFF",
     packaging: "Food-grade glass jar",
   },
@@ -72,14 +72,14 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-1-litre",
     title: "Pure A2 Gir Cow Ghee 1 Litre",
     size: "1 Litre",
-    price: 94900,
-    compareAtPrice: 159900,
-    effectiveRatePerLitre: "₹949 / Litre",
+    price: 129900,
+    compareAtPrice: 209900,
+    effectiveRatePerLitre: "₹1,299 / Litre",
     badge: "👑 #1 BESTSELLER • MOST LOVED",
     badgeColor: "bg-[#C38936]",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     bestFor: "Nuclear families (2–3 people), daily roti brushing, and dal tadka",
-    dailyCost: "~₹31 / day",
+    dailyCost: "~₹43 / day",
     savings: "41% OFF",
     packaging: "Food-grade glass jar",
     isPopular: true,
@@ -90,13 +90,13 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-2-5-litre",
     title: "Pure A2 Gir Cow Ghee 2.5 Litre",
     size: "2.5 Litre",
-    price: 209900,
-    compareAtPrice: 349900,
-    effectiveRatePerLitre: "₹839.60 / Litre",
+    price: 269900,
+    compareAtPrice: 449900,
+    effectiveRatePerLitre: "₹1,079.60 / Litre",
     badge: "🔥 BEST VALUE FOR FAMILIES",
     badgeColor: "bg-[#8A1B14]",
     image: "/assets/product_6-2p5_jpg.webp",
-    bestFor: "Families of 3–5 members; lowers cost to ₹839/L with higher savings",
+    bestFor: "Families of 3–5 members; lowers cost to ₹1,079/L with higher savings",
     dailyCost: "~₹27 / day",
     savings: "40% OFF",
     packaging: "Heavy-duty food container",
@@ -107,14 +107,14 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-5-litre",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     size: "5 Litre",
-    price: 349900,
-    compareAtPrice: 599900,
-    effectiveRatePerLitre: "₹699.80 / Litre",
+    price: 449900,
+    compareAtPrice: 779900,
+    effectiveRatePerLitre: "₹899.80 / Litre",
     badge: "💰 BULK SAVINGS TIN",
     badgeColor: "bg-emerald-800",
     image: "/assets/product_6-5L_jpg.webp",
     bestFor: "Joint households, festive sweet preparations, and Ayurvedic diets",
-    dailyCost: "~₹23 / day",
+    dailyCost: "~₹30 / day",
     savings: "42% OFF",
     packaging: "Traditional heritage metal tin",
   },
@@ -123,7 +123,7 @@ const PACK_CATALOG: PackItem[] = [
 const FAQS = [
   {
     q: "What is the official price of Namo Narayana Ghee 1 Litre?",
-    a: "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹949.00 on the official store (namonarayanaghee.store). This includes free courier delivery across India.",
+    a: "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹1,299.00 on the official store (namonarayanaghee.store). This includes free courier delivery across India.",
   },
   {
     q: "Why does authentic Bilona Ghee cost more than supermarket ghee?",
@@ -309,7 +309,7 @@ export default function PriceBuyingGuideContent() {
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
             <p>
-              Shoppers often wonder why authentic A2 Gir Cow Bilona Ghee costs ₹949 per litre while industrial supermarket ghee is sold for ₹450 to ₹600 per litre. The answer lies in the fundamental difference between <strong>industrial cream-separation</strong> and the <strong>traditional Vedic Bilona curd-churning method</strong>.
+              Shoppers often wonder why authentic A2 Gir Cow Bilona Ghee costs ₹1,299 per litre while industrial supermarket ghee is sold for ₹450 to ₹600 per litre. The answer lies in the fundamental difference between <strong>industrial cream-separation</strong> and the <strong>traditional Vedic Bilona curd-churning method</strong>.
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 my-6 not-prose">
@@ -506,7 +506,7 @@ export default function PriceBuyingGuideContent() {
                 href="/products/pure-desi-cow-ghee-1-litre"
                 className="bg-[#D4A017] hover:bg-[#C99A3D] text-[#24211E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
               >
-                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Bestseller (₹949)
+                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Bestseller (₹1,299)
               </Link>
               <Link
                 href="/collections/ghee"

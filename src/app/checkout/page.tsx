@@ -562,10 +562,10 @@ export default function CheckoutPage() {
         variantId: bumpVariantId,
         title: "Pure A2 Gir Cow Ghee 500 ml",
         variantTitle: "500 ml",
-        price: 59900,
+        price: 79900,
         image: "/media/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942_cab5f3.webp",
         slug: "pure-desi-cow-ghee-500-ml",
-        compareAtPrice: 149900
+        compareAtPrice: 199900
       }, 1);
       toast.success("Added 500ml A2 Ghee jar (60% OFF) to your parcel!");
     }
@@ -1682,7 +1682,7 @@ export default function CheckoutPage() {
                       Add 500ml A2 Ghee Jar for Parents
                     </p>
                     <p className="text-[11px] text-[#7A4A3B] mt-0.5">
-                      Special: <strong className="text-[#8A1B14]">₹599</strong> <span className="line-through text-stone-400">₹999</span> • <span className="text-emerald-700 font-semibold">40% OFF</span>
+                      Special: <strong className="text-[#8A1B14]">₹799</strong> <span className="line-through text-stone-400">₹1,999</span> • <span className="text-emerald-700 font-semibold">60% OFF</span>
                     </p>
                   </div>
                 </label>

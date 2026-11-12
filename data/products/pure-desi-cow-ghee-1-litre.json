@@ -15,14 +15,14 @@
     "organic",
     "pure"
   ],
-  "price": 94900,
-  "price_min": 94900,
-  "price_max": 94900,
+  "price": 129900,
+  "price_min": 129900,
+  "price_max": 129900,
   "available": true,
   "price_varies": false,
-  "compare_at_price": 159900,
-  "compare_at_price_min": 159900,
-  "compare_at_price_max": 159900,
+  "compare_at_price": 329900,
+  "compare_at_price_min": 329900,
+  "compare_at_price_max": 329900,
   "compare_at_price_varies": false,
   "variants": [
     {
@@ -41,9 +41,9 @@
       "options": [
         "1 Litre"
       ],
-      "price": 94900,
+      "price": 129900,
       "weight": 0,
-      "compare_at_price": 159900,
+      "compare_at_price": 329900,
       "inventory_management": "shopify",
       "barcode": null,
       "quantity_rule": {
