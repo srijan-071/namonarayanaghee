@@ -992,14 +992,29 @@ export default function CheckoutPage() {
                   <span>-{formatPrice(pricing.discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-emerald-700 font-semibold">
-                <span>⚡ Prepaid Instant Discount</span>
-                <span>-{formatPrice(pricing.prepaidDiscount || 10000)}</span>
-              </div>
-              <div className="flex justify-between text-stone-600">
-                <span>Express Pan-India Delivery</span>
-                <span className="text-emerald-700 font-semibold">FREE</span>
-              </div>
+              {paymentMethod === "prepaid" ? (
+                <>
+                  <div className="flex justify-between text-emerald-700 font-semibold">
+                    <span>⚡ Prepaid Instant Discount</span>
+                    <span>-{formatPrice(pricing.prepaidDiscount || 10000)}</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600">
+                    <span>Delivery &amp; COD Handling</span>
+                    <span className="text-emerald-700 font-semibold">FREE (Saved ₹250)</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between text-[#8A1B14] font-semibold">
+                    <span>COD Courier Handling Fee</span>
+                    <span>+{formatPrice(pricing.codFee || 25000)}</span>
+                  </div>
+                  <div className="flex justify-between text-amber-900 font-semibold bg-amber-50 px-2 py-1 rounded">
+                    <span>📦 Due on Delivery</span>
+                    <span>{formatPrice(pricing.amountRemaining)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -1387,79 +1402,129 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Step 3: Payment Method (100% Secure Prepaid Orders Only) */}
-              <div className="mt-8 pt-6 border-t border-[#EAE3D7]">
+              {/* Step 3: Payment Method Selector (Prepaid Active vs Pan-India COD) */}
+              <div className="mt-8 pt-6 border-t border-[#EAD7BC]/60">
                 <div className="flex items-center justify-between pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[#4E1013] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-[#5E0B10] text-white flex items-center justify-center font-bold text-xs shrink-0">
                       3
                     </span>
-                    <h2 className="font-serif text-base sm:text-lg font-bold text-[#4E1013]">
+                    <h2 className="font-serif text-base sm:text-lg font-bold text-[#5E0B10]">
                       Payment Method
                     </h2>
                   </div>
                   <span className="text-[11px] text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    100% Secure Prepaid Only
+                    Pan-India COD & Instant UPI
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {/* Online Prepaid (Sole Authoritative Method) */}
-                  <div className="rounded-xl p-4 bg-[#F8F5EE] border-2 border-[#4E1013] shadow-2xs relative">
+                  {/* Option 1: Online Prepaid (Recommended) */}
+                  <div
+                    onClick={() => {
+                      setPaymentMethod("prepaid");
+                      trackAdLeadAction("checkout_step", {
+                        step: "Selected Online Prepaid (Save ₹350)",
+                        paymentMethod: "prepaid",
+                        cartTotal: pricing.subtotal,
+                      });
+                    }}
+                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
+                      paymentMethod === "prepaid"
+                        ? "bg-[#FAF9F5] border-[#5E0B10] shadow-2xs"
+                        : "bg-white border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded-full border-4 border-[#4E1013] bg-white shrink-0" />
+                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${
+                          paymentMethod === "prepaid" ? "border-[#5E0B10] bg-white" : "border-stone-300 bg-white"
+                        }`} />
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-sm font-bold text-[#4E1013]">
+                            <span className="text-sm font-bold text-[#5E0B10]">
                               Pay Online (UPI, Cards, NetBanking)
                             </span>
-                            <span className="text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">
-                              FLAT ₹100 OFF APPLIED
+                            <span className="text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-700">
+                              SAVE ₹350 NOW
                             </span>
                           </div>
-                          <p className="text-xs text-[#29251F] mt-1 font-medium">
-                            Free Express Delivery • Instant ₹100 Prepaid Savings
+                          <p className="text-xs text-stone-600 mt-1 font-medium">
+                            <span className="text-emerald-700">₹100 Instant Discount</span> + <span className="text-emerald-700">₹250 COD Fee Waived</span>
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-[#4E1013] bg-amber-100 px-2 py-0.5 rounded-full shrink-0">
-                        OFFICIAL STORE
+                      <span className="text-[10px] font-bold text-[#5E0B10] bg-amber-100 px-2 py-0.5 rounded-full shrink-0">
+                        RECOMMENDED
                       </span>
                     </div>
 
                     {/* Official Payment Logos Strip */}
-                    <div className="flex items-center gap-1.5 flex-wrap pt-3 pl-7">
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                    <div className="flex items-center gap-1.5 flex-wrap pt-2.5 pl-7">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/phonepe.png" alt="PhonePe" width={56} height={16} className="h-3 w-auto object-contain" />
                       </div>
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/gpay.png" alt="Google Pay" width={42} height={16} className="h-3 w-auto object-contain" />
                       </div>
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/paytm.png" alt="Paytm" width={38} height={14} className="h-2.5 w-auto object-contain" />
                       </div>
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/upi.png" alt="UPI" width={38} height={14} className="h-2.5 w-auto object-contain" />
                       </div>
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/visa.png" alt="Visa" width={34} height={12} className="h-2.5 w-auto object-contain" />
                       </div>
-                      <div className="h-6 px-2 bg-white rounded border border-[#EAE3D7] flex items-center justify-center">
+                      <div className="h-6 px-2 bg-white rounded border border-stone-200 flex items-center justify-center">
                         <Image src="/assets/payments/rupay.svg" alt="RuPay" width={36} height={14} className="h-2.5 w-auto object-contain" />
                       </div>
                     </div>
+                  </div>
 
-                    <p className="text-[11px] text-[#78634B] mt-3 pl-7 leading-relaxed">
-                      To ensure direct gaushala batch freshness and eliminate transit courier delays, Namo Narayana is exclusively a prepaid store. All transactions are 256-bit SSL encrypted.
-                    </p>
+                  {/* Option 2: Cash on Delivery */}
+                  <div
+                    onClick={() => {
+                      setPaymentMethod("cod");
+                      trackAdLeadAction("checkout_step", {
+                        step: "Selected Cash on Delivery (Advance ₹250)",
+                        paymentMethod: "cod",
+                        cartTotal: pricing.subtotal,
+                      });
+                    }}
+                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
+                      paymentMethod === "cod"
+                        ? "bg-[#FAF9F5] border-[#5E0B10] shadow-2xs"
+                        : "bg-white border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${
+                          paymentMethod === "cod" ? "border-[#5E0B10] bg-white" : "border-stone-300 bg-white"
+                        }`} />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#5E0B10]">
+                              Cash on Delivery (COD)
+                            </span>
+                          </div>
+                          <p className="text-xs text-stone-600 mt-1 font-medium">
+                            Pay ₹250 booking advance to confirm • Balance {formatPrice(pricing.amountRemaining)} on delivery
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded-full shrink-0 border border-red-100">
+                        +₹250 COD FEE
+                      </span>
+                    </div>
                   </div>
 
                   {/* Guaranteed Safe Delivery Strip */}
-                  <div className="p-3 bg-white border border-[#EAE3D7] rounded-xl flex items-center gap-2 text-xs text-[#4E1013]">
+                  <div className="p-3 bg-[#FAF9F5] border border-[#EAD7BC] rounded-xl flex items-center gap-2 text-xs text-[#5E0B10]">
                     <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
                     <span className="text-[11px]">
-                      <strong>100% Insured Delivery:</strong> Multi-layer shockproof glass packaging with free damage replacement guarantee.
+                      <strong>100% Insured Delivery:</strong> 4-layer shockproof glass packaging with damage replacement guarantee.
                     </span>
                   </div>
                 </div>
@@ -1701,23 +1766,40 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between text-emerald-700 font-semibold">
-                  <span>Prepaid Discount</span>
-                  <span>-{formatPrice(pricing.prepaidDiscount || 10000)}</span>
-                </div>
-                <div className="flex justify-between items-center text-stone-600">
-                  <span>Express Delivery</span>
-                  <span className="font-bold text-emerald-700">FREE</span>
-                </div>
+                {paymentMethod === "prepaid" ? (
+                  <>
+                    <div className="flex justify-between text-emerald-700 font-semibold">
+                      <span>Prepaid Discount</span>
+                      <span>-{formatPrice(pricing.prepaidDiscount || 10000)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-stone-600">
+                      <span>Delivery</span>
+                      <span className="font-bold text-emerald-700">FREE</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between text-stone-600">
+                      <span>COD Fee</span>
+                      <span className="font-medium text-stone-800">+{formatPrice(pricing.codFee || 25000)}</span>
+                    </div>
+                    <div className="flex justify-between text-stone-600">
+                      <span>Balance on Delivery</span>
+                      <span className="font-semibold text-stone-800">{formatPrice(pricing.amountRemaining)}</span>
+                    </div>
+                  </>
+                )}
 
                 <div className="pt-2 border-t border-[#EAD7BC] flex justify-between items-baseline">
                   <div>
                     <span className="text-base font-bold text-[#5E0B10] block">
-                      Total Amount
+                      {paymentMethod === "cod" ? "Pay Now (Advance)" : "Total Amount"}
                     </span>
-                    <span className="text-[10px] text-emerald-700 font-medium">
-                      Free pan-India delivery included
-                    </span>
+                    {paymentMethod === "cod" && (
+                      <span className="text-[10px] text-stone-500">
+                        {formatPrice(pricing.amountRemaining)} due on delivery
+                      </span>
+                    )}
                   </div>
                   <span className="text-2xl sm:text-3xl font-extrabold text-[#5E0B10]">
                     {formatPrice(pricing.amountToPay)}
@@ -1741,7 +1823,9 @@ export default function CheckoutPage() {
                   <>
                     <Lock className="w-4 h-4 text-amber-300" />
                     <span>
-                      Pay {formatPrice(pricing.amountToPay)} →
+                      {paymentMethod === "cod"
+                        ? `Pay ${formatPrice(pricing.amountToPay)} to Confirm Order →`
+                        : `Pay ${formatPrice(pricing.amountToPay)} (Save ₹350) →`}
                     </span>
                   </>
                 )}
@@ -1781,13 +1865,13 @@ export default function CheckoutPage() {
         <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
           <div className="flex flex-col shrink-0">
             <span className="text-[9px] text-[#7A4A3B] font-bold uppercase tracking-wider">
-              Total
+              {paymentMethod === "cod" ? "Pay Now" : "Total"}
             </span>
             <span className="text-xl font-extrabold text-[#5E0B10] leading-tight">
               {formatPrice(pricing.amountToPay)}
             </span>
-            <span className="text-[9px] text-emerald-700 font-medium">
-              Free Express Delivery
+            <span className="text-[9px] text-stone-500 font-medium">
+              {paymentMethod === "cod" ? `+ ${formatPrice(pricing.amountRemaining)} on Delivery` : "Free Delivery"}
             </span>
           </div>
 
@@ -1806,7 +1890,7 @@ export default function CheckoutPage() {
               <>
                 <Lock className="w-3.5 h-3.5 text-amber-300" />
                 <span>
-                  Pay {formatPrice(pricing.amountToPay)} →
+                  {paymentMethod === "cod" ? `Pay ${formatPrice(pricing.amountToPay)} to Confirm →` : `Pay ${formatPrice(pricing.amountToPay)} →`}
                 </span>
               </>
             )}

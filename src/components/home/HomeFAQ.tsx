@@ -18,8 +18,8 @@ const FAQS: FAQItem[] = [
     a: "Commercial ghee is produced rapidly by separating raw cream directly from milk using high-speed industrial centrifuges. Authentic Bilona ghee follows the ancient Ayurvedic 5-step process: fresh milk is boiled, cultured overnight into curd, and hand-churned bi-directionally in a wooden bilona to separate cultured makkhan (butter), which is then gently clarified over a low flame. This preserves the natural danedar texture and distinct nutty aroma.",
   },
   {
-    q: "Why is Namo Narayana exclusively a Prepaid-Only store?",
-    a: "To eliminate transit delays and ensure delicate glass jars of batch-fresh Vedic Bilona ghee are never left idling in courier hubs due to unverified bookings, we process 100% secure prepaid orders only. Payments are encrypted and processed seamlessly via all major UPI applications (Google Pay, PhonePe, Paytm), Debit/Credit Cards, and Net Banking with free express courier dispatch across India.",
+    q: "How does Cash on Delivery (COD) work on this store?",
+    a: "To protect our gaushala dispatch operations from fraudulent unverified orders and high courier return-to-origin (RTO) costs, Cash on Delivery requires a standard ₹250 online advance booking deposit. The remaining balance is collected conveniently via Cash or UPI at your doorstep when the delivery arrives.",
   },
   {
     q: "What are the verified laboratory test results for this ghee?",

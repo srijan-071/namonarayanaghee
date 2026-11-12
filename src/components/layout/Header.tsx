@@ -62,11 +62,15 @@ export default function Header() {
 
   return (
     <>
-      {/* ─── Compact Single-Offer Announcement Bar (Prepaid Only) ─── */}
+      {/* ─── Compact Single-Offer Announcement Bar (COD & Prepaid) ─── */}
       <div className="bg-[#4E1013] text-[#F8F5EE] text-xs h-9 px-3 sm:px-4 font-medium tracking-wide border-b border-[#68191D]/40 relative z-40 flex items-center justify-center select-none">
         <div className="flex items-center justify-center gap-2 text-center text-[11px] sm:text-xs truncate">
-          <span className="font-semibold text-[#EAE3D7]">
-            🔒 100% Secure Prepaid Orders Only • Free Express Delivery Across India
+          <span className="font-semibold text-amber-200">
+            🚚 Pan-India COD Available
+          </span>
+          <span className="text-[#EAE3D7]/40 hidden sm:inline">•</span>
+          <span className="font-semibold text-[#EAE3D7] hidden sm:inline">
+            Free Express Delivery Across India
           </span>
           <span className="text-[#EAE3D7]/40 hidden sm:inline">|</span>
           <span className="hidden sm:inline text-amber-200">
