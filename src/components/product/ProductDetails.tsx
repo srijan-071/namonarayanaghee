@@ -201,7 +201,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
       price: price,
       quantity: qty,
       cartTotal: price * qty,
-      freeGift: giftData.hasGift ? giftData.giftText : null,
+      freeGift: giftData.hasGift ? giftData.title : null,
     });
 
     if (giftData.hasGift) {
@@ -246,7 +246,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
       price: price,
       quantity: qty,
       cartTotal: price * qty,
-      freeGift: giftData.hasGift ? giftData.giftText : null,
+      freeGift: giftData.hasGift ? giftData.title : null,
     });
 
     router.push("/checkout");

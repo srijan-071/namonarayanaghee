@@ -154,35 +154,35 @@ export default function PriceBuyingGuideContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleAddToCart = (pack: PackItem) => {
-    addToCart({
-      id: pack.id,
-      productId: pack.id,
-      variantId: pack.variantId,
-      slug: pack.slug,
-      title: pack.title,
-      variantTitle: pack.size,
-      price: pack.price,
-      image: pack.image,
-      quantity: 1,
-      available: true,
-    });
+    addToCart(
+      {
+        productId: pack.id,
+        variantId: pack.variantId,
+        slug: pack.slug,
+        title: pack.title,
+        variantTitle: pack.size,
+        price: pack.price,
+        image: pack.image,
+      },
+      1
+    );
     toast.success(`Added ${pack.title} to cart`);
     open();
   };
 
   const handleInstantBuy = (pack: PackItem) => {
-    addToCart({
-      id: pack.id,
-      productId: pack.id,
-      variantId: pack.variantId,
-      slug: pack.slug,
-      title: pack.title,
-      variantTitle: pack.size,
-      price: pack.price,
-      image: pack.image,
-      quantity: 1,
-      available: true,
-    });
+    addToCart(
+      {
+        productId: pack.id,
+        variantId: pack.variantId,
+        slug: pack.slug,
+        title: pack.title,
+        variantTitle: pack.size,
+        price: pack.price,
+        image: pack.image,
+      },
+      1
+    );
     router.push("/checkout");
   };
 

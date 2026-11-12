@@ -129,34 +129,34 @@ export default function ElvishYadavGheeContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleInstantBuy = (pack: EndorsedPack) => {
-    addToCart({
-      id: pack.id,
-      productId: pack.id,
-      variantId: pack.variantId,
-      slug: pack.slug,
-      title: pack.title,
-      variantTitle: pack.size,
-      price: pack.price,
-      image: pack.image,
-      quantity: 1,
-      available: true,
-    });
+    addToCart(
+      {
+        productId: pack.id,
+        variantId: pack.variantId,
+        slug: pack.slug,
+        title: pack.title,
+        variantTitle: pack.size,
+        price: pack.price,
+        image: pack.image,
+      },
+      1
+    );
     router.push("/checkout");
   };
 
   const handleAddToCart = (pack: EndorsedPack) => {
-    addToCart({
-      id: pack.id,
-      productId: pack.id,
-      variantId: pack.variantId,
-      slug: pack.slug,
-      title: pack.title,
-      variantTitle: pack.size,
-      price: pack.price,
-      image: pack.image,
-      quantity: 1,
-      available: true,
-    });
+    addToCart(
+      {
+        productId: pack.id,
+        variantId: pack.variantId,
+        slug: pack.slug,
+        title: pack.title,
+        variantTitle: pack.size,
+        price: pack.price,
+        image: pack.image,
+      },
+      1
+    );
     toast.success(`Added ${pack.title} to cart`);
     open();
   };
