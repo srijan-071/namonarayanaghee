@@ -30,17 +30,17 @@ export default function GheeRecipes() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#FAF8F5] border-b border-[#E5DEC9]">
+    <section className="py-16 md:py-24 bg-[#F8F5EE] border-b border-[#EAE3D7]">
       <div className="nn-container">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#2D5A37] block mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#68191D] block mb-2">
             Culinary Heritage
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#142918] font-bold mb-4">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-4">
             Pure Ghee in Every Day Indian Cooking
           </h2>
-          <p className="text-sm sm:text-base text-[#3D4A41] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#29251F] leading-relaxed">
             With a smoke point exceeding 250°C and a rich danedar crumb, Namo Narayana A2 Ghee elevates traditional dishes with unmatched aroma and wholesome flavor.
           </p>
         </div>
@@ -49,7 +49,7 @@ export default function GheeRecipes() {
           {recipes.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl overflow-hidden border border-[#E5DEC9] shadow-2xs flex flex-col group hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl overflow-hidden border border-[#EAE3D7] shadow-2xs flex flex-col group hover:shadow-md transition-shadow"
             >
               <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
                 <Image
@@ -59,7 +59,7 @@ export default function GheeRecipes() {
                   sizes="(min-width: 768px) 33vw, 90vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <span className="absolute top-3 left-3 bg-[#1E3A24] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                <span className="absolute top-3 left-3 bg-[#68191D] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
                   {item.category}
                 </span>
                 <span className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded">
@@ -69,17 +69,17 @@ export default function GheeRecipes() {
 
               <div className="p-5 flex flex-col flex-1 justify-between">
                 <div>
-                  <h3 className="font-serif font-bold text-base text-[#142918] mb-2 group-hover:text-[#2D5A37] transition-colors">
+                  <h3 className="font-serif font-bold text-base text-[#4E1013] mb-2 group-hover:text-[#68191D] transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-[#3D4A41] leading-relaxed mb-4">
+                  <p className="text-xs text-[#29251F] leading-relaxed mb-4">
                     {item.desc}
                   </p>
                 </div>
 
                 <Link
                   href="/#bestsellers"
-                  className="text-xs font-semibold text-[#1E3A24] hover:text-[#2D5A37] inline-flex items-center gap-1"
+                  className="text-xs font-semibold text-[#68191D] hover:text-[#68191D] inline-flex items-center gap-1"
                 >
                   <span>Order Ghee for this recipe →</span>
                 </Link>
@@ -92,3 +92,4 @@ export default function GheeRecipes() {
     </section>
   );
 }
+

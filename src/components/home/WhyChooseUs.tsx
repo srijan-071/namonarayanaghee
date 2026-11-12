@@ -37,17 +37,17 @@ const differentiators = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 md:py-20 bg-white border-b border-[#E5DEC9]">
+    <section className="py-16 md:py-20 bg-white border-b border-[#EAE3D7]">
       <div className="nn-container">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#2D5A37] block mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#68191D] block mb-2">
             The Namo Narayana Distinction
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#142918] font-bold mb-4">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-4">
             Traditional Craftsmanship, Verifiable Purity
           </h2>
-          <p className="text-sm sm:text-base text-[#3D4A41] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#29251F] leading-relaxed">
             We adhere to authentic Vedic practices without industrial shortcuts. Every jar is defined by genuine ingredients, documented processes, and rigorous batch tests.
           </p>
         </div>
@@ -58,15 +58,15 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={i}
-                className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#E5DEC9] hover:border-[#1E3A24]/40 transition-all flex flex-col"
+                className="p-6 rounded-2xl bg-[#F8F5EE] border border-[#EAE3D7] hover:border-[#68191D]/40 transition-all flex flex-col"
               >
-                <div className="w-12 h-12 rounded-xl bg-white border border-[#E5DEC9] flex items-center justify-center text-[#1E3A24] mb-4 shadow-2xs">
-                  <Icon className="w-6 h-6 text-[#2D5A37]" />
+                <div className="w-12 h-12 rounded-xl bg-white border border-[#EAE3D7] flex items-center justify-center text-[#68191D] mb-4 shadow-2xs">
+                  <Icon className="w-6 h-6 text-[#68191D]" />
                 </div>
-                <h3 className="font-serif font-bold text-lg text-[#142918] mb-2">
+                <h3 className="font-serif font-bold text-lg text-[#4E1013] mb-2">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#3D4A41] leading-relaxed flex-1">
+                <p className="text-xs sm:text-sm text-[#29251F] leading-relaxed flex-1">
                   {item.desc}
                 </p>
               </div>

@@ -1,308 +1,305 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Loader2, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Heart, ShoppingCart, ChevronDown, Leaf, Droplets, Sparkles } from "lucide-react";
-import { cn, formatPrice } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { ShoppingCart, Zap, Loader2, Sparkles, Check, Gift } from "lucide-react";
+import { toast } from "sonner";
+import { formatPrice, discountPercent, cn } from "@/lib/utils";
 import { addToCart, useCartDrawer } from "@/lib/cart";
 import { trackEvent } from "@/lib/analytics";
 
-// Actual Ghee products data matching the live store
-const gheeProducts = [
+interface GheePack {
+  id: number;
+  variantId: number;
+  slug: string;
+  title: string;
+  variantTitle: string;
+  size: string;
+  label: string;
+  price: number;
+  compareAtPrice: number;
+  ratePerLitre: string;
+  giftText: string;
+  image: string;
+  isBestseller?: boolean;
+}
+
+const GHEE_COLLECTION: GheePack[] = [
   {
     id: 9545153446055,
     variantId: 55812012572839,
     slug: "pure-desi-cow-ghee-500-ml",
-    badge: "🌱 STARTER / TRIAL PACK",
-    badgeColor: "bg-[#8A1B14]",
-    title: "Pure A2 Gir Cow Ghee 500 ml",
+    title: "Pure A2 Gir Cow Ghee",
     variantTitle: "500 ml",
-    subtitle: "Traditional Bilona Churned • 100% Pure A2",
-    size: "500 ml",
+    size: "500 ml Jar",
+    label: "Starter & Sacred Rituals",
     price: 79900,
     compareAtPrice: 199900,
-    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
+    ratePerLitre: "₹1,598 / L",
+    giftText: "Tamper-evident glass jar",
+    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
   },
   {
     id: 9545153446056,
     variantId: 55812012572840,
     slug: "pure-desi-cow-ghee-1-litre",
-    badge: "👑 #1 BESTSELLER • MOST LOVED",
-    badgeColor: "bg-[#C38936]",
-    title: "Pure A2 Gir Cow Ghee 1 Litre",
+    title: "Pure A2 Gir Cow Ghee",
     variantTitle: "1 Litre",
-    subtitle: "Bilona Churned • 1 Free Mustard Oil (250ml)",
-    size: "1 Litre",
+    size: "1 Litre Jar",
+    label: "Flagship Bestseller",
     price: 129900,
     compareAtPrice: 329900,
-    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp"
+    ratePerLitre: "₹1,299 / L",
+    giftText: "+ Free 250ml Mustard Oil",
+    image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
+    isBestseller: true,
   },
   {
     id: 9545146237096,
     variantId: 55811997728936,
     slug: "pure-desi-cow-ghee-2-5-litre",
-    badge: "🔥 BEST VALUE FOR FAMILIES",
-    badgeColor: "bg-[#8A1B14]",
-    title: "Pure A2 Gir Cow Ghee 2.5 Litre",
+    title: "Pure A2 Gir Cow Ghee",
     variantTitle: "2.5 Litre",
-    subtitle: "Family Pack • 3 Free Cold-Pressed Oils",
-    size: "2.5 Litre",
+    size: "2.5 Litre Container",
+    label: "Family Pack Value",
     price: 269900,
     compareAtPrice: 749900,
-    image: "/assets/product_6-2p5_jpg.webp"
+    ratePerLitre: "₹1,079.60 / L",
+    giftText: "+ 3 Free Cold-Pressed Oils",
+    image: "/assets/product_6-2p5_jpg.webp",
   },
   {
     id: 9545149055144,
     variantId: 55812002971816,
     slug: "pure-desi-cow-ghee-5-litre",
-    badge: "🏆 BULK SAVINGS PACK",
-    badgeColor: "bg-[#C38936]",
-    title: "Pure A2 Gir Cow Ghee 5 Litre",
+    title: "Pure A2 Gir Cow Ghee",
     variantTitle: "5 Litre",
-    subtitle: "Bulk Savings • 3 Free Cold-Pressed Oils",
-    size: "5 Litre",
+    size: "5 Litre Bulk Tin",
+    label: "Bulk Heritage Reserve",
     price: 449900,
     compareAtPrice: 1449900,
-    image: "/assets/product_6-5L_jpg.webp"
-  }
+    ratePerLitre: "₹899.80 / L",
+    giftText: "+ 3 Free Cold-Pressed Oils",
+    image: "/assets/product_6-5L_jpg.webp",
+  },
 ];
 
 export default function Bestsellers() {
   const router = useRouter();
-  const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const { open } = useCartDrawer();
+  const [loadingAction, setLoadingAction] = useState<Record<string, "cart" | "buy" | null>>({});
 
-  useEffect(() => {
-    router.prefetch("/checkout");
-  }, [router]);
+  const handleAddToCart = (e: React.MouseEvent, pack: GheePack) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const handleQuickBuy = (p: typeof gheeProducts[0]) => {
-    setLoading(prev => ({ ...prev, ['buy_' + p.id]: true }));
+    setLoadingAction((prev) => ({ ...prev, [pack.slug]: "cart" }));
+
     addToCart({
-      productId: p.id,
-      variantId: p.variantId,
-      slug: p.slug,
-      title: p.title,
-      variantTitle: p.variantTitle,
-      price: p.price,
-      compareAtPrice: p.compareAtPrice,
-      image: p.image
+      productId: pack.id,
+      variantId: pack.variantId,
+      slug: pack.slug,
+      title: `${pack.title} ${pack.variantTitle}`,
+      variantTitle: pack.variantTitle,
+      price: pack.price,
+      image: pack.image,
+      compareAtPrice: pack.compareAtPrice,
+    });
+
+    trackEvent("add_to_cart", {
+      currency: "INR",
+      value: pack.price,
+      items: [
+        {
+          item_id: pack.id,
+          item_name: pack.title,
+          quantity: 1,
+          price: pack.price,
+        },
+      ],
+    });
+
+    toast.success(`Added ${pack.variantTitle} to cart.`);
+    open();
+    setTimeout(() => {
+      setLoadingAction((prev) => ({ ...prev, [pack.slug]: null }));
+    }, 400);
+  };
+
+  const handleBuyNow = (e: React.MouseEvent, pack: GheePack) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setLoadingAction((prev) => ({ ...prev, [pack.slug]: "buy" }));
+
+    addToCart({
+      productId: pack.id,
+      variantId: pack.variantId,
+      slug: pack.slug,
+      title: `${pack.title} ${pack.variantTitle}`,
+      variantTitle: pack.variantTitle,
+      price: pack.price,
+      image: pack.image,
+      compareAtPrice: pack.compareAtPrice,
     });
 
     trackEvent("begin_checkout", {
       currency: "INR",
-      value: p.price,
+      value: pack.price,
     });
 
     router.push("/checkout");
   };
-  
-  const handleAddWithLoading = (p: any) => {
-    handleAddToCart(p);
-  };
-
-  const handleFavorite = (id: number | string) => {
-    toast.success("Added to favorites");
-  };
-
-  const { open } = useCartDrawer();
-
-  const handleAddToCart = (p: typeof gheeProducts[0]) => {
-    addToCart({
-      productId: p.id,
-      variantId: p.variantId,
-      slug: p.slug,
-      title: p.title,
-      variantTitle: p.variantTitle,
-      price: p.price,
-      compareAtPrice: p.compareAtPrice,
-      image: p.image
-    });
-    
-    trackEvent("add_to_cart", {
-      currency: "INR",
-      value: p.price,
-      items: [{
-        item_id: p.id,
-        item_name: p.title,
-        quantity: 1,
-        price: p.price
-      }]
-    });
-
-    const vTitle = (p.variantTitle || p.title || "").toLowerCase();
-    if (vTitle.includes("500")) {
-      toast.success("Added 500ml Ghee to cart. Tip: Upgrade to 1L for complimentary Mustard Oil (250ml)!", { duration: 4000 });
-    } else if (vTitle.includes("2.5")) {
-      toast.success("Added 2.5L Ghee to cart! 3 complimentary Cold-Pressed Oils included!", { duration: 4000 });
-    } else if (vTitle.includes("5 litre") || vTitle.includes("5l")) {
-      toast.success("Added 5L Ghee to cart! 3 complimentary Cold-Pressed Oils (Coconut, Groundnut & Mustard) included!", { duration: 4000 });
-    } else {
-      toast.success("Added 1L Ghee to cart! Complimentary Mustard Oil (250ml) included!", { duration: 4000 });
-    }
-
-    open();
-  };
 
   return (
-    <section className="bg-white overflow-hidden">
-      {/* Top Banner Area */}
-      <div className="relative w-full overflow-hidden bg-[#1a1a1a] min-h-[300px] flex items-center">
-        <div
-          className="absolute inset-0 z-0"
-        >
-          <Image src="/assets/home-shop-bg.jpg" alt="Home Shop Background" fill className="object-cover object-center" />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+    <section className="py-16 md:py-24 bg-[#F8F5EE] border-b border-[#EAE3D7]">
+      <div className="nn-container">
         
-        <div className="nn-container relative z-10 py-12 md:py-16 text-white drop-shadow-md">
-          <div className="flex items-center justify-between">
-            <div
-              className="w-full lg:w-2/3"
-            >
-              <div className="text-sm font-medium text-amber-200 mb-6 tracking-wide drop-shadow-sm flex items-center gap-2">
-                <span>Home &nbsp;&gt;&nbsp; <strong className="text-white">Bestsellers</strong></span>
-                <Sparkles className="w-4 h-4 text-amber-300" />
-              </div>
-              <span className="text-xs font-bold text-amber-300 uppercase tracking-widest mb-3 block drop-shadow-sm">100% PURE VEDIC BILONA GHEE</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%)]">Handcrafted Gir Cow A2 Ghee</h2>
-              <p className="text-amber-50 max-w-xl text-base md:text-lg mb-8 drop-shadow-md font-medium">
-                Small-batch curd-churned golden elixir from indigenous Gir cows. Naturally rich in aroma, golden granules, and gut-friendly nutrients.
-              </p>
-              
-              <div className="flex flex-wrap items-center gap-3">
-                <Link href="/collections/all-products" className="bg-amber-400 text-stone-950 px-6 py-2 rounded-full text-sm font-bold hover:bg-amber-300 transition-colors shadow-lg">All Ghee Packs</Link>
-                <Link href="/collections/ghee" className="bg-black/40 backdrop-blur-md text-amber-200 border border-amber-400/40 px-6 py-2 rounded-full text-sm font-bold hover:bg-black/60 transition-colors shadow-lg">Pure A2 Ghee</Link>
-              </div>
-            </div>
-            
-            <div
-              className="hidden lg:flex lg:w-1/3 justify-end items-center pr-8 xl:pr-12"
-            >
-              <div className="text-amber-200 text-4xl lg:text-5xl font-serif italic font-light leading-tight drop-shadow-lg [text-shadow:_0_4px_12px_rgb(0_0_0_/_80%)] text-right">
-                Pure Ghee <br/> Traditional <br/> Bilona
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Combined Products Section */}
-      <div className="relative w-full overflow-hidden">
-        {/* Background Image with White Vignette Overlay */}
-        <div className="absolute inset-0 z-0">
-          <Image src="/assets/bestsellers-bg.jpg" alt="Products Background" fill className="object-cover object-center" />
-          <div className="absolute inset-0 bg-white/30" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0)_0%,rgba(255,255,255,0.95)_100%)] pointer-events-none" />
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <span className="text-xs font-semibold text-[#78634B] uppercase tracking-widest block mb-2">
+            Pure Desi Cow Ghee
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-3">
+            The Ghee Collection
+          </h2>
+          <p className="text-sm sm:text-base text-[#29251F] leading-relaxed">
+            Thoughtfully crafted for everyday kitchens and family tables. Handcrafted via Vedic Bilona method from pure A2 Gir cow milk.
+          </p>
         </div>
 
-        <div className="relative z-10">
-          {/* Available Now Section */}
-          <div className="py-12 md:py-16">
-            <div className="nn-container">
+        {/* 4-Column Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {GHEE_COLLECTION.map((pack) => {
+            const discount = discountPercent(pack.price, pack.compareAtPrice);
+            const isCartLoading = loadingAction[pack.slug] === "cart";
+            const isBuyLoading = loadingAction[pack.slug] === "buy";
+
+            return (
               <div
-                className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-6"
+                key={pack.slug}
+                className={cn(
+                  "bg-white rounded-2xl border transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:shadow-lg",
+                  pack.isBestseller
+                    ? "border-[#68191D] ring-1 ring-[#68191D]/30"
+                    : "border-[#EAE3D7] hover:border-[#78634B]/50"
+                )}
               >
-                <div>
-                  <div className="flex items-center gap-2 mb-1 text-[#8A1B14] font-bold text-xs uppercase tracking-widest">
-                    <Sparkles className="w-4 h-4 text-[#8A1B14]" />
-                    <span>AUTHENTIC BILONA COLLECTION</span>
+                {/* Product Image Box */}
+                <Link
+                  href={`/products/${pack.slug}`}
+                  className="relative aspect-square w-full bg-[#FAF8F5] block overflow-hidden border-b border-[#EAE3D7]/70"
+                >
+                  <Image
+                    src={pack.image}
+                    alt={`${pack.title} - ${pack.variantTitle}`}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                  />
+
+                  {/* Pack Label Badge */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs",
+                        pack.isBestseller
+                          ? "bg-[#68191D] text-white"
+                          : "bg-[#EAE3D7] text-[#4E1013]"
+                      )}
+                    >
+                      {pack.label}
+                    </span>
                   </div>
-                  <h3 className="font-serif text-3xl font-bold text-[#5E0B10] mb-2 drop-shadow-sm">Pure Desi Gir Cow Ghee Collection</h3>
-                  <p className="text-[#4A352F] font-medium text-sm md:text-base">100% Pure Vedic A2 Gir Cow Ghee with complimentary cold-pressed oils added to every ghee pack!</p>
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-6 bg-white/60 backdrop-blur-md border border-amber-200/60 rounded-2xl p-4 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <Leaf className="w-6 h-6 text-[#8A1B14]" />
-                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">A2 Gir Cow<br/>Milk</span>
-                  </div>
-                  <div className="w-px h-8 bg-amber-200" />
-                  <div className="flex items-center gap-3">
-                    <Droplets className="w-6 h-6 text-[#C38936]" />
-                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">Bilona<br/>Churned</span>
-                  </div>
-                  <div className="w-px h-8 bg-amber-200" />
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-6 h-6 text-[#8A1B14]" />
-                    <span className="text-xs font-bold text-[#5E0B10] leading-tight">Farm Fresh<br/>& Natural</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-              >
-                {gheeProducts.map((p) => (
-                  <div key={p.id} className="bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-amber-200/50 flex flex-col h-full group">
-                    <Link href={`/products/${p.slug}`} className="relative aspect-square w-full bg-[#FCFAF5] p-6 flex items-center justify-center overflow-hidden block">
-                      <Image src={p.image} alt={p.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                      <div className="absolute top-4 left-4 z-10">
-                        <span className={cn("text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-sm", p.badgeColor)}>
-                          {p.badge}
-                        </span>
-                      </div>
-                      <button onClick={(e) => { e.preventDefault(); handleFavorite(p.id); }} className="absolute top-4 right-4 z-10 p-2 text-white hover:text-amber-400 transition-colors drop-shadow-md">
-                        <Heart className="w-6 h-6" />
-                      </button>
+
+                  {/* Discount Pill */}
+                  {discount > 0 && (
+                    <span className="absolute top-3 right-3 bg-white/95 text-[#68191D] border border-[#EAE3D7] text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
+                      {discount}% OFF
+                    </span>
+                  )}
+                </Link>
+
+                {/* Card Content */}
+                <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between text-left">
+                  
+                  <div>
+                    <span className="text-[11px] font-mono font-semibold text-[#78634B] uppercase tracking-wider block mb-1">
+                      {pack.size}
+                    </span>
+                    <Link
+                      href={`/products/${pack.slug}`}
+                      className="font-serif font-bold text-base sm:text-lg text-[#29251F] group-hover:text-[#68191D] transition-colors leading-tight block mb-2"
+                    >
+                      {pack.title} {pack.variantTitle}
                     </Link>
-                    
-                    <div className="p-5 flex flex-col flex-1">
-                      <Link href={`/products/${p.slug}`}>
-                        <h4 className="font-serif font-bold text-lg text-[#5E0B10] mb-1 group-hover:text-[#8A1B14] transition-colors">{p.title}</h4>
-                      </Link>
-                      <p className="text-xs text-[#7A4A3B] mb-4">{p.subtitle}</p>
-                      
-                      <div className="relative mb-4">
-                        <select className="w-full appearance-none bg-white border border-[#EAD7BC] text-[#2A1612] text-sm rounded-md px-3 py-2 pr-8 focus:outline-none focus:border-[#8A1B14] cursor-pointer" defaultValue={p.size}>
-                          <option value={p.size}>{p.size}</option>
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A4A3B] pointer-events-none" />
-                      </div>
-                      
-                      <div className="flex items-baseline gap-2 mb-4 flex-wrap">
-                        <span className="font-extrabold text-2xl text-[#5E0B10]">{formatPrice(p.price)}</span>
-                        {p.compareAtPrice && p.compareAtPrice > p.price && (
-                          <span className="text-sm text-gray-400 line-through font-semibold">
-                            {formatPrice(p.compareAtPrice)}
-                          </span>
-                        )}
-                        {p.compareAtPrice && (
-                          <span className="text-[11px] font-extrabold bg-[#8A1B14] text-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            {Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100)}% OFF
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="mt-auto flex flex-col gap-2">
-                        <button 
-                          onClick={() => handleQuickBuy(p)}
-                          disabled={loading['buy_'+p.id]}
-                          className="w-full bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-95 text-stone-950 rounded-xl py-2.5 flex items-center justify-center gap-2 font-black text-xs sm:text-sm shadow-[0_2px_10px_rgba(245,158,11,0.35)] uppercase border border-amber-300 tracking-wide transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                          {loading['buy_'+p.id] ? <Loader2 className="w-4 h-4 animate-spin text-stone-950" /> : <Zap className="w-4 h-4 fill-stone-950 text-stone-950" />}
-                          {loading['buy_'+p.id] ? "Opening..." : "Quick Checkout"}
-                        </button>
 
-                        <button 
-                          onClick={() => handleAddWithLoading(p)}
-                          disabled={loading['add_'+p.id]}
-                          className="w-full bg-[#FCFAF5] hover:bg-[#8A1B14] text-[#8A1B14] hover:text-white border-2 border-[#8A1B14] rounded-xl py-2 flex items-center justify-center gap-2 active:scale-95 transition-all font-bold text-xs sm:text-sm uppercase shadow-2xs tracking-wide disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                          {loading['add_'+p.id] ? <Loader2 className="w-4 h-4 animate-spin text-current" /> : <ShoppingCart className="w-4 h-4 stroke-[2.2]" />}
-                          {loading['add_'+p.id] ? "Adding..." : "Add to Cart"}
-                        </button>
-                      </div>
+                    {/* Price and Unit Price */}
+                    <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                      <span className="text-xl font-bold font-sans text-[#4E1013]">
+                        {formatPrice(pack.price)}
+                      </span>
+                      {pack.compareAtPrice > pack.price && (
+                        <span className="text-xs text-[#78634B]/70 line-through">
+                          {formatPrice(pack.compareAtPrice)}
+                        </span>
+                      )}
+                      <span className="text-xs font-semibold text-[#42634F] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                        {pack.ratePerLitre}
+                      </span>
                     </div>
+
+                    {/* Gift / Value line */}
+                    <p className="text-[11px] text-[#78634B] flex items-center gap-1.5 mt-2 mb-4 font-medium">
+                      <Gift className="w-3.5 h-3.5 text-[#C5A16B] shrink-0" />
+                      <span>{pack.giftText}</span>
+                    </p>
                   </div>
-                ))}
+
+                  {/* Actions System */}
+                  <div className="flex flex-col gap-2 mt-auto pt-2">
+                    <button
+                      type="button"
+                      onClick={(e) => handleBuyNow(e, pack)}
+                      disabled={isBuyLoading}
+                      className="w-full bg-[#68191D] hover:bg-[#4E1013] active:scale-[0.98] text-white font-semibold text-xs sm:text-sm py-2.5 rounded-xl transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                    >
+                      {isBuyLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Zap className="w-3.5 h-3.5 fill-current shrink-0" />
+                          <span>Buy Now</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => handleAddToCart(e, pack)}
+                      disabled={isCartLoading}
+                      className="w-full bg-white hover:bg-[#FAF8F5] border border-[#EAE3D7] active:scale-[0.98] text-[#29251F] font-semibold text-xs sm:text-sm py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                    >
+                      {isCartLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-[#68191D]" />
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-3.5 h-3.5 text-[#78634B] shrink-0" />
+                          <span>Add to Cart</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                </div>
+
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
+
       </div>
     </section>
   );

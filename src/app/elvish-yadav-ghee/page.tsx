@@ -144,11 +144,11 @@ export default function ElvishYadavPage() {
           },
           {
             "@type": "Question",
-            "name": "Can I pay via Cash on Delivery (COD)?",
+            "name": "What payment methods are supported on the official store?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "Yes, COD is available pan-India. A nominal ₹250 booking advance is collected online to confirm genuine intent, and the remaining balance is paid directly to the courier executive upon doorstep parcel arrival.",
+                "To ensure contactless, tamper-proof logistics and avoid transit delays, Namo Narayana operates exclusively on 100% secure prepaid orders. We support UPI (Google Pay, PhonePe, Paytm, BHIM), all major Credit/Debit Cards, and Net Banking with end-to-end 256-bit SSL encryption.",
             },
           },
         ],

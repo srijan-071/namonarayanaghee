@@ -28,30 +28,30 @@ export default function CertificationsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <div className="bg-[#FAF8F5] min-h-screen pt-28 pb-24">
+      <div className="bg-[#F8F5EE] min-h-screen pt-28 pb-24">
         <div className="nn-container max-w-4xl mx-auto">
           
           {/* Header */}
           <header className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-sm mb-6 border border-[#E5DEC9]">
-              <ShieldCheck className="w-8 h-8 text-[#2D5A37]" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-sm mb-6 border border-[#EAE3D7]">
+              <ShieldCheck className="w-8 h-8 text-[#68191D]" />
             </div>
-            <h1 className="font-serif text-3xl sm:text-5xl text-[#142918] font-bold mb-4">
+            <h1 className="font-serif text-3xl sm:text-5xl text-[#4E1013] font-bold mb-4">
               Quality Certifications &amp; Lab Reports
             </h1>
-            <p className="text-sm sm:text-base text-[#3D4A41] max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-[#29251F] max-w-2xl mx-auto leading-relaxed">
               Quality isn&apos;t a claim &mdash; it&apos;s a paper trail. Every batch of Namo Narayana Pure A2 Gir Cow Ghee is produced in licensed facilities and tested in NABL-accredited laboratories.
             </p>
           </header>
 
           {/* Section 1: Statutory Regulatory License */}
-          <section className="bg-white rounded-3xl border border-[#E5DEC9] p-6 sm:p-10 shadow-sm mb-10">
-            <div className="flex items-center gap-3 border-b border-[#E5DEC9] pb-5 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] flex items-center justify-center text-[#2D5A37]">
+          <section className="bg-white rounded-3xl border border-[#EAE3D7] p-6 sm:p-10 shadow-sm mb-10">
+            <div className="flex items-center gap-3 border-b border-[#EAE3D7] pb-5 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-[#F8F5EE] border border-[#EAE3D7] flex items-center justify-center text-[#68191D]">
                 <FileCheck className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-serif text-xl sm:text-2xl text-[#142918] font-bold">
+                <h2 className="font-serif text-xl sm:text-2xl text-[#4E1013] font-bold">
                   Statutory Food Safety Compliance
                 </h2>
                 <span className="text-xs text-stone-500">
@@ -61,11 +61,11 @@ export default function CertificationsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-xs sm:text-sm">
-              <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[#E5DEC9]">
+              <div className="bg-[#F8F5EE] p-4 rounded-xl border border-[#EAE3D7]">
                 <span className="text-xs text-stone-400 block mb-1 uppercase font-semibold">
                   FSSAI License Number
                 </span>
-                <strong className="text-base font-mono text-[#1E3A24]">
+                <strong className="text-base font-mono text-[#68191D]">
                   20824005000185
                 </strong>
                 <span className="text-xs text-stone-500 block mt-1">
@@ -73,7 +73,7 @@ export default function CertificationsPage() {
                 </span>
               </div>
 
-              <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[#E5DEC9]">
+              <div className="bg-[#F8F5EE] p-4 rounded-xl border border-[#EAE3D7]">
                 <span className="text-xs text-stone-400 block mb-1 uppercase font-semibold">
                   Licensed Product Category
                 </span>
@@ -86,7 +86,7 @@ export default function CertificationsPage() {
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#3D4A41] leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm text-[#29251F] leading-relaxed mb-6">
               Namo Narayana facilities strictly comply with Good Manufacturing Practices (GMP) and statutory hygiene mandates stipulated under the Food Safety and Standards (Food Business Operators) Regulations. Consumers may verify licensing status anytime via the national FoSCoS portal.
             </p>
 
@@ -94,7 +94,7 @@ export default function CertificationsPage() {
               href="https://foscos.fssai.gov.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-bold text-[#1E3A24] hover:text-[#2D5A37] underline underline-offset-4"
+              className="inline-flex items-center gap-2 text-xs font-bold text-[#68191D] hover:text-[#68191D] underline underline-offset-4"
             >
               <span>Verify on Official FSSAI FoSCoS Portal</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -102,13 +102,13 @@ export default function CertificationsPage() {
           </section>
 
           {/* Section 2: Laboratory Test Report */}
-          <section className="bg-white rounded-3xl border border-[#E5DEC9] p-6 sm:p-10 shadow-sm mb-10">
-            <div className="flex items-center gap-3 border-b border-[#E5DEC9] pb-5 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#E5DEC9] flex items-center justify-center text-[#2D5A37]">
+          <section className="bg-white rounded-3xl border border-[#EAE3D7] p-6 sm:p-10 shadow-sm mb-10">
+            <div className="flex items-center gap-3 border-b border-[#EAE3D7] pb-5 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-[#F8F5EE] border border-[#EAE3D7] flex items-center justify-center text-[#68191D]">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-serif text-xl sm:text-2xl text-[#142918] font-bold">
+                <h2 className="font-serif text-xl sm:text-2xl text-[#4E1013] font-bold">
                   Accredited Laboratory Analysis Report
                 </h2>
                 <span className="text-xs text-stone-500">
@@ -118,20 +118,20 @@ export default function CertificationsPage() {
             </div>
 
             {/* Meta tags */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-xs text-[#3D4A41]">
-              <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E5DEC9]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-xs text-[#29251F]">
+              <div className="bg-[#F8F5EE] p-3 rounded-xl border border-[#EAE3D7]">
                 <span className="text-[10px] text-stone-400 block uppercase">Laboratory</span>
                 <strong className="text-stone-800">FARE Labs (Gurugram)</strong>
               </div>
-              <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E5DEC9]">
+              <div className="bg-[#F8F5EE] p-3 rounded-xl border border-[#EAE3D7]">
                 <span className="text-[10px] text-stone-400 block uppercase">Report ULR</span>
                 <strong className="text-stone-800 font-mono">TC550326100005189F</strong>
               </div>
-              <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E5DEC9]">
+              <div className="bg-[#F8F5EE] p-3 rounded-xl border border-[#EAE3D7]">
                 <span className="text-[10px] text-stone-400 block uppercase">Sample / Batch</span>
                 <strong className="text-stone-800">NMO-260722-A01</strong>
               </div>
-              <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E5DEC9]">
+              <div className="bg-[#F8F5EE] p-3 rounded-xl border border-[#EAE3D7]">
                 <span className="text-[10px] text-stone-400 block uppercase">Tested Period</span>
                 <strong className="text-stone-800">23 &ndash; 28 July 2026</strong>
               </div>
@@ -141,7 +141,7 @@ export default function CertificationsPage() {
             <div className="overflow-x-auto mb-6">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#E5DEC9] bg-[#FAF8F5] text-[#142918]">
+                  <tr className="border-b border-[#EAE3D7] bg-[#F8F5EE] text-[#4E1013]">
                     <th className="py-2.5 px-3 font-bold">Tested Parameter</th>
                     <th className="py-2.5 px-3 font-bold">Observed Value</th>
                     <th className="py-2.5 px-3 font-bold">FSSR 2011 Standard</th>
@@ -149,7 +149,7 @@ export default function CertificationsPage() {
                     <th className="py-2.5 px-3 font-bold text-right">Result</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5DEC9]/60 text-[#3D4A41]">
+                <tbody className="divide-y divide-[#EAE3D7]/60 text-[#29251F]">
                   <tr>
                     <td className="py-2.5 px-3 font-medium text-stone-900">Total Milk Fat %</td>
                     <td className="py-2.5 px-3 font-bold text-emerald-800">99.88%</td>
@@ -190,9 +190,9 @@ export default function CertificationsPage() {
             </div>
 
             {/* Download CTA */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DEC9]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#F8F5EE] border border-[#EAE3D7]">
               <div>
-                <strong className="text-xs sm:text-sm text-[#142918] block">
+                <strong className="text-xs sm:text-sm text-[#4E1013] block">
                   Original FARE Labs Test Certificate (Batch NMO-260722-A01)
                 </strong>
                 <span className="text-[11px] text-stone-500">
@@ -203,7 +203,7 @@ export default function CertificationsPage() {
                 href="/media/o_f20260715-011-015_2_25449c.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-[#1E3A24] hover:bg-[#142918] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition-all shadow-2xs shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 bg-[#68191D] hover:bg-[#4E1013] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition-all shadow-2xs shrink-0 cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 <span>Download PDF Report</span>
@@ -221,11 +221,11 @@ export default function CertificationsPage() {
           </section>
 
           {/* Certificate Image Preview */}
-          <section className="bg-white rounded-3xl border border-[#E5DEC9] p-6 sm:p-10 shadow-sm text-center">
-            <h3 className="font-serif text-lg font-bold text-[#142918] mb-4">
+          <section className="bg-white rounded-3xl border border-[#EAE3D7] p-6 sm:p-10 shadow-sm text-center">
+            <h3 className="font-serif text-lg font-bold text-[#4E1013] mb-4">
               Scanned FARE Labs Laboratory Certificate
             </h3>
-            <div className="relative max-w-xl mx-auto aspect-[3/4] rounded-2xl overflow-hidden border border-[#E5DEC9] shadow-md bg-stone-50">
+            <div className="relative max-w-xl mx-auto aspect-[3/4] rounded-2xl overflow-hidden border border-[#EAE3D7] shadow-md bg-stone-50">
               <Image
                 src="/media/IMG-20260728-WA0131_jpg_b04570c5-92c7-4348-90a9-11972108ad9b_7f6e93.webp"
                 alt="FARE Labs Certificate of Analysis - Namo Narayana Gir Cow Ghee"

@@ -6,48 +6,45 @@
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-serif: var(--font-serif), Georgia, serif;
 
-  /* Premium Indian Food Editorial Palette (Warm Ivory / Forest Green / Muted Brass) */
-  --color-nn-forest:       #1E3A24;
-  --color-nn-forest-deep:  #142918;
-  --color-nn-forest-dark:  #0D1C10;
-  
-  /* Warm Ivory / Light Oat Canvas */
-  --color-nn-ivory:        #FFFDF8;
-  --color-nn-cream:        #FAF7F0;
-  --color-nn-beige:        #F2ECE0;
-  
-  /* Earth */
-  --color-nn-earth:        #6E5338;
-  --color-nn-earth-light:  #9B7E58;
-  
-  /* Muted Brass / Turmeric Accent */
-  --color-nn-gold:         #C99A3D;
-  --color-nn-saffron:      #D48B28;
-  --color-nn-leaf:         #2D5A37;
-  
-  /* Warm Subtle Accent */
-  --color-nn-sage:         #507A5A;
+  /* Modern Indian Heritage Luxury Palette */
+  --color-nn-maroon:       #68191D;
+  --color-nn-deep-maroon:  #4E1013;
+  --color-nn-ivory:        #F8F5EE;
+  --color-nn-gold:         #C5A16B;
+  --color-nn-charcoal:     #29251F;
+  --color-nn-brown:        #78634B;
+  --color-nn-sandstone:    #EAE3D7;
+  --color-nn-white:        #FFFFFF;
+  --color-nn-green:        #42634F;
 
-  /* Core UI - Ink & Charcoal */
-  --color-nn-ink:          #1C241F;
-  --color-nn-bark:         #3D4A41;
-  --color-nn-hairline:     #E5DEC9;
-  --color-nn-bg:           #FAF8F5;
+  /* Semantic Aliases */
+  --color-nn-forest:       #68191D;
+  --color-nn-forest-deep:  #4E1013;
+  --color-nn-forest-dark:  #380A0D;
+  
+  --color-nn-cream:        #F8F5EE;
+  --color-nn-beige:        #EAE3D7;
+  
+  --color-nn-earth:        #78634B;
+  --color-nn-earth-light:  #A3896D;
+  
+  --color-nn-saffron:      #C5A16B;
+  --color-nn-leaf:         #42634F;
+  --color-nn-sage:         #42634F;
+
+  --color-nn-ink:          #29251F;
+  --color-nn-bark:         #78634B;
+  --color-nn-hairline:     #EAE3D7;
+  --color-nn-bg:           #F8F5EE;
 
   --radius-card: 16px;
   --radius-btn:  8px;
   --radius-pill: 9999px;
 
-  --shadow-card:       0 4px 14px rgba(94, 11, 16, 0.05);
-  --shadow-card-hover: 0 16px 32px rgba(94, 11, 16, 0.12);
-  --shadow-glow:       0 0 40px rgba(245, 189, 71, 0.3);
+  --shadow-card:       0 4px 14px rgba(78, 16, 19, 0.05);
+  --shadow-card-hover: 0 16px 32px rgba(78, 16, 19, 0.10);
+  --shadow-glow:       0 0 30px rgba(197, 161, 107, 0.25);
 
-  /* Diwali Festive Palette */
-  --color-diwali-gold:      #F5BD47;
-  --color-diwali-amber:     #F39C12;
-  --color-diwali-deepgold:  #C48B28;
-  --color-diwali-red:       #8A1B14;
-  --color-diwali-maroon:    #5E0B10;
   --color-diwali-flame:     #FFB703;
   --color-diwali-cream:     #FFFDF7;
 }
@@ -64,8 +61,8 @@
   }
 
   ::selection {
-    background-color: #1E3A24;
-    color: #FFFDF8;
+    background-color: #68191D;
+    color: #F8F5EE;
   }
 }
 

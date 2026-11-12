@@ -46,7 +46,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webSchema) }}
       />
-      <main className="flex flex-col w-full overflow-hidden bg-[#FAF8F5]">
+      <main className="flex flex-col w-full overflow-hidden bg-[#F8F5EE]">
         {/* 02. Hero / Above the Fold */}
         <Hero />
 

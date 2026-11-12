@@ -141,20 +141,20 @@ export default function PriceBuyingGuidePage() {
           },
           {
             "@type": "Question",
-            "name": "How does Cash on Delivery (COD) work on the official store?",
+            "name": "Why does Namo Narayana operate exclusively on prepaid orders?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "To eliminate automated bot orders and reduce parcel transit rejections, Cash on Delivery requires a nominal ₹250 booking advance paid online at checkout. The remaining balance is paid directly to the courier executive upon physical delivery at your doorstep.",
+                "To protect our glass jar packaging, guarantee temperature-controlled priority transit, and prevent courier transit rejections, all orders are 100% prepaid. This allows us to offer complimentary express shipping across India and an additional instant prepaid discount at checkout.",
             },
           },
           {
             "@type": "Question",
-            "name": "Can I convert my COD order to prepaid later for a discount?",
+            "name": "What secure payment methods are accepted at checkout?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "Yes! When you track your order on the /track-order page, if your order is confirmed via COD, you can choose to prepay the remaining balance before it reaches your city. Doing so completely waives the ₹250 COD handling fee and provides an additional 10% discount on the remaining payment.",
+                "We accept all major secure payment options: UPI (Google Pay, PhonePe, Paytm, BHIM), Credit Cards, Debit Cards, and Net Banking protected with 256-bit bank-grade SSL encryption.",
             },
           },
           {

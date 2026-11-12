@@ -11,15 +11,15 @@ interface FAQItem {
 const FAQS: FAQItem[] = [
   {
     q: "How do I know this is the authentic official website for Namo Narayana?",
-    a: "The only legitimate official website for Namo Narayana Ghee is https://www.namonarayanaghee.store/. Every authentic shipment features statutory FSSAI License No. 20824005000185, tamper-evident security seals, and direct batch tracing. Beware of unauthorized imitators or third-party clones.",
+    a: "The only legitimate official website for Namo Narayana Ghee is https://www.namonarayanaghee.store/. Every authentic shipment features statutory FSSAI License No. 20824005000185, tamper-evident security packaging, and batch tracking. Beware of unauthorized imitators or third-party clones.",
   },
   {
     q: "What makes Bilona ghee different from regular cream-based commercial ghee?",
     a: "Commercial ghee is produced rapidly by separating raw cream directly from milk using high-speed industrial centrifuges. Authentic Bilona ghee follows the ancient Ayurvedic 5-step process: fresh milk is boiled, cultured overnight into curd, and hand-churned bi-directionally in a wooden bilona to separate cultured makkhan (butter), which is then gently clarified over a low flame. This preserves the natural danedar texture and distinct nutty aroma.",
   },
   {
-    q: "How does Cash on Delivery (COD) work on this store?",
-    a: "To protect our gaushala dispatch operations from fraudulent unverified orders and high courier return-to-origin (RTO) costs, Cash on Delivery requires a standard ₹250 online advance booking deposit. The remaining balance is collected conveniently via Cash or UPI at your doorstep when the delivery arrives.",
+    q: "Why is Namo Narayana exclusively a Prepaid-Only store?",
+    a: "To eliminate transit delays and ensure delicate glass jars of batch-fresh Vedic Bilona ghee are never left idling in courier hubs due to unverified bookings, we process 100% secure prepaid orders only. Payments are encrypted and processed seamlessly via all major UPI applications (Google Pay, PhonePe, Paytm), Debit/Credit Cards, and Net Banking with free express courier dispatch across India.",
   },
   {
     q: "What are the verified laboratory test results for this ghee?",
@@ -47,22 +47,22 @@ export default function HomeFAQ() {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-white border-b border-[#E5DEC9]">
+    <section className="py-16 md:py-24 bg-white border-b border-[#EAE3D7]">
       <div className="nn-container max-w-4xl mx-auto">
         
         <div className="text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#2D5A37] block mb-2">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[#78634B] block mb-2">
             Clear Answers
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#142918] font-bold mb-3">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-sm sm:text-base text-[#3D4A41]">
+          <p className="text-sm sm:text-base text-[#29251F]">
             Everything you need to know about our sourcing, bilona method, lab reports, and delivery.
           </p>
         </div>
 
-        <div className="divide-y divide-[#E5DEC9] border-y border-[#E5DEC9]">
+        <div className="divide-y divide-[#EAE3D7] border-y border-[#EAE3D7]">
           {FAQS.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
@@ -70,18 +70,18 @@ export default function HomeFAQ() {
                 <button
                   type="button"
                   onClick={() => toggleFAQ(i)}
-                  className="w-full flex items-center justify-between text-left font-serif font-bold text-base sm:text-lg text-[#142918] hover:text-[#2D5A37] transition-colors gap-4 cursor-pointer"
+                  className="w-full flex items-center justify-between text-left font-serif font-bold text-base sm:text-lg text-[#29251F] hover:text-[#68191D] transition-colors gap-4 cursor-pointer"
                   aria-expanded={isOpen}
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#2D5A37] shrink-0 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-[#68191D] shrink-0 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <p className="mt-3 text-xs sm:text-sm text-[#3D4A41] leading-relaxed">
+                  <p className="mt-3 text-xs sm:text-sm text-[#29251F] leading-relaxed">
                     {faq.a}
                   </p>
                 )}

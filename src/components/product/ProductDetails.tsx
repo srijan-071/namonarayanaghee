@@ -287,7 +287,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           const po = data[0].PostOffice[0];
           const city = po.District || po.Block || "Your Area";
           const state = po.State || "";
-          const statusText = `Delivery available to ${city}${state ? `, ${state}` : ""} · COD available (3–5 days).`;
+          const statusText = `Delivery available to ${city}${state ? `, ${state}` : ""} · Free express shipping (3–5 days).`;
           setPinStatus("success");
           setPinMessage(statusText);
           trackAdLeadAction("pincode_checked", {
@@ -303,7 +303,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
     // Graceful non-blocking fallback
     setPinStatus("fallback");
-    setPinMessage("Delivery available pan-India · COD available (3–5 days).");
+    setPinMessage("Delivery available pan-India · Free express shipping (3–5 days).");
   };
 
   // Diwali Reward Promotion
@@ -625,9 +625,9 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                 <Check className="w-3.5 h-3.5 text-[#16794B]" /> Free Pan-India Delivery
               </span>
               <span>•</span>
-              <span className="font-medium text-[#24211E]">Cash on Delivery Available</span>
+              <span className="font-medium text-[#24211E]">🔒 100% Secure Prepaid Orders</span>
               <span>•</span>
-              <span className="text-emerald-700 font-medium">Extra ₹100 OFF on Prepaid</span>
+              <span className="text-emerald-700 font-medium">Extra 10% OFF with code NAMO10</span>
             </div>
           </div>
 
@@ -830,7 +830,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
             <div className="pt-2 border-t border-[#E9E3D9]/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#77716A]">
               <div className="flex items-center gap-1.5 font-medium text-[#142918]">
                 <Truck className="w-3.5 h-3.5 text-[#1E3A24]" />
-                <span>Cash on Delivery &amp; Instant UPI Available</span>
+                <span>100% Secure Prepaid &amp; Instant UPI Available</span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap justify-center">
                 <div className="h-4 px-1.5 py-0.5 bg-white rounded border border-[#E9E3D9] flex items-center justify-center">

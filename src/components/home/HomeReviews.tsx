@@ -9,17 +9,17 @@ export default function HomeReviews() {
   const reviews = (PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"] || []).slice(0, 3);
 
   return (
-    <section className="py-16 md:py-24 bg-[#FAF8F5] border-b border-[#E5DEC9]">
+    <section className="py-16 md:py-24 bg-[#F8F5EE] border-b border-[#EAE3D7]">
       <div className="nn-container">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#2D5A37] block mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#68191D] block mb-2">
             Verified Experiences
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#142918] font-bold mb-4">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-4">
             Loved Across Indian Homes
           </h2>
-          <p className="text-sm sm:text-base text-[#3D4A41] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#29251F] leading-relaxed">
             Honest feedback from customers who use Namo Narayana Pure A2 Gir Cow Ghee for daily cooking, pooja rituals, and family wellness.
           </p>
         </div>
@@ -28,7 +28,7 @@ export default function HomeReviews() {
           {reviews.map((rev) => (
             <div
               key={rev.id}
-              className="bg-white p-6 rounded-2xl border border-[#E5DEC9] shadow-2xs flex flex-col justify-between"
+              className="bg-white p-6 rounded-2xl border border-[#EAE3D7] shadow-2xs flex flex-col justify-between"
             >
               <div>
                 {/* Rating Stars */}
@@ -37,21 +37,21 @@ export default function HomeReviews() {
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < rev.rating ? "text-[#C99A3D] fill-[#C99A3D]" : "text-stone-300"
+                        i < rev.rating ? "text-[#C5A16B] fill-[#C5A16B]" : "text-stone-300"
                       }`}
                     />
                   ))}
                 </div>
                 
                 {/* Review Body */}
-                <p className="text-xs sm:text-sm text-[#3D4A41] leading-relaxed italic mb-4">
+                <p className="text-xs sm:text-sm text-[#29251F] leading-relaxed italic mb-4">
                   &ldquo;{rev.content}&rdquo;
                 </p>
               </div>
 
-              <div className="border-t border-[#E5DEC9]/60 pt-3 flex items-center justify-between text-xs">
+              <div className="border-t border-[#EAE3D7]/60 pt-3 flex items-center justify-between text-xs">
                 <div>
-                  <strong className="text-[#142918] block">{rev.author}</strong>
+                  <strong className="text-[#4E1013] block">{rev.author}</strong>
                   <span className="text-[11px] text-stone-400">{rev.date}</span>
                 </div>
                 {rev.verified && (
@@ -68,7 +68,7 @@ export default function HomeReviews() {
         <div className="text-center">
           <Link
             href="/products/pure-desi-cow-ghee-1-litre#product-reviews-section"
-            className="text-xs sm:text-sm font-semibold text-[#1E3A24] hover:text-[#2D5A37] underline underline-offset-4"
+            className="text-xs sm:text-sm font-semibold text-[#68191D] hover:text-[#68191D] underline underline-offset-4"
           >
             Read all customer reviews on the flagship 1 Litre pack →
           </Link>
@@ -78,3 +78,4 @@ export default function HomeReviews() {
     </section>
   );
 }
+

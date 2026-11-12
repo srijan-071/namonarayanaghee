@@ -118,8 +118,8 @@ const FAQS = [
     a: "Always ensure your web browser is on https://www.namonarayanaghee.store/. Do not place orders via unverified third-party websites or informal social media payment links. Every authentic parcel is shipped with tamper-evident holographic seals and FSSAI Lic. No. 20824005000185.",
   },
   {
-    q: "Can I pay via Cash on Delivery (COD)?",
-    a: "Yes, COD is available pan-India. A nominal ₹250 booking advance is collected online to confirm genuine intent, and the remaining balance is paid directly to the courier executive upon doorstep parcel arrival.",
+    q: "What payment methods are supported on the official store?",
+    a: "To ensure contactless, tamper-proof logistics and avoid transit delays, Namo Narayana operates exclusively on 100% secure prepaid orders. We support UPI (Google Pay, PhonePe, Paytm, BHIM), all major Credit/Debit Cards, and Net Banking with end-to-end 256-bit SSL encryption.",
   },
 ];
 
