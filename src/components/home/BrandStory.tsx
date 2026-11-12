@@ -14,11 +14,11 @@ export default function BrandStory() {
           <div
             className="relative bg-[#E9DFD1] rounded-[2rem] overflow-hidden p-8 md:p-12 pb-0 flex flex-col min-h-[500px] z-10"
           >
-            <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em] mb-4 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#8A1B14]" />
+            <span className="text-[11px] font-bold text-[#2D5A37] uppercase tracking-[0.2em] mb-4 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#2D5A37]" />
               <span>VEDIC BILONA METHOD • OUR SIGNATURE</span>
             </span>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#5E0B10] mb-3">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#142918] mb-3">
               100% Pure A2 Gir Cow Ghee
             </h2>
             <p className="text-[#4A352F] text-lg mb-8">
@@ -27,44 +27,44 @@ export default function BrandStory() {
             
             <div className="space-y-4 relative z-20 w-full sm:w-2/3 mb-10">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#8A1B14]/40 bg-amber-50 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-4 h-4 text-[#8A1B14]" />
+                <div className="w-8 h-8 rounded-full border border-[#2D5A37]/40 bg-amber-50 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-[#2D5A37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">Vedic Danedar Texture</h4>
+                  <h4 className="font-bold text-[#142918] text-sm">Vedic Danedar Texture</h4>
                   <p className="text-xs text-[#7A4A3B]">Golden, grainy texture with rich nutty aroma</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#8A1B14]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
-                  <Leaf className="w-4 h-4 text-[#8A1B14]" />
+                <div className="w-8 h-8 rounded-full border border-[#2D5A37]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
+                  <Leaf className="w-4 h-4 text-[#2D5A37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">No Preservatives &amp; Chemicals</h4>
+                  <h4 className="font-bold text-[#142918] text-sm">No Preservatives &amp; Chemicals</h4>
                   <p className="text-xs text-[#7A4A3B]">Zero adulteration — just pure goodness</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#8A1B14]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
-                  <Heart className="w-4 h-4 text-[#8A1B14]" />
+                <div className="w-8 h-8 rounded-full border border-[#2D5A37]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
+                  <Heart className="w-4 h-4 text-[#2D5A37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">Rich Aroma for Daily Cooking</h4>
+                  <h4 className="font-bold text-[#142918] text-sm">Rich Aroma for Daily Cooking</h4>
                   <p className="text-xs text-[#7A4A3B]">Elevates dal, rotis, parathas &amp; traditional sweets</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#8A1B14]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
-                  <Droplets className="w-4 h-4 text-[#8A1B14]" />
+                <div className="w-8 h-8 rounded-full border border-[#2D5A37]/30 bg-amber-50/50 flex items-center justify-center shrink-0">
+                  <Droplets className="w-4 h-4 text-[#2D5A37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#5E0B10] text-sm">Traditional Vedic Bilona</h4>
-                  <p className="text-xs text-[#7A4A3B]">Hand-churned makhana from whole milk curd</p>
+                  <h4 className="font-bold text-[#142918] text-sm">Traditional Vedic Bilona</h4>
+                  <p className="text-xs text-[#7A4A3B]">Hand-churned makkhan from whole milk curd</p>
                 </div>
               </div>
             </div>
 
-            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#68140E] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
+            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#2D5A37] hover:bg-[#68140E] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
               <Sparkles className="w-4 h-4" />
               <span>Explore A2 Gir Cow Ghee</span>
               <ArrowRight className="w-4 h-4" />
@@ -89,7 +89,7 @@ export default function BrandStory() {
                     <textPath href="#curve">BILONA CHURNED • A2 GIR COW MILK •</textPath>
                   </text>
                 </svg>
-                <Droplets className="w-8 h-8 text-[#8A1B14]" />
+                <Droplets className="w-8 h-8 text-[#2D5A37]" />
               </div>
               <div className="text-[#4A352F] text-2xl font-serif italic font-light drop-shadow-sm rotate-[-5deg] mt-6 text-center">
                 Same<br/>Tradition<br/>Newer<br/>Generations
@@ -102,7 +102,7 @@ export default function BrandStory() {
             className="flex flex-col justify-center px-4 lg:px-0"
           >
             <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4">Our Story</span>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-[#5E0B10] mb-6 leading-tight">
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-[#142918] mb-6 leading-tight">
               Rooted in pure tradition.<br/>The Official Store.
             </h2>
             <div className="space-y-5 text-[#4A352F] leading-relaxed mb-10 text-sm md:text-base">
@@ -110,35 +110,35 @@ export default function BrandStory() {
                 At Namo Narayana, we believe that true nourishment begins at the source. Our journey started with a simple vision: to bring back the authentic, unadulterated goodness of traditional Indian foods to modern homes. This is the <strong>only official Namo Narayana store</strong>, proudly launched by Elvish Yadav.
               </p>
               <p>
-                Every jar of our A2 Gir Cow Ghee is crafted using the ancient Vedic Bilona method, ensuring that the vital nutrients, natural aroma, and healing properties are preserved &mdash; just as nature intended.
+                Every jar of our A2 Gir Cow Ghee is crafted using the ancient Vedic Bilona method, ensuring that the vital nutrients, natural aroma, and rich danedar texture are preserved &mdash; just as nature intended.
               </p>
             </div>
             
             <div className="grid grid-cols-4 gap-2 border-y border-[#EAD7BC] py-8 mb-10">
               <div className="flex flex-col items-center text-center">
-                <Hexagon className="w-8 h-8 text-[#8A1B14] mb-3" />
-                <h5 className="font-bold text-[#5E0B10] text-xs mb-1">A2 Gir Cows</h5>
+                <Hexagon className="w-8 h-8 text-[#2D5A37] mb-3" />
+                <h5 className="font-bold text-[#142918] text-xs mb-1">A2 Gir Cows</h5>
                 <p className="text-[10px] text-[#7A4A3B]">Ethically Raised</p>
               </div>
               <div className="flex flex-col items-center text-center">
-                <Leaf className="w-8 h-8 text-[#8A1B14] mb-3" />
-                <h5 className="font-bold text-[#5E0B10] text-xs mb-1">Chemical Free</h5>
+                <Leaf className="w-8 h-8 text-[#2D5A37] mb-3" />
+                <h5 className="font-bold text-[#142918] text-xs mb-1">Chemical Free</h5>
                 <p className="text-[10px] text-[#7A4A3B]">Farming</p>
               </div>
               <div className="flex flex-col items-center text-center">
-                <Heart className="w-8 h-8 text-[#8A1B14] mb-3" />
-                <h5 className="font-bold text-[#5E0B10] text-xs mb-1">Tradition</h5>
+                <Heart className="w-8 h-8 text-[#2D5A37] mb-3" />
+                <h5 className="font-bold text-[#142918] text-xs mb-1">Tradition</h5>
                 <p className="text-[10px] text-[#7A4A3B]">Backed by Ayurveda</p>
               </div>
               <div className="flex flex-col items-center text-center">
-                <Users className="w-8 h-8 text-[#8A1B14] mb-3" />
-                <h5 className="font-bold text-[#5E0B10] text-xs mb-1">For Healthier</h5>
+                <Users className="w-8 h-8 text-[#2D5A37] mb-3" />
+                <h5 className="font-bold text-[#142918] text-xs mb-1">For Healthier</h5>
                 <p className="text-[10px] text-[#7A4A3B]">Generations</p>
               </div>
             </div>
 
             <div>
-              <Link href="/pages/our-story" className="inline-flex items-center justify-center gap-2 bg-transparent text-[#8A1B14] border border-[#8A1B14] rounded-lg px-6 py-2.5 font-medium text-sm hover:bg-[#8A1B14] hover:text-white transition-all w-max shadow-sm">
+              <Link href="/pages/our-story" className="inline-flex items-center justify-center gap-2 bg-transparent text-[#2D5A37] border border-[#2D5A37] rounded-lg px-6 py-2.5 font-medium text-sm hover:bg-[#2D5A37] hover:text-white transition-all w-max shadow-sm">
                 Our Complete Story
                 <ArrowRight className="w-4 h-4" />
               </Link>

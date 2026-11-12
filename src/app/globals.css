@@ -6,33 +6,33 @@
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-serif: var(--font-serif), Georgia, serif;
 
-  /* Diwali Royal Festive Palette (replaces green) */
-  --color-nn-forest:       #8A1B14;
-  --color-nn-forest-deep:  #5E0B10;
-  --color-nn-forest-dark:  #6E0D14;
+  /* Premium Indian Food Editorial Palette (Warm Ivory / Forest Green / Muted Brass) */
+  --color-nn-forest:       #1E3A24;
+  --color-nn-forest-deep:  #142918;
+  --color-nn-forest-dark:  #0D1C10;
   
-  /* Cream / Festive Ivory */
-  --color-nn-ivory:        #FFFDF7;
-  --color-nn-cream:        #FBF5E8;
-  --color-nn-beige:        #F3E7D3;
+  /* Warm Ivory / Light Oat Canvas */
+  --color-nn-ivory:        #FFFDF8;
+  --color-nn-cream:        #FAF7F0;
+  --color-nn-beige:        #F2ECE0;
   
   /* Earth */
-  --color-nn-earth:        #7A4B2A;
-  --color-nn-earth-light:  #A87845;
+  --color-nn-earth:        #6E5338;
+  --color-nn-earth-light:  #9B7E58;
   
-  /* Gold / Amber / Flame Accent */
-  --color-nn-gold:         #D4A017;
-  --color-nn-saffron:      #E67E22;
-  --color-nn-leaf:         #C48B28;
+  /* Muted Brass / Turmeric Accent */
+  --color-nn-gold:         #C99A3D;
+  --color-nn-saffron:      #D48B28;
+  --color-nn-leaf:         #2D5A37;
   
   /* Warm Subtle Accent */
-  --color-nn-sage:         #D4A017;
+  --color-nn-sage:         #507A5A;
 
-  /* Core UI - Warm Festive */
-  --color-nn-ink:          #231714;
-  --color-nn-bark:         #4A352F;
-  --color-nn-hairline:     #EAD7BC;
-  --color-nn-bg:           #FCFAF5;
+  /* Core UI - Ink & Charcoal */
+  --color-nn-ink:          #1C241F;
+  --color-nn-bark:         #3D4A41;
+  --color-nn-hairline:     #E5DEC9;
+  --color-nn-bg:           #FAF8F5;
 
   --radius-card: 16px;
   --radius-btn:  8px;
@@ -64,8 +64,8 @@
   }
 
   ::selection {
-    background-color: #8A1B14;
-    color: #FFFDF7;
+    background-color: #1E3A24;
+    color: #FFFDF8;
   }
 }
 

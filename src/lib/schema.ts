@@ -5,11 +5,22 @@ import { absoluteUrl } from "./seo";
 export function generateOrganizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "OnlineStore",
     "@id": `${siteConfig.url}/#organization`,
-    name: siteConfig.name,
+    name: "Namo Narayana",
+    legalName: "Namo Narayana",
     url: siteConfig.url,
-    logo: absoluteUrl("/assets/logo.png"), // ensure we have a logo
+    logo: absoluteUrl("/assets/logo.png"),
+    email: "support@namonarayanaghee.store",
+    telephone: "+91-89300-88005",
+    description: "Official online store of Namo Narayana Pure A2 Gir Cow Ghee, handcrafted using traditional Vedic Bilona method.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Gurugram",
+      addressRegion: "Haryana",
+      postalCode: "122002",
+      addressCountry: "IN",
+    },
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+91-89300-88005",
@@ -17,6 +28,7 @@ export function generateOrganizationSchema() {
       availableLanguage: ["en", "hi"],
     },
     sameAs: [
+      "https://www.youtube.com/@NamoNarayanaOfficial",
       "https://www.instagram.com/namonarayanaghee/",
       "https://www.facebook.com/namonarayanaghee/"
     ],
@@ -126,7 +138,10 @@ export function generateProductSchema(product: Product) {
     schema.gtin = product.gtin;
   }
   
-  if (product.rating && product.reviews && product.reviews.length > 0) {
+  // NOTE: Review schema is deliberately gated per Technical SEO Spec Section 7 & Release Checklist
+  // until review provenance and platform integration pass audit, preventing Google rich-result penalties.
+  const ENABLE_REVIEW_SCHEMA = false;
+  if (ENABLE_REVIEW_SCHEMA && product.rating && product.reviews && product.reviews.length > 0) {
     schema.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: product.rating.value.toString(),

@@ -331,7 +331,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
     <div className="pb-28 lg:pb-12 text-[#24211E]">
 
       {/* DIWALI PROMO BANNER */}
-      <div className="mb-6 bg-gradient-to-r from-[#8A1B14] to-[#4E1013] rounded-2xl p-4 sm:p-5 text-white flex items-center justify-between shadow-lg">
+      <div className="mb-6 bg-gradient-to-r from-[#8A1B14] to-[#142918] rounded-2xl p-4 sm:p-5 text-white flex items-center justify-between shadow-lg">
         <div>
           <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
             <Sparkles className="text-[#D6A53B]" /> Diwali Special Reward
@@ -379,7 +379,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
             {/* Restrained Single Image Overlay (Section 4, Section C) */}
             <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-              <span className="bg-[#4E1013]/90 backdrop-blur-xs text-[#FAF8F2] text-[11px] font-semibold px-2.5 py-1 rounded-md shadow-2xs border border-[#701619]/40">
+              <span className="bg-[#142918]/90 backdrop-blur-xs text-[#FAF8F2] text-[11px] font-semibold px-2.5 py-1 rounded-md shadow-2xs border border-[#1E3A24]/40">
                 Traditional Bilona
               </span>
             </div>
@@ -438,7 +438,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                   onClick={() => setSelectedImage(i)}
                   className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden bg-[#FAF8F2] border transition-all cursor-pointer shrink-0 ${
                     i === selectedImage
-                      ? "border-[#701619] ring-2 ring-[#701619]/25 opacity-100 shadow-2xs"
+                      ? "border-[#1E3A24] ring-2 ring-[#1E3A24]/25 opacity-100 shadow-2xs"
                       : "border-[#E9E3D9] hover:border-stone-400 opacity-70 hover:opacity-100"
                   }`}
                   aria-label={`View photo ${i + 1}`}
@@ -458,13 +458,13 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
             <span className="text-[11px] font-semibold tracking-wider uppercase text-[#77716A]">
               Pure Desi Vedic Cow Ghee
             </span>
-            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-[#4E1013] leading-tight">
+            <h1 className="font-serif font-bold text-2xl sm:text-3xl text-[#142918] leading-tight">
               {product.title}
             </h1>
 
             {/* Official Store Indicator & Reviews */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-1 text-xs">
-              <span className="inline-flex items-center gap-1 text-[#4E1013] font-semibold">
+              <span className="inline-flex items-center gap-1 text-[#142918] font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Official Store by Elvish Yadav</span>
               </span>
@@ -475,7 +475,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                   const el = document.getElementById("product-reviews-section");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="inline-flex items-center gap-1.5 text-[#24211E] hover:text-[#701619] transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-[#24211E] hover:text-[#1E3A24] transition-colors cursor-pointer"
               >
                 <div className="flex text-[#D6A53B]">
                   {[...Array(5)].map((_, i) => (
@@ -498,7 +498,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {gheePacks && gheePacks.length > 0 && (
             <div className="space-y-2 pt-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#4E1013] uppercase tracking-wide">
+                <span className="text-xs font-bold text-[#142918] uppercase tracking-wide">
                   Select Pack Size:
                 </span>
                 <span className="text-[11px] font-medium text-[#77716A]">
@@ -551,8 +551,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                       }}
                       className={`relative text-left rounded-xl p-3 border transition-all duration-150 flex flex-col justify-between cursor-pointer ${
                         isSelected
-                          ? "border-[#701619] bg-[#FAF8F2] ring-1 ring-[#701619] shadow-2xs"
-                          : "border-[#E9E3D9] bg-white hover:border-[#701619]/40 hover:bg-[#FAF8F2]/40"
+                          ? "border-[#1E3A24] bg-[#FAF8F2] ring-1 ring-[#1E3A24] shadow-2xs"
+                          : "border-[#E9E3D9] bg-white hover:border-[#1E3A24]/40 hover:bg-[#FAF8F2]/40"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-1 mb-1">
@@ -560,14 +560,14 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                           <span className="font-bold text-sm text-[#24211E] block">
                             {pack.variants[0]?.title ?? pack.title.split(" ").slice(-2).join(" ")}
                           </span>
-                          <span className="text-[11px] font-semibold text-[#701619] block">
+                          <span className="text-[11px] font-semibold text-[#1E3A24] block">
                             {packRole}
                           </span>
                         </div>
                         {isNavigatingThis ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[#701619] shrink-0" />
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-[#1E3A24] shrink-0" />
                         ) : isSelected ? (
-                          <span className="w-4 h-4 rounded-full bg-[#701619] text-white flex items-center justify-center shrink-0">
+                          <span className="w-4 h-4 rounded-full bg-[#1E3A24] text-white flex items-center justify-center shrink-0">
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </span>
                         ) : null}
@@ -575,7 +575,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
                       <div className="mt-2 pt-2 border-t border-[#E9E3D9]/60 flex items-baseline justify-between">
                         <div>
-                          <span className="text-base font-bold text-[#4E1013]">
+                          <span className="text-base font-bold text-[#142918]">
                             ₹{Math.round(pack.price / 100).toLocaleString("en-IN")}
                           </span>
                           {pack.compareAtPrice && pack.compareAtPrice > pack.price && (
@@ -605,7 +605,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {/* ═══ SECTION 6: Single Clear Price Summary ═══ */}
           <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-3.5 sm:p-4 space-y-2">
             <div className="flex flex-wrap items-baseline gap-2.5">
-              <span className="text-2xl sm:text-3xl font-bold text-[#4E1013] tracking-tight">
+              <span className="text-2xl sm:text-3xl font-bold text-[#142918] tracking-tight">
                 ₹{(price / 100).toLocaleString("en-IN")}
               </span>
               {compareAt && compareAt > price && (
@@ -634,8 +634,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {/* ═══ SECTION 7: Diwali Gift Promotion (Inline, Non-Intrusive) ═══ */}
           <div className="border border-[#E9E3D9] bg-white rounded-xl p-3.5 space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#701619] uppercase tracking-wide flex items-center gap-1.5">
-                <Gift className="w-4 h-4 text-[#701619]" />
+              <span className="text-xs font-bold text-[#1E3A24] uppercase tracking-wide flex items-center gap-1.5">
+                <Gift className="w-4 h-4 text-[#1E3A24]" />
                 <span>{giftData.badge}</span>
               </span>
               <span className="text-[11px] font-semibold text-[#16794B] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
@@ -664,7 +664,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                       />
                     </div>
                     <div className="text-[11px] leading-tight">
-                      <span className="font-bold text-[#4E1013] block">{item.name}</span>
+                      <span className="font-bold text-[#142918] block">{item.name}</span>
                       <span className="text-stone-500 text-[10px]">{item.size} • Free Gift</span>
                     </div>
                   </div>
@@ -681,7 +681,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                       router.push(`/products/${p1L.slug}`);
                     }
                   }}
-                  className="text-xs font-bold text-[#701619] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-[#1E3A24] hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <span>Upgrade to 1 Litre pack to unlock free cold-pressed oil gift</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -693,8 +693,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {/* ═══ SECTION 8: Delivery & Dispatch with Simple PIN Checker ═══ */}
           <div className="border border-[#E9E3D9] bg-[#FAF8F2] rounded-xl p-3.5 space-y-2.5">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 font-bold text-[#4E1013]">
-                <Truck className="w-4 h-4 text-[#701619]" />
+              <div className="flex items-center gap-1.5 font-bold text-[#142918]">
+                <Truck className="w-4 h-4 text-[#1E3A24]" />
                 <span>Estimated Delivery: {deliveryDateStr}</span>
               </div>
               <span className="text-[11px] text-[#77716A]">Pan-India</span>
@@ -715,12 +715,12 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                   if (pinStatus !== "idle") setPinStatus("idle");
                 }}
                 placeholder="Enter 6-digit delivery PIN"
-                className="flex-1 bg-white border border-[#E9E3D9] rounded-lg px-3 py-1.5 text-xs placeholder-[#77716A] focus:outline-none focus:border-[#701619] text-[#24211E]"
+                className="flex-1 bg-white border border-[#E9E3D9] rounded-lg px-3 py-1.5 text-xs placeholder-[#77716A] focus:outline-none focus:border-[#1E3A24] text-[#24211E]"
               />
               <button
                 type="submit"
                 disabled={pinStatus === "loading"}
-                className="bg-[#4E1013] hover:bg-[#701619] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+                className="bg-[#142918] hover:bg-[#1E3A24] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50 shrink-0"
               >
                 {pinStatus === "loading" ? "Checking..." : "Check"}
               </button>
@@ -741,10 +741,10 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {/* ═══ SECTION 10: Compact Coupon Component ═══ */}
           <div className="border border-dashed border-[#D6A53B] bg-[#FAF8F2] rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3">
             <div className="text-xs">
-              <div className="flex items-center gap-1.5 font-bold text-[#4E1013]">
+              <div className="flex items-center gap-1.5 font-bold text-[#142918]">
                 <Sparkles className="w-3.5 h-3.5 text-[#D6A53B]" />
                 <span>Special Offer:</span>
-                <span className="font-mono bg-white border border-[#D6A53B]/60 px-1.5 py-0.2 rounded text-[11px] text-[#4E1013]">
+                <span className="font-mono bg-white border border-[#D6A53B]/60 px-1.5 py-0.2 rounded text-[11px] text-[#142918]">
                   NAMO10
                 </span>
               </div>
@@ -755,7 +755,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
             <button
               type="button"
               onClick={() => handleCopyCoupon("NAMO10")}
-              className="text-xs font-semibold bg-white border border-[#E9E3D9] hover:border-[#701619] text-[#4E1013] px-3 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer active:scale-95 shrink-0 shadow-2xs"
+              className="text-xs font-semibold bg-white border border-[#E9E3D9] hover:border-[#1E3A24] text-[#142918] px-3 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer active:scale-95 shrink-0 shadow-2xs"
             >
               {couponCopied ? (
                 <>
@@ -779,18 +779,18 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                 <button
                   type="button"
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="w-8 h-full flex items-center justify-center text-[#701619] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
+                  className="w-8 h-full flex items-center justify-center text-[#1E3A24] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="w-8 text-center font-bold text-sm text-[#4E1013]">
+                <span className="w-8 text-center font-bold text-sm text-[#142918]">
                   {qty}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQty(qty + 1)}
-                  className="w-8 h-full flex items-center justify-center text-[#701619] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
+                  className="w-8 h-full flex items-center justify-center text-[#1E3A24] hover:bg-white active:scale-95 rounded-lg text-lg font-bold cursor-pointer transition-colors"
                   aria-label="Increase quantity"
                 >
                   +
@@ -802,7 +802,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!variant?.available}
-                className="flex-1 bg-[#701619] hover:bg-[#4E1013] text-white font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-2 text-sm uppercase tracking-wide cursor-pointer shadow-xs disabled:opacity-50"
+                className="flex-1 bg-[#1E3A24] hover:bg-[#142918] text-white font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-2 text-sm uppercase tracking-wide cursor-pointer shadow-xs disabled:opacity-50"
               >
                 <span>Add to Cart</span>
               </button>
@@ -813,10 +813,10 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                 id="product-buy-now-btn"
                 onClick={handleBuyNow}
                 disabled={!variant?.available || isAdding}
-                className="flex-1 bg-[#FAF8F2] hover:bg-amber-100/60 border border-[#D6A53B] text-[#4E1013] font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-1.5 text-sm uppercase tracking-wide cursor-pointer disabled:opacity-50"
+                className="flex-1 bg-[#FAF8F2] hover:bg-amber-100/60 border border-[#D6A53B] text-[#142918] font-bold h-12 rounded-xl transition-all active:scale-[0.99] flex items-center justify-center gap-1.5 text-sm uppercase tracking-wide cursor-pointer disabled:opacity-50"
               >
                 {isAdding ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-[#4E1013]" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#142918]" />
                 ) : (
                   <>
                     <Zap className="w-4 h-4 text-[#D6A53B] fill-current" />
@@ -828,8 +828,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
             {/* Supported Payment Logos & Security Strip (Section 12 & 16) */}
             <div className="pt-2 border-t border-[#E9E3D9]/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#77716A]">
-              <div className="flex items-center gap-1.5 font-medium text-[#4E1013]">
-                <Truck className="w-3.5 h-3.5 text-[#701619]" />
+              <div className="flex items-center gap-1.5 font-medium text-[#142918]">
+                <Truck className="w-3.5 h-3.5 text-[#1E3A24]" />
                 <span>Cash on Delivery &amp; Instant UPI Available</span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap justify-center">
@@ -861,11 +861,11 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
           {/* ═══ SECTION 9: Consistent Trust & Quality Cards ═══ */}
           <div className="grid grid-cols-3 gap-2 pt-2">
             <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
-              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#1E3A24] shrink-0">
                 <Leaf className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                <span className="text-[11px] font-bold text-[#142918] block leading-tight">
                   Gir Cow Sourcing
                 </span>
                 <span className="text-[10px] text-[#77716A] leading-tight block mt-0.5 hidden sm:block">
@@ -875,11 +875,11 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
             </div>
 
             <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
-              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#1E3A24] shrink-0">
                 <ShieldCheck className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                <span className="text-[11px] font-bold text-[#142918] block leading-tight">
                   Laboratory Tested
                 </span>
                 <span className="text-[10px] text-[#77716A] leading-tight block mt-0.5 hidden sm:block">
@@ -889,15 +889,15 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
             </div>
 
             <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-2.5 text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-2">
-              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#701619] shrink-0">
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E9E3D9] flex items-center justify-center text-[#1E3A24] shrink-0">
                 <Award className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-bold text-[#4E1013] block leading-tight">
+                <span className="text-[11px] font-bold text-[#1E3A24] block leading-tight">
                   FSSAI Licensed
                 </span>
                 <span className="text-[10px] text-[#77716A] font-mono leading-tight block mt-0.5 hidden sm:block">
-                  10823999000412
+                  20824005000185
                 </span>
               </div>
             </div>
@@ -905,9 +905,9 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
           {/* 100% Vedic Purity Refund Guarantee */}
           <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-xl p-3 flex items-start gap-2.5 text-xs">
-            <ShieldCheck className="w-4 h-4 text-[#701619] shrink-0 mt-0.5" />
+            <ShieldCheck className="w-4 h-4 text-[#1E3A24] shrink-0 mt-0.5" />
             <div className="text-[11px] leading-relaxed text-[#77716A]">
-              <strong className="text-[#4E1013] font-semibold">100% Vedic Purity Guarantee:</strong>{" "}
+              <strong className="text-[#142918] font-semibold">100% Vedic Purity Guarantee:</strong>{" "}
               Authentic bilona ghee slow-churned from cultured curd. If not genuine, receive an instant 100% refund.
             </div>
           </div>
@@ -950,12 +950,12 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                     }}
                     className={`text-[10.5px] sm:text-[11px] font-extrabold px-2 sm:px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                       isSelected
-                        ? "bg-[#701619] text-white shadow-xs ring-1 ring-[#701619]"
+                        ? "bg-[#1E3A24] text-white shadow-xs ring-1 ring-[#1E3A24]"
                         : "bg-[#FAF8F2] border border-[#E9E3D9] text-[#24211E] hover:bg-[#F3EFE6] active:scale-95"
                     }`}
                   >
                     {isNavigatingThis ? (
-                      <Loader2 className="w-3 h-3 animate-spin text-[#701619]" />
+                      <Loader2 className="w-3 h-3 animate-spin text-[#1E3A24]" />
                     ) : (
                       <>
                         <span>{shortName}</span>
@@ -981,7 +981,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         <div className="flex items-center justify-between gap-2.5">
           <div className="flex flex-col min-w-0">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-bold text-[#4E1013]">
+              <span className="text-lg font-bold text-[#142918]">
                 ₹{((price * qty) / 100).toLocaleString("en-IN")}
               </span>
               {compareAt && compareAt > price && (
@@ -1000,7 +1000,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
               type="button"
               onClick={handleAddToCart}
               disabled={!variant?.available}
-              className="bg-white border border-[#701619] hover:bg-[#FAF8F2] active:scale-95 text-[#701619] font-bold h-10 px-3 rounded-xl shadow-xs flex items-center justify-center text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
+              className="bg-white border border-[#1E3A24] hover:bg-[#FAF8F2] active:scale-95 text-[#1E3A24] font-bold h-10 px-3 rounded-xl shadow-xs flex items-center justify-center text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
             >
               <span>Add to Cart</span>
             </button>
@@ -1009,7 +1009,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
               type="button"
               onClick={handleBuyNow}
               disabled={!variant?.available || isAdding}
-              className="bg-[#701619] hover:bg-[#4E1013] active:scale-95 text-white font-bold h-10 px-3.5 rounded-xl shadow-xs flex items-center justify-center gap-1 text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
+              className="bg-[#1E3A24] hover:bg-[#142918] active:scale-95 text-white font-bold h-10 px-3.5 rounded-xl shadow-xs flex items-center justify-center gap-1 text-xs uppercase tracking-wider shrink-0 cursor-pointer disabled:opacity-50"
             >
               {isAdding ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1029,7 +1029,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
         {/* Why Families Choose Namo Narayana vs Commercial Ghee */}
         <div className="bg-[#FAF8F2] border border-[#E9E3D9] rounded-2xl p-5 sm:p-6">
-          <h2 className="font-serif font-bold text-lg sm:text-xl text-[#4E1013] mb-4 flex items-center gap-2">
+          <h2 className="font-serif font-bold text-lg sm:text-xl text-[#142918] mb-4 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#D6A53B]" />
             <span>Why Families Choose Namo Narayana vs Commercial Ghee</span>
           </h2>
@@ -1038,7 +1038,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
               <thead>
                 <tr className="border-b border-[#E9E3D9]">
                   <th className="py-2.5 pr-3 text-[#77716A] font-medium">Criteria</th>
-                  <th className="py-2.5 px-3 text-[#701619] font-bold bg-[#E9E3D9]/40 rounded-t-lg">
+                  <th className="py-2.5 px-3 text-[#1E3A24] font-bold bg-[#E9E3D9]/40 rounded-t-lg">
                     Namo Narayana
                   </th>
                   <th className="py-2.5 pl-3 text-[#77716A] font-medium">Commercial Store Ghee</th>
@@ -1047,22 +1047,22 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
               <tbody className="divide-y divide-[#E9E3D9]/60">
                 <tr>
                   <td className="py-2.5 pr-3 font-medium text-[#24211E]">Milk Source</td>
-                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">100% Indigenous Gir Cows</td>
+                  <td className="py-2.5 px-3 text-[#142918] font-bold bg-[#FAF8F2]">100% Indigenous Gir Cows</td>
                   <td className="py-2.5 pl-3 text-[#77716A]">Commercial Buffalo / Mixed Breeds</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 pr-3 font-medium text-[#24211E]">Churning Method</td>
-                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Hand-churned Curd (Vedic Bilona)</td>
+                  <td className="py-2.5 px-3 text-[#142918] font-bold bg-[#FAF8F2]">Hand-churned Curd (Vedic Bilona)</td>
                   <td className="py-2.5 pl-3 text-[#77716A]">Industrial Cream Separator</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 pr-3 font-medium text-[#24211E]">Digestibility</td>
-                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Gentle on gut (A2 Beta-Casein)</td>
+                  <td className="py-2.5 px-3 text-[#142918] font-bold bg-[#FAF8F2]">Gentle on gut (A2 Beta-Casein)</td>
                   <td className="py-2.5 pl-3 text-[#77716A]">Heavy, contains A1 protein</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 pr-3 font-medium text-[#24211E]">Texture & Aroma</td>
-                  <td className="py-2.5 px-3 text-[#4E1013] font-bold bg-[#FAF8F2]">Grainy (Danedar) & Nutty Aroma</td>
+                  <td className="py-2.5 px-3 text-[#142918] font-bold bg-[#FAF8F2]">Grainy (Danedar) & Nutty Aroma</td>
                   <td className="py-2.5 pl-3 text-[#77716A]">Waxy or Artificial Aroma</td>
                 </tr>
               </tbody>
@@ -1072,11 +1072,11 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
 
         {/* Product Description & Heritage */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-[#4E1013] uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-[#142918] uppercase tracking-wider">
             Product Description &amp; Health Benefits
           </h2>
           <div
-            className="prose prose-sm max-w-none text-[#24211E] marker:text-[#701619] leading-relaxed"
+            className="prose prose-sm max-w-none text-[#24211E] marker:text-[#1E3A24] leading-relaxed"
             dangerouslySetInnerHTML={{ __html: product.description }}
           />
         </div>

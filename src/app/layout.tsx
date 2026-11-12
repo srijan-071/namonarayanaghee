@@ -52,7 +52,6 @@ export const metadata: Metadata = {
 
 import { Toaster } from 'sonner';
 import { BotIdClient } from "botid/client";
-import DiwaliEffects from "@/components/festive/DiwaliEffects";
 
 const protectedBotRoutes = [
   { path: "/api/create-order", method: "POST" },
@@ -62,8 +61,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        <link rel="preconnect" href="https://namonarayana.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://namonarayana.com" />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806114019541775"
@@ -75,7 +72,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AnalyticsProvider>
           <FirebaseProvider>
             <CartDrawerProvider>
-              <DiwaliEffects />
               <Toaster position="top-center" duration={2000} richColors />
               <Header />
               <main className="flex-1">{children}</main>

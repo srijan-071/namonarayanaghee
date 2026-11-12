@@ -19,13 +19,13 @@ const steps = [
   {
     number: "03",
     title: "Churning (Bilona)",
-    desc: "The curd is hand-churned in a wooden bilona to separate pure makhana (butter).",
+    desc: "The curd is hand-churned bi-directionally in a wooden bilona to separate cultured makkhan (butter).",
     icon: RotateCcw,
   },
   {
     number: "04",
-    title: "Heating",
-    desc: "The makhana is slowly heated on a low flame until the water evaporates, leaving behind pure, aromatic ghee.",
+    title: "Slow Clarification",
+    desc: "The cultured makkhan is slowly simmered on a gentle low flame until moisture evaporates, leaving behind pure, golden danedar ghee.",
     icon: Sun,
   }
 ];
@@ -62,10 +62,10 @@ export default function BilonaProcess() {
           className="mb-16 text-center max-w-3xl mx-auto"
         >
           <div className="inline-flex items-center gap-2 bg-[#FCF8EE] border border-amber-300 rounded-full px-4 py-1.5 mb-4 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#8A1B14]" />
-            <span className="text-[11px] font-bold text-[#8A1B14] uppercase tracking-[0.2em]">The Sacred Vedic Bilona Method</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#2D5A37]" />
+            <span className="text-[11px] font-bold text-[#2D5A37] uppercase tracking-[0.2em]">The Sacred Vedic Bilona Method</span>
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#5E0B10] mb-6">The Ancient Art of Bilona</h2>
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-[#142918] mb-6">The Ancient Art of Bilona</h2>
           <p className="text-[#4A352F] text-lg leading-relaxed">
             A time-honoured Vedic process that transforms pure A2 milk into golden ghee &mdash; slowly, naturally, and with unmatched care. Hand-churned from curd to deliver wholesome nutrition, rich aroma, and golden granules.
           </p>
@@ -149,13 +149,13 @@ export default function BilonaProcess() {
                   >
                     {/* Circle Icon */}
                     <div className="relative z-10 w-20 h-20 rounded-full bg-[#FCF8EE] border-4 border-amber-200/80 flex flex-col items-center justify-center shrink-0 shadow-md">
-                      <Icon className="w-6 h-6 text-[#8A1B14]" />
+                      <Icon className="w-6 h-6 text-[#2D5A37]" />
                     </div>
                     
                     <div className="pt-2">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="font-serif text-3xl font-bold text-[#C38936]">{step.number}</span>
-                        <h3 className="font-serif font-bold text-2xl text-[#5E0B10]">{step.title}</h3>
+                        <h3 className="font-serif font-bold text-2xl text-[#142918]">{step.title}</h3>
                       </div>
                       <p className="text-base text-[#4A352F] leading-relaxed max-w-md">{step.desc}</p>
                     </div>
@@ -172,7 +172,7 @@ export default function BilonaProcess() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-4">
             {features.map((feature, i) => (
               <div key={i} className="flex flex-col items-center text-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center text-[#8A1B14]">
+                <div className="w-10 h-10 flex items-center justify-center text-[#2D5A37]">
                   {feature.icon === 'cow' && (
                     <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12h3M6 12v3M9 12v6M12 12v6M15 12v3M18 12h3M2 15h20M4 9h16"/></svg>
                   )}
@@ -183,7 +183,7 @@ export default function BilonaProcess() {
                   {feature.icon === 'badge' && <BadgeCheck className="w-8 h-8" />}
                 </div>
                 <div>
-                  <h5 className="font-bold text-[#5E0B10] text-sm leading-tight mb-1">{feature.title}</h5>
+                  <h5 className="font-bold text-[#142918] text-sm leading-tight mb-1">{feature.title}</h5>
                   <p className="text-xs text-[#7A4A3B]">{feature.desc}</p>
                 </div>
               </div>

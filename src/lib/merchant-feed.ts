@@ -5,9 +5,9 @@ import { absoluteUrl } from "./seo";
 function getOptimizedShoppingTitle(title: string, packSize?: string): string {
   const size = packSize || (title.match(/\d+(\.\d+)?\s*(litre|l|ml)/i)?.[0] || "");
   if (size) {
-    return `Buy Pure A2 Gir Cow Bilona Ghee ${size} Online in India | Namo Narayana`;
+    return `Namo Narayana A2 Gir Cow Ghee, Traditional Bilona Process, ${size}`;
   }
-  return `Buy Pure A2 Gir Cow Bilona Ghee Online in India | Namo Narayana`;
+  return `Namo Narayana A2 Gir Cow Ghee, Traditional Bilona Process`;
 }
 
 function cleanDescription(desc: string): string {

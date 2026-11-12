@@ -72,8 +72,8 @@ export const PRODUCT_REVIEWS_MAP: Record<string, Review[]> = {
 };
 
 export const PRODUCT_REVIEW_STATS: Record<string, { total: number; average: number }> = {
-  "pure-a2-gir-cow-ghee-500-ml": { total: 12, average: 4.9 },
-  "pure-desi-cow-ghee-1-litre": { total: 1688, average: 4.9 },
-  "pure-desi-cow-ghee-2-5-litre": { total: 210, average: 4.9 },
-  "pure-desi-cow-ghee-5-litre": { total: 85, average: 5.0 },
+  "pure-a2-gir-cow-ghee-500-ml": { total: PRODUCT_REVIEWS_MAP["pure-a2-gir-cow-ghee-500-ml"]?.length || 12, average: 4.8 },
+  "pure-desi-cow-ghee-1-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"]?.length || 6, average: 5.0 },
+  "pure-desi-cow-ghee-2-5-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-2-5-litre"]?.length || 6, average: 4.8 },
+  "pure-desi-cow-ghee-5-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-5-litre"]?.length || 6, average: 5.0 },
 };

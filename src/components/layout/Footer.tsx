@@ -52,6 +52,13 @@ export default function Footer() {
             <p className="text-sm text-amber-100/90 leading-relaxed font-medium drop-shadow-md [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
               Rooted in pure tradition. We bring you naturally crafted A2 Gir Cow Ghee and wholesome Indian foods for a healthier, happier tomorrow.
             </p>
+
+            <div className="text-xs text-amber-200/80 space-y-1 bg-black/40 p-3.5 rounded-xl border border-amber-500/20 backdrop-blur-xs">
+              <p><strong className="text-amber-300">Legal Entity:</strong> Namo Narayana</p>
+              <p><strong className="text-amber-300">FSSAI Lic. No:</strong> 20824005000185</p>
+              <p><strong className="text-amber-300">Official Domain:</strong> https://www.namonarayanaghee.store/</p>
+              <p><strong className="text-amber-300">Customer Support:</strong> support@namonarayanaghee.store</p>
+            </div>
             
             {/* Social Icons */}
             <div className="flex gap-4 mt-2">
