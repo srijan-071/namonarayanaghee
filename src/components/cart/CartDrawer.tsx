@@ -452,6 +452,10 @@ export default function CartDrawer() {
                         className="w-full border-2 border-dashed border-gray-300 rounded-xl pl-4 pr-[88px] py-3 text-[13px] focus:outline-none focus:border-[#075B43] bg-white uppercase font-bold placeholder:font-normal placeholder:normal-case notranslate"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && tempCoupon) {
+                            if (tempCoupon.includes("DIWALI")) {
+                              toast.error("Diwali festive offers have ended. This code is no longer valid.");
+                              return;
+                            }
                             if (!applyCoupon(tempCoupon)) {
                               toast.error("This code isn't valid for the items in your cart.");
                             } else {
@@ -463,6 +467,10 @@ export default function CartDrawer() {
                       <button 
                         onClick={() => {
                           if (tempCoupon) {
+                            if (tempCoupon.includes("DIWALI")) {
+                              toast.error("Diwali festive offers have ended. This code is no longer valid.");
+                              return;
+                            }
                             if (!applyCoupon(tempCoupon)) {
                               toast.error("This code isn't valid for the items in your cart.");
                             } else {

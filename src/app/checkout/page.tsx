@@ -234,19 +234,23 @@ export default function CheckoutPage() {
         setForm(prev => ({ ...prev, ...parsed.form }));
         if (parsed.hasGst !== undefined) setHasGst(parsed.hasGst);
         if (parsed.gstDetails) setGstDetails(parsed.gstDetails);
-        if (parsed.couponCode) setCouponCode(parsed.couponCode);
+        if (parsed.couponCode && !parsed.couponCode.toUpperCase().includes("DIWALI")) {
+          setCouponCode(parsed.couponCode);
+        }
       }
 
-      // Check URL parameters (e.g. ?coupon=DIWALI or ?restoreOrder=...)
+      // Check URL parameters (e.g. ?coupon=FIRST250 or ?restoreOrder=...)
       if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
         const urlCoupon = params.get("coupon");
         if (urlCoupon) {
           const upper = urlCoupon.toUpperCase().trim();
-          setCouponCode(upper);
-          import("@/lib/cart").then((cartLib) => {
-            if (cartLib.VALID_COUPONS[upper]) cartLib.applyCoupon(upper);
-          });
+          if (!upper.includes("DIWALI")) {
+            setCouponCode(upper);
+            import("@/lib/cart").then((cartLib) => {
+              if (cartLib.VALID_COUPONS[upper]) cartLib.applyCoupon(upper);
+            });
+          }
         }
       }
     } catch (e) {
@@ -506,8 +510,12 @@ export default function CheckoutPage() {
   const handleApplyCoupon = async (codeToApply: string) => {
     const val = codeToApply.trim().toUpperCase();
     if (!val) return;
+    if (val.includes("DIWALI")) {
+      toast.error("Diwali festive coupon offers have ended and are no longer valid.");
+      return;
+    }
     const cartLib = await import("@/lib/cart");
-    if (cartLib.VALID_COUPONS[val] || /^(FIRST|VEDIC|WELCOME|DIWALI)(100|250|500|1000)/.test(val)) {
+    if (cartLib.VALID_COUPONS[val] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000)/.test(val)) {
       setCouponCode(val);
       cartLib.applyCoupon(val);
       setTempCoupon("");
@@ -993,7 +1001,7 @@ export default function CheckoutPage() {
                     <span>Coupon / Gift Card Discount ({couponCode})</span>
                     <span>-{formatPrice(pricing.discount)}</span>
                   </div>
-                  {/^(FIRST|VEDIC|WELCOME|DIWALI)/.test(couponCode) && (
+                  {/^(FIRST|VEDIC|WELCOME)/.test(couponCode) && (
                     <p className="text-[10px] text-[#075B43] bg-[#E8F1EC] px-2 py-0.5 rounded font-semibold">
                       🎁 + Equal Gift Card unlocked for your next order upon purchase!
                     </p>

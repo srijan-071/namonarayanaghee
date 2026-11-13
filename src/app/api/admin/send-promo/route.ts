@@ -86,7 +86,7 @@ You received this because you visited namonarayanaghee.store. Reply with 'unsubs
         Special 10% Farm Welcome:
       </p>
       <p style="font-size: 15px; margin: 0 0 14px 0; color: #17231E;">
-        Use coupon code <strong style="background-color: #E8F1EC; border: 1px solid #075B43; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 15px; color: #075B43; letter-spacing: 0.5px;">DIWALI</strong> at checkout.
+        Use coupon code <strong style="background-color: #E8F1EC; border: 1px solid #075B43; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 15px; color: #075B43; letter-spacing: 0.5px;">NAMO10</strong> at checkout.
       </p>
       <a href="https://www.namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #075B43; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 10px 22px; border-radius: 6px;">
         Order Pure A2 Gir Cow Ghee (1L) &rarr;

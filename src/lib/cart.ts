@@ -20,6 +20,10 @@ function readCart(): Cart {
     if (raw === cachedRaw) return cachedCart;
     cachedRaw = raw;
     cachedCart = raw ? (JSON.parse(raw) as Cart) : EMPTY_CART;
+    if (cachedCart.discountCode && cachedCart.discountCode.includes("DIWALI")) {
+      cachedCart = recalculate(cachedCart.items, undefined);
+      writeCart(cachedCart);
+    }
     return cachedCart;
   } catch { /* noop */ }
   return EMPTY_CART;
@@ -36,8 +40,6 @@ function writeCart(cart: Cart) {
 
 export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
   "NAMO10": { type: 'percentage', value: 10 },
-  "DIWALI": { type: 'percentage', value: 10 },
-  "DIWALI2026": { type: 'percentage', value: 10 },
   "SHUBHLAABH": { type: 'fixed', value: 100 },
   "ELVISH10": { type: 'percentage', value: 10 },
   "NAMO50": { type: 'fixed', value: 50 },
@@ -64,7 +66,11 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
 
   if (discountCode) {
     const code = discountCode.trim().toUpperCase();
-    if (VALID_COUPONS[code]) {
+    if (code.includes("DIWALI")) {
+      // Explicitly reject any Diwali coupons with zero discount
+      validCode = undefined;
+      discountAmount = 0;
+    } else if (VALID_COUPONS[code]) {
       const coupon = VALID_COUPONS[code];
       validCode = code;
       if (coupon.type === 'percentage') {
@@ -72,8 +78,8 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
       } else if (coupon.type === 'fixed') {
         discountAmount = coupon.value * 100;
       }
-    } else if (/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/.test(code)) {
-      const match = code.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/);
+    } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(code)) {
+      const match = code.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
       if (match) {
         const val = parseInt(match[2], 10);
         validCode = code;
@@ -181,7 +187,10 @@ export function clearCart() {
 export function applyCoupon(code: string): boolean {
   const cart = readCart();
   const normalized = code.trim().toUpperCase();
-  if (VALID_COUPONS[normalized] || /^DIWALI(100|250|500|1000)/.test(normalized)) {
+  if (normalized.includes("DIWALI")) {
+    return false;
+  }
+  if (VALID_COUPONS[normalized] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000)/.test(normalized)) {
     writeCart(recalculate(cart.items, normalized));
     return true;
   }

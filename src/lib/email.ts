@@ -28,32 +28,32 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   // Order items table
   const items = orderData?.items || [];
 
-  // Diwali Coupon section
-  let diwaliCoupon = orderData?.diwaliCoupon;
+  // Vedic Heritage Reward Coupon section
+  let rewardCoupon = orderData?.rewardCoupon || orderData?.vedicRewardCoupon || orderData?.diwaliCoupon;
   let rewardAmount = orderData?.rewardAmount;
 
-  // Resilient fallback: ensure customer ALWAYS gets their Diwali reward coupon in the email!
-  if (!diwaliCoupon) {
+  // Resilient fallback: ensure customer ALWAYS gets their Vedic reward coupon in the email!
+  if (!rewardCoupon || rewardCoupon.includes("DIWALI")) {
     const rawTotal = (amount || 0) / 100;
     const fallbackReward = rawTotal >= 3000 ? 1000 : rawTotal >= 1700 ? 500 : rawTotal >= 700 ? 250 : 100;
     rewardAmount = fallbackReward;
-    diwaliCoupon = `DIWALI${fallbackReward}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    rewardCoupon = `VEDIC${fallbackReward}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
   }
 
-  const diwaliCouponHtml = `
-    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 14px; padding: 22px 20px; margin: 24px 0; text-align: center; box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);">
+  const rewardCouponHtml = `
+    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #B89A62; border-radius: 14px; padding: 22px 20px; margin: 24px 0; text-align: center; box-shadow: 0 4px 16px rgba(184, 154, 98, 0.12);">
       <div style="display: inline-block; background-color: #075B43; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
-        🪔 Exclusive Festive Gift Card
+        ✨ Exclusive Vedic Heritage Reward
       </div>
-      <h3 style="color: #17231E; margin: 0 0 8px 0; font-size: 18px; font-weight: 800;">Special ₹${rewardAmount} Diwali Reward Unlocked!</h3>
+      <h3 style="color: #17231E; margin: 0 0 8px 0; font-size: 18px; font-weight: 800;">Special ₹${rewardAmount} Vedic Heritage Reward Unlocked!</h3>
       <p style="margin: 0 0 16px 0; font-size: 13px; color: #17231E; line-height: 1.5;">
         As our humble gratitude for choosing pure Vedic Gir Cow Ghee, we have gifted you a <strong>₹${rewardAmount} instant gift voucher</strong> for your next family purchase.
       </p>
-      <div style="background-color: #ffffff; padding: 12px 24px; border-radius: 8px; font-family: monospace; font-size: 22px; font-weight: 900; color: #075B43; display: inline-block; border: 2px solid #D4A017; letter-spacing: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
-        ${diwaliCoupon}
+      <div style="background-color: #ffffff; padding: 12px 24px; border-radius: 8px; font-family: monospace; font-size: 22px; font-weight: 900; color: #075B43; display: inline-block; border: 2px solid #B89A62; letter-spacing: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
+        ${rewardCoupon}
       </div>
-      <p style="margin: 14px 0 0 0; font-size: 11px; color: #7A4A3B;">
-        Apply code <strong style="color: #17231E;">${diwaliCoupon}</strong> at checkout on your next order. Valid across our entire pure ghee and cold-pressed oil range until <strong>Nov 15th</strong>.
+      <p style="margin: 14px 0 0 0; font-size: 11px; color: #727B75;">
+        Apply code <strong style="color: #075B43;">${rewardCoupon}</strong> at checkout on your next order. Valid across our entire pure ghee and cold-pressed oil range.
       </p>
     </div>
   `;
@@ -177,8 +177,8 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
             ${paymentStatusHtml}
           </div>
 
-          <!-- Special Diwali Reward Voucher -->
-          ${diwaliCouponHtml}
+          <!-- Special Vedic Heritage Reward Voucher -->
+          ${rewardCouponHtml}
 
           <!-- ─── Visual Order Progress Tracker ─── -->
           <div style="margin: 28px 0; background-color: #FAF6EF; border: 1px solid #EAD7BC; border-radius: 12px; padding: 18px 12px;">

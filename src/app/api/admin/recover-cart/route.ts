@@ -14,8 +14,10 @@ export async function POST(req: Request) {
       items,
       subtotal,
       freeGift,
-      couponCode = "DIWALI"
+      couponCode: inputCouponCode = "NAMO10"
     } = body;
+
+    const couponCode = (inputCouponCode && !inputCouponCode.includes("DIWALI")) ? inputCouponCode : "NAMO10";
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });

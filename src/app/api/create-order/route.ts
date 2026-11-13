@@ -11,9 +11,18 @@ const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: numbe
   "NAMO50": { type: 'fixed', value: 50 },
   "WELCOME": { type: 'percentage', value: 5 },
   "GHEE100": { type: 'fixed', value: 100 },
-  "DIWALI": { type: 'percentage', value: 10 },
-  "DIWALI2026": { type: 'percentage', value: 10 },
-  "SHUBHLAABH": { type: 'fixed', value: 100 }
+  "SHUBHLAABH": { type: 'fixed', value: 100 },
+  "FIRST250": { type: 'fixed', value: 250 },
+  "VEDIC250": { type: 'fixed', value: 250 },
+  "FIRST100": { type: 'fixed', value: 100 },
+  "VEDIC100": { type: 'fixed', value: 100 },
+  "FIRST500": { type: 'fixed', value: 500 },
+  "VEDIC500": { type: 'fixed', value: 500 },
+  "FIRST1000": { type: 'fixed', value: 1000 },
+  "VEDIC1000": { type: 'fixed', value: 1000 },
+  "FIRSTORDER": { type: 'fixed', value: 250 },
+  "GIFTCARD": { type: 'fixed', value: 250 },
+  "VEDICREWARD": { type: 'fixed', value: 250 },
 };
 
 const PROXY_URL = "/pay-proxy";
@@ -95,18 +104,20 @@ export async function POST(req: Request) {
     let discountPercent = 0;
     const couponCode = checkoutData.couponCode?.toUpperCase().trim();
 
-    if (couponCode && VALID_COUPONS[couponCode]) {
-      const coupon = VALID_COUPONS[couponCode];
-      if (coupon.type === 'percentage') {
-        discount = Math.round(serverSubtotal * (coupon.value / 100));
-        discountPercent = coupon.value;
-      } else if (coupon.type === 'fixed') {
-        discount = coupon.value * 100;
-      }
-    } else if (couponCode && /^DIWALI(100|250|500|1000)/.test(couponCode)) {
-      const match = couponCode.match(/^DIWALI(\d+)/);
-      if (match) {
-        discount = parseInt(match[1], 10) * 100;
+    if (couponCode && !couponCode.includes("DIWALI")) {
+      if (VALID_COUPONS[couponCode]) {
+        const coupon = VALID_COUPONS[couponCode];
+        if (coupon.type === 'percentage') {
+          discount = Math.round(serverSubtotal * (coupon.value / 100));
+          discountPercent = coupon.value;
+        } else if (coupon.type === 'fixed') {
+          discount = coupon.value * 100;
+        }
+      } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(couponCode)) {
+        const match = couponCode.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
+        if (match) {
+          discount = parseInt(match[2], 10) * 100;
+        }
       }
     }
 

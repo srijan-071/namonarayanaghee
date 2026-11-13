@@ -67,19 +67,21 @@ export function calculateCheckoutPricing(
   let discountPercent = 0;
 
   const normalizedCode = couponCode?.toUpperCase().trim();
-  if (normalizedCode && VALID_COUPONS[normalizedCode]) {
-    const coupon = VALID_COUPONS[normalizedCode];
-    if (coupon.type === 'percentage') {
-      discount += Math.round(subtotal * (coupon.value / 100));
-      discountPercent += coupon.value;
-    } else if (coupon.type === 'fixed') {
-      discount += coupon.value * 100; // Value is in rupees, subtotal is in paise
-    }
-  } else if (normalizedCode && /^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/.test(normalizedCode)) {
-    const match = normalizedCode.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/);
-    if (match) {
-      const val = parseInt(match[2], 10);
-      discount += val * 100; // Convert rupee reward into paise
+  if (normalizedCode && !normalizedCode.includes("DIWALI")) {
+    if (VALID_COUPONS[normalizedCode]) {
+      const coupon = VALID_COUPONS[normalizedCode];
+      if (coupon.type === 'percentage') {
+        discount += Math.round(subtotal * (coupon.value / 100));
+        discountPercent += coupon.value;
+      } else if (coupon.type === 'fixed') {
+        discount += coupon.value * 100; // Value is in rupees, subtotal is in paise
+      }
+    } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(normalizedCode)) {
+      const match = normalizedCode.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
+      if (match) {
+        const val = parseInt(match[2], 10);
+        discount += val * 100; // Convert rupee reward into paise
+      }
     }
   }
 

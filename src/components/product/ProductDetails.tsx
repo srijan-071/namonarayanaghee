@@ -132,7 +132,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         hasGift: true,
         title: "3 Complimentary Cold-Pressed Oils Included",
         description: "Your order includes 3 complimentary cold-pressed oils (250ml each).",
-        badge: "DIWALI GIFT",
+        badge: "HERITAGE GIFT",
         items: [
           { name: "Groundnut Oil", image: "/assets/groundnut-oil-250ml.webp", size: "250 ml" },
           { name: "Yellow Mustard Oil", image: "/assets/yellow-mustard-oil-250ml.webp", size: "250 ml" },
@@ -144,7 +144,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         hasGift: true,
         title: "3 Complimentary Large Cold-Pressed Oils Included",
         description: "Your order includes 3 complimentary cold-pressed oils (Coconut 250ml, Groundnut 250ml, Mustard 500ml).",
-        badge: "DIWALI GIFT",
+        badge: "HERITAGE GIFT",
         items: [
           { name: "Coconut Oil", image: "/assets/coconut-oil-250ml.webp", size: "250 ml" },
           { name: "Groundnut Oil", image: "/assets/groundnut-oil-250ml.webp", size: "250 ml" },
@@ -157,7 +157,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         hasGift: true,
         title: "Complimentary Cold-Pressed Mustard Oil Included",
         description: "Your order includes 1 complimentary bottle of Cold-Pressed Mustard Oil (250ml).",
-        badge: "DIWALI GIFT",
+        badge: "HERITAGE GIFT",
         items: [
           { name: "Mustard Oil", image: "/assets/mustard-oil-250ml.webp", size: "250 ml" },
         ],

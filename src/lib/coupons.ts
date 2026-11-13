@@ -1,8 +1,8 @@
 import { db } from "@/lib/firebase";
 import { doc, setDoc, getDoc, updateDoc, collection, serverTimestamp } from "firebase/firestore/lite";
 
-export async function generateDiwaliCoupon(email: string, phone: string, amount: number): Promise<string> {
-  const code = `DIWALI${amount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+export async function generateVedicCoupon(email: string, phone: string, amount: number): Promise<string> {
+  const code = `VEDIC${amount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
   try {
     const couponRef = doc(collection(db, "coupons"), code);
@@ -13,18 +13,28 @@ export async function generateDiwaliCoupon(email: string, phone: string, amount:
       phone: (phone || "").trim(),
       used: false,
       createdAt: serverTimestamp(),
-      expiresAt: new Date("2026-11-15T23:59:59.000Z").toISOString() // Post-Diwali expiry
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() // 90 days validity
     });
   } catch (err) {
-    console.error("Resilient fallback: Error persisting coupon to Firestore:", err);
+    console.error("Resilient fallback: Error persisting Vedic coupon to Firestore:", err);
   }
 
   return code;
 }
 
+// Backward compatibility alias: always issues Vedic Heritage reward coupon
+export async function generateDiwaliCoupon(email: string, phone: string, amount: number): Promise<string> {
+  return generateVedicCoupon(email, phone, amount);
+}
+
 export async function validateCoupon(code: string, email?: string): Promise<{ valid: boolean; amount?: number }> {
   if (!code) return { valid: false };
   const cleanCode = code.trim().toUpperCase();
+
+  // All Diwali coupons are completely invalid and grant zero discount
+  if (cleanCode.includes("DIWALI")) {
+    return { valid: false };
+  }
 
   try {
     const couponRef = doc(db, "coupons", cleanCode);
@@ -43,8 +53,8 @@ export async function validateCoupon(code: string, email?: string): Promise<{ va
     console.error("validateCoupon Firestore lookup error:", err);
   }
 
-  // Resilient format fallback for valid First-Purchase & DIWALI coupons: (FIRST|VEDIC|WELCOME|DIWALI){amount}
-  const match = cleanCode.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)([A-Z0-9]{0,6})$/);
+  // Resilient format fallback for valid First-Purchase & Vedic coupons: (FIRST|VEDIC|WELCOME){amount}
+  const match = cleanCode.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)([A-Z0-9]{0,6})$/);
   if (match) {
     return { valid: true, amount: parseInt(match[2], 10) };
   }

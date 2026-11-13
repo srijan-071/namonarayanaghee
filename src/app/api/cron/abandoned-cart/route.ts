@@ -71,8 +71,8 @@ export async function GET(req: Request) {
               phone: cartData.phone,
               items: cartData.cartItems,
               subtotal: cartData.subtotal,
-              couponCode: "DIWALI",
-              freeGift: "Complimentary Brass Puja Spoon & Festive Diya",
+              couponCode: "NAMO10",
+              freeGift: "Complimentary Cold-Pressed Mustard Oil (250ml)",
               cartUrl: "https://www.namonarayanaghee.store/checkout"
             }).catch(console.error);
           }
@@ -89,7 +89,7 @@ Subtotal: ${formatPrice(cartData.subtotal)}
 Items Count: ${cartData.cartItems.length}
 
 WhatsApp Recovery Link:
-https://wa.me/91${cleanPhone}?text=Namaste%2C%20we%20noticed%20you%20were%20ordering%20pure%20Vedic%20Gir%20Cow%20Ghee%20at%20Namo%20Narayana.%20Use%20code%20DIWALI%20for%20an%20extra%2010%25%20OFF%20at%20namonarayanaghee.store
+https://wa.me/91${cleanPhone}?text=Namaste%2C%20we%20noticed%20you%20were%20ordering%20pure%20Vedic%20Gir%20Cow%20Ghee%20at%20Namo%20Narayana.%20Use%20code%20NAMO10%20for%20an%20extra%2010%25%20OFF%20at%20namonarayanaghee.store
 ------------------------------
             `.trim();
 

@@ -139,7 +139,7 @@ export async function POST(req: Request) {
       id: cleanOrderId
     };
 
-    // 1.5. Issue Diwali Coupon
+    // 1.5. Issue Vedic Heritage Reward Gift Card for Next Order
     const items = orderData.items || [];
     let gheeVolume = 0;
     items.forEach((item: any) => {
@@ -165,25 +165,30 @@ export async function POST(req: Request) {
       else rewardAmount = 100;
     }
 
-    let couponCode = orderData.diwaliCoupon || "";
+    let couponCode = orderData.rewardCoupon || orderData.vedicRewardCoupon || orderData.diwaliCoupon || "";
+    if (couponCode.includes("DIWALI")) {
+      couponCode = ""; // Purge any legacy Diwali coupon string
+    }
     if (!couponCode && rewardAmount > 0) {
       try {
-        const { generateDiwaliCoupon } = await import("@/lib/coupons");
+        const { generateVedicCoupon } = await import("@/lib/coupons");
         const customerEmail = orderData.contactInfo?.email || orderData.shippingAddress?.email || orderData.customerEmail || "";
         const customerPhone = orderData.contactInfo?.phone || orderData.shippingAddress?.phone || orderData.customerPhone || "";
-        couponCode = await generateDiwaliCoupon(customerEmail, customerPhone, rewardAmount);
+        couponCode = await generateVedicCoupon(customerEmail, customerPhone, rewardAmount);
       } catch (couponErr) {
-        console.error("Failed to generate Diwali coupon in Firestore, using code fallback:", couponErr);
-        couponCode = `DIWALI${rewardAmount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        console.error("Failed to generate Vedic coupon in Firestore, using code fallback:", couponErr);
+        couponCode = `VEDIC${rewardAmount}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       }
     }
 
     if (couponCode) {
       try {
-        await updateDoc(orderRef, { diwaliCoupon: couponCode, rewardAmount });
+        await updateDoc(orderRef, { rewardCoupon: couponCode, vedicRewardCoupon: couponCode, diwaliCoupon: couponCode, rewardAmount });
       } catch (upErr) {
         console.error("Failed to save coupon to order doc:", upErr);
       }
+      (mergedOrder as any).rewardCoupon = couponCode;
+      (mergedOrder as any).vedicRewardCoupon = couponCode;
       (mergedOrder as any).diwaliCoupon = couponCode;
       (mergedOrder as any).rewardAmount = rewardAmount;
     }

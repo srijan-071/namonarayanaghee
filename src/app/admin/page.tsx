@@ -1019,14 +1019,14 @@ export default function AdminPage() {
           cartId: cart.cartId || cart.id,
           items: cart.cartItems,
           subtotal: cart.subtotal,
-          couponCode: "DIWALI",
+          couponCode: "NAMO10",
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to dispatch recovery email");
 
-      toast.success(`Recovery email sent to ${cart.email} with 10% OFF code DIWALI!`);
+      toast.success(`Recovery email sent to ${cart.email} with 10% OFF code NAMO10!`);
 
       // Update cart local status across matching email or phone
       setAbandonedCarts((prev) =>
@@ -2098,7 +2098,7 @@ export default function AdminPage() {
                         // Build personalized WhatsApp text
                         const firstItemName = cart.cartItems?.[0]?.name || cart.cartItems?.[0]?.title || "Pure Vedic A2 Gir Cow Ghee";
                         const waText = encodeURIComponent(
-                          `Namaste ${cart.name || "Ji"}, we noticed you were looking at ${firstItemName} on Namo Narayana. You can complete your order now with 10% OFF using coupon code DIWALI (+ complimentary festive gift) at https://www.namonarayanaghee.store/checkout${cart.orderId ? `?restoreOrder=${cart.orderId}` : ""}`
+                          `Namaste ${cart.name || "Ji"}, we noticed you were looking at ${firstItemName} on Namo Narayana. You can complete your order now with 10% OFF using coupon code NAMO10 (+ complimentary gift) at https://www.namonarayanaghee.store/checkout${cart.orderId ? `?restoreOrder=${cart.orderId}` : ""}`
                         );
 
                         return (
@@ -2856,7 +2856,7 @@ export default function AdminPage() {
                 <div className="bg-[#FCFAF5] border border-[#EAD7BC] rounded-lg p-3 my-2">
                   <p className="text-xs font-semibold text-[#5E0B10]">Special 10% Farm Welcome:</p>
                   <p className="text-xs text-[#4A352F]">
-                    Use coupon code <strong className="font-mono text-[#8A1B14]">DIWALI</strong> at checkout.
+                    Use coupon code <strong className="font-mono text-[#075B43]">NAMO10</strong> at checkout.
                   </p>
                 </div>
                 <div className="border-t border-gray-200 pt-3 text-[11px] text-gray-500">

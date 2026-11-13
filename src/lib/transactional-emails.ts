@@ -375,19 +375,21 @@ export async function sendOrderStatusEmail(
   const freeGiftsHtml = buildFreeGiftsHtml(orderData?.freeGifts || []);
   const shippingHtml = buildShippingAddressHtml(orderData?.shippingAddress, orderData?.contactInfo);
 
-  const diwaliCoupon = orderData?.diwaliCoupon;
-  const rewardAmount = orderData?.rewardAmount || (diwaliCoupon ? (diwaliCoupon.match(/^DIWALI(\d+)/)?.[1] || "250") : null);
-  const diwaliCouponHtml = diwaliCoupon ? `
-    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 12px; padding: 18px 16px; margin: 20px 0; text-align: center;">
+  const rewardCoupon = (orderData?.rewardCoupon || orderData?.vedicRewardCoupon || orderData?.diwaliCoupon || "").includes("DIWALI")
+    ? ""
+    : (orderData?.rewardCoupon || orderData?.vedicRewardCoupon || orderData?.diwaliCoupon);
+  const rewardAmount = orderData?.rewardAmount || (rewardCoupon ? (rewardCoupon.match(/^VEDIC(\d+)/)?.[1] || "250") : null);
+  const rewardCouponHtml = rewardCoupon ? `
+    <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #B89A62; border-radius: 12px; padding: 18px 16px; margin: 20px 0; text-align: center;">
       <span style="display: inline-block; background-color: #075B43; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
-        🪔 Unlocked Festive Reward
+        ✨ Vedic Heritage Reward
       </span>
       <h3 style="color: #17231E; margin: 8px 0 6px 0; font-size: 16px; font-weight: 800;">Your ₹${rewardAmount} Gift Card</h3>
-      <div style="background-color: #ffffff; padding: 8px 18px; border-radius: 6px; font-family: monospace; font-size: 18px; font-weight: 900; color: #075B43; display: inline-block; border: 1.5px solid #D4A017; letter-spacing: 2px;">
-        ${diwaliCoupon}
+      <div style="background-color: #ffffff; padding: 8px 18px; border-radius: 6px; font-family: monospace; font-size: 18px; font-weight: 900; color: #075B43; display: inline-block; border: 1.5px solid #B89A62; letter-spacing: 2px;">
+        ${rewardCoupon}
       </div>
-      <p style="margin: 8px 0 0 0; font-size: 11px; color: #7A4A3B;">
-        Use code at checkout on your next order. Valid until Nov 15th.
+      <p style="margin: 8px 0 0 0; font-size: 11px; color: #727B75;">
+        Use code at checkout on your next order. Valid across our entire range.
       </p>
     </div>
   ` : "";
@@ -438,7 +440,7 @@ export async function sendOrderStatusEmail(
             </span>
           </div>
 
-          ${diwaliCouponHtml}
+          ${rewardCouponHtml}
 
           <!-- Items Table -->
           ${itemsTableHtml}
@@ -571,7 +573,7 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
   }
 
   const customerName = recipient.name || "Customer";
-  const coupon = recipient.couponCode || "DIWALI";
+  const coupon = (recipient.couponCode && !recipient.couponCode.includes("DIWALI")) ? recipient.couponCode : "NAMO10";
   const checkoutUrl = recipient.cartUrl || `${STORE_URL}/checkout`;
 
   const subject = `Namaste ${customerName}, your fresh Vedic Bilona Ghee jar is reserved for you 🙏`;
