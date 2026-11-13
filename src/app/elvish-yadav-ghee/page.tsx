@@ -130,7 +130,7 @@ export default function ElvishYadavPage() {
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "On the official store (namonarayanaghee.store), the verified rates are: 500ml at ₹799, 1 Litre flagship at ₹1,299, 2.5 Litres at ₹2,699, and 5 Litres at ₹4,499. All orders include complimentary pan-India delivery.",
+                "On the official store (namonarayanaghee.store), the verified rates are: 500ml at ₹899 (₹799 with Gift Card), 1 Litre flagship at ₹1,549 (₹1,299 with Gift Card), 2.5 Litres at ₹3,199 (₹2,699 with Gift Card), and 5 Litres at ₹5,499 (₹4,499 with Gift Card). All orders also receive an equal gift card for their subsequent purchase, with complimentary pan-India delivery.",
             },
           },
           {

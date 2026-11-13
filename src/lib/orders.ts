@@ -75,10 +75,10 @@ export function calculateCheckoutPricing(
     } else if (coupon.type === 'fixed') {
       discount += coupon.value * 100; // Value is in rupees, subtotal is in paise
     }
-  } else if (normalizedCode && /^DIWALI(1000|500|250|100)/.test(normalizedCode)) {
-    const match = normalizedCode.match(/^DIWALI(1000|500|250|100)/);
+  } else if (normalizedCode && /^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/.test(normalizedCode)) {
+    const match = normalizedCode.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/);
     if (match) {
-      const val = parseInt(match[1], 10);
+      const val = parseInt(match[2], 10);
       discount += val * 100; // Convert rupee reward into paise
     }
   }

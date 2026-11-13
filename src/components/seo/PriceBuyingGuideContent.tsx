@@ -55,9 +55,9 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-500-ml",
     title: "Pure A2 Gir Cow Ghee 500 ml",
     size: "500 ml",
-    price: 79900,
-    compareAtPrice: 199900,
-    effectiveRatePerLitre: "₹1,598 / Litre",
+    price: 89900,
+    compareAtPrice: 219900,
+    effectiveRatePerLitre: "₹899 (₹799 with 1st Order Gift Card)",
     badge: "🌱 STARTER / TRIAL",
     badgeColor: "bg-[#1E3A24]",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
@@ -72,9 +72,9 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-1-litre",
     title: "Pure A2 Gir Cow Ghee 1 Litre",
     size: "1 Litre",
-    price: 129900,
-    compareAtPrice: 329900,
-    effectiveRatePerLitre: "₹1,299 / Litre",
+    price: 154900,
+    compareAtPrice: 349900,
+    effectiveRatePerLitre: "₹1,549 (₹1,299 with 1st Order Gift Card)",
     badge: "👑 #1 BESTSELLER • MOST LOVED",
     badgeColor: "bg-[#C38936]",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
@@ -90,13 +90,13 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-2-5-litre",
     title: "Pure A2 Gir Cow Ghee 2.5 Litre",
     size: "2.5 Litre",
-    price: 269900,
-    compareAtPrice: 749900,
-    effectiveRatePerLitre: "₹1,079.60 / Litre",
+    price: 319900,
+    compareAtPrice: 799900,
+    effectiveRatePerLitre: "₹3,199 (₹2,699 with 1st Order Gift Card)",
     badge: "🔥 BEST VALUE FOR FAMILIES",
     badgeColor: "bg-[#1E3A24]",
     image: "/assets/product_6-2p5_jpg.webp",
-    bestFor: "Families of 3–5 members; lowers cost to ₹1,079/L with higher savings",
+    bestFor: "Families of 3–5 members; lowers cost with maximum savings",
     dailyCost: "~₹27 / day",
     savings: "64% OFF",
     packaging: "Heavy-duty food container",
@@ -107,9 +107,9 @@ const PACK_CATALOG: PackItem[] = [
     slug: "pure-desi-cow-ghee-5-litre",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     size: "5 Litre",
-    price: 449900,
-    compareAtPrice: 1449900,
-    effectiveRatePerLitre: "₹899.80 / Litre",
+    price: 549900,
+    compareAtPrice: 1549900,
+    effectiveRatePerLitre: "₹5,499 (₹4,499 with 1st Order Gift Card)",
     badge: "💰 BULK SAVINGS CONTAINER",
     badgeColor: "bg-emerald-800",
     image: "/assets/product_6-5L_jpg.webp",
@@ -123,7 +123,7 @@ const PACK_CATALOG: PackItem[] = [
 const FAQS = [
   {
     q: "What is the official price of Namo Narayana Ghee 1 Litre?",
-    a: "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹1,299.00 on the official store (namonarayanaghee.store). This includes free courier delivery across India.",
+    a: "The verified price for the 1 Litre flagship glass jar of Namo Narayana Pure A2 Gir Cow Bilona Ghee is ₹1,549.00 on the official store (namonarayanaghee.store), or ₹1,299.00 when applying the First-Order Vedic Heritage Gift Card. All purchases also receive an equal gift card for their subsequent order and free pan-India courier delivery.",
   },
   {
     q: "Why does authentic Bilona Ghee cost more than supermarket ghee?",
@@ -309,7 +309,7 @@ export default function PriceBuyingGuideContent() {
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
             <p>
-              Shoppers often wonder why authentic A2 Gir Cow Bilona Ghee costs ₹1,299 per litre while industrial supermarket ghee is sold for ₹450 to ₹600 per litre. The answer lies in the fundamental difference between <strong>industrial cream-separation</strong> and the <strong>traditional Vedic Bilona curd-churning method</strong>.
+              Shoppers often wonder why authentic A2 Gir Cow Bilona Ghee costs ₹1,549 per litre (or ₹1,299 with first-order Vedic reward) while industrial supermarket ghee is sold for ₹450 to ₹600 per litre. The answer lies in the fundamental difference between <strong>industrial cream-separation</strong> and the <strong>traditional Vedic Bilona curd-churning method</strong>.
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 my-6 not-prose">
@@ -506,7 +506,7 @@ export default function PriceBuyingGuideContent() {
                 href="/products/pure-desi-cow-ghee-1-litre"
                 className="bg-[#B89A62] hover:bg-[#D4AF37] text-[#17231E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
               >
-                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Bestseller (₹1,299)
+                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Bestseller (₹1,549)
               </Link>
               <Link
                 href="/collections/ghee"

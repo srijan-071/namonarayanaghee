@@ -78,6 +78,7 @@ const INDIAN_STATES = [
 
 // Popular instant-apply coupons
 const QUICK_COUPONS = [
+  { code: "FIRST250", label: "₹250 OFF", desc: "First Order Gift Card" },
   { code: "NAMO10", label: "10% OFF", desc: "Special 10% Off" },
   { code: "SHUBHLAABH", label: "₹100 OFF", desc: "Instant Discount" },
   { code: "WELCOME", label: "5% OFF", desc: "First Order" },
@@ -506,7 +507,7 @@ export default function CheckoutPage() {
     const val = codeToApply.trim().toUpperCase();
     if (!val) return;
     const cartLib = await import("@/lib/cart");
-    if (cartLib.VALID_COUPONS[val] || /^DIWALI(100|250|500|1000)/.test(val)) {
+    if (cartLib.VALID_COUPONS[val] || /^(FIRST|VEDIC|WELCOME|DIWALI)(100|250|500|1000)/.test(val)) {
       setCouponCode(val);
       cartLib.applyCoupon(val);
       setTempCoupon("");
@@ -562,10 +563,10 @@ export default function CheckoutPage() {
         variantId: bumpVariantId,
         title: "Pure A2 Gir Cow Ghee 500 ml",
         variantTitle: "500 ml",
-        price: 79900,
+        price: 89900,
         image: "/media/6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942_cab5f3.webp",
         slug: "pure-desi-cow-ghee-500-ml",
-        compareAtPrice: 199900
+        compareAtPrice: 219900
       }, 1);
       toast.success("Added 500ml A2 Ghee jar (60% OFF) to your parcel!");
     }
@@ -987,9 +988,16 @@ export default function CheckoutPage() {
                 <span>{formatPrice(pricing.subtotal)}</span>
               </div>
               {pricing.discount > 0 && (
-                <div className="flex justify-between text-emerald-700 font-medium">
-                  <span>Coupon Discount ({couponCode})</span>
-                  <span>-{formatPrice(pricing.discount)}</span>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-emerald-700 font-medium">
+                    <span>Coupon / Gift Card Discount ({couponCode})</span>
+                    <span>-{formatPrice(pricing.discount)}</span>
+                  </div>
+                  {/^(FIRST|VEDIC|WELCOME|DIWALI)/.test(couponCode) && (
+                    <p className="text-[10px] text-[#075B43] bg-[#E8F1EC] px-2 py-0.5 rounded font-semibold">
+                      🎁 + Equal Gift Card unlocked for your next order upon purchase!
+                    </p>
+                  )}
                 </div>
               )}
               {paymentMethod === "prepaid" ? (
@@ -1682,7 +1690,7 @@ export default function CheckoutPage() {
                       Add 500ml A2 Ghee Jar for Parents
                     </p>
                     <p className="text-[11px] text-[#727B75] mt-0.5">
-                      Special: <strong className="text-[#075B43]">₹799</strong> <span className="line-through text-stone-400">₹1,999</span> • <span className="text-emerald-700 font-semibold">60% OFF</span>
+                      Special: <strong className="text-[#075B43]">₹899</strong> <span className="line-through text-stone-400">₹2,199</span> • <span className="text-emerald-700 font-semibold">60% OFF</span>
                     </p>
                   </div>
                 </label>

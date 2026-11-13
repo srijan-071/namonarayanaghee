@@ -81,10 +81,10 @@ export default function Header() {
   ];
 
   const shopPacks = [
-    { href: "/products/pure-desi-cow-ghee-500-ml", title: "500 ml Jar", sub: "Starter Pack • ₹799" },
-    { href: "/products/pure-desi-cow-ghee-1-litre", title: "1 Litre Jar", sub: "Flagship Bestseller • ₹1,299" },
-    { href: "/products/pure-desi-cow-ghee-2-5-litre", title: "2.5 Litre Pack", sub: "Family Value (+3 Free Oils) • ₹2,699" },
-    { href: "/products/pure-desi-cow-ghee-5-litre", title: "5 Litre Tin", sub: "Bulk Heritage (+3 Free Oils) • ₹4,499" },
+    { href: "/products/pure-desi-cow-ghee-500-ml", title: "500 ml Jar", sub: "Starter Pack • ₹899 (₹799 with Gift Card)" },
+    { href: "/products/pure-desi-cow-ghee-1-litre", title: "1 Litre Jar", sub: "Flagship Bestseller • ₹1,549 (₹1,299 with Gift Card)" },
+    { href: "/products/pure-desi-cow-ghee-2-5-litre", title: "2.5 Litre Pack", sub: "Family Value (+3 Free Oils) • ₹3,199 (₹2,699 with Gift Card)" },
+    { href: "/products/pure-desi-cow-ghee-5-litre", title: "5 Litre Tin", sub: "Bulk Heritage (+3 Free Oils) • ₹5,499 (₹4,499 with Gift Card)" },
     { href: "/collections/ghee", title: "View All Products →", sub: "Full Vedic Ghee Collection" },
   ];
 

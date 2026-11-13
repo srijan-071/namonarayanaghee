@@ -42,7 +42,19 @@ export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value
   "ELVISH10": { type: 'percentage', value: 10 },
   "NAMO50": { type: 'fixed', value: 50 },
   "WELCOME": { type: 'percentage', value: 5 },
-  "GHEE100": { type: 'fixed', value: 100 }
+  "GHEE100": { type: 'fixed', value: 100 },
+  // First-Purchase Vedic Heritage Gift Card Codes
+  "FIRST250": { type: 'fixed', value: 250 },
+  "VEDIC250": { type: 'fixed', value: 250 },
+  "FIRST100": { type: 'fixed', value: 100 },
+  "VEDIC100": { type: 'fixed', value: 100 },
+  "FIRST500": { type: 'fixed', value: 500 },
+  "VEDIC500": { type: 'fixed', value: 500 },
+  "FIRST1000": { type: 'fixed', value: 1000 },
+  "VEDIC1000": { type: 'fixed', value: 1000 },
+  "FIRSTORDER": { type: 'fixed', value: 250 },
+  "GIFTCARD": { type: 'fixed', value: 250 },
+  "VEDICREWARD": { type: 'fixed', value: 250 },
 };
 
 function recalculate(items: CartItem[], discountCode?: string): Cart {
@@ -60,10 +72,10 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
       } else if (coupon.type === 'fixed') {
         discountAmount = coupon.value * 100;
       }
-    } else if (/^DIWALI(1000|500|250|100)/.test(code)) {
-      const match = code.match(/^DIWALI(1000|500|250|100)/);
+    } else if (/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/.test(code)) {
+      const match = code.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)/);
       if (match) {
-        const val = parseInt(match[1], 10);
+        const val = parseInt(match[2], 10);
         validCode = code;
         discountAmount = val * 100;
       }

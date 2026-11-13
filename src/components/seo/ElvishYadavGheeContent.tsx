@@ -51,12 +51,12 @@ const ELVISH_PACKS: EndorsedPack[] = [
     slug: "pure-desi-cow-ghee-500-ml",
     title: "Pure A2 Gir Cow Ghee 500 ml",
     size: "500 ml",
-    price: 79900,
-    compareAtPrice: 199900,
+    price: 89900,
+    compareAtPrice: 219900,
     badge: "Starter / Trial Pack",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
-    bestUse: "Starter trial, daily pooja rituals, single individuals",
-    effectiveRate: "₹1,598 / Litre",
+    bestUse: "Starter trial, daily pooja rituals (₹799 with 1st Order Gift Card)",
+    effectiveRate: "₹899 (₹799 with Gift Card)",
   },
   {
     id: 9545153446056,
@@ -64,12 +64,12 @@ const ELVISH_PACKS: EndorsedPack[] = [
     slug: "pure-desi-cow-ghee-1-litre",
     title: "Pure A2 Gir Cow Ghee 1 Litre",
     size: "1 Litre",
-    price: 129900,
-    compareAtPrice: 329900,
+    price: 154900,
+    compareAtPrice: 349900,
     badge: "👑 #1 Bestseller (Most Popular)",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     bestUse: "Regular family cooking, roti brushing, daily wellness (~₹43/day)",
-    effectiveRate: "₹1,299 / Litre",
+    effectiveRate: "₹1,549 (₹1,299 with 1st Order Gift Card)",
     isBestseller: true,
   },
   {
@@ -78,12 +78,12 @@ const ELVISH_PACKS: EndorsedPack[] = [
     slug: "pure-desi-cow-ghee-2-5-litre",
     title: "Pure A2 Gir Cow Ghee 2.5 Litre",
     size: "2.5 Litre",
-    price: 269900,
-    compareAtPrice: 749900,
+    price: 319900,
+    compareAtPrice: 799900,
     badge: "🔥 Best Value Family Pack",
     image: "/assets/product_6-2p5_jpg.webp",
-    bestUse: "Households of 3–5 members; lowers effective rate to ₹1,079.60/L",
-    effectiveRate: "₹1,079.60 / Litre",
+    bestUse: "Households of 3–5 members; lowers effective rate to ₹2,699 with Gift Card",
+    effectiveRate: "₹3,199 (₹2,699 with Gift Card)",
   },
   {
     id: 9545149055144,
@@ -91,12 +91,12 @@ const ELVISH_PACKS: EndorsedPack[] = [
     slug: "pure-desi-cow-ghee-5-litre",
     title: "Pure A2 Gir Cow Ghee 5 Litre",
     size: "5 Litre",
-    price: 449900,
-    compareAtPrice: 1449900,
+    price: 549900,
+    compareAtPrice: 1549900,
     badge: "💰 Bulk Heritage Container",
     image: "/assets/product_6-5L_jpg.webp",
     bestUse: "Joint families, traditional sweets, festive celebrations",
-    effectiveRate: "₹899.80 / Litre",
+    effectiveRate: "₹5,499 (₹4,499 with Gift Card)",
   },
 ];
 
@@ -111,7 +111,7 @@ const FAQS = [
   },
   {
     q: "What is the official price of Elvish Yadav's Ghee?",
-    a: "On the official store (namonarayanaghee.store), the verified rates are: 500ml at ₹799, 1 Litre flagship at ₹1,299, 2.5 Litres at ₹2,699, and 5 Litres at ₹4,499. All orders include complimentary pan-India delivery.",
+    a: "On the official store (namonarayanaghee.store), the verified rates are: 500ml at ₹899 (₹799 with 1st Order Gift Card), 1 Litre flagship at ₹1,549 (₹1,299 with Gift Card), 2.5 Litres at ₹3,199 (₹2,699 with Gift Card), and 5 Litres at ₹5,499 (₹4,499 with Gift Card). Every order also receives an additional gift card for their subsequent purchase, plus complimentary pan-India delivery.",
   },
   {
     q: "How can I make sure I am ordering the genuine product?",
@@ -245,7 +245,7 @@ export default function ElvishYadavGheeContent() {
                   href="/products/pure-desi-cow-ghee-1-litre"
                   className="bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2 shadow-md shadow-[#075B43]/20"
                 >
-                  <Zap className="w-4 h-4 fill-current text-[#B89A62]" /> Order Elvish&apos;s 1L Bestseller (₹1,299)
+                  <Zap className="w-4 h-4 fill-current text-[#B89A62]" /> Order Elvish&apos;s 1L Bestseller (₹1,549)
                 </Link>
                 <Link
                   href="#packs"
@@ -459,7 +459,7 @@ export default function ElvishYadavGheeContent() {
                 href="/products/pure-desi-cow-ghee-1-litre"
                 className="bg-[#B89A62] hover:bg-[#a3844f] text-[#17231E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
               >
-                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Flagship (₹1,299)
+                <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Flagship (₹1,549)
               </Link>
               <Link
                 href="/pages/namo-narayana-ghee-price-buying-guide"

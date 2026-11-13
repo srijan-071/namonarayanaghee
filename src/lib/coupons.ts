@@ -43,10 +43,15 @@ export async function validateCoupon(code: string, email?: string): Promise<{ va
     console.error("validateCoupon Firestore lookup error:", err);
   }
 
-  // Resilient format fallback for valid DIWALI coupons: DIWALI{amount}{4 alphanumeric chars}
-  const match = cleanCode.match(/^DIWALI(1000|500|250|100)[A-Z0-9]{4}$/);
+  // Resilient format fallback for valid First-Purchase & DIWALI coupons: (FIRST|VEDIC|WELCOME|DIWALI){amount}
+  const match = cleanCode.match(/^(FIRST|VEDIC|WELCOME|DIWALI)(1000|500|250|100)([A-Z0-9]{0,6})$/);
   if (match) {
-    return { valid: true, amount: parseInt(match[1], 10) };
+    return { valid: true, amount: parseInt(match[2], 10) };
+  }
+
+  // Common universal first-purchase alias codes
+  if (["FIRSTORDER", "GIFTCARD", "VEDICREWARD"].includes(cleanCode)) {
+    return { valid: true, amount: 250 };
   }
 
   return { valid: false };

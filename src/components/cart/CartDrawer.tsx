@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, Star, Gift, Sparkles, ArrowRight, Lock, ShieldCheck } from "lucide-react";
+import { Loader2, ChevronLeft, ShoppingCart, Trash2, Ticket, TrendingUp, Star, Gift, Sparkles, ArrowRight, Lock, ShieldCheck, Check } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { RAW_PRODUCTS } from "@/lib/data-store";
 import { getFreeGiftsForCart, has500mlGheeUpsell } from "@/lib/gifts";
@@ -33,6 +33,22 @@ export default function CartDrawer() {
   const totalGheeItemsCount = cart.items.reduce((s, i) => s + i.quantity, 0);
   const totalCombinedCount = totalGheeItemsCount + totalFreeGiftsCount;
   const show500mlUpsell = has500mlGheeUpsell(cart.items);
+
+  // Dynamic First-Purchase Vedic Gift Card calculation based on cart items
+  const firstOrderDiscount = (() => {
+    const has5L = cart.items.some((i) => (i.slug || "").includes("5-litre") || (i.variantTitle || "").includes("5 Litre"));
+    if (has5L) return 1000;
+    const has2_5L = cart.items.some((i) => (i.slug || "").includes("2-5-litre") || (i.variantTitle || "").includes("2.5 Litre"));
+    if (has2_5L) return 500;
+    const has1L = cart.items.some((i) => (i.slug || "").includes("1-litre") || (i.variantTitle || "").includes("1 Litre"));
+    if (has1L) return 250;
+    const has500 = cart.items.some((i) => (i.slug || "").includes("500-ml") || (i.variantTitle || "").includes("500 ml"));
+    if (has500) return 100;
+    return 250;
+  })();
+
+  const firstOrderCouponCode = `FIRST${firstOrderDiscount}`;
+  const isFirstOrderCouponApplied = !!(cart.discountCode && (cart.discountCode.startsWith("FIRST") || cart.discountCode.startsWith("VEDIC") || cart.discountCode === "FIRSTORDER"));
 
   const handleRemove = (variantId: number) => {
     const item = cart.items.find((i) => i.variantId === variantId);
@@ -170,6 +186,53 @@ export default function CartDrawer() {
                     </button>
                   </div>
                 )}
+
+                {/* First Purchase Gift Card Prompt Banner in Cart */}
+                <div className="rounded-2xl bg-gradient-to-r from-[#04261C] via-[#063B2C] to-[#084837] border border-[#D4AF37]/40 p-3.5 text-white shadow-sm relative overflow-hidden">
+                  <div
+                    className="pointer-events-none absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-[#D4AF37]/10 blur-xl"
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#104D3B] to-[#05281E] border border-[#D4AF37]/40 flex items-center justify-center shrink-0">
+                        <Gift className="w-4.5 h-4.5 text-[#F5E5B8]" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-[#D4AF37] shrink-0" />
+                          <span className="text-[10px] font-bold tracking-widest text-[#EADBB6] uppercase">
+                            FIRST ORDER REWARD
+                          </span>
+                        </div>
+                        <p className="text-[13px] font-bold text-white leading-tight">
+                          Flat ₹{firstOrderDiscount} Gift Card Discount
+                        </p>
+                        <p className="text-[10.5px] text-[#E3DDD1] leading-tight mt-0.5 truncate">
+                          + ₹{firstOrderDiscount} Gift Card on next order!
+                        </p>
+                      </div>
+                    </div>
+
+                    {isFirstOrderCouponApplied ? (
+                      <span className="inline-flex items-center gap-1 bg-[#D4AF37]/20 border border-[#D4AF37]/60 text-[#F5E5B8] text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0">
+                        <Check className="w-3 h-3 stroke-[3]" /> Applied
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (applyCoupon(firstOrderCouponCode)) {
+                            toast.success(`🎉 Flat ₹${firstOrderDiscount} First Order Gift Card applied! Plus ₹${firstOrderDiscount} for next order.`);
+                          }
+                        }}
+                        className="bg-gradient-to-r from-[#D4AF37] to-[#B89A62] hover:brightness-110 text-[#04261C] text-[11px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 shrink-0 cursor-pointer flex items-center gap-1"
+                      >
+                        <span>Apply ₹{firstOrderDiscount}</span>
+                        <ArrowRight className="w-3 h-3 stroke-[3]" />
+                      </button>
+                    )}
+                  </div>
+                </div>
 
                 {/* Cart Details Header */}
                 <div>
@@ -318,35 +381,66 @@ export default function CartDrawer() {
                   </div>
                   {/* 1-Click Offer Coupon */}
                   {!cart.discountCode && (
-                    <div className="bg-gradient-to-r from-[#E8F1EC] to-[#FAF9F5] border border-[#DCE8DF] rounded-xl p-3 flex items-center justify-between mb-3 shadow-xs">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Sparkles className="w-5 h-5 text-[#075B43] shrink-0" />
-                        <div>
-                          <p className="text-[12px] font-black text-[#075B43] leading-tight">
-                            SPECIAL SAVINGS (10% OFF)
-                          </p>
-                          <p className="text-[11px] text-[#727B75] font-medium">
-                            Apply code <span className="font-bold text-[#17231E]">NAMO10</span> for extra 10% OFF
-                          </p>
+                    <div className="space-y-2 mb-3">
+                      {/* Priority First-Order Gift Card Option */}
+                      <div className="bg-gradient-to-r from-[#04261C] via-[#063B2C] to-[#084837] border border-[#D4AF37]/40 rounded-xl p-3 flex items-center justify-between shadow-xs text-white">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Gift className="w-5 h-5 text-[#F5E5B8] shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-[12px] font-black text-[#F5E5B8] leading-tight">
+                              FIRST ORDER GIFT CARD (FLAT ₹{firstOrderDiscount} OFF)
+                            </p>
+                            <p className="text-[11px] text-[#E3DDD1] font-medium truncate">
+                              Apply code <span className="font-bold text-white">{firstOrderCouponCode}</span> for instant discount
+                            </p>
+                          </div>
                         </div>
+                        <button
+                          onClick={() => {
+                            if (applyCoupon(firstOrderCouponCode)) {
+                              toast.success(`🎉 Flat ₹${firstOrderDiscount} First Order Gift Card Applied!`);
+                            }
+                          }}
+                          className="bg-gradient-to-r from-[#D4AF37] to-[#B89A62] hover:brightness-110 text-[#04261C] text-[11px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 cursor-pointer shrink-0"
+                        >
+                          Apply
+                        </button>
                       </div>
-                      <button
-                        onClick={() => {
-                          if (applyCoupon("NAMO10")) {
-                            toast.success("10% Special Discount Applied!");
-                          }
-                        }}
-                        className="bg-[#075B43] hover:bg-[#064635] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 cursor-pointer shrink-0"
-                      >
-                        Apply
-                      </button>
+
+                      {/* Alternate 10% Off Option */}
+                      <div className="bg-gradient-to-r from-[#E8F1EC] to-[#FAF9F5] border border-[#DCE8DF] rounded-xl p-2.5 flex items-center justify-between shadow-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Sparkles className="w-4 h-4 text-[#075B43] shrink-0" />
+                          <div>
+                            <p className="text-[11px] font-black text-[#075B43] leading-tight">
+                              SPECIAL SAVINGS (10% OFF)
+                            </p>
+                            <p className="text-[10.5px] text-[#727B75]">
+                              Code <span className="font-bold text-[#17231E]">NAMO10</span>
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (applyCoupon("NAMO10")) {
+                              toast.success("10% Special Discount Applied!");
+                            }
+                          }}
+                          className="bg-[#075B43] hover:bg-[#064635] text-white text-[10.5px] font-bold px-2.5 py-1 rounded-md shadow-sm transition active:scale-95 cursor-pointer shrink-0"
+                        >
+                          Apply
+                        </button>
+                      </div>
                     </div>
                   )}
 
                   {cart.discountCode ? (
                     <div className="flex items-center justify-between bg-[#E8F1EC] border border-[#DCE8DF] text-[#075B43] px-4 py-3 rounded-xl text-sm font-bold">
-                      <span>{cart.discountCode} applied!</span>
-                      <button onClick={() => removeCoupon()} className="text-xs hover:underline cursor-pointer">Remove</button>
+                      <div className="flex items-center gap-1.5">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        <span>Code <strong>{cart.discountCode}</strong> applied (-{formatPrice(cart.discountAmount || 0)})</span>
+                      </div>
+                      <button onClick={() => removeCoupon()} className="text-xs hover:underline cursor-pointer text-[#075B43]">Remove</button>
                     </div>
                   ) : (
                     <div className="flex gap-2 relative">

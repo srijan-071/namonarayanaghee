@@ -288,10 +288,10 @@ export default function AboutUsContent() {
                 Hand-churned from natural curd using traditional wooden bilonas. Golden, aromatic, granular texture with zero preservatives.
               </p>
               <div className="flex items-baseline gap-3 mb-6">
-                <span className="text-3xl font-serif font-bold text-[#075B43]">₹1,299.00</span>
-                <span className="text-stone-400 line-through">₹2,099.00</span>
+                <span className="text-3xl font-serif font-bold text-[#075B43]">₹1,549.00</span>
+                <span className="text-stone-400 line-through">₹3,499.00</span>
                 <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                  Free Pan-India Delivery
+                  ₹1,299 with 1st Order Gift Card • Free Delivery
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -299,7 +299,7 @@ export default function AboutUsContent() {
                   href="/products/pure-desi-cow-ghee-1-litre"
                   className="bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2 shadow-md shadow-[#075B43]/20"
                 >
-                  <Zap className="w-4 h-4 fill-current text-[#B89A62]" /> Order Official 1L Jar (₹1,299)
+                  <Zap className="w-4 h-4 fill-current text-[#B89A62]" /> Order Official 1L Jar (₹1,549)
                 </Link>
                 <Link
                   href="/pages/namo-narayana-ghee-price-buying-guide"

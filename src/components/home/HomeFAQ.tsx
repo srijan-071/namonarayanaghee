@@ -31,7 +31,7 @@ const FAQS: FAQItem[] = [
   },
   {
     q: "Which pack size is best suited for my household?",
-    a: "The 500 ml jar (₹799) is ideal as a starter trial pack. The 1 Litre jar (₹1,299) is our flagship best-seller for small families of 2-3 members. For regular cooking households (3-5 members), the 2.5 Litre pack (₹2,699, ₹1,079/L) provides optimum value. The 5 Litre bulk container (₹4,499, ₹899/L) offers maximum family savings.",
+    a: "The 500 ml jar (₹899, or ₹799 with 1st Order Gift Card) is ideal as a starter trial pack. The 1 Litre jar (₹1,549, or ₹1,299 with 1st Order Gift Card) is our flagship best-seller for small families of 2-3 members. For regular cooking households (3-5 members), the 2.5 Litre pack (₹3,199, or ₹2,699 with Gift Card) provides optimum value. The 5 Litre bulk container (₹5,499, or ₹4,499 with Gift Card) offers maximum family savings. All orders also receive an equal gift card for their next purchase!",
   },
   {
     q: "What is your shipping and return policy if a jar arrives damaged?",
