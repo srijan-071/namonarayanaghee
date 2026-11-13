@@ -256,9 +256,9 @@ export default function NamoNarayanaGheeReviewContent() {
   };
 
   return (
-    <div className="bg-[#FCFAF5] text-nn-ink font-sans selection:bg-[#8A1B14] selection:text-white">
+    <div className="bg-[#FAF9F5] text-nn-ink font-sans selection:bg-[#075B43] selection:text-white">
       {/* ─── Top Hero / Header Section ──────────────────────── */}
-      <section className="relative overflow-hidden pt-10 pb-16 md:py-20 bg-gradient-to-b from-[#FFFDF7] via-[#FBF5E8] to-[#FCFAF5] border-b border-amber-900/10">
+      <section className="relative overflow-hidden pt-10 pb-16 md:py-20 bg-gradient-to-b from-[#FFFDF7] via-[#FBF5E8] to-[#FAF9F5] border-b border-amber-900/10">
         <div className="nn-container max-w-5xl mx-auto">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center space-x-2 text-xs md:text-sm text-nn-earth mb-6" aria-label="Breadcrumb">
@@ -271,7 +271,7 @@ export default function NamoNarayanaGheeReviewContent() {
 
           {/* Eyebrow & Badges */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#8A1B14]/10 text-[#8A1B14] border border-[#8A1B14]/20">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#075B43]/10 text-[#075B43] border border-[#075B43]/20">
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
               Verified In-Depth Review &amp; Buyer&apos;s Guide
             </span>
@@ -297,7 +297,7 @@ export default function NamoNarayanaGheeReviewContent() {
           {/* Author & Trust Bar */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:p-5 rounded-2xl bg-white/80 border border-amber-900/10 shadow-sm backdrop-blur-sm">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-[#8A1B14] text-white flex items-center justify-center font-serif font-bold text-lg shadow-inner">
+              <div className="w-11 h-11 rounded-full bg-[#075B43] text-white flex items-center justify-center font-serif font-bold text-lg shadow-inner">
                 NN
               </div>
               <div>
@@ -398,7 +398,7 @@ export default function NamoNarayanaGheeReviewContent() {
             </span>
             <Link
               href="#products-section"
-              className="inline-flex items-center gap-1 font-bold text-[#8A1B14] hover:underline"
+              className="inline-flex items-center gap-1 font-bold text-[#075B43] hover:underline"
             >
               Skip to Packs &amp; Best Deals <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -455,7 +455,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     >
                       {/* Ribbon / Badge */}
                       {product.badge && (
-                        <div className={`px-4 py-1.5 text-xs font-bold text-center tracking-wide uppercase ${product.badgeColor || "bg-[#8A1B14] text-white"}`}>
+                        <div className={`px-4 py-1.5 text-xs font-bold text-center tracking-wide uppercase ${product.badgeColor || "bg-[#075B43] text-white"}`}>
                           {product.badge}
                         </div>
                       )}
@@ -494,7 +494,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         {/* Pricing Row */}
                         <div className="my-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100 flex items-baseline justify-between">
                           <div>
-                            <div className="text-2xl font-bold text-[#8A1B14]">
+                            <div className="text-2xl font-bold text-[#075B43]">
                               {formatPrice(product.price)}
                             </div>
                             <div className="text-xs text-stone-400 line-through">
@@ -527,7 +527,7 @@ export default function NamoNarayanaGheeReviewContent() {
                             type="button"
                             onClick={(e) => handleAddToCart(product, e)}
                             disabled={addingId === product.id}
-                            className="w-full py-2.5 px-3 rounded-lg border-2 border-[#8A1B14] text-[#8A1B14] font-bold text-xs uppercase tracking-wider hover:bg-[#8A1B14] hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                            className="w-full py-2.5 px-3 rounded-lg border-2 border-[#075B43] text-[#075B43] font-bold text-xs uppercase tracking-wider hover:bg-[#075B43] hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                           >
                             <ShoppingCart className="w-3.5 h-3.5" />
                             {addingId === product.id ? "Adding..." : "Add to Cart"}
@@ -552,14 +552,14 @@ export default function NamoNarayanaGheeReviewContent() {
               <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 flex items-center gap-3">
                 <Sparkles className="w-6 h-6 shrink-0 text-amber-600" />
                 <div className="text-xs sm:text-sm text-stone-700">
-                  <strong className="text-[#8A1B14]">Editor&apos;s Recommendation:</strong> For a typical Indian household of 3–4 people, the <strong>1 Litre Pack (₹1,299)</strong> or <strong>2.5 Litre Family Pack (₹2,699)</strong> offers the ideal balance of culinary freshness, daily immunity dosage, and direct farm savings.
+                  <strong className="text-[#075B43]">Editor&apos;s Recommendation:</strong> For a typical Indian household of 3–4 people, the <strong>1 Litre Pack (₹1,299)</strong> or <strong>2.5 Litre Family Pack (₹2,699)</strong> offers the ideal balance of culinary freshness, daily immunity dosage, and direct farm savings.
                 </div>
               </div>
             </section>
 
             {/* ─── Section: Brand Founder & Ownership (P0 Intent) ─── */}
             <section className="bg-white rounded-2xl p-6 md:p-8 border border-stone-200 shadow-sm space-y-4">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#8A1B14]">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#075B43]">
                 <BadgeCheck className="w-4 h-4" /> Brand Transparency
               </div>
               <h2 className="font-serif text-2xl md:text-3xl font-bold text-[#231714]">
@@ -573,10 +573,10 @@ export default function NamoNarayanaGheeReviewContent() {
                 <p>
                   <strong>Namo Narayana was founded by youth icon, content creator, and entrepreneur Elvish Yadav</strong>, in collaboration with dedicated traditional dairy agriculturalists.
                 </p>
-                <div className="bg-stone-50 border-l-4 border-[#8A1B14] p-4 my-4 rounded-r-xl">
+                <div className="bg-stone-50 border-l-4 border-[#075B43] p-4 my-4 rounded-r-xl">
                   <p className="italic text-sm text-stone-700 mb-0">
                     &ldquo;In our childhood, ghee had an intoxicating aroma that filled the entire courtyard the moment mother made parathas. Today, store-bought ghee tastes like bland cooking oil because commercial factories use chemical machines and hybrid cow milk. Namo Narayana was born from a pledge: to bring back 100% unadulterated, grandmother-style A2 Gir Cow Bilona Ghee to Indian homes.&rdquo;
-                    <span className="block mt-2 font-bold not-italic text-xs text-[#8A1B14]">— Elvish Yadav, Founder</span>
+                    <span className="block mt-2 font-bold not-italic text-xs text-[#075B43]">— Elvish Yadav, Founder</span>
                   </p>
                 </div>
                 <p>
@@ -613,7 +613,7 @@ export default function NamoNarayanaGheeReviewContent() {
                           onClick={() => setFamilySize(size)}
                           className={`py-2 px-3 text-xs font-bold rounded-lg border transition-all ${
                             familySize === size
-                              ? "bg-[#8A1B14] text-white border-[#8A1B14] shadow"
+                              ? "bg-[#075B43] text-white border-[#075B43] shadow"
                               : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
                           }`}
                         >
@@ -635,9 +635,9 @@ export default function NamoNarayanaGheeReviewContent() {
                         step="1"
                         value={dailySpoons}
                         onChange={(e) => setDailySpoons(Number(e.target.value))}
-                        className="w-full accent-[#8A1B14] cursor-pointer"
+                        className="w-full accent-[#075B43] cursor-pointer"
                       />
-                      <span className="font-bold text-sm text-[#8A1B14] whitespace-nowrap min-w-[70px]">
+                      <span className="font-bold text-sm text-[#075B43] whitespace-nowrap min-w-[70px]">
                         {dailySpoons} {dailySpoons === 1 ? "Spoon" : "Spoons"}
                       </span>
                     </div>
@@ -653,7 +653,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     <div className="text-xs uppercase tracking-wider font-semibold text-amber-900 mb-1">
                       Estimated Monthly Requirement
                     </div>
-                    <div className="text-2xl font-bold text-[#8A1B14]">
+                    <div className="text-2xl font-bold text-[#075B43]">
                       ~{monthlyConsumptionLitre.toFixed(1)} Litres / Month
                     </div>
                     <div className="text-xs text-stone-600 mt-1">
@@ -665,12 +665,12 @@ export default function NamoNarayanaGheeReviewContent() {
                     <div className="text-xs text-stone-500 mb-1">Recommended Best Match:</div>
                     <div className="font-bold text-sm text-[#231714] flex items-center justify-between">
                       <span>{recommendedPack.title}</span>
-                      <span className="text-[#8A1B14]">{formatPrice(recommendedPack.price)}</span>
+                      <span className="text-[#075B43]">{formatPrice(recommendedPack.price)}</span>
                     </div>
                     <button
                       type="button"
                       onClick={(e) => handleAddToCart(recommendedPack, e)}
-                      className="mt-3 w-full py-2 bg-[#8A1B14] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-[#6E0D14] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                      className="mt-3 w-full py-2 bg-[#075B43] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-[#064635] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
                       Add Recommended Pack to Cart
@@ -716,27 +716,27 @@ export default function NamoNarayanaGheeReviewContent() {
 
                 <div className="grid sm:grid-cols-5 gap-3 my-4 not-prose">
                   <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
-                    <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">1</span>
+                    <span className="w-6 h-6 rounded-full bg-[#075B43] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">1</span>
                     <div className="font-bold text-xs text-stone-900">Slow Boiling</div>
                     <div className="text-[11px] text-stone-500 mt-1">Fresh whole A2 Gir cow milk is boiled slowly</div>
                   </div>
                   <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
-                    <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">2</span>
+                    <span className="w-6 h-6 rounded-full bg-[#075B43] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">2</span>
                     <div className="font-bold text-xs text-stone-900">Curd Culturing</div>
                     <div className="text-[11px] text-stone-500 mt-1">Milk is converted into whole Dahi overnight</div>
                   </div>
                   <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
-                    <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">3</span>
+                    <span className="w-6 h-6 rounded-full bg-[#075B43] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">3</span>
                     <div className="font-bold text-xs text-stone-900">Bilona Churning</div>
                     <div className="text-[11px] text-stone-500 mt-1">Bi-directional wooden churning separates Makkhan</div>
                   </div>
                   <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
-                    <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">4</span>
+                    <span className="w-6 h-6 rounded-full bg-[#075B43] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">4</span>
                     <div className="font-bold text-xs text-stone-900">Slow Simmering</div>
                     <div className="text-[11px] text-stone-500 mt-1">Cultured butter is gently simmered in brass kadai</div>
                   </div>
                   <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-center">
-                    <span className="w-6 h-6 rounded-full bg-[#8A1B14] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">5</span>
+                    <span className="w-6 h-6 rounded-full bg-[#075B43] text-white text-xs font-bold inline-flex items-center justify-center mb-1.5">5</span>
                     <div className="font-bold text-xs text-stone-900">Danedar Ghee</div>
                     <div className="text-[11px] text-stone-500 mt-1">Golden aromatic granular ghee is strained &amp; packed</div>
                   </div>
@@ -764,7 +764,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     type="button"
                     onClick={() => setActiveTab("overview")}
                     className={`px-3 py-1.5 rounded-md transition-all ${
-                      activeTab === "overview" ? "bg-white text-[#8A1B14] shadow" : "text-stone-600 hover:text-stone-900"
+                      activeTab === "overview" ? "bg-white text-[#075B43] shadow" : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
                     At a Glance
@@ -773,7 +773,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     type="button"
                     onClick={() => setActiveTab("health")}
                     className={`px-3 py-1.5 rounded-md transition-all ${
-                      activeTab === "health" ? "bg-white text-[#8A1B14] shadow" : "text-stone-600 hover:text-stone-900"
+                      activeTab === "health" ? "bg-white text-[#075B43] shadow" : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
                     Digestion &amp; Nutrients
@@ -782,7 +782,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     type="button"
                     onClick={() => setActiveTab("process")}
                     className={`px-3 py-1.5 rounded-md transition-all ${
-                      activeTab === "process" ? "bg-white text-[#8A1B14] shadow" : "text-stone-600 hover:text-stone-900"
+                      activeTab === "process" ? "bg-white text-[#075B43] shadow" : "text-stone-600 hover:text-stone-900"
                     }`}
                   >
                     Sourcing &amp; Lab
@@ -796,7 +796,7 @@ export default function NamoNarayanaGheeReviewContent() {
                   <thead>
                     <tr className="bg-stone-50 border-b border-stone-200 text-stone-700">
                       <th className="p-3.5 font-bold">Parameter</th>
-                      <th className="p-3.5 font-bold text-[#8A1B14] bg-amber-50/70 border-x border-amber-200">
+                      <th className="p-3.5 font-bold text-[#075B43] bg-amber-50/70 border-x border-amber-200">
                         Namo Narayana A2 Bilona Ghee
                       </th>
                       <th className="p-3.5 font-bold">Standard Commercial Ghee</th>
@@ -808,7 +808,7 @@ export default function NamoNarayanaGheeReviewContent() {
                       <>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Primary Milk Source</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             100% Desi Gir Cows (A2 Beta-Casein)
                           </td>
                           <td className="p-3.5">Hybrid / HF Crossbred (A1/A2 mix)</td>
@@ -816,7 +816,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Manufacturing Method</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             Vedic Bilona (Curd &rarr; Makkhan Churned)
                           </td>
                           <td className="p-3.5">Direct Cream Skimming via machines</td>
@@ -824,7 +824,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Milk Required per Litre</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             25–30 Litres Whole A2 Milk
                           </td>
                           <td className="p-3.5">10–12 Litres Cream</td>
@@ -832,7 +832,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Texture &amp; Aroma</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             Golden Danedar, Rich Nutty Makkhan Aroma
                           </td>
                           <td className="p-3.5">Waxy, smooth, faint or artificial aroma</td>
@@ -845,7 +845,7 @@ export default function NamoNarayanaGheeReviewContent() {
                       <>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Digestibility</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             Very High (Zero BCM-7 peptide, light on liver)
                           </td>
                           <td className="p-3.5">Moderate to Heavy (Causes bloating in some)</td>
@@ -853,7 +853,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Butyric Acid Content</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             High (Natural probiotic curd fermentation)
                           </td>
                           <td className="p-3.5">Low to moderate</td>
@@ -861,7 +861,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Lactose &amp; Casein Solids</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             99.9% Removed during slow clarifying
                           </td>
                           <td className="p-3.5">Trace proteins remain</td>
@@ -869,7 +869,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Omega-3 &amp; CLA Ratios</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             Optimal (from pasture-grazed Gir cows)
                           </td>
                           <td className="p-3.5">Low (grain/feedlot dairy)</td>
@@ -882,7 +882,7 @@ export default function NamoNarayanaGheeReviewContent() {
                       <>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Preservatives / Colours</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             0% (Pure single ingredient: Milk Fat)
                           </td>
                           <td className="p-3.5">Often synthetic betacarotene or aromas added</td>
@@ -890,7 +890,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">FSSAI Milk Fat %</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             &gt;99.5% Standard Certified
                           </td>
                           <td className="p-3.5">Bare minimum ~99.5%</td>
@@ -898,7 +898,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Moisture Content</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             &lt;0.5% (High shelf stability)
                           </td>
                           <td className="p-3.5">Near standard limits</td>
@@ -906,7 +906,7 @@ export default function NamoNarayanaGheeReviewContent() {
                         </tr>
                         <tr>
                           <td className="p-3.5 font-semibold text-stone-800">Ahimsa Milking Protocol</td>
-                          <td className="p-3.5 font-semibold text-[#8A1B14] bg-amber-50/40 border-x border-amber-100">
+                          <td className="p-3.5 font-semibold text-[#075B43] bg-amber-50/40 border-x border-amber-100">
                             Strict (Calf feeds first)
                           </td>
                           <td className="p-3.5">Industrial automated milking</td>
@@ -930,7 +930,7 @@ export default function NamoNarayanaGheeReviewContent() {
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-stone-500 uppercase">Confidence</span>
-                  <div className="font-bold text-lg text-[#8A1B14]">{purityScore}%</div>
+                  <div className="font-bold text-lg text-[#075B43]">{purityScore}%</div>
                 </div>
               </div>
 
@@ -941,7 +941,7 @@ export default function NamoNarayanaGheeReviewContent() {
               {/* Progress bar */}
               <div className="w-full bg-stone-200 h-2.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-amber-500 to-[#8A1B14] h-full transition-all duration-500 rounded-full"
+                  className="bg-gradient-to-r from-[#B89A62] to-[#075B43] h-full transition-all duration-500 rounded-full"
                   style={{ width: `${purityScore}%` }}
                 />
               </div>
@@ -980,7 +980,7 @@ export default function NamoNarayanaGheeReviewContent() {
                   >
                     <div
                       className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                        checkedTests[index] ? "bg-[#8A1B14] text-white" : "border-2 border-stone-300"
+                        checkedTests[index] ? "bg-[#075B43] text-white" : "border-2 border-stone-300"
                       }`}
                     >
                       {checkedTests[index] && <Check className="w-3.5 h-3.5" />}
@@ -1127,7 +1127,7 @@ export default function NamoNarayanaGheeReviewContent() {
             </section>
 
             {/* ─── Final Verdict: Is It Worth Buying? ─── */}
-            <section className="bg-gradient-to-br from-[#8A1B14] to-[#5E0B10] text-white rounded-2xl p-6 md:p-8 shadow-xl space-y-4">
+            <section className="bg-gradient-to-br from-[#075B43] via-[#064635] to-[#17231E] text-white rounded-2xl p-6 md:p-8 shadow-xl space-y-4">
               <div className="flex items-center gap-2 text-amber-300 text-xs font-bold uppercase tracking-wider">
                 <Award className="w-5 h-5" /> Editorial Verdict
               </div>
@@ -1215,7 +1215,7 @@ export default function NamoNarayanaGheeReviewContent() {
                     >
                       <span>{faq.q}</span>
                       {expandedFaq === index ? (
-                        <ChevronUp className="w-4 h-4 text-[#8A1B14] shrink-0" />
+                        <ChevronUp className="w-4 h-4 text-[#075B43] shrink-0" />
                       ) : (
                         <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />
                       )}
@@ -1240,7 +1240,7 @@ export default function NamoNarayanaGheeReviewContent() {
               
               {/* Featured Best Seller Card */}
               <div className="bg-white rounded-2xl p-5 border-2 border-amber-400 shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#8A1B14] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                <div className="absolute top-0 right-0 bg-[#075B43] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
                   Top Choice
                 </div>
 
@@ -1267,7 +1267,7 @@ export default function NamoNarayanaGheeReviewContent() {
                 <div className="bg-amber-50 p-3 rounded-xl mb-4 flex items-center justify-between">
                   <div>
                     <span className="text-xs text-stone-500 block">Offer Price</span>
-                    <div className="text-2xl font-bold text-[#8A1B14]">₹1,299</div>
+                    <div className="text-2xl font-bold text-[#075B43]">₹1,299</div>
                   </div>
                   <div className="text-right">
                     <span className="text-xs text-stone-400 line-through">MRP: ₹3,299</span>
@@ -1279,7 +1279,7 @@ export default function NamoNarayanaGheeReviewContent() {
                   <button
                     type="button"
                     onClick={(e) => handleAddToCart(PRODUCTS_DATA[0], e)}
-                    className="w-full py-3 bg-[#8A1B14] text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#6E0D14] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                    className="w-full py-3 bg-[#075B43] text-white rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#064635] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
                   >
                     <ShoppingCart className="w-4 h-4" /> Add 1L Jar to Cart
                   </button>
@@ -1310,42 +1310,42 @@ export default function NamoNarayanaGheeReviewContent() {
                 </div>
                 <ul className="space-y-2 text-stone-600">
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">01.</span> Pack Sizes &amp; Prices (500ml–5L)
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">02.</span> Who Owns &amp; Founded It?
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">03.</span> Interactive Usage Calculator
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">04.</span> A2 Gir Cow &amp; Bilona Method
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">05.</span> Purity &amp; Quality Test Checklist
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">06.</span> Customer Feedback Analysis
                     </a>
                   </li>
                   <li>
-                    <a href="#products-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#products-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">07.</span> How to Order Online Safely
                     </a>
                   </li>
                   <li>
-                    <a href="#faq-section" className="hover:text-[#8A1B14] transition-colors flex items-center gap-1.5">
+                    <a href="#faq-section" className="hover:text-[#075B43] transition-colors flex items-center gap-1.5">
                       <span className="text-amber-700 font-bold">08.</span> Frequently Asked Questions
                     </a>
                   </li>
@@ -1362,7 +1362,7 @@ export default function NamoNarayanaGheeReviewContent() {
                 </p>
                 <Link
                   href="/pages/certifications"
-                  className="inline-flex items-center gap-1 font-bold text-[#8A1B14] hover:underline text-[11px]"
+                  className="inline-flex items-center gap-1 font-bold text-[#075B43] hover:underline text-[11px]"
                 >
                   View Lab Reports <ArrowRight className="w-3 h-3" />
                 </Link>

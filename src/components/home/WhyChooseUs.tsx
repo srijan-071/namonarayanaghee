@@ -37,17 +37,17 @@ const differentiators = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 md:py-20 bg-white border-b border-[#EAE3D7]">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-white via-[#FAFBF9] to-[#FAF8F5] border-b border-emerald-900/10">
       <div className="nn-container">
         
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#68191D] block mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#059669] block mb-2">
             The Namo Narayana Distinction
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-4">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#0D2B1D] font-bold mb-4 tracking-tight">
             Traditional Craftsmanship, Verifiable Purity
           </h2>
-          <p className="text-sm sm:text-base text-[#29251F] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4B5548] leading-relaxed font-sans">
             We adhere to authentic Vedic practices without industrial shortcuts. Every jar is defined by genuine ingredients, documented processes, and rigorous batch tests.
           </p>
         </div>
@@ -58,15 +58,15 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={i}
-                className="p-6 rounded-2xl bg-[#F8F5EE] border border-[#EAE3D7] hover:border-[#68191D]/40 transition-all flex flex-col"
+                className="p-6 rounded-2xl bg-gradient-to-br from-white via-[#FAFBF9] to-[#F4F8F6] border border-emerald-900/10 hover:border-emerald-500/40 hover:shadow-xs transition-all flex flex-col group"
               >
-                <div className="w-12 h-12 rounded-xl bg-white border border-[#EAE3D7] flex items-center justify-center text-[#68191D] mb-4 shadow-2xs">
-                  <Icon className="w-6 h-6 text-[#68191D]" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100/90 to-emerald-50/80 border border-emerald-300/40 flex items-center justify-center text-[#059669] mb-4 shadow-2xs group-hover:scale-105 transition-transform">
+                  <Icon className="w-6 h-6 text-[#059669]" strokeWidth={1.85} />
                 </div>
-                <h3 className="font-serif font-bold text-lg text-[#4E1013] mb-2">
+                <h3 className="font-serif font-bold text-lg text-[#0D2B1D] mb-2 tracking-tight">
                   {item.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#29251F] leading-relaxed flex-1">
+                <p className="text-xs sm:text-sm text-[#4B5548] leading-relaxed flex-1 font-sans">
                   {item.desc}
                 </p>
               </div>

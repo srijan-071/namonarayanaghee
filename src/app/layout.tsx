@@ -8,6 +8,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { CartDrawerProvider } from "@/components/cart/CartDrawerProvider";
 import { FirebaseProvider } from "@/components/providers/FirebaseProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import InAppBrowserWarning from "@/components/layout/InAppBrowserWarning";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -72,12 +73,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AnalyticsProvider>
           <FirebaseProvider>
             <CartDrawerProvider>
-              <Toaster position="top-center" duration={2000} richColors />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <CartDrawer />
-              <InAppBrowserWarning />
+              <SmoothScrollProvider>
+                <Toaster position="top-center" duration={2000} richColors />
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <CartDrawer />
+                <InAppBrowserWarning />
+              </SmoothScrollProvider>
             </CartDrawerProvider>
           </FirebaseProvider>
         </AnalyticsProvider>

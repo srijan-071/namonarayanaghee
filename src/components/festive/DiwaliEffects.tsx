@@ -322,9 +322,9 @@ export default function DiwaliEffects() {
                 <line x1="70" y1="90" x2="75" y2="120" stroke="#E67E22" strokeWidth="2" strokeDasharray="2,2" />
                 <defs>
                   <linearGradient id="kandilGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#8A1B14" />
-                    <stop offset="50%" stopColor="#C48B28" />
-                    <stop offset="100%" stopColor="#5E0B10" />
+                    <stop offset="0%" stopColor="#075B43" />
+                    <stop offset="50%" stopColor="#B89A62" />
+                    <stop offset="100%" stopColor="#064635" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -349,9 +349,9 @@ export default function DiwaliEffects() {
                 <line x1="70" y1="90" x2="75" y2="120" stroke="#E67E22" strokeWidth="2" strokeDasharray="2,2" />
                 <defs>
                   <linearGradient id="kandilGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#C48B28" />
-                    <stop offset="50%" stopColor="#8A1B14" />
-                    <stop offset="100%" stopColor="#D4A017" />
+                    <stop offset="0%" stopColor="#B89A62" />
+                    <stop offset="50%" stopColor="#075B43" />
+                    <stop offset="100%" stopColor="#064635" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -388,7 +388,7 @@ export default function DiwaliEffects() {
             </div>
 
             {/* Terracotta Clay Diya Pot */}
-            <svg viewBox="0 0 100 45" className="w-14 h-8 drop-shadow-[0_4px_8px_rgba(94,11,16,0.4)]">
+            <svg viewBox="0 0 100 45" className="w-14 h-8 drop-shadow-[0_4px_8px_rgba(7,91,67,0.4)]">
               {/* Clay Bowl */}
               <path
                 d="M 5 15 Q 50 45 95 15 Q 70 8 50 14 Q 30 8 5 15 Z"
@@ -397,20 +397,20 @@ export default function DiwaliEffects() {
                 strokeWidth="2"
               />
               {/* Lip / Golden Filigree Trim */}
-              <ellipse cx="50" cy="14" rx="42" ry="5" fill="#8A1B14" stroke="#F5BD47" strokeWidth="1.5" />
+              <ellipse cx="50" cy="14" rx="42" ry="5" fill="#075B43" stroke="#F5BD47" strokeWidth="1.5" />
               {/* Vedic Ghee Pool */}
               <ellipse cx="50" cy="14" rx="30" ry="3.5" fill="#FFB703" opacity="0.9" />
               <defs>
                 <linearGradient id="clayDiyaGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#C45A28" />
-                  <stop offset="50%" stopColor="#8A1B14" />
-                  <stop offset="100%" stopColor="#5E0B10" />
+                  <stop offset="0%" stopColor="#B89A62" />
+                  <stop offset="50%" stopColor="#075B43" />
+                  <stop offset="100%" stopColor="#064635" />
                 </linearGradient>
               </defs>
             </svg>
 
             {/* Sparkle Tag */}
-            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#5E0B10]/90 text-[#F5BD47] text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-[#D4A017]/60 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
+            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#064635]/90 text-[#B89A62] text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-[#B89A62]/60 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
               Tap for Sparks ✨
             </span>
           </div>
@@ -422,7 +422,7 @@ export default function DiwaliEffects() {
         <button
           type="button"
           onClick={toggleEffects}
-          className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#8A1B14] bg-[#FFFDF7]/90 hover:bg-[#FFFDF7] border border-[#EAD7BC] shadow-xs backdrop-blur-xs transition hover:scale-105"
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#075B43] bg-white/90 hover:bg-white border border-[#EAE7DF] shadow-xs backdrop-blur-xs transition hover:scale-105"
           title={isEnabled ? "Disable Diwali visual animations" : "Enable Diwali visual animations"}
         >
           <Sparkles className={`w-3 h-3 ${isEnabled ? "text-amber-500 fill-amber-500 animate-spin" : "text-stone-400"}`} />

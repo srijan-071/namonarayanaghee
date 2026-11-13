@@ -88,7 +88,7 @@ function calculateEDD(order: any) {
       isDelivered: false,
       isFailed: false,
       badgeText: "Express Transit",
-      badgeColor: "bg-[#F5ECE0] text-[#5E0B10] border-[#EAD7BC]",
+      badgeColor: "bg-[#E8F1EC] text-[#075B43] border-[#DCE8DF]",
     };
   }
 
@@ -220,7 +220,7 @@ function calculateEDD(order: any) {
     isDelivered: false,
     isFailed: false,
     badgeText: zoneLabel,
-    badgeColor: "bg-[#F5ECE0] text-[#5E0B10] border-[#EAD7BC]",
+    badgeColor: "bg-[#E8F1EC] text-[#075B43] border-[#DCE8DF]",
   };
 }
 
@@ -545,16 +545,16 @@ function TrackOrderContent() {
       <div className="nn-container max-w-3xl">
         <div className="text-center mb-12">
           <span className="nn-eyebrow mb-4 inline-block">Track Order</span>
-          <h1 className="text-4xl md:text-5xl font-serif text-[#5E0B10] mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif text-[#17231E] mb-4 font-bold">
             Where is my Ghee?
           </h1>
-          <p className="text-[#4A352F] text-lg">
+          <p className="text-[#727B75] text-lg">
             Enter your Order ID (with or without &apos;#&apos;) and Email or Phone to track the real-time status of your package.
           </p>
         </div>
 
         {!order ? (
-          <div className="bg-white rounded-2xl shadow-xl border border-[#EAD7BC] p-8 md:p-12">
+          <div className="bg-white rounded-2xl shadow-xl border border-[#EAE7DF] p-8 md:p-12">
             <form onSubmit={handleTrack} className="space-y-6">
               {error && (
                 <div className="bg-red-50 text-red-700 p-4 rounded-xl flex gap-3 text-sm">
@@ -564,7 +564,7 @@ function TrackOrderContent() {
               )}
 
               <div>
-                <label htmlFor="orderId" className="block text-sm font-medium text-[#4A352F] mb-2">
+                <label htmlFor="orderId" className="block text-sm font-medium text-[#17231E] mb-2">
                   Order ID
                 </label>
                 <input
@@ -572,18 +572,18 @@ function TrackOrderContent() {
                   id="orderId"
                   value={orderId}
                   onChange={(e) => setOrderId(e.target.value)}
-                  className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all font-mono text-[#2A1612]"
+                  className="w-full bg-[#FAF9F5] border border-[#EAE7DF] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#075B43] focus:border-transparent transition-all font-mono text-[#17231E]"
                   placeholder="e.g. #7e9b04... or 7e9b04..."
                   required
                 />
-                <p className="text-xs text-[#8C988B] mt-1.5 flex items-center gap-1.5">
-                  <span className="text-[#C99A3D] font-bold">✓</span>
+                <p className="text-xs text-[#727B75] mt-1.5 flex items-center gap-1.5">
+                  <span className="text-[#075B43] font-bold">✓</span>
                   <span>Search works with or without the &apos;#&apos; hashtag (e.g. #5xVp9q or 5xVp9q)</span>
                 </p>
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-[#4A352F] mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-[#17231E] mb-2">
                   Email Address or Phone Number
                 </label>
                 <input
@@ -591,7 +591,7 @@ function TrackOrderContent() {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#FCFAF5] border border-[#EAD7BC] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C99A3D] focus:border-transparent transition-all"
+                  className="w-full bg-[#FAF9F5] border border-[#EAE7DF] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#075B43] focus:border-transparent transition-all text-[#17231E]"
                   placeholder="Email or phone used during checkout"
                   required
                 />
@@ -600,7 +600,7 @@ function TrackOrderContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full nn-btn nn-btn-primary py-4 text-base shadow-lg flex justify-center items-center gap-2"
+                className="w-full nn-btn nn-btn-primary py-4 text-base shadow-lg flex justify-center items-center gap-2 cursor-pointer"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -618,16 +618,16 @@ function TrackOrderContent() {
             <div className="flex justify-between items-center mb-4">
               <button
                 onClick={() => setOrder(null)}
-                className="text-[#C99A3D] font-semibold hover:text-[#A87845] text-sm flex items-center gap-1"
+                className="text-[#075B43] font-semibold hover:underline text-sm flex items-center gap-1 cursor-pointer"
               >
                 &larr; Track another order
               </button>
             </div>
 
-            <div className="bg-white border border-[#EAD7BC] rounded-2xl overflow-hidden shadow-xl">
-              <div className="bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] p-8 text-white text-center">
-                <p className="text-sm text-[#EAD7BC] mb-2 uppercase tracking-widest font-semibold">Current Status</p>
-                <h2 className="text-2xl md:text-3xl font-serif text-[#F5BD47]">
+            <div className="bg-white border border-[#EAE7DF] rounded-2xl overflow-hidden shadow-xl">
+              <div className="bg-gradient-to-r from-[#075B43] via-[#064635] to-[#043327] p-8 text-white text-center">
+                <p className="text-sm text-emerald-100 mb-2 uppercase tracking-widest font-semibold">Current Status</p>
+                <h2 className="text-2xl md:text-3xl font-serif text-[#B89A62] font-bold">
                   {getDynamicOrderStatus(order.createdAt, order.status, order.paymentStatus, order.paymentMethod)}
                 </h2>
               </div>
@@ -637,26 +637,26 @@ function TrackOrderContent() {
                 {(() => {
                   const edd = calculateEDD(order);
                   return (
-                    <div className="mb-8 p-4 sm:p-5 rounded-2xl border border-[#EAD7BC] bg-gradient-to-br from-[#FFFDF9] via-[#FAF6EE] to-[#F5ECE0] shadow-xs">
+                    <div className="mb-8 p-4 sm:p-5 rounded-2xl border border-[#EAE7DF] bg-gradient-to-br from-[#FFFDF9] via-[#FAF9F5] to-[#E8F1EC] shadow-xs">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-start gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5E0B10] to-[#8A1B14] flex items-center justify-center shrink-0 shadow-xs">
-                            <Calendar className="w-5 h-5 text-[#F5BD47]" />
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#075B43] to-[#064635] flex items-center justify-center shrink-0 shadow-xs">
+                            <Calendar className="w-5 h-5 text-[#B89A62]" />
                           </div>
                           <div>
-                            <span className="text-[10px] uppercase font-extrabold tracking-wider text-[#8A1B14] block">
+                            <span className="text-[10px] uppercase font-extrabold tracking-wider text-[#075B43] block">
                               Doorstep Arrival Window
                             </span>
-                            <h3 className="text-lg sm:text-xl font-serif font-bold text-[#5E0B10]">
+                            <h3 className="text-lg sm:text-xl font-serif font-bold text-[#17231E]">
                               {edd.title}
                             </h3>
-                            <p className="text-xs text-[#7A4A3B] mt-0.5 leading-relaxed">
+                            <p className="text-xs text-[#727B75] mt-0.5 leading-relaxed">
                               {edd.subtitle}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EAD7BC]">
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EAE7DF]">
                           <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full border ${edd.badgeColor} uppercase tracking-wider`}>
                             {edd.badgeText}
                           </span>
@@ -673,21 +673,21 @@ function TrackOrderContent() {
                 {(() => {
                   const currentStageIndex = getJourneyStageIndex(order);
                   return (
-                    <div className="mb-8 p-5 sm:p-6 rounded-2xl border border-[#EAD7BC] bg-[#FCFAF5] shadow-xs">
-                      <div className="flex items-center justify-between flex-wrap gap-2 mb-6 border-b border-[#EAD7BC] pb-4">
+                    <div className="mb-8 p-5 sm:p-6 rounded-2xl border border-[#EAE7DF] bg-[#FAF9F5] shadow-xs">
+                      <div className="flex items-center justify-between flex-wrap gap-2 mb-6 border-b border-[#EAE7DF] pb-4">
                         <div>
-                          <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#8A1B14] block">
+                          <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#075B43] block">
                             Vedic Fulfillment Journey
                           </span>
-                          <h3 className="text-lg font-serif font-bold text-[#5E0B10] flex items-center gap-2">
+                          <h3 className="text-lg font-serif font-bold text-[#17231E] flex items-center gap-2">
                             <span>Farm-to-Kitchen Sacred Progress</span>
-                            <span className="inline-flex items-center text-[10px] font-sans font-bold bg-[#F5ECE0] text-[#8A1B14] px-2 py-0.5 rounded-full border border-[#EAD7BC]">
+                            <span className="inline-flex items-center text-[10px] font-sans font-bold bg-[#E8F1EC] text-[#075B43] px-2 py-0.5 rounded-full border border-[#DCE8DF]">
                               Brahma Muhurta Bilona
                             </span>
                           </h3>
                         </div>
 
-                        <div className="text-xs text-[#7A4A3B] font-medium flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#EAD7BC] shadow-2xs">
+                        <div className="text-xs text-[#727B75] font-medium flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-[#EAE7DF] shadow-2xs">
                           <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
                           <span>Live Order Tracking</span>
                         </div>
@@ -699,7 +699,7 @@ function TrackOrderContent() {
                           {/* Connecting Progress Line */}
                           <div className="absolute top-6 left-8 right-8 h-1 bg-[#E8DEC9] -z-0" aria-hidden="true">
                             <div
-                              className="h-full bg-gradient-to-r from-emerald-600 via-[#D4A017] to-[#8A1B14] transition-all duration-700 ease-out"
+                              className="h-full bg-gradient-to-r from-emerald-600 via-[#059669] to-[#075B43] transition-all duration-700 ease-out"
                               style={{
                                 width: `${Math.min(100, (currentStageIndex / (VEDIC_JOURNEY_STAGES.length - 1)) * 100)}%`,
                               }}
@@ -722,8 +722,8 @@ function TrackOrderContent() {
                                     isCompleted
                                       ? "bg-emerald-600 text-white shadow-md"
                                       : isCurrent
-                                      ? "bg-gradient-to-br from-[#D4A017] to-[#B38012] text-white shadow-lg ring-4 ring-amber-200/80 scale-110"
-                                      : "bg-white border-2 border-[#EAD7BC] text-[#8C7B6D]"
+                                      ? "bg-gradient-to-br from-[#075B43] to-[#064635] text-white shadow-lg ring-4 ring-emerald-200/80 scale-110"
+                                      : "bg-white border-2 border-[#EAE7DF] text-[#727B75]"
                                   }`}
                                 >
                                   {isCompleted ? (
@@ -739,7 +739,7 @@ function TrackOrderContent() {
                                       isCompleted
                                         ? "text-emerald-700"
                                         : isCurrent
-                                        ? "text-[#8A1B14]"
+                                        ? "text-[#075B43]"
                                         : "text-stone-400"
                                     }`}
                                   >
@@ -747,7 +747,7 @@ function TrackOrderContent() {
                                   </span>
                                   <h4
                                     className={`text-xs font-bold leading-tight ${
-                                      isCompleted || isCurrent ? "text-[#2A1612]" : "text-stone-400"
+                                      isCompleted || isCurrent ? "text-[#17231E]" : "text-stone-400"
                                     }`}
                                   >
                                     {st.title}
@@ -828,14 +828,14 @@ function TrackOrderContent() {
                       </div>
 
                       {/* Courier & AWB Information Strip */}
-                      <div className="mt-6 pt-4 border-t border-[#EAD7BC] bg-white p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div className="mt-6 pt-4 border-t border-[#EAE7DF] bg-white p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-[#FAF6EE] border border-[#EAD7BC] flex items-center justify-center text-[#8A1B14] shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-[#FAF9F5] border border-[#EAE7DF] flex items-center justify-center text-[#075B43] shrink-0">
                             <Truck className="w-4 h-4" />
                           </div>
                           <div>
                             <span className="text-[10px] uppercase font-bold text-stone-400 block">Courier Partner</span>
-                            <strong className="text-[#2A1612]">
+                            <strong className="text-[#17231E]">
                               {order.courierPartner || "Delhivery Express / Blue Dart"}
                             </strong>
                           </div>
@@ -845,21 +845,21 @@ function TrackOrderContent() {
                           <span className="text-[10px] uppercase font-bold text-stone-400 block">AWB Tracking Status</span>
                           {order.trackingNumber && !String(order.trackingNumber).toLowerCase().includes("not picked up") ? (
                             <div className="flex items-center sm:justify-end gap-1.5">
-                              <span className="font-mono font-bold text-[#8A1B14] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                              <span className="font-mono font-bold text-[#075B43] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                                 {order.trackingNumber || order.awbNumber}
                               </span>
                               <a
                                 href={`https://www.delhivery.com/track/package/${order.trackingNumber || order.awbNumber}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#8A1B14] hover:underline flex items-center gap-0.5 font-bold"
+                                className="text-[#075B43] hover:underline flex items-center gap-0.5 font-bold"
                               >
                                 <ExternalLink className="w-3 h-3" />
                               </a>
                             </div>
                           ) : (
-                            <span className="inline-flex items-center gap-1 font-semibold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                              <Clock className="w-3 h-3 text-amber-600" />
+                            <span className="inline-flex items-center gap-1 font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                              <Clock className="w-3 h-3 text-[#075B43]" />
                               Order not picked up yet • AWB will generate on pickup
                             </span>
                           )}
@@ -873,42 +873,42 @@ function TrackOrderContent() {
                 {isCodActive ? (
                   <div className="space-y-4 mb-8">
                     {/* COD Info Strip */}
-                    <div className="bg-[#FAF8F5] border border-[#EAD7BC] rounded-xl p-3.5 text-xs sm:text-sm text-[#4E1013] flex items-center justify-between gap-3">
+                    <div className="bg-[#FAF9F5] border border-[#EAE7DF] rounded-xl p-3.5 text-xs sm:text-sm text-[#17231E] flex items-center justify-between gap-3">
                       <div>
-                        <strong className="block text-sm font-bold text-[#8A1B14]">Cash on Delivery Order</strong>
+                        <strong className="block text-sm font-bold text-[#075B43]">Cash on Delivery Order</strong>
                         <span className="text-stone-600 text-xs">
                           Doorstep balance to collect: <strong>{formatPrice(remainingPaise)}</strong>
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300 shrink-0">
+                      <span className="text-[11px] font-bold bg-[#E8F1EC] text-[#075B43] px-2.5 py-1 rounded-full border border-[#DCE8DF] shrink-0">
                         COD Active
                       </span>
                     </div>
 
                     {/* Pre-Delivery Discount & COD Waiver Card */}
-                    <div className="relative overflow-hidden rounded-2xl border-2 border-[#D4A017] bg-gradient-to-br from-[#FFFDF9] via-[#FCF7ED] to-[#F5ECE0] p-5 sm:p-6 shadow-md">
+                    <div className="relative overflow-hidden rounded-2xl border-2 border-[#B89A62]/60 bg-gradient-to-br from-[#FFFDF9] via-[#FAF9F5] to-[#E8F1EC] p-5 sm:p-6 shadow-md">
                       {/* Decorative Gold Sparkle Tag */}
                       <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#8A1B14] to-[#5E0B10] text-white text-[11px] font-extrabold uppercase tracking-wider shadow-xs">
-                          <Sparkles className="w-3.5 h-3.5 text-[#F5BD47]" />
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#075B43] to-[#064635] text-white text-[11px] font-extrabold uppercase tracking-wider shadow-xs">
+                          <Sparkles className="w-3.5 h-3.5 text-[#B89A62]" />
                           Pre-Arrival Upgrade • Save ₹{totalSavingsRupees}
                         </div>
-                        <span className="text-[11px] font-bold text-[#8A1B14] bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-200">
+                        <span className="text-[11px] font-bold text-[#075B43] bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
                           ⚡ Limited Time Before City Arrival
                         </span>
                       </div>
 
-                      <h3 className="text-lg sm:text-xl font-serif font-bold text-[#5E0B10] mb-1.5">
+                      <h3 className="text-lg sm:text-xl font-serif font-bold text-[#17231E] mb-1.5">
                         Prepay Remaining Balance Online & Save ₹{totalSavingsRupees}!
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-[#4A352F] leading-relaxed mb-4">
+                      <p className="text-xs sm:text-sm text-[#727B75] leading-relaxed mb-4">
                         Your consignment is in transit. Avoid the hassle of arranging cash change at your doorstep. Prepay now to get your <strong>₹250 COD fee waived off</strong> + an extra <strong>10% instant discount</strong> before it arrives in your city!
                       </p>
 
                       {/* Live Price Math Breakdown */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
-                        <div className="bg-white/80 border border-[#EAD7BC] rounded-xl p-2.5 text-center">
+                        <div className="bg-white/80 border border-[#EAE7DF] rounded-xl p-2.5 text-center">
                           <span className="text-[10px] uppercase font-bold text-gray-500 block">Doorstep Cash</span>
                           <span className="text-sm font-bold text-gray-400 line-through">₹{remainingRupees}</span>
                         </div>
@@ -923,14 +923,14 @@ function TrackOrderContent() {
                           <span className="text-sm font-bold text-emerald-700">−₹{tenPercentDiscountRupees}</span>
                         </div>
 
-                        <div className="bg-gradient-to-r from-[#5E0B10] to-[#8A1B14] text-white rounded-xl p-2.5 text-center shadow-xs">
-                          <span className="text-[10px] uppercase font-bold text-[#F5BD47] block">You Pay Online</span>
+                        <div className="bg-gradient-to-r from-[#075B43] to-[#064635] text-white rounded-xl p-2.5 text-center shadow-xs">
+                          <span className="text-[10px] uppercase font-bold text-[#B89A62] block">You Pay Online</span>
                           <span className="text-base font-extrabold text-white">₹{finalPrepayAmountRupees}</span>
                         </div>
                       </div>
 
                       {/* Trust Highlights */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] text-[#4A352F] font-medium mb-5 bg-white/60 p-3 rounded-xl border border-[#EAD7BC]">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] text-[#727B75] font-medium mb-5 bg-white/60 p-3 rounded-xl border border-[#EAE7DF]">
                         <div className="flex items-center gap-1.5">
                           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                           <span>Zero cash needed at doorstep</span>
@@ -940,7 +940,7 @@ function TrackOrderContent() {
                           <span>Contactless priority handover</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <CreditCard className="w-4 h-4 text-[#8A1B14] shrink-0" />
+                          <CreditCard className="w-4 h-4 text-[#075B43] shrink-0" />
                           <span>UPI / GPay / PhonePe / Cards</span>
                         </div>
                       </div>
@@ -950,19 +950,19 @@ function TrackOrderContent() {
                         type="button"
                         onClick={handleInitiatePrepay}
                         disabled={isInitiatingPayment}
-                        className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#8A1B14] via-[#A8281E] to-[#5E0B10] text-white font-bold text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-[1.005] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                        className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#075B43] via-[#064635] to-[#043327] text-white font-bold text-sm sm:text-base shadow-lg hover:shadow-xl hover:scale-[1.005] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                       >
                         {isInitiatingPayment ? (
                           <Loader2 className="w-5 h-5 animate-spin" />
                         ) : (
                           <>
-                            <Zap className="w-4 h-4 text-[#F5BD47] fill-[#F5BD47]" />
+                            <Zap className="w-4 h-4 text-[#B89A62] fill-[#B89A62]" />
                             <span>Prepay ₹{finalPrepayAmountRupees} Online Now (Save ₹{totalSavingsRupees})</span>
                             <ArrowRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
-                      <p className="text-[10px] text-center text-[#7A4A3B] mt-2">
+                      <p className="text-[10px] text-center text-[#727B75] mt-2">
                         🔒 100% Secure 256-Bit Encrypted Payment • Instant Receipt & Delivery Update
                       </p>
                     </div>
@@ -1010,30 +1010,30 @@ function TrackOrderContent() {
                 </div>
 
                 <div className="space-y-6">
-                  <h3 className="font-serif text-[#5E0B10] text-xl">Items Ordered</h3>
+                  <h3 className="font-serif text-[#17231E] text-xl font-bold">Items Ordered</h3>
                   {order.items?.map((item: any, idx: number) => (
                     <div key={idx} className="flex gap-4 items-center">
-                      <div className="w-20 h-20 bg-[#FDF6E8] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#EAD7BC]">
+                      <div className="w-20 h-20 bg-[#FAF9F5] rounded-lg overflow-hidden flex-shrink-0 relative border border-[#EAE7DF]">
                         {item.image ? (
                           <img src={item.image} alt={item.name || item.title} className="w-full h-full object-cover" />
                         ) : (
-                          <Package className="w-6 h-6 text-[#7A4A3B] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                          <Package className="w-6 h-6 text-[#727B75] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                         )}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {item.isGift && (
-                            <span className="bg-[#8A1B14] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="bg-[#075B43] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                               FREE GIFT
                             </span>
                           )}
-                          <h4 className="font-bold text-[#2A1612]">{item.name || item.title}</h4>
+                          <h4 className="font-bold text-[#17231E]">{item.name || item.title}</h4>
                         </div>
-                        <p className="text-[#7A4A3B] text-sm mt-1">Quantity: {item.quantity}</p>
+                        <p className="text-[#727B75] text-sm mt-1">Quantity: {item.quantity}</p>
                       </div>
-                      <div className="font-bold text-[#4A352F]">
+                      <div className="font-bold text-[#727B75]">
                         {item.isGift || item.price === 0 ? (
-                          <span className="text-[#D4A017] font-bold">FREE</span>
+                          <span className="text-[#075B43] font-bold">FREE</span>
                         ) : (
                           formatPrice(item.price * item.quantity)
                         )}
@@ -1042,37 +1042,37 @@ function TrackOrderContent() {
                   ))}
                 </div>
 
-                <div className="pt-6 mt-4 border-t border-[#EAD7BC] space-y-3 text-[#4A352F]">
+                <div className="pt-6 mt-4 border-t border-[#EAE7DF] space-y-3 text-[#727B75]">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-semibold">Subtotal</span>
-                    <span className="font-bold text-[#2A1612]">{formatPrice(order.subtotal)}</span>
+                    <span className="font-bold text-[#17231E]">{formatPrice(order.subtotal)}</span>
                   </div>
                   {order.discount > 0 && (
-                    <div className="flex justify-between items-center text-sm text-[#8A1B14] font-semibold">
+                    <div className="flex justify-between items-center text-sm text-[#075B43] font-semibold">
                       <span className="font-semibold">Discount ({order.discountPercent}%)</span>
                       <span className="font-bold">-{formatPrice(order.discount)}</span>
                     </div>
                   )}
                   {isCodActive && (
-                    <div className="flex justify-between items-center text-sm text-[#8A1B14]">
+                    <div className="flex justify-between items-center text-sm text-[#075B43]">
                       <span className="font-semibold">Balance Due on Delivery</span>
                       <span className="font-bold">{formatPrice(remainingPaise)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center text-lg mt-4 pt-4 border-t border-[#EAD7BC]">
-                    <span className="font-bold text-[#2A1612]">Total Amount</span>
-                    <span className="font-bold text-[#8A1B14]">{formatPrice(order.amountToPay || order.totalAmount)}</span>
+                  <div className="flex justify-between items-center text-lg mt-4 pt-4 border-t border-[#EAE7DF]">
+                    <span className="font-bold text-[#17231E]">Total Amount</span>
+                    <span className="font-bold text-[#075B43]">{formatPrice(order.amountToPay || order.totalAmount)}</span>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-[#EAD7BC]">
+                <div className="mt-8 pt-8 border-t border-[#EAE7DF]">
                   <div className="flex items-start gap-4">
-                    <div className="bg-[#FCFAF5] p-3 rounded-xl text-[#8A1B14]">
+                    <div className="bg-[#FAF9F5] p-3 rounded-xl text-[#075B43]">
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#2A1612] mb-1">Shipping To</h4>
-                      <p className="text-[#4A352F] text-sm leading-relaxed">
+                      <h4 className="font-bold text-[#17231E] mb-1">Shipping To</h4>
+                      <p className="text-[#727B75] text-sm leading-relaxed">
                         {order.shippingAddress?.name}<br />
                         {order.shippingAddress?.address}<br />
                         {order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.pincode}
@@ -1084,9 +1084,9 @@ function TrackOrderContent() {
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-[#8C988B]">
+              <p className="text-sm text-[#727B75]">
                 Have a question about this order?{" "}
-                <Link href="/pages/contact" className="text-[#C99A3D] hover:underline">
+                <Link href="/pages/contact" className="text-[#075B43] hover:underline font-semibold">
                   Contact Support
                 </Link>
               </p>
@@ -1106,15 +1106,15 @@ function TrackOrderContent() {
             ? `Namaste Namo Narayana Team,\n\nI need assistance with my Order #${String(order.id || order.orderId || "").replace(/^#/, "")}.\nCustomer: ${order.shippingAddress?.name || order.contactInfo?.name || "Customer"}\nStatus: ${getDynamicOrderStatus(order.createdAt, order.status, order.paymentStatus, order.paymentMethod)}\n\nQuery details:\n`
             : "Namaste Namo Narayana Team,\n\nI have an inquiry regarding my Vedic Ghee order.\n\nQuery details:\n"
         )}`}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#5E0B10] via-[#85181A] to-[#5E0B10] hover:from-[#730E14] hover:to-[#6B0F15] text-amber-100 rounded-full shadow-2xl hover:shadow-amber-900/40 transition-all hover:scale-105 active:scale-95 border-2 border-amber-400/40 group cursor-pointer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#075B43] via-[#064635] to-[#043327] hover:from-[#064635] hover:to-[#043327] text-white rounded-full shadow-2xl hover:shadow-emerald-900/40 transition-all hover:scale-105 active:scale-95 border-2 border-[#075B43]/40 group cursor-pointer"
         aria-label="Email Customer Support"
       >
         <div className="relative flex items-center justify-center">
-          <Mail className="w-5 h-5 text-amber-300" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#5E0B10] animate-pulse" />
+          <Mail className="w-5 h-5 text-[#B89A62]" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#075B43] animate-pulse" />
         </div>
         <div className="text-left hidden sm:block">
-          <span className="block text-[9px] text-amber-300 uppercase font-extrabold tracking-wider leading-none">
+          <span className="block text-[9px] text-[#B89A62] uppercase font-extrabold tracking-wider leading-none">
             Official Support
           </span>
           <span className="block text-xs font-bold text-white leading-tight mt-0.5">

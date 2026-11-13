@@ -145,16 +145,16 @@ export default function ProductCard({
 
         {/* Purity & Discount Badge */}
         {discount > 0 ? (
-          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-gradient-to-r from-[#8A1B14] to-[#630D12] text-amber-200 text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40">
+          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-gradient-to-r from-[#075B43] to-[#064635] text-white text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded shadow-sm border border-[#075B43]/50">
             {discount}% OFF
           </span>
         ) : (
-          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-[#8A1B14] text-amber-200 text-[10px] font-black px-2 py-0.5 rounded shadow-sm border border-amber-400/40">
+          <span className="absolute top-2 sm:top-2.5 left-2 sm:left-2.5 bg-[#075B43] text-white text-[10px] font-black px-2 py-0.5 rounded shadow-sm border border-[#075B43]/50">
             100% Pure A2
           </span>
         )}
 
-        <span className="absolute bottom-2 sm:bottom-2.5 right-2 sm:right-2.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+        <span className="absolute bottom-2 sm:bottom-2.5 right-2 sm:right-2.5 bg-[#17231E]/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
           Free Shipping
         </span>
       </Link>
@@ -163,10 +163,10 @@ export default function ProductCard({
       <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between bg-white text-center">
         <div>
           <Link href={`/products/${slug}`} className="block focus:outline-none">
-            <span className="text-[10px] text-[#8A1B14] font-extrabold uppercase tracking-widest block mb-1">
+            <span className="text-[10px] text-[#075B43] font-extrabold uppercase tracking-widest block mb-1">
               100% PURE BILONA GHEE
             </span>
-            <h3 className="font-serif font-bold text-sm sm:text-base leading-snug text-nn-ink group-hover:text-[#8A1B14] transition-colors line-clamp-2 mb-1.5">
+            <h3 className="font-serif font-bold text-sm sm:text-base leading-snug text-[#17231E] group-hover:text-[#075B43] transition-colors line-clamp-2 mb-1.5">
               {title}
             </h3>
           </Link>
@@ -175,20 +175,20 @@ export default function ProductCard({
         <div className="flex flex-col items-center gap-1 mt-auto">
           {/* Price & Savings */}
           <div className="flex items-center justify-center gap-1.5 mb-0.5 flex-wrap">
-            <span className="font-extrabold text-[#5E0B10] text-base sm:text-lg font-sans">{formatPrice(price)}</span>
+            <span className="font-extrabold text-[#17231E] text-base sm:text-lg font-sans">{formatPrice(price)}</span>
             {compareAtPrice && compareAtPrice > price && (
               <span className="text-xs sm:text-sm font-semibold text-stone-400 line-through">
                 {formatPrice(compareAtPrice)}
               </span>
             )}
             {discount > 0 && (
-              <span className="text-[10px] font-black bg-[#8A1B14] text-amber-200 px-1.5 py-0.5 rounded uppercase">
+              <span className="text-[10px] font-black bg-[#075B43] text-white px-1.5 py-0.5 rounded uppercase">
                 {discount}% OFF
               </span>
             )}
           </div>
 
-          <span className="text-[10px] text-amber-800 font-semibold flex items-center gap-1 mb-2.5">
+          <span className="text-[10px] text-[#727B75] font-semibold flex items-center gap-1 mb-2.5">
             <span>Free Cold-Pressed Oils Included</span>
           </span>
 
@@ -200,16 +200,16 @@ export default function ProductCard({
               onClick={handleBuyNow}
               onMouseEnter={() => router.prefetch("/checkout")}
               disabled={!available || isBuying}
-              className="w-full bg-gradient-to-r from-[#FFB800] via-[#F59E0B] to-[#D97706] hover:brightness-105 active:scale-[0.98] text-stone-950 font-black text-xs sm:text-sm py-2 sm:py-2.5 px-2.5 rounded-xl transition-all shadow-[0_2px_10px_rgba(245,158,11,0.35)] flex items-center justify-center gap-1.5 uppercase border border-amber-300 cursor-pointer disabled:opacity-70 tracking-wide"
+              className="w-full bg-gradient-to-r from-[#B89A62] via-[#D4AF37] to-[#B89A62] hover:brightness-105 active:scale-[0.98] text-[#17231E] font-black text-xs sm:text-sm py-2 sm:py-2.5 px-2.5 rounded-xl transition-all shadow-[0_2px_10px_rgba(184,154,98,0.25)] flex items-center justify-center gap-1.5 uppercase border border-[#B89A62]/40 cursor-pointer disabled:opacity-70 tracking-wide"
             >
               {isBuying ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-stone-950" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#17231E]" />
                   <span>Opening...</span>
                 </>
               ) : (
                 <>
-                  <Zap className="w-3.5 h-3.5 fill-current text-stone-950 shrink-0" />
+                  <Zap className="w-3.5 h-3.5 fill-current text-[#17231E] shrink-0" />
                   <span>Quick Checkout</span>
                 </>
               )}
@@ -220,7 +220,7 @@ export default function ProductCard({
               type="button"
               onClick={handleAddToCart}
               disabled={!available || isAdding}
-              className="w-full bg-[#FCFAF5] hover:bg-[#8A1B14] text-[#8A1B14] hover:text-white border-2 border-[#8A1B14] font-extrabold text-xs sm:text-sm py-1.5 sm:py-2 px-2.5 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 uppercase cursor-pointer disabled:opacity-70 shadow-2xs tracking-wide"
+              className="w-full bg-[#FAF9F5] hover:bg-[#075B43] text-[#075B43] hover:text-white border border-[#075B43] font-extrabold text-xs sm:text-sm py-1.5 sm:py-2 px-2.5 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 uppercase cursor-pointer disabled:opacity-70 shadow-2xs tracking-wide"
             >
               {isAdding ? (
                 <>

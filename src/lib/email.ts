@@ -42,18 +42,18 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
 
   const diwaliCouponHtml = `
     <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 14px; padding: 22px 20px; margin: 24px 0; text-align: center; box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12);">
-      <div style="display: inline-block; background-color: #8A1B14; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
+      <div style="display: inline-block; background-color: #075B43; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">
         🪔 Exclusive Festive Gift Card
       </div>
-      <h3 style="color: #5E0B10; margin: 0 0 8px 0; font-size: 18px; font-weight: 800;">Special ₹${rewardAmount} Diwali Reward Unlocked!</h3>
-      <p style="margin: 0 0 16px 0; font-size: 13px; color: #5E0B10; line-height: 1.5;">
+      <h3 style="color: #17231E; margin: 0 0 8px 0; font-size: 18px; font-weight: 800;">Special ₹${rewardAmount} Diwali Reward Unlocked!</h3>
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: #17231E; line-height: 1.5;">
         As our humble gratitude for choosing pure Vedic Gir Cow Ghee, we have gifted you a <strong>₹${rewardAmount} instant gift voucher</strong> for your next family purchase.
       </p>
-      <div style="background-color: #ffffff; padding: 12px 24px; border-radius: 8px; font-family: monospace; font-size: 22px; font-weight: 900; color: #8A1B14; display: inline-block; border: 2px solid #D4A017; letter-spacing: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
+      <div style="background-color: #ffffff; padding: 12px 24px; border-radius: 8px; font-family: monospace; font-size: 22px; font-weight: 900; color: #075B43; display: inline-block; border: 2px solid #D4A017; letter-spacing: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
         ${diwaliCoupon}
       </div>
       <p style="margin: 14px 0 0 0; font-size: 11px; color: #7A4A3B;">
-        Apply code <strong style="color: #5E0B10;">${diwaliCoupon}</strong> at checkout on your next order. Valid across our entire pure ghee and cold-pressed oil range until <strong>Nov 15th</strong>.
+        Apply code <strong style="color: #17231E;">${diwaliCoupon}</strong> at checkout on your next order. Valid across our entire pure ghee and cold-pressed oil range until <strong>Nov 15th</strong>.
       </p>
     </div>
   `;
@@ -61,7 +61,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   const itemsTableHtml = items.length > 0 ? `
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px;">
       <thead>
-        <tr style="background-color: #F8F4EB; color: #5E0B10; text-align: left;">
+        <tr style="background-color: #F8F4EB; color: #17231E; text-align: left;">
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Item</th>
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; text-align: center; font-size: 12px; text-transform: uppercase;">Qty</th>
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; text-align: right; font-size: 12px; text-transform: uppercase;">Price</th>
@@ -78,7 +78,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
             <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: center; font-weight: 600; vertical-align: middle;">
               ${i.quantity}
             </td>
-            <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: right; font-weight: bold; color: #8A1B14; vertical-align: middle; font-size: 14px;">
+            <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: right; font-weight: bold; color: #075B43; vertical-align: middle; font-size: 14px;">
               ${i.price === 0 || i.isGift ? '<span style="color: #2e7d32; font-weight: 800;">FREE</span>' : `Rs. ${((i.price * i.quantity) / 100).toLocaleString('en-IN')}`}
             </td>
           </tr>
@@ -91,7 +91,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   const freeGifts = orderData?.freeGifts || [];
   const freeGiftsHtml = freeGifts.length > 0 ? `
     <div style="background-color: #FFFDF7; border: 1px dashed #D4A017; border-radius: 8px; padding: 12px 15px; margin-top: 15px;">
-      <strong style="color: #8A1B14; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">🎁 Free Gifts Included in Your Parcel:</strong>
+      <strong style="color: #075B43; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">🎁 Free Gifts Included in Your Parcel:</strong>
       <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #4A352F;">
         ${freeGifts.map((g: any) => `<li>${typeof g === 'string' ? g : `${g.name} (${g.size} x${g.quantity})`} <strong style="color: #2e7d32;">— FREE</strong></li>`).join("")}
       </ul>
@@ -101,7 +101,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
   const shipping = orderData?.shippingAddress;
   const shippingHtml = shipping ? `
     <div style="background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 10px; padding: 16px; margin-top: 20px; font-size: 13px; line-height: 1.6; color: #4A352F;">
-      <strong style="color: #5E0B10; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 6px;">📍 Shipping Address</strong>
+      <strong style="color: #17231E; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 6px;">📍 Shipping Address</strong>
       <div style="font-size: 14px; font-weight: bold; color: #2A1612;">${shipping.name || name}</div>
       <div>${shipping.address}</div>
       <div>${shipping.city}, ${shipping.state} ${shipping.pincode}</div>
@@ -121,9 +121,9 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
 
   const paymentStatusHtml = isCod ? `
     <div style="background-color: #FFF9E6; border: 1.5px solid #D4A017; border-radius: 10px; padding: 12px 14px; margin: 15px 0; text-align: center;">
-      <span style="color: #8A1B14; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">Cash on Delivery Order</span>
+      <span style="color: #075B43; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 4px;">Cash on Delivery Order</span>
       <div style="font-size: 13px; color: #2e7d32; font-weight: bold;">Advance Paid Online: ${formattedAmount}</div>
-      <div style="font-size: 15px; font-weight: 800; color: #8A1B14; margin-top: 4px;">
+      <div style="font-size: 15px; font-weight: 800; color: #075B43; margin-top: 4px;">
         Balance Due on Delivery: ${formattedRemaining}
       </div>
     </div>
@@ -143,15 +143,15 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF9F5; margin: 0; padding: 0; }
         .wrapper { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(94, 11, 16, 0.08); border: 1px solid #EAD7BC; }
-        .header { background: linear-gradient(135deg, #5E0B10 0%, #8A1B14 100%); padding: 35px 20px; text-align: center; border-bottom: 4px solid #D4A017; }
+        .header { background: linear-gradient(135deg, #075B43 0%, #064635 100%); padding: 35px 20px; text-align: center; border-bottom: 4px solid #D4A017; }
         .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
         .header p { color: #F5BD47; margin: 6px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
         .content { padding: 35px 30px; color: #4A352F; line-height: 1.6; }
-        .greeting { color: #5E0B10; font-size: 22px; font-weight: bold; margin-top: 0; }
+        .greeting { color: #17231E; font-size: 22px; font-weight: bold; margin-top: 0; }
         .order-box { background: linear-gradient(to bottom, #FFFDF9, #FCFAF5); border: 1px solid #EAD7BC; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center; }
-        .amount { font-size: 28px; font-weight: 800; color: #8A1B14; margin: 6px 0; }
+        .amount { font-size: 28px; font-weight: 800; color: #075B43; margin: 6px 0; }
         .btn-container { text-align: center; margin: 30px 0 20px 0; }
-        .btn { background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 10px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(138, 27, 20, 0.3); letter-spacing: 0.5px; }
+        .btn { background: linear-gradient(135deg, #075B43 0%, #064635 100%); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 10px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(138, 27, 20, 0.3); letter-spacing: 0.5px; }
         .footer { background-color: #FCFAF5; padding: 25px 20px; text-align: center; font-size: 12px; color: #7A4A3B; border-top: 1px solid #EAD7BC; }
       </style>
     </head>
@@ -172,7 +172,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
           <!-- Order Reference Card -->
           <div class="order-box">
             <span style="color: #7A4A3B; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Order Reference ID</span>
-            <div style="font-size: 20px; color: #5E0B10; font-weight: 800; font-family: monospace; margin: 4px 0;">#${orderId}</div>
+            <div style="font-size: 20px; color: #17231E; font-weight: 800; font-family: monospace; margin: 4px 0;">#${orderId}</div>
             <div class="amount">${formattedAmount}</div>
             ${paymentStatusHtml}
           </div>
@@ -182,7 +182,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
 
           <!-- ─── Visual Order Progress Tracker ─── -->
           <div style="margin: 28px 0; background-color: #FAF6EF; border: 1px solid #EAD7BC; border-radius: 12px; padding: 18px 12px;">
-            <div style="text-align: center; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #5E0B10; letter-spacing: 1px; margin-bottom: 14px;">
+            <div style="text-align: center; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #17231E; letter-spacing: 1px; margin-bottom: 14px;">
               📦 Live Delivery Tracker
             </div>
             <table style="width: 100%; border-collapse: collapse; text-align: center;">
@@ -203,10 +203,10 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
 
                 <!-- Step 2: Farm Churn & Packing (ACTIVE) -->
                 <td style="width: 25%; vertical-align: top;">
-                  <div style="width: 34px; height: 34px; border-radius: 50%; background-color: #ffffff; border: 2px solid #D4A017; color: #8A1B14; font-size: 13px; line-height: 30px; font-weight: 800; margin: 0 auto 6px auto; text-align: center;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background-color: #ffffff; border: 2px solid #D4A017; color: #075B43; font-size: 13px; line-height: 30px; font-weight: 800; margin: 0 auto 6px auto; text-align: center;">
                     2
                   </div>
-                  <strong style="font-size: 11px; color: #5E0B10; display: block; text-transform: uppercase;">Farm Packing</strong>
+                  <strong style="font-size: 11px; color: #17231E; display: block; text-transform: uppercase;">Farm Packing</strong>
                   <span style="font-size: 10px; color: #D4A017; font-weight: 700;">In Progress</span>
                 </td>
 
@@ -242,7 +242,7 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
           </div>
 
           <!-- Order Items -->
-          <h3 style="color: #5E0B10; font-size: 16px; margin: 25px 0 10px 0; border-bottom: 2px solid #FDF6E8; padding-bottom: 8px;">
+          <h3 style="color: #17231E; font-size: 16px; margin: 25px 0 10px 0; border-bottom: 2px solid #FDF6E8; padding-bottom: 8px;">
             Order Breakdown
           </h3>
 
@@ -268,12 +268,12 @@ export async function sendOrderEmail(orderId: string, email: string, name: strin
           </div>
 
           <p style="text-align: center; font-size: 12px; color: #7A4A3B; margin-top: 10px;">
-            Need help with your order? Reply directly to this email or contact us at <a href="mailto:namonarayana.contact@gmail.com" style="color: #8A1B14; font-weight: bold;">namonarayana.contact@gmail.com</a>
+            Need help with your order? Reply directly to this email or contact us at <a href="mailto:namonarayana.contact@gmail.com" style="color: #075B43; font-weight: bold;">namonarayana.contact@gmail.com</a>
           </p>
         </div>
 
         <div class="footer">
-          <p style="margin: 0 0 6px 0; font-weight: bold; color: #5E0B10; font-size: 13px;">
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #17231E; font-size: 13px;">
             Namo Narayana Vedic Farm
           </p>
           <p style="margin: 0 0 8px 0;">Pure Vedic Bilona Ghee • Made from Curd of Gir Cows • Bharat 🙏</p>

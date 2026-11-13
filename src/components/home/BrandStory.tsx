@@ -64,7 +64,7 @@ export default function BrandStory() {
               </div>
             </div>
 
-            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-[#2D5A37] hover:bg-[#68140E] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
+            <Link href="/collections/ghee" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all w-max shadow-md relative z-30 mb-8 sm:mb-0">
               <Sparkles className="w-4 h-4" />
               <span>Explore A2 Gir Cow Ghee</span>
               <ArrowRight className="w-4 h-4" />

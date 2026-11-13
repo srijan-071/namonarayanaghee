@@ -47,22 +47,22 @@ export default function HomeFAQ() {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-white border-b border-[#EAE3D7]">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-white via-[#FAFBF9] to-[#FAF8F5] border-b border-emerald-900/10">
       <div className="nn-container max-w-4xl mx-auto">
         
         <div className="text-center mb-12">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#78634B] block mb-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#059669] block mb-2">
             Clear Answers
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#4E1013] font-bold mb-3">
+          <h2 className="font-serif text-3xl sm:text-4xl text-[#0D2B1D] font-bold mb-3 tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="text-sm sm:text-base text-[#29251F]">
+          <p className="text-sm sm:text-base text-[#4B5548] font-sans">
             Everything you need to know about our sourcing, bilona method, lab reports, and delivery.
           </p>
         </div>
 
-        <div className="divide-y divide-[#EAE3D7] border-y border-[#EAE3D7]">
+        <div className="divide-y divide-emerald-900/10 border-y border-emerald-900/10">
           {FAQS.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
@@ -70,18 +70,18 @@ export default function HomeFAQ() {
                 <button
                   type="button"
                   onClick={() => toggleFAQ(i)}
-                  className="w-full flex items-center justify-between text-left font-serif font-bold text-base sm:text-lg text-[#29251F] hover:text-[#68191D] transition-colors gap-4 cursor-pointer"
+                  className="w-full flex items-center justify-between text-left font-serif font-bold text-base sm:text-lg text-[#111815] hover:text-[#064E3B] transition-colors gap-4 cursor-pointer"
                   aria-expanded={isOpen}
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#68191D] shrink-0 transition-transform duration-200 ${
+                    className={`w-5 h-5 text-[#059669] shrink-0 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <p className="mt-3 text-xs sm:text-sm text-[#29251F] leading-relaxed">
+                  <p className="mt-3 text-xs sm:text-sm text-[#4B5548] leading-relaxed font-sans">
                     {faq.a}
                   </p>
                 )}

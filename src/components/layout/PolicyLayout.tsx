@@ -14,26 +14,26 @@ export default function PolicyLayout({ title, lastUpdated, children }: PolicyLay
       <div className="nn-container max-w-4xl">
         
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-[#6A4E42] mb-8 font-medium">
-          <Link href="/" className="hover:text-[#8A1B14] transition-colors">Home</Link>
+        <nav className="flex items-center gap-2 text-sm text-[#727B75] mb-8 font-medium">
+          <Link href="/" className="hover:text-[#075B43] transition-colors">Home</Link>
           <ChevronRight className="w-4 h-4 opacity-50" />
-          <span className="text-[#2A1612]">{title}</span>
+          <span className="text-[#17231E]">{title}</span>
         </nav>
 
         {/* Header */}
-        <header className="mb-12 border-b border-[#E5D7B7] pb-8">
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#5E0B10] tracking-tight mb-4">
+        <header className="mb-12 border-b border-[#EAE7DF] pb-8">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#17231E] tracking-tight mb-4">
             {title}
           </h1>
           {lastUpdated && (
-            <p className="text-[#6A4E42] text-sm tracking-wide uppercase">
+            <p className="text-[#727B75] text-sm tracking-wide uppercase">
               Last updated: {lastUpdated}
             </p>
           )}
         </header>
 
         {/* Content */}
-        <div className="prose prose-lg prose-headings:font-serif prose-headings:font-semibold prose-headings:text-[#5E0B10] prose-p:text-[#6A4E42] prose-p:leading-relaxed prose-a:text-[#8A1B14] prose-a:font-semibold hover:prose-a:text-[#5E0B10] max-w-none prose-li:text-[#6A4E42] prose-li:marker:text-[#D4A017]">
+        <div className="prose prose-lg prose-headings:font-serif prose-headings:font-semibold prose-headings:text-[#17231E] prose-p:text-[#727B75] prose-p:leading-relaxed prose-a:text-[#075B43] prose-a:font-semibold hover:prose-a:text-[#064635] max-w-none prose-li:text-[#727B75] prose-li:marker:text-[#075B43]">
           {children}
         </div>
         

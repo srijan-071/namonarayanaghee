@@ -60,7 +60,7 @@ export default function BlogIndex() {
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                             sizes="(max-width: 768px) 100vw, 50vw"
                           />
-                          <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#8A1B14] text-white shadow">
+                          <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#075B43] text-white shadow">
                             <Sparkles className="w-3.5 h-3.5" /> Featured Review
                           </div>
                         </div>
@@ -75,7 +75,7 @@ export default function BlogIndex() {
                               </span>
                             </div>
 
-                            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#231714] group-hover:text-[#8A1B14] transition-colors mb-3 leading-snug">
+                            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] group-hover:text-[#075B43] transition-colors mb-3 leading-snug">
                               {post.title}
                             </h2>
 
@@ -85,7 +85,7 @@ export default function BlogIndex() {
                           </div>
 
                           <div className="flex items-center justify-between pt-4 border-t border-stone-100">
-                            <span className="text-xs font-bold text-[#8A1B14] flex items-center gap-1 group-hover:gap-2 transition-all">
+                            <span className="text-xs font-bold text-[#075B43] flex items-center gap-1 group-hover:gap-2 transition-all">
                               Read Full Review <ArrowRight className="w-4 h-4" />
                             </span>
                             <span className="text-xs text-stone-400">By {post.author}</span>
@@ -104,7 +104,7 @@ export default function BlogIndex() {
                             </span>
                           </div>
 
-                          <h2 className="font-serif text-xl font-bold text-[#231714] group-hover:text-[#8A1B14] transition-colors mb-2.5 line-clamp-2">
+                          <h2 className="font-serif text-xl font-bold text-[#17231E] group-hover:text-[#075B43] transition-colors mb-2.5 line-clamp-2">
                             {post.title}
                           </h2>
 
@@ -114,7 +114,7 @@ export default function BlogIndex() {
                         </div>
 
                         <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                          <span className="text-xs font-bold text-[#8A1B14] flex items-center gap-1 group-hover:gap-2 transition-all">
+                          <span className="text-xs font-bold text-[#075B43] flex items-center gap-1 group-hover:gap-2 transition-all">
                             Read Article <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                           <span className="text-[11px] text-stone-400">Namo Narayana</span>

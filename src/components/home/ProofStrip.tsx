@@ -36,7 +36,7 @@ export default function ProofStrip() {
   ];
 
   return (
-    <section className="bg-white py-8 border-b border-[#E5DEC9]">
+    <section className="bg-gradient-to-b from-white via-[#FAFBF9] to-[#FAF8F5] py-9 border-b border-emerald-900/10">
       <div className="nn-container">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {proofs.map((p, i) => {
@@ -44,22 +44,22 @@ export default function ProofStrip() {
             return (
               <div
                 key={i}
-                className="flex flex-col justify-between p-4 rounded-2xl bg-[#FAF8F5] border border-[#E5DEC9]/80 hover:border-[#2D5A37]/50 transition-all"
+                className="flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-br from-white via-[#FAFBF9] to-[#F4F8F6] border border-emerald-900/10 hover:border-emerald-500/40 hover:shadow-xs transition-all duration-300"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-[#EAE3D2] flex items-center justify-center text-[#1E3A24] mb-3">
-                    <Icon className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-100/80 to-emerald-50/80 flex items-center justify-center text-[#059669] mb-3.5 border border-emerald-300/40 shadow-2xs">
+                    <Icon className="w-5 h-5" strokeWidth={1.85} />
                   </div>
-                  <h3 className="font-serif font-bold text-base text-[#142918] mb-1">
+                  <h3 className="font-serif font-bold text-base text-[#0D2B1D] mb-1.5 tracking-tight">
                     {p.title}
                   </h3>
-                  <p className="text-xs text-[#3D4A41] leading-relaxed mb-3">
+                  <p className="text-xs text-[#4B5548] leading-relaxed mb-4">
                     {p.desc}
                   </p>
                 </div>
                 <Link
                   href={p.link}
-                  className="text-xs font-semibold text-[#1E3A24] hover:text-[#2D5A37] inline-flex items-center gap-1 group"
+                  className="text-xs font-semibold text-[#064E3B] hover:text-[#059669] inline-flex items-center gap-1 group transition-colors"
                 >
                   <span>{p.cta}</span>
                 </Link>

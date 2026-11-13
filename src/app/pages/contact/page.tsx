@@ -33,44 +33,44 @@ export default function ContactPage() {
             className="space-y-10"
           >
             <div>
-              <h2 className="text-3xl font-serif text-[#5E0B10] mb-8">How can we help?</h2>
+              <h2 className="text-3xl font-serif text-[#17231E] mb-8 font-bold">How can we help?</h2>
             </div>
 
             {/* Info Cards */}
             <div className="space-y-6">
               
               {/* Customer Support */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
-                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#C99A3D]">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE7DF] shadow-sm">
+                <div className="bg-[#FAF9F5] p-4 rounded-xl text-[#075B43]">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Customer Support</h3>
-                  <p className="text-[#4A352F] text-sm mb-2">We typically respond within 24 hours (Mon–Sat, 10 AM – 7 PM IST)</p>
-                  <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">support@namonarayanaghee.store</a>
+                  <h3 className="text-lg font-bold text-[#17231E] mb-1">Customer Support</h3>
+                  <p className="text-[#727B75] text-sm mb-2">We typically respond within 24 hours (Mon–Sat, 10 AM – 7 PM IST)</p>
+                  <a href="mailto:support@namonarayanaghee.store" className="text-[#075B43] font-semibold hover:underline">support@namonarayanaghee.store</a>
                 </div>
               </div>
 
               {/* Order Support */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
-                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#8A1B14]">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE7DF] shadow-sm">
+                <div className="bg-[#FAF9F5] p-4 rounded-xl text-[#075B43]">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Order &amp; Delivery Help</h3>
-                  <p className="text-[#4A352F] text-sm mb-2">For order tracking, delivery status updates, and expedited dispatch.</p>
-                  <a href="mailto:support@namonarayanaghee.store" className="text-[#C99A3D] font-semibold hover:text-[#8A1B14]">support@namonarayanaghee.store</a>
+                  <h3 className="text-lg font-bold text-[#17231E] mb-1">Order &amp; Delivery Help</h3>
+                  <p className="text-[#727B75] text-sm mb-2">For order tracking, delivery status updates, and expedited dispatch.</p>
+                  <a href="mailto:support@namonarayanaghee.store" className="text-[#075B43] font-semibold hover:underline">support@namonarayanaghee.store</a>
                 </div>
               </div>
 
               {/* Address */}
-              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAD7BC] shadow-sm">
-                <div className="bg-[#FCFAF5] p-4 rounded-xl text-[#8A1B14]">
+              <div className="flex items-start gap-6 bg-white p-6 rounded-2xl border border-[#EAE7DF] shadow-sm">
+                <div className="bg-[#FAF9F5] p-4 rounded-xl text-[#075B43]">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-[#2A1612] mb-1">Registered Office</h3>
-                  <p className="text-[#4A352F] text-sm leading-relaxed">
+                  <h3 className="text-lg font-bold text-[#17231E] mb-1">Registered Office</h3>
+                  <p className="text-[#727B75] text-sm leading-relaxed">
                     HIMANI FOODS PRIVATE LIMITED<br />
                     Rohat(215), Sampla Sonipat Road<br />
                     District Sonipat, 131403<br />
@@ -99,8 +99,8 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div
           >
-            <div className="bg-white rounded-2xl shadow-xl border border-[#EAD7BC] p-8 md:p-12">
-              <h3 className="text-2xl font-serif text-[#5E0B10] mb-6">Send us a message</h3>
+            <div className="bg-white rounded-2xl shadow-xl border border-[#EAE7DF] p-8 md:p-12">
+              <h3 className="text-2xl font-serif text-[#17231E] mb-6 font-bold">Send us a message</h3>
               
               <form className="space-y-6" onSubmit={(e) => {
                 e.preventDefault();

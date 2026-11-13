@@ -56,11 +56,11 @@ export default function AuthUpgrade({ user }: { user: any }) {
   };
 
   return (
-    <div className="bg-[#FCFAF5] border border-[#EAD7BC] rounded-2xl p-6 md:p-8 mb-8 shadow-sm">
+    <div className="bg-[#FAF9F5] border border-[#EAE7DF] rounded-2xl p-6 md:p-8 mb-8 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex-1">
-          <h3 className="text-xl font-serif text-[#5E0B10] mb-2">Save your Order History</h3>
-          <p className="text-[#4A352F] text-sm leading-relaxed">
+          <h3 className="text-xl font-serif text-[#17231E] mb-2 font-bold">Save your Order History</h3>
+          <p className="text-[#727B75] text-sm leading-relaxed">
             You are currently using a guest account. Create a password to link this session to your email so you can track your orders from any device.
           </p>
         </div>

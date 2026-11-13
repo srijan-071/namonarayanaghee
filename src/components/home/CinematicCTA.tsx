@@ -33,12 +33,12 @@ export default function CinematicCTA() {
       </div>
 
       {/* Gradients to blend top edge to previous section and bottom edge to footer */}
-      <div className="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-[#F2EFE8] to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-48 z-10 bg-gradient-to-t from-[#2D0609] to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-[#FAF9F5] to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-48 z-10 bg-gradient-to-t from-[#064635] via-[#064635]/70 to-transparent pointer-events-none" />
       
       {/* Script Text */}
       <div
-        className="absolute top-16 right-12 hidden lg:block text-[#F2C94C] text-3xl md:text-4xl font-serif italic font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-10deg] z-20 text-right"
+        className="absolute top-16 right-12 hidden lg:block text-[#B89A62] text-3xl md:text-4xl font-serif italic font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] rotate-[-10deg] z-20 text-right"
       >
         Vedic Tradition <br/> Pure Wellness
       </div>
@@ -48,21 +48,21 @@ export default function CinematicCTA() {
         <div
           className="max-w-xl"
         >
-          <div className="inline-flex items-center gap-2 bg-[#5E0B10]/80 border border-amber-400/50 rounded-full px-3.5 py-1 mb-4 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span className="text-[10px] md:text-xs font-bold text-amber-300 uppercase tracking-[0.2em]">
+          <div className="inline-flex items-center gap-2 bg-[#075B43]/90 border border-[#B89A62]/40 rounded-full px-3.5 py-1 mb-4 shadow-md backdrop-blur-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#B89A62]" />
+            <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.2em]">
               100% PURE A2 GIR COW GHEE • DIRECT FROM FARM
             </span>
           </div>
 
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] [text-shadow:_0_2px_4px_rgb(0_0_0_/_80%)]">
             Experience the Golden Essence of <br className="hidden md:block"/>
-            <span className="italic text-[#F2C94C] font-light">Ancient Vedic Purity.</span>
+            <span className="italic text-[#B89A62] font-light">Ancient Vedic Purity.</span>
           </h2>
-          <p className="text-amber-100 text-base md:text-lg mb-8 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-w-lg">
-            Nourish your family with authentic, curd-churned A2 Gir Cow Bilona Ghee. Crafted in small batches for pristine aroma, golden danedar granules, and vital wellness. Use code <strong className="text-amber-300 underline">NAMO10</strong> for 10% OFF!
+          <p className="text-white/90 text-base md:text-lg mb-8 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] max-w-lg">
+            Nourish your family with authentic, curd-churned A2 Gir Cow Bilona Ghee. Crafted in small batches for pristine aroma, golden danedar granules, and vital wellness. Use code <strong className="text-[#B89A62] underline">NAMO10</strong> for 10% OFF!
           </p>
-          <Link href="/collections/all-products" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#2D0609] rounded-full px-8 py-4 font-black transition-all w-max shadow-2xl group hover:scale-105 active:scale-95">
+          <Link href="/collections/all-products" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#B89A62] via-[#D4AF37] to-[#B89A62] hover:brightness-105 text-[#17231E] rounded-full px-8 py-4 font-black transition-all w-max shadow-2xl group hover:scale-105 active:scale-95">
             <Sparkles className="w-4 h-4" />
             <span>Explore All Products</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

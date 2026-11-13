@@ -162,23 +162,23 @@ export default function ElvishYadavGheeContent() {
   };
 
   return (
-    <article className="bg-[#FAF8F5] text-[#24211E] py-12 md:py-20 font-sans">
+    <article className="bg-[#FAF9F5] text-[#17231E] py-12 md:py-20 font-sans">
       <div className="nn-container max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Breadcrumbs */}
         <nav aria-label="Breadcrumb" className="text-xs text-stone-500 mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#8A1B14] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-[#075B43] transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-[#8A1B14] font-medium">Elvish Yadav &amp; Namo Narayana</span>
+          <span className="text-[#075B43] font-medium">Elvish Yadav &amp; Namo Narayana</span>
         </nav>
 
         {/* Hero Header */}
         <header className="mb-12 text-center max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2 bg-[#F3E8D8] text-[#8A1B14] text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full mb-4 border border-[#E4D1B8]">
-            <Award className="w-3.5 h-3.5 text-[#C99A3D]" />
+          <span className="inline-flex items-center gap-2 bg-[#E8F1EC] text-[#075B43] text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full mb-4 border border-[#075B43]/20">
+            <Award className="w-3.5 h-3.5 text-[#B89A62]" />
             Official Verified Association
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#5E0B10] leading-tight mb-4">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#17231E] leading-tight mb-4">
             Namo Narayana Ghee and Elvish Yadav: The Official Story &amp; Verified Guide
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
@@ -187,28 +187,28 @@ export default function ElvishYadavGheeContent() {
         </header>
 
         {/* AEO / Direct Answer Callout Box */}
-        <section className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#D4A017]/40 shadow-sm mb-12">
+        <section className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#075B43]/30 shadow-xs mb-12">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-[#FCFAF5] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14] mt-1">
+            <div className="w-10 h-10 rounded-full bg-[#E8F1EC] border border-[#075B43]/30 flex items-center justify-center shrink-0 text-[#075B43] mt-1">
               <Info className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-serif font-bold text-[#5E0B10] mb-2">
+              <h2 className="text-lg sm:text-xl font-serif font-bold text-[#17231E] mb-2">
                 Direct Answer: What Is Elvish Yadav&apos;s Verified Association?
               </h2>
               <p className="text-sm sm:text-base text-stone-700 leading-relaxed mb-4">
                 <strong>Elvish Yadav</strong> is the celebrity co-founder and chief promoter of <strong>Namo Narayana Ghee</strong>. He publicly introduced and launched the brand on <strong>July 28, 2026</strong>, to deliver authentic, curd-churned A2 Gir Cow Bilona Ghee directly from Vedic gaushalas to Indian consumers.
               </p>
               <div className="grid sm:grid-cols-3 gap-3 text-sm">
-                <div className="bg-[#FCFAF5] p-3 rounded-xl border border-[#EAD7BC]">
+                <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#EAE7DF]">
                   <span className="text-xs text-stone-500 font-semibold block uppercase">Official Role</span>
-                  <strong className="text-[#8A1B14] font-serif text-base">Co-Founder &amp; Promoter</strong>
+                  <strong className="text-[#075B43] font-serif text-base">Co-Founder &amp; Promoter</strong>
                 </div>
-                <div className="bg-[#FCFAF5] p-3 rounded-xl border border-[#EAD7BC]">
+                <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#EAE7DF]">
                   <span className="text-xs text-stone-500 font-semibold block uppercase">Official Launch Date</span>
                   <strong className="text-stone-800 text-sm">July 28, 2026</strong>
                 </div>
-                <div className="bg-[#FCFAF5] p-3 rounded-xl border border-[#EAD7BC]">
+                <div className="bg-[#FAF9F5] p-3 rounded-xl border border-[#EAE7DF]">
                   <span className="text-xs text-stone-500 font-semibold block uppercase">Verified Store</span>
                   <strong className="text-stone-800 text-sm">namonarayanaghee.store</strong>
                 </div>
@@ -218,9 +218,9 @@ export default function ElvishYadavGheeContent() {
         </section>
 
         {/* Hero Visual Card */}
-        <section className="mb-16 rounded-2xl overflow-hidden border border-[#EAD7BC] shadow-md bg-white">
+        <section className="mb-16 rounded-2xl overflow-hidden border border-[#EAE7DF] shadow-xs bg-white">
           <div className="grid md:grid-cols-12 items-center">
-            <div className="md:col-span-5 relative min-h-[300px] md:min-h-[420px] bg-amber-50">
+            <div className="md:col-span-5 relative min-h-[300px] md:min-h-[420px] bg-[#FAF9F5]">
               <Image
                 src="/assets/product_Elvish_slide.webp"
                 alt="Elvish Yadav presenting authentic Namo Narayana Pure A2 Gir Cow Ghee"
@@ -231,10 +231,10 @@ export default function ElvishYadavGheeContent() {
               />
             </div>
             <div className="md:col-span-7 p-6 sm:p-10">
-              <span className="text-xs font-bold text-[#8A1B14] uppercase tracking-widest block mb-2">
+              <span className="text-xs font-bold text-[#075B43] uppercase tracking-widest block mb-2">
                 A Mission of Purity
               </span>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-4">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-4">
                 &ldquo;Pure food isn&apos;t a luxury &mdash; it is our ancestral right.&rdquo;
               </h2>
               <p className="text-stone-600 text-sm sm:text-base leading-relaxed mb-6">
@@ -243,13 +243,13 @@ export default function ElvishYadavGheeContent() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/products/pure-desi-cow-ghee-1-litre"
-                  className="bg-[#8A1B14] hover:bg-[#5E0B10] text-white font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2 shadow-md"
+                  className="bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2 shadow-md shadow-[#075B43]/20"
                 >
-                  <Zap className="w-4 h-4 fill-current" /> Order Elvish&apos;s 1L Bestseller (₹1,299)
+                  <Zap className="w-4 h-4 fill-current text-[#B89A62]" /> Order Elvish&apos;s 1L Bestseller (₹1,299)
                 </Link>
                 <Link
                   href="#packs"
-                  className="border-2 border-[#8A1B14] text-[#8A1B14] hover:bg-amber-50 font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2"
+                  className="border-2 border-[#075B43] text-[#075B43] hover:bg-[#E8F1EC] font-bold px-6 py-3 rounded-xl transition-all text-sm inline-flex items-center gap-2"
                 >
                   View Pack Sizes &amp; Prices
                 </Link>
@@ -259,8 +259,8 @@ export default function ElvishYadavGheeContent() {
         </section>
 
         {/* Section 1: The Founding Background */}
-        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAD7BC] shadow-sm">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-4">
+        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAE7DF] shadow-xs">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-4">
             1. The Genesis: Why Elvish Yadav Launched Namo Narayana
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
@@ -277,19 +277,19 @@ export default function ElvishYadavGheeContent() {
         </section>
 
         {/* Section 2: Anti-Counterfeit & Domain Verification */}
-        <section className="mb-16 bg-[#FFF9F5] rounded-2xl p-6 sm:p-10 border-2 border-amber-300 shadow-sm">
+        <section className="mb-16 bg-[#FAF9F5] rounded-2xl p-6 sm:p-10 border-2 border-[#075B43]/20 shadow-xs">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0 text-[#8A1B14]">
+            <div className="w-10 h-10 rounded-full bg-[#E8F1EC] flex items-center justify-center shrink-0 text-[#075B43]">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="font-serif text-2xl font-bold text-[#5E0B10] mb-2">
+              <h2 className="font-serif text-2xl font-bold text-[#17231E] mb-2">
                 2. Official Store vs Counterfeit Awareness: Protect Your Family
               </h2>
               <p className="text-stone-700 text-sm leading-relaxed mb-4">
                 Following Elvish Yadav&apos;s widespread launch announcement, several unverified third-party websites and unauthorized social media profiles attempted to mimic the brand.
               </p>
-              <div className="bg-white p-4 rounded-xl border border-amber-200 text-stone-800 text-xs sm:text-sm space-y-2 mb-4">
+              <div className="bg-white p-4 rounded-xl border border-[#EAE7DF] text-stone-800 text-xs sm:text-sm space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-emerald-800 font-bold">
                   <Check className="w-4 h-4 text-emerald-600" />
                   Official Domain: https://www.namonarayanaghee.store/
@@ -298,7 +298,7 @@ export default function ElvishYadavGheeContent() {
                   Verify the domain extension in your address bar before entering payment credentials. The brand does not sell via unverified .com portals, unverified WhatsApp links, or unauthorized marketplaces.
                 </div>
                 <div className="flex items-center gap-2 text-stone-800 font-semibold pt-2">
-                  <PackageCheck className="w-4 h-4 text-[#8A1B14]" />
+                  <PackageCheck className="w-4 h-4 text-[#075B43]" />
                   Tamper-Proof Verification:
                 </div>
                 <div className="text-stone-600 pl-6">
@@ -312,8 +312,8 @@ export default function ElvishYadavGheeContent() {
         {/* Section 3: Packs Endorsed by Elvish */}
         <section id="packs" className="mb-16">
           <div className="text-center mb-8">
-            <span className="text-xs font-bold text-[#8A1B14] tracking-widest uppercase block mb-1">Authentic Catalog</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10]">
+            <span className="text-xs font-bold text-[#075B43] tracking-widest uppercase block mb-1">Authentic Catalog</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E]">
               3. Products Endorsed by Elvish Yadav &amp; Official Rates
             </h2>
             <p className="text-sm text-stone-600 max-w-xl mx-auto mt-2">
@@ -327,12 +327,12 @@ export default function ElvishYadavGheeContent() {
                 key={p.slug}
                 className={`bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-lg ${
                   p.isBestseller
-                    ? "border-[#D4A017] shadow-md ring-2 ring-[#D4A017]/30"
-                    : "border-[#EAD7BC] shadow-xs"
+                    ? "border-[#075B43] shadow-md ring-2 ring-[#075B43]/20"
+                    : "border-[#EAE7DF] shadow-xs"
                 }`}
               >
                 <div>
-                  <div className="relative aspect-square rounded-xl overflow-hidden bg-amber-50/50 mb-4">
+                  <div className="relative aspect-square rounded-xl overflow-hidden bg-[#FAF9F5] mb-4">
                     <Image
                       src={p.image}
                       alt={p.title}
@@ -340,16 +340,16 @@ export default function ElvishYadavGheeContent() {
                       className="object-contain p-3"
                       sizes="(max-width: 640px) 100vw, 250px"
                     />
-                    <span className="absolute top-2 left-2 bg-[#8A1B14] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
+                    <span className="absolute top-2 left-2 bg-[#075B43] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
                       {p.size}
                     </span>
                   </div>
 
-                  <h3 className="font-serif font-bold text-lg text-[#5E0B10] mb-1">
+                  <h3 className="font-serif font-bold text-lg text-[#17231E] mb-1">
                     {p.title}
                   </h3>
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-2xl font-serif font-bold text-[#8A1B14]">{formatPrice(p.price)}</span>
+                    <span className="text-2xl font-serif font-bold text-[#075B43]">{formatPrice(p.price)}</span>
                     <span className="text-xs text-stone-400 line-through">{formatPrice(p.compareAtPrice)}</span>
                   </div>
                   <div className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded inline-block mb-3 border border-emerald-200">
@@ -363,13 +363,13 @@ export default function ElvishYadavGheeContent() {
                 <div className="space-y-2 pt-2 border-t border-stone-100">
                   <button
                     onClick={() => handleInstantBuy(p)}
-                    className="w-full bg-[#8A1B14] hover:bg-[#5E0B10] text-white text-xs font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs"
+                    className="w-full bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white text-xs font-bold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs"
                   >
-                    <Zap className="w-3.5 h-3.5 fill-current" /> Buy Now
+                    <Zap className="w-3.5 h-3.5 fill-current text-[#B89A62]" /> Buy Now
                   </button>
                   <button
                     onClick={() => handleAddToCart(p)}
-                    className="w-full border border-stone-300 hover:border-[#8A1B14] text-stone-700 hover:text-[#8A1B14] text-xs font-semibold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5"
+                    className="w-full border border-stone-300 hover:border-[#075B43] text-stone-700 hover:text-[#075B43] text-xs font-semibold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
                   </button>
@@ -380,8 +380,8 @@ export default function ElvishYadavGheeContent() {
         </section>
 
         {/* Section 4: The Science of A2 Gir Cow Ghee */}
-        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAD7BC] shadow-sm">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-4">
+        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAE7DF] shadow-xs">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-4">
             4. Why A2 Gir Cow Ghee? The Nutritional Superiority
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
@@ -390,25 +390,25 @@ export default function ElvishYadavGheeContent() {
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 my-6 not-prose">
-              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAD7BC]">
-                <Leaf className="w-6 h-6 text-[#8A1B14] mb-2" />
-                <h4 className="font-serif font-bold text-[#5E0B10] mb-1">A2 Beta-Casein Protein</h4>
+              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAE7DF]">
+                <Leaf className="w-6 h-6 text-[#075B43] mb-2" />
+                <h4 className="font-serif font-bold text-[#17231E] mb-1">A2 Beta-Casein Protein</h4>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Indigenous Gir cows naturally produce milk containing the proline amino acid variant at position 67, preventing the release of BCM-7 peptides associated with digestive distress.
                 </p>
               </div>
 
-              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAD7BC]">
-                <Flame className="w-6 h-6 text-[#C99A3D] mb-2" />
-                <h4 className="font-serif font-bold text-[#5E0B10] mb-1">High Smoke Point (~250°C)</h4>
+              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAE7DF]">
+                <Flame className="w-6 h-6 text-[#B89A62] mb-2" />
+                <h4 className="font-serif font-bold text-[#17231E] mb-1">High Smoke Point (~250°C)</h4>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   The clarification process eliminates moisture and milk solids, providing an exceptionally high smoke point of approximately 250°C (482°F) that prevents toxic lipid oxidation during cooking.
                 </p>
               </div>
 
-              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAD7BC]">
-                <Droplets className="w-6 h-6 text-amber-700 mb-2" />
-                <h4 className="font-serif font-bold text-[#5E0B10] mb-1">Rich in Butyric Acid</h4>
+              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-[#EAE7DF]">
+                <Droplets className="w-6 h-6 text-[#075B43] mb-2" />
+                <h4 className="font-serif font-bold text-[#17231E] mb-1">Rich in Butyric Acid</h4>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Lactic acid fermentation during curd culturing creates abundant short-chain fatty acids (butyrate) that support intestinal lining integrity and efficient nutrient absorption.
                 </p>
@@ -419,23 +419,23 @@ export default function ElvishYadavGheeContent() {
 
         {/* Section 5: FAQs */}
         <section className="mb-16">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-6 text-center">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-6 text-center">
             5. Frequently Asked Questions
           </h2>
           <div className="space-y-4">
             {FAQS.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={idx} className="bg-white rounded-xl border border-[#EAD7BC] overflow-hidden shadow-xs">
+                <div key={idx} className="bg-white rounded-xl border border-[#EAE7DF] overflow-hidden shadow-xs">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full text-left p-5 flex items-center justify-between font-serif font-bold text-stone-800 hover:text-[#8A1B14] transition-colors"
+                    className="w-full text-left p-5 flex items-center justify-between font-serif font-bold text-stone-800 hover:text-[#075B43] transition-colors"
                   >
                     <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-5 h-5 text-[#8A1B14] shrink-0" /> : <ChevronDown className="w-5 h-5 text-stone-400 shrink-0" />}
+                    {isOpen ? <ChevronUp className="w-5 h-5 text-[#075B43] shrink-0" /> : <ChevronDown className="w-5 h-5 text-stone-400 shrink-0" />}
                   </button>
                   {isOpen && (
-                    <div className="p-5 pt-0 text-sm text-stone-600 leading-relaxed border-t border-stone-100 bg-[#FCFAF5]/50">
+                    <div className="p-5 pt-0 text-sm text-stone-600 leading-relaxed border-t border-stone-100 bg-[#FAF9F5]/50">
                       {faq.a}
                     </div>
                   )}
@@ -446,18 +446,18 @@ export default function ElvishYadavGheeContent() {
         </section>
 
         {/* Bottom CTA Banner */}
-        <section className="bg-gradient-to-r from-[#5E0B10] to-[#8A1B14] rounded-2xl p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden">
+        <section className="bg-gradient-to-r from-[#075B43] via-[#064635] to-[#17231E] rounded-2xl p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden">
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-3">
               Join the Pure Food Movement with Elvish Yadav
             </h2>
-            <p className="text-amber-100 text-sm sm:text-base mb-8">
+            <p className="text-emerald-100 text-sm sm:text-base mb-8">
               Experience the authentic taste of golden, grainy, hand-churned A2 Gir Cow Bilona Ghee delivered directly to your doorstep.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/products/pure-desi-cow-ghee-1-litre"
-                className="bg-[#D4A017] hover:bg-[#C99A3D] text-[#24211E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
+                className="bg-[#B89A62] hover:bg-[#a3844f] text-[#17231E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
               >
                 <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Flagship (₹1,299)
               </Link>

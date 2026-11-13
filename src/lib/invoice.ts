@@ -77,7 +77,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
         ${idx + 1}
       </td>
       <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: left;">
-        <div style="font-weight: 600; color: #5E0B10; font-size: 14px;">${item.name || item.title}</div>
+        <div style="font-weight: 600; color: #17231E; font-size: 14px;">${item.name || item.title}</div>
         ${item.variantTitle ? `<div style="font-size: 12px; color: #7A4A3B; margin-top: 2px;">${item.variantTitle}</div>` : ""}
       </td>
       <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: center; font-size: 14px;">
@@ -86,7 +86,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: right; font-size: 14px;">
         ${item.price === 0 ? '<span style="color: #D4A017; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price)}
       </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: right; font-weight: 600; font-size: 14px; color: #5E0B10;">
+      <td style="padding: 12px 16px; border-bottom: 1px solid #EAD7BC; text-align: right; font-weight: 600; font-size: 14px; color: #17231E;">
         ${item.price === 0 ? '<span style="color: #D4A017; font-weight: bold;">FREE</span>' : formatInvoicePrice(item.price * item.quantity)}
       </td>
     </tr>`
@@ -124,7 +124,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
 
   <!-- Print Button -->
   <div class="no-print" style="text-align: center; margin-bottom: 24px;">
-    <button onclick="window.print()" style="background: #8A1B14; color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif;">
+    <button onclick="window.print()" style="background: #075B43; color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif;">
       🖨 Download / Print Invoice
     </button>
   </div>
@@ -132,7 +132,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <!-- Header -->
   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 3px solid #D4A017; padding-bottom: 24px;">
     <div>
-      <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #5E0B10; margin-bottom: 4px;">Namo Narayana</h1>
+      <h1 style="font-family: 'Playfair Display', serif; font-size: 28px; color: #17231E; margin-bottom: 4px;">Namo Narayana</h1>
       <p style="font-size: 12px; color: #D4A017; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Pure A2 Gir Cow Ghee & Traditional Foods</p>
       <div style="margin-top: 12px; font-size: 12px; color: #7A4A3B; line-height: 1.8;">
         <div>✉ namonarayana.contact@gmail.com</div>
@@ -141,11 +141,11 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       </div>
     </div>
     <div style="text-align: right;">
-      <div style="font-size: 32px; font-family: 'Playfair Display', serif; font-weight: 700; color: #5E0B10;">INVOICE</div>
+      <div style="font-size: 32px; font-family: 'Playfair Display', serif; font-weight: 700; color: #17231E;">INVOICE</div>
       <div style="margin-top: 8px; font-size: 13px;">
-        <div style="color: #7A4A3B;">Invoice No: <strong style="color: #5E0B10;">${invoiceNumber}</strong></div>
-        <div style="color: #7A4A3B; margin-top: 4px;">Date: <strong style="color: #5E0B10;">${invoiceDate}</strong></div>
-        <div style="color: #7A4A3B; margin-top: 4px;">Order ID: <strong style="color: #5E0B10;">${order.orderId || order.id}</strong></div>
+        <div style="color: #7A4A3B;">Invoice No: <strong style="color: #17231E;">${invoiceNumber}</strong></div>
+        <div style="color: #7A4A3B; margin-top: 4px;">Date: <strong style="color: #17231E;">${invoiceDate}</strong></div>
+        <div style="color: #7A4A3B; margin-top: 4px;">Order ID: <strong style="color: #17231E;">${order.orderId || order.id}</strong></div>
       </div>
     </div>
   </div>
@@ -154,7 +154,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <div style="display: flex; gap: 32px; margin-bottom: 32px;">
     <div style="flex: 1; background: #FCFAF5; padding: 20px; border-radius: 12px; border: 1px solid #EAD7BC;">
       <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #D4A017; font-weight: 700; margin-bottom: 10px;">Ship To</h3>
-      <div style="font-size: 13px; line-height: 1.7; color: #5E0B10;">
+      <div style="font-size: 13px; line-height: 1.7; color: #17231E;">
         <strong>${order.shippingAddress.name}</strong><br>
         ${order.shippingAddress.address}<br>
         ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.pincode}<br>
@@ -166,7 +166,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
     </div>
     <div style="flex: 1; background: #FCFAF5; padding: 20px; border-radius: 12px; border: 1px solid #EAD7BC;">
       <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #D4A017; font-weight: 700; margin-bottom: 10px;">Bill To</h3>
-      <div style="font-size: 13px; line-height: 1.7; color: #5E0B10;">
+      <div style="font-size: 13px; line-height: 1.7; color: #17231E;">
         <strong>${order.billingAddress.name}</strong><br>
         ${order.billingAddress.address}<br>
         ${order.billingAddress.city}, ${order.billingAddress.state} ${order.billingAddress.pincode}<br>
@@ -186,7 +186,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
   <!-- Items Table -->
   <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
     <thead>
-      <tr style="background: #5E0B10;">
+      <tr style="background: #17231E;">
         <th style="padding: 12px 16px; text-align: left; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; border-radius: 8px 0 0 0;">#</th>
         <th style="padding: 12px 16px; text-align: left; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Product</th>
         <th style="padding: 12px 16px; text-align: center; color: white; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Qty</th>
@@ -208,7 +208,7 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
       </div>
       ${
         order.discount && order.discount > 0
-          ? `<div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #8A1B14;">
+          ? `<div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #075B43;">
               <span>Discount (${order.discountPercent || 10}%)</span>
               <span style="font-weight: 600;">-${formatInvoicePrice(order.discount)}</span>
             </div>`
@@ -222,13 +222,13 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
         <span>Tax (Included)</span>
         <span style="font-weight: 600;">${formatInvoicePrice(order.tax || 0)}</span>
       </div>
-      <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 18px; font-weight: 700; color: #5E0B10; border-top: 2px solid #5E0B10; margin-top: 8px;">
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 18px; font-weight: 700; color: #17231E; border-top: 2px solid #17231E; margin-top: 8px;">
         <span>Total</span>
         <span>${formatInvoicePrice(order.totalAmount)}</span>
       </div>
       <div style="display: flex; justify-content: space-between; padding: 8px 12px; font-size: 13px; background: #FCFAF5; border-radius: 8px; margin-top: 8px; border: 1px solid #EAD7BC;">
         <span>Paid Online</span>
-        <span style="font-weight: 600; color: #5E0B10;">${formatInvoicePrice(order.amountToPay || order.totalAmount)}</span>
+        <span style="font-weight: 600; color: #17231E;">${formatInvoicePrice(order.amountToPay || order.totalAmount)}</span>
       </div>
       ${
         order.amountRemaining && order.amountRemaining > 0
@@ -243,16 +243,16 @@ export function generateInvoiceHTML(order: InvoiceOrder): string {
 
   <!-- Payment Info -->
   <div style="background: #FCFAF5; padding: 16px 20px; border-radius: 12px; border: 1px solid #EAD7BC; margin-bottom: 32px; font-size: 13px;">
-    <strong style="color: #5E0B10;">Payment:</strong>
+    <strong style="color: #17231E;">Payment:</strong>
     <span style="color: #7A4A3B; margin-left: 8px;">
       Prepaid (Online Payment)
-      - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#8A1B14" : "#D4A017"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
+      - Status: <strong style="color: ${order.paymentStatus === "paid" ? "#075B43" : "#D4A017"};">${order.paymentStatus === "paid" ? "Paid ✓" : "Pending"}</strong>
     </span>
   </div>
 
   <!-- Footer -->
   <div style="text-align: center; padding-top: 24px; border-top: 1px solid #EAD7BC;">
-    <p style="font-family: 'Playfair Display', serif; font-size: 16px; color: #5E0B10; margin-bottom: 4px;">Thank you for shopping with Namo Narayana!</p>
+    <p style="font-family: 'Playfair Display', serif; font-size: 16px; color: #17231E; margin-bottom: 4px;">Thank you for shopping with Namo Narayana!</p>
     <p style="font-size: 12px; color: #7A4A3B;">Pure Food. Stronger Bharat. 🙏</p>
     <p style="font-size: 11px; color: #8C988B; margin-top: 12px;">This is a computer-generated invoice and does not require a signature.</p>
   </div>

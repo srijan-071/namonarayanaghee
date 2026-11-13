@@ -81,28 +81,28 @@ You received this because you visited namonarayanaghee.store. Reply with 'unsubs
       It takes nearly 25 to 30 litres of pure Gir cow milk to produce just one single litre of this golden, grainy ghee. Elvish and our whole team wanted you to experience what real, unadulterated ghee actually tastes like.
     </p>
 
-    <div style="background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 8px; padding: 18px 20px; margin: 24px 0;">
-      <p style="font-size: 14px; margin: 0 0 6px 0; color: #5E0B10; font-weight: 600;">
+    <div style="background-color: #FAF9F5; border: 1px solid #EAE7DF; border-radius: 8px; padding: 18px 20px; margin: 24px 0;">
+      <p style="font-size: 14px; margin: 0 0 6px 0; color: #17231E; font-weight: 600;">
         Special 10% Farm Welcome:
       </p>
-      <p style="font-size: 15px; margin: 0 0 14px 0; color: #4A352F;">
-        Use coupon code <strong style="background-color: #FDF6E8; border: 1px solid #EAD7BC; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 15px; color: #8A1B14; letter-spacing: 0.5px;">DIWALI</strong> at checkout.
+      <p style="font-size: 15px; margin: 0 0 14px 0; color: #17231E;">
+        Use coupon code <strong style="background-color: #E8F1EC; border: 1px solid #075B43; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 15px; color: #075B43; letter-spacing: 0.5px;">DIWALI</strong> at checkout.
       </p>
-      <a href="https://www.namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #8A1B14; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 10px 22px; border-radius: 6px;">
+      <a href="https://www.namonarayanaghee.store/products/pure-desi-cow-ghee-1-litre" style="display: inline-block; background-color: #075B43; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 10px 22px; border-radius: 6px;">
         Order Pure A2 Gir Cow Ghee (1L) &rarr;
       </a>
     </div>
 
-    <p style="font-size: 14px; margin: 0 0 16px 0; color: #7A4A3B;">
+    <p style="font-size: 14px; margin: 0 0 16px 0; color: #727B75;">
       Every order includes <strong>Free Express Shipping</strong> across India, packed in safe, food-grade glass jars freshly dispatched from our farm.
     </p>
 
-    <p style="font-size: 15px; margin: 0 0 24px 0; color: #4A352F;">
+    <p style="font-size: 15px; margin: 0 0 24px 0; color: #17231E;">
       If you have any questions about how our ghee is made, or want to verify our NABL lab certificates, <strong>simply hit reply to this email</strong>. I read and reply to every message personally.
     </p>
 
-    <div style="border-top: 1px solid #EAD7BC; padding-top: 18px; margin-top: 24px;">
-      <p style="font-size: 14px; margin: 0; color: #5E0B10; font-weight: 700;">Anurag Sharma</p>
+    <div style="border-top: 1px solid #EAE7DF; padding-top: 18px; margin-top: 24px;">
+      <p style="font-size: 14px; margin: 0; color: #17231E; font-weight: 700;">Anurag Sharma</p>
       <p style="font-size: 13px; margin: 2px 0 0 0; color: #7A4A3B;">Founder & Farm Lead, Namo Narayana</p>
       <p style="font-size: 12px; margin: 4px 0 0 0; color: #7A4A3B;">Traditional Vedic Bilona Ghee • Rajasthan</p>
     </div>

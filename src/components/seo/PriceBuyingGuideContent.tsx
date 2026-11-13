@@ -192,20 +192,20 @@ export default function PriceBuyingGuideContent() {
 
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="text-xs text-stone-500 mb-6 flex items-center gap-2">
-          <Link href="/" className="hover:text-[#8A1B14] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-[#075B43] transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/collections/ghee" className="hover:text-[#8A1B14] transition-colors">Ghee</Link>
+          <Link href="/collections/ghee" className="hover:text-[#075B43] transition-colors">Ghee</Link>
           <span>/</span>
-          <span className="text-[#8A1B14] font-medium">Price &amp; Buying Guide</span>
+          <span className="text-[#075B43] font-medium">Price &amp; Buying Guide</span>
         </nav>
 
         {/* Hero Header */}
         <header className="mb-12 text-center max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2 bg-[#F3E8D8] text-[#8A1B14] text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full mb-4 border border-[#E4D1B8]">
-            <Sparkles className="w-3.5 h-3.5 text-[#C99A3D]" />
+          <span className="inline-flex items-center gap-2 bg-[#E8F1EC] text-[#075B43] text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full mb-4 border border-[#DCE8DF]">
+            <Sparkles className="w-3.5 h-3.5 text-[#B89A62]" />
             Official 2026 Price &amp; Pack Size Guide
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#5E0B10] leading-tight mb-4">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#17231E] leading-tight mb-4">
             Namo Narayana Ghee Price: Pack Sizes, Current Rates &amp; Buying Guide
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
@@ -214,13 +214,13 @@ export default function PriceBuyingGuideContent() {
         </header>
 
         {/* AEO / Direct Answer Callout Box */}
-        <section className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#D4A017]/40 shadow-sm mb-12">
+        <section className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#B89A62]/40 shadow-sm mb-12">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-[#FCFAF5] border border-[#D4A017] flex items-center justify-center shrink-0 text-[#8A1B14] mt-1">
+            <div className="w-10 h-10 rounded-full bg-[#FAF9F5] border border-[#B89A62] flex items-center justify-center shrink-0 text-[#075B43] mt-1">
               <Info className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-serif font-bold text-[#5E0B10] mb-2">
+              <h2 className="text-lg sm:text-xl font-serif font-bold text-[#17231E] mb-2">
                 Quick Summary: Current Official Rates (November 2026)
               </h2>
               <p className="text-sm sm:text-base text-stone-700 leading-relaxed mb-4">
@@ -228,9 +228,9 @@ export default function PriceBuyingGuideContent() {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 {PACK_CATALOG.map((p) => (
-                  <div key={p.size} className="bg-[#FCFAF5] p-3 rounded-xl border border-[#EAD7BC]">
+                  <div key={p.size} className="bg-[#FAF9F5] p-3 rounded-xl border border-[#EAE7DF]">
                     <div className="text-xs font-bold text-stone-500 uppercase">{p.size}</div>
-                    <div className="text-xl font-serif font-bold text-[#8A1B14]">{formatPrice(p.price)}</div>
+                    <div className="text-xl font-serif font-bold text-[#075B43]">{formatPrice(p.price)}</div>
                     <div className="text-[11px] text-stone-500 line-through">{formatPrice(p.compareAtPrice)}</div>
                     <div className="text-[11px] font-semibold text-emerald-700 mt-1">{p.effectiveRatePerLitre}</div>
                   </div>
@@ -247,7 +247,7 @@ export default function PriceBuyingGuideContent() {
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10]">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E]">
                 1. Official Price &amp; Specification Breakdown
               </h2>
               <p className="text-sm text-stone-600 mt-1">
@@ -256,10 +256,10 @@ export default function PriceBuyingGuideContent() {
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-white rounded-2xl border border-[#EAD7BC] shadow-sm">
+          <div className="overflow-x-auto bg-white rounded-2xl border border-[#EAE7DF] shadow-sm">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-[#F8F4EC] text-[#5E0B10] font-serif border-b border-[#EAD7BC]">
+                <tr className="bg-[#FAF9F5] text-[#17231E] font-serif border-b border-[#EAE7DF]">
                   <th className="p-4 font-bold">Pack Size</th>
                   <th className="p-4 font-bold">Container</th>
                   <th className="p-4 font-bold">Official Price</th>
@@ -269,28 +269,28 @@ export default function PriceBuyingGuideContent() {
                   <th className="p-4 font-bold text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F0E4D4]">
+              <tbody className="divide-y divide-[#EAE7DF]">
                 {PACK_CATALOG.map((p) => (
-                  <tr key={p.slug} className={`hover:bg-amber-50/50 transition-colors ${p.isPopular ? "bg-amber-50/30 font-medium" : ""}`}>
+                  <tr key={p.slug} className={`hover:bg-[#E8F1EC]/40 transition-colors ${p.isPopular ? "bg-[#E8F1EC]/20 font-medium" : ""}`}>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#24211E]">{p.size}</span>
+                        <span className="font-bold text-[#17231E]">{p.size}</span>
                         {p.isPopular && (
-                          <span className="bg-[#C38936] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-[#075B43] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                             Popular
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="p-4 text-stone-600">{p.packaging}</td>
-                    <td className="p-4 font-bold text-[#8A1B14]">{formatPrice(p.price)}</td>
+                    <td className="p-4 font-bold text-[#075B43]">{formatPrice(p.price)}</td>
                     <td className="p-4 text-stone-400 line-through">{formatPrice(p.compareAtPrice)}</td>
                     <td className="p-4 font-semibold text-emerald-800">{p.effectiveRatePerLitre}</td>
                     <td className="p-4 text-stone-600">{p.dailyCost}</td>
                     <td className="p-4 text-center">
                       <button
                         onClick={() => handleInstantBuy(p)}
-                        className="inline-flex items-center justify-center gap-1.5 bg-[#8A1B14] hover:bg-[#5E0B10] text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-all"
+                        className="inline-flex items-center justify-center gap-1.5 bg-[#075B43] hover:bg-[#064635] text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-all cursor-pointer"
                       >
                         <Zap className="w-3.5 h-3.5 fill-current" /> Buy Now
                       </button>
@@ -303,8 +303,8 @@ export default function PriceBuyingGuideContent() {
         </section>
 
         {/* Section 2: Economics of Authentic Bilona Ghee */}
-        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAD7BC] shadow-sm">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-4">
+        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAE7DF] shadow-sm">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-4">
             2. The Economics of Bilona Ghee: Why Authentic Ghee Cannot Cost ₹300/kg
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
@@ -313,8 +313,8 @@ export default function PriceBuyingGuideContent() {
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 my-6 not-prose">
-              <div className="bg-[#FFF8F7] p-5 rounded-xl border border-red-200">
-                <span className="text-xs font-bold text-red-800 uppercase tracking-wider block mb-2">Commercial Industrial Ghee</span>
+              <div className="bg-[#FAF9F5] p-5 rounded-xl border border-stone-200">
+                <span className="text-xs font-bold text-stone-700 uppercase tracking-wider block mb-2">Commercial Industrial Ghee</span>
                 <p className="text-xs text-stone-600 mb-3">
                   Industrial processors run raw milk through high-speed mechanical centrifuges, skimming fat directly as raw cream.
                 </p>
@@ -326,8 +326,8 @@ export default function PriceBuyingGuideContent() {
                 </ul>
               </div>
 
-              <div className="bg-[#FAF9F5] p-5 rounded-xl border-2 border-[#D4A017]">
-                <span className="text-xs font-bold text-[#8A1B14] uppercase tracking-wider block mb-2">Vedic Bilona Method (Namo Narayana)</span>
+              <div className="bg-[#E8F1EC]/40 p-5 rounded-xl border-2 border-[#075B43]/50">
+                <span className="text-xs font-bold text-[#075B43] uppercase tracking-wider block mb-2">Vedic Bilona Method (Namo Narayana)</span>
                 <p className="text-xs text-stone-600 mb-3">
                   Whole A2 Gir cow milk is boiled, naturally cultured into curd, hand-churned with bi-directional wooden bilonas, and slow-simmered.
                 </p>
@@ -349,8 +349,8 @@ export default function PriceBuyingGuideContent() {
         {/* Section 3: Interactive Pack Selector */}
         <section className="mb-16">
           <div className="text-center mb-8">
-            <span className="text-xs font-bold text-[#8A1B14] tracking-widest uppercase block mb-1">Interactive Recommendation</span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10]">
+            <span className="text-xs font-bold text-[#075B43] tracking-widest uppercase block mb-1">Interactive Recommendation</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E]">
               3. Which Pack Size Best Fits Your Household?
             </h2>
             <p className="text-sm text-stone-600 max-w-xl mx-auto mt-2">
@@ -365,14 +365,14 @@ export default function PriceBuyingGuideContent() {
                 <button
                   key={pack.size}
                   onClick={() => setSelectedPack(pack)}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
                     isSelected
-                      ? "border-[#8A1B14] bg-white shadow-md ring-2 ring-[#8A1B14]/20"
-                      : "border-[#EAD7BC] bg-[#FCFAF5] hover:bg-white text-stone-700"
+                      ? "border-[#075B43] bg-white shadow-md ring-2 ring-[#075B43]/20"
+                      : "border-[#EAE7DF] bg-[#FAF9F5] hover:bg-white text-stone-700"
                   }`}
                 >
                   <div className="text-xs font-bold text-stone-500 uppercase">{pack.size}</div>
-                  <div className="text-lg font-serif font-bold text-[#8A1B14] mt-1">{formatPrice(pack.price)}</div>
+                  <div className="text-lg font-serif font-bold text-[#075B43] mt-1">{formatPrice(pack.price)}</div>
                   <div className="text-[11px] text-emerald-700 font-semibold">{pack.savings}</div>
                 </button>
               );
@@ -380,9 +380,9 @@ export default function PriceBuyingGuideContent() {
           </div>
 
           {/* Selected Pack Spotlight Card */}
-          <div className="bg-white rounded-2xl border border-[#EAD7BC] p-6 sm:p-8 shadow-sm">
+          <div className="bg-white rounded-2xl border border-[#EAE7DF] p-6 sm:p-8 shadow-sm">
             <div className="grid md:grid-cols-12 gap-8 items-center">
-              <div className="md:col-span-4 relative aspect-square rounded-xl overflow-hidden bg-amber-50/50">
+              <div className="md:col-span-4 relative aspect-square rounded-xl overflow-hidden bg-[#FAF9F5]">
                 <Image
                   src={selectedPack.image}
                   alt={selectedPack.title}
@@ -393,14 +393,14 @@ export default function PriceBuyingGuideContent() {
               </div>
 
               <div className="md:col-span-8">
-                <div className="inline-block bg-[#8A1B14] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-3">
+                <div className="inline-block bg-[#075B43] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-3">
                   {selectedPack.badge}
                 </div>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-2">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-2">
                   {selectedPack.title}
                 </h3>
                 <div className="flex items-baseline gap-3 mb-4">
-                  <span className="text-3xl font-serif font-bold text-[#8A1B14]">{formatPrice(selectedPack.price)}</span>
+                  <span className="text-3xl font-serif font-bold text-[#075B43]">{formatPrice(selectedPack.price)}</span>
                   <span className="text-lg text-stone-400 line-through">{formatPrice(selectedPack.compareAtPrice)}</span>
                   <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                     Effective {selectedPack.effectiveRatePerLitre}
@@ -414,13 +414,13 @@ export default function PriceBuyingGuideContent() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => handleInstantBuy(selectedPack)}
-                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#8A1B14] hover:bg-[#5E0B10] text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all text-sm"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#075B43] hover:bg-[#064635] text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all text-sm cursor-pointer"
                   >
                     <Zap className="w-4 h-4 fill-current" /> Buy Now (Instant Checkout)
                   </button>
                   <button
                     onClick={() => handleAddToCart(selectedPack)}
-                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 border-2 border-[#8A1B14] text-[#8A1B14] hover:bg-amber-50 font-bold px-6 py-3 rounded-xl transition-all text-sm"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 border-2 border-[#075B43] text-[#075B43] hover:bg-[#E8F1EC] font-bold px-6 py-3 rounded-xl transition-all text-sm cursor-pointer"
                   >
                     <ShoppingCart className="w-4 h-4" /> Add to Cart
                   </button>
@@ -431,8 +431,8 @@ export default function PriceBuyingGuideContent() {
         </section>
 
         {/* Section 4: Ordering Guide & COD Policies */}
-        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAD7BC] shadow-sm">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-4">
+        <section className="mb-16 bg-white rounded-2xl p-6 sm:p-10 border border-[#EAE7DF] shadow-sm">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-4">
             4. Step-by-Step Guide: How to Order Authentic Ghee Online
           </h2>
           <div className="prose prose-stone max-w-none text-stone-700 leading-relaxed space-y-4">
@@ -466,23 +466,23 @@ export default function PriceBuyingGuideContent() {
 
         {/* Section 5: Frequently Asked Questions */}
         <section className="mb-16">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#5E0B10] mb-6 text-center">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17231E] mb-6 text-center">
             5. Frequently Asked Questions
           </h2>
           <div className="space-y-4">
             {FAQS.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={idx} className="bg-white rounded-xl border border-[#EAD7BC] overflow-hidden shadow-xs">
+                <div key={idx} className="bg-white rounded-xl border border-[#EAE7DF] overflow-hidden shadow-xs">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full text-left p-5 flex items-center justify-between font-serif font-bold text-stone-800 hover:text-[#8A1B14] transition-colors"
+                    className="w-full text-left p-5 flex items-center justify-between font-serif font-bold text-stone-800 hover:text-[#075B43] transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-5 h-5 text-[#8A1B14] shrink-0" /> : <ChevronDown className="w-5 h-5 text-stone-400 shrink-0" />}
+                    {isOpen ? <ChevronUp className="w-5 h-5 text-[#075B43] shrink-0" /> : <ChevronDown className="w-5 h-5 text-stone-400 shrink-0" />}
                   </button>
                   {isOpen && (
-                    <div className="p-5 pt-0 text-sm text-stone-600 leading-relaxed border-t border-stone-100 bg-[#FCFAF5]/50">
+                    <div className="p-5 pt-0 text-sm text-stone-600 leading-relaxed border-t border-stone-100 bg-[#FAF9F5]/50">
                       {faq.a}
                     </div>
                   )}
@@ -493,18 +493,18 @@ export default function PriceBuyingGuideContent() {
         </section>
 
         {/* Bottom CTA Banner */}
-        <section className="bg-gradient-to-r from-[#5E0B10] to-[#8A1B14] rounded-2xl p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden">
+        <section className="bg-gradient-to-r from-[#075B43] via-[#064635] to-[#17231E] rounded-2xl p-8 sm:p-12 text-center text-white shadow-xl relative overflow-hidden border border-[#075B43]/30">
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-3">
               Taste Authentic Vedic Bilona Ghee Today
             </h2>
-            <p className="text-amber-100 text-sm sm:text-base mb-8">
+            <p className="text-emerald-100 text-sm sm:text-base mb-8">
               100% Pure A2 Gir Cow Ghee, hand-churned from cultured curd. Zero preservatives, zero additives, pan-India free delivery.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/products/pure-desi-cow-ghee-1-litre"
-                className="bg-[#D4A017] hover:bg-[#C99A3D] text-[#24211E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
+                className="bg-[#B89A62] hover:bg-[#D4AF37] text-[#17231E] font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all text-sm inline-flex items-center gap-2"
               >
                 <Zap className="w-4 h-4 fill-current" /> Order 1 Litre Bestseller (₹1,299)
               </Link>

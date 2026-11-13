@@ -6,7 +6,7 @@
  * 1. Multipart MIME (Identical structured HTML + clean, complete plaintext fallback).
  * 2. Strict RFC Transactional Headers (X-Mailin-Tag, Auto-Submitted, X-Entity-Ref-ID, List-Unsubscribe).
  * 3. High text-to-HTML ratio with zero spam-triggering marketing buzzwords.
- * 4. Namo Narayana Vedic Ghee design system (#5E0B10, #8A1B14, #D4A017, #FCFAF5).
+ * 4. Namo Narayana Vedic Ghee design system (#17231E, #075B43, #D4A017, #FCFAF5).
  */
 
 export type OrderStatusType =
@@ -72,7 +72,7 @@ function buildProgressTrackerHtml(currentStatus: OrderStatusType): string {
 
   return `
     <div style="margin: 28px 0; background-color: #FAF6EF; border: 1px solid #EAD7BC; border-radius: 12px; padding: 18px 12px;">
-      <div style="text-align: center; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #5E0B10; letter-spacing: 1px; margin-bottom: 14px;">
+      <div style="text-align: center; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #17231E; letter-spacing: 1px; margin-bottom: 14px;">
         Live Shipment Progress
       </div>
       <table style="width: 100%; border-collapse: collapse; text-align: center;">
@@ -126,7 +126,7 @@ function buildItemsTableHtml(items: any[] = []): string {
   return `
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px;">
       <thead>
-        <tr style="background-color: #F8F4EB; color: #5E0B10; text-align: left;">
+        <tr style="background-color: #F8F4EB; color: #17231E; text-align: left;">
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Item Ordered</th>
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; text-align: center; font-size: 11px; text-transform: uppercase;">Qty</th>
           <th style="padding: 10px; border-bottom: 2px solid #EAD7BC; text-align: right; font-size: 11px; text-transform: uppercase;">Amount</th>
@@ -144,7 +144,7 @@ function buildItemsTableHtml(items: any[] = []): string {
             <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: center; font-weight: 600; vertical-align: middle;">
               ${i.quantity}
             </td>
-            <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: right; font-weight: bold; color: #8A1B14; vertical-align: middle; font-size: 13px;">
+            <td style="padding: 12px 10px; border-bottom: 1px solid #F0E6D6; text-align: right; font-weight: bold; color: #075B43; vertical-align: middle; font-size: 13px;">
               ${i.price === 0 || i.isGift ? '<span style="color: #2e7d32; font-weight: 800;">FREE</span>' : formatRupees((i.price || 0) * (i.quantity || 1))}
             </td>
           </tr>
@@ -163,7 +163,7 @@ function buildFreeGiftsHtml(freeGifts: any[] = []): string {
 
   return `
     <div style="background-color: #FFFDF7; border: 1px dashed #D4A017; border-radius: 8px; padding: 12px 15px; margin-top: 15px;">
-      <strong style="color: #8A1B14; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">
+      <strong style="color: #075B43; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">
         🎁 Complimentary Gifts in Your Parcel:
       </strong>
       <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #4A352F;">
@@ -193,7 +193,7 @@ function buildShippingAddressHtml(shipping: any, contact: any): string {
 
   return `
     <div style="background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 10px; padding: 16px; margin-top: 20px; font-size: 13px; line-height: 1.6; color: #4A352F;">
-      <strong style="color: #5E0B10; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 6px;">📍 Shipping Address</strong>
+      <strong style="color: #17231E; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 6px;">📍 Shipping Address</strong>
       <div style="font-size: 14px; font-weight: bold; color: #2A1612;">${name}</div>
       <div>${address}</div>
       ${cityState ? `<div>${cityState}</div>` : ""}
@@ -260,7 +260,7 @@ export async function sendOrderStatusEmail(
       statusDescriptionPlain = `Your order #${orderId} has been verified and our farm team is currently preparing your freshly churned Vedic Bilona Ghee jar with sacred care.`;
       statusBannerHtml = `
         <div style="background-color: #F8F4EB; border-left: 4px solid #D4A017; padding: 14px 18px; border-radius: 4px; margin: 18px 0;">
-          <strong style="color: #5E0B10; font-size: 14px; display: block; margin-bottom: 4px;">Status: In Preparation & Packing</strong>
+          <strong style="color: #17231E; font-size: 14px; display: block; margin-bottom: 4px;">Status: In Preparation & Packing</strong>
           <span style="color: #4A352F; font-size: 13px;">Our dairy team is carefully packing your glass jar with shockproof cushioning and complimentary festive gifts.</span>
         </div>
       `;
@@ -379,11 +379,11 @@ export async function sendOrderStatusEmail(
   const rewardAmount = orderData?.rewardAmount || (diwaliCoupon ? (diwaliCoupon.match(/^DIWALI(\d+)/)?.[1] || "250") : null);
   const diwaliCouponHtml = diwaliCoupon ? `
     <div style="background: linear-gradient(135deg, #FFFDF8 0%, #FBF5E6 100%); border: 2px dashed #D4A017; border-radius: 12px; padding: 18px 16px; margin: 20px 0; text-align: center;">
-      <span style="display: inline-block; background-color: #8A1B14; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
+      <span style="display: inline-block; background-color: #075B43; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
         🪔 Unlocked Festive Reward
       </span>
-      <h3 style="color: #5E0B10; margin: 8px 0 6px 0; font-size: 16px; font-weight: 800;">Your ₹${rewardAmount} Gift Card</h3>
-      <div style="background-color: #ffffff; padding: 8px 18px; border-radius: 6px; font-family: monospace; font-size: 18px; font-weight: 900; color: #8A1B14; display: inline-block; border: 1.5px solid #D4A017; letter-spacing: 2px;">
+      <h3 style="color: #17231E; margin: 8px 0 6px 0; font-size: 16px; font-weight: 800;">Your ₹${rewardAmount} Gift Card</h3>
+      <div style="background-color: #ffffff; padding: 8px 18px; border-radius: 6px; font-family: monospace; font-size: 18px; font-weight: 900; color: #075B43; display: inline-block; border: 1.5px solid #D4A017; letter-spacing: 2px;">
         ${diwaliCoupon}
       </div>
       <p style="margin: 8px 0 0 0; font-size: 11px; color: #7A4A3B;">
@@ -403,15 +403,15 @@ export async function sendOrderStatusEmail(
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF9F5; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         .wrapper { max-width: 600px; margin: 25px auto; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(94, 11, 16, 0.08); border: 1px solid #EAD7BC; }
-        .header { background: linear-gradient(135deg, #5E0B10 0%, #8A1B14 100%); padding: 30px 20px; text-align: center; border-bottom: 3px solid #D4A017; }
+        .header { background: linear-gradient(135deg, #075B43 0%, #064635 100%); padding: 30px 20px; text-align: center; border-bottom: 3px solid #D4A017; }
         .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
         .header p { color: #F5BD47; margin: 4px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
         .content { padding: 30px 25px; color: #4A352F; line-height: 1.6; }
-        .greeting { color: #5E0B10; font-size: 20px; font-weight: bold; margin-top: 0; }
+        .greeting { color: #17231E; font-size: 20px; font-weight: bold; margin-top: 0; }
         .order-card { background: linear-gradient(to bottom, #FFFDF9, #FCFAF5); border: 1px solid #EAD7BC; border-radius: 10px; padding: 18px; margin: 18px 0; text-align: center; }
-        .amount { font-size: 24px; font-weight: 800; color: #8A1B14; margin: 4px 0; }
+        .amount { font-size: 24px; font-weight: 800; color: #075B43; margin: 4px 0; }
         .btn-container { text-align: center; margin: 28px 0 20px 0; }
-        .btn { background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%); color: #ffffff !important; text-decoration: none; padding: 15px 32px; border-radius: 8px; font-weight: 800; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(138, 27, 20, 0.25); letter-spacing: 0.5px; }
+        .btn { background: linear-gradient(135deg, #075B43 0%, #064635 100%); color: #ffffff !important; text-decoration: none; padding: 15px 32px; border-radius: 8px; font-weight: 800; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(138, 27, 20, 0.25); letter-spacing: 0.5px; }
         .footer { background-color: #FCFAF5; padding: 22px 20px; text-align: center; font-size: 11px; color: #7A4A3B; border-top: 1px solid #EAD7BC; }
       </style>
     </head>
@@ -431,9 +431,9 @@ export async function sendOrderStatusEmail(
           <!-- Order Summary Card -->
           <div class="order-card">
             <span style="color: #7A4A3B; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Order Reference ID</span>
-            <div style="font-size: 19px; color: #5E0B10; font-weight: 800; font-family: monospace; margin: 3px 0;">#${orderId}</div>
+            <div style="font-size: 19px; color: #17231E; font-weight: 800; font-family: monospace; margin: 3px 0;">#${orderId}</div>
             <div class="amount">${formattedTotal}</div>
-            <span style="display: inline-block; background-color: #F8F4EB; color: #5E0B10; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #EAD7BC; margin-top: 4px;">
+            <span style="display: inline-block; background-color: #F8F4EB; color: #17231E; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid #EAD7BC; margin-top: 4px;">
               Current Status: ${newStatus.toUpperCase().replace(/_/g, " ")}
             </span>
           </div>
@@ -453,12 +453,12 @@ export async function sendOrderStatusEmail(
           </div>
 
           <p style="text-align: center; font-size: 12px; color: #7A4A3B; margin-top: 20px;">
-            Questions regarding this update? Reply directly to this email or contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #8A1B14; font-weight: bold;">${SUPPORT_EMAIL}</a>
+            Questions regarding this update? Reply directly to this email or contact us at <a href="mailto:${SUPPORT_EMAIL}" style="color: #075B43; font-weight: bold;">${SUPPORT_EMAIL}</a>
           </p>
         </div>
 
         <div class="footer">
-          <p style="margin: 0 0 6px 0; font-weight: bold; color: #5E0B10; font-size: 12px;">
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #17231E; font-size: 12px;">
             Namo Narayana Vedic Farm
           </p>
           <p style="margin: 0 0 8px 0;">Pure Vedic Bilona Ghee • Made from Curd of Gir Cows • Bharat 🙏</p>
@@ -584,7 +584,7 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
           <strong style="color: #2A1612; font-size: 13px;">${item.name || item.title || "Pure A2 Gir Cow Ghee"}</strong>
           ${item.variantTitle ? `<br><span style="color: #7A4A3B; font-size: 11px;">Size: ${item.variantTitle}</span>` : ""}
         </div>
-        <span style="font-weight: bold; color: #8A1B14; font-size: 13px;">Qty: ${item.quantity || 1}</span>
+        <span style="font-weight: bold; color: #075B43; font-size: 13px;">Qty: ${item.quantity || 1}</span>
       </div>
     `
     )
@@ -599,12 +599,12 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF9F5; margin: 0; padding: 0; }
         .wrapper { max-width: 600px; margin: 25px auto; background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(94, 11, 16, 0.08); border: 1px solid #EAD7BC; }
-        .header { background: linear-gradient(135deg, #5E0B10 0%, #8A1B14 100%); padding: 30px 20px; text-align: center; border-bottom: 3px solid #D4A017; }
+        .header { background: linear-gradient(135deg, #075B43 0%, #064635 100%); padding: 30px 20px; text-align: center; border-bottom: 3px solid #D4A017; }
         .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
         .header p { color: #F5BD47; margin: 4px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
         .content { padding: 30px 25px; color: #4A352F; line-height: 1.6; }
         .btn-container { text-align: center; margin: 28px 0; }
-        .btn { background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(138, 27, 20, 0.25); }
+        .btn { background: linear-gradient(135deg, #075B43 0%, #064635 100%); color: #ffffff !important; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(138, 27, 20, 0.25); }
         .footer { background-color: #FCFAF5; padding: 20px; text-align: center; font-size: 11px; color: #7A4A3B; border-top: 1px solid #EAD7BC; }
       </style>
     </head>
@@ -616,7 +616,7 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
         </div>
 
         <div class="content">
-          <h2 style="color: #5E0B10; font-size: 20px; font-weight: bold; margin-top: 0;">
+          <h2 style="color: #17231E; font-size: 20px; font-weight: bold; margin-top: 0;">
             Namaste ${customerName}, You Left Something Sacred Behind! 🙏
           </h2>
           
@@ -625,7 +625,7 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
           </p>
 
           <div style="background-color: #FFFDF9; border: 1px solid #EAD7BC; border-radius: 10px; padding: 18px; margin: 20px 0;">
-            <div style="font-size: 12px; text-transform: uppercase; font-weight: 800; color: #5E0B10; letter-spacing: 0.5px; margin-bottom: 10px;">
+            <div style="font-size: 12px; text-transform: uppercase; font-weight: 800; color: #17231E; letter-spacing: 0.5px; margin-bottom: 10px;">
               Your Reserved Cart:
             </div>
             ${itemsListHtml || '<div style="font-size: 13px; color: #7A4A3B;">Pure Vedic A2 Gir Cow Bilona Ghee</div>'}
@@ -639,10 +639,10 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
           <!-- Coupon Callout -->
           <div style="background: linear-gradient(to right, #FFF8E7, #FFFDF7); border: 1px dashed #D4A017; border-radius: 8px; padding: 14px 16px; text-align: center; margin: 20px 0;">
             <span style="font-size: 11px; color: #7A4A3B; text-transform: uppercase; font-weight: bold;">Festive Blessing Code</span>
-            <div style="font-size: 18px; font-weight: 800; color: #8A1B14; letter-spacing: 2px; margin: 4px 0;">
+            <div style="font-size: 18px; font-weight: 800; color: #075B43; letter-spacing: 2px; margin: 4px 0;">
               Use Code: <span style="background-color: #F8E5C4; padding: 2px 8px; border-radius: 4px;">${coupon}</span>
             </div>
-            <span style="font-size: 12px; color: #5E0B10;">Get Extra 10% OFF + Complimentary Free Gifts with your jar!</span>
+            <span style="font-size: 12px; color: #17231E;">Get Extra 10% OFF + Complimentary Free Gifts with your jar!</span>
           </div>
 
           <div class="btn-container">
@@ -657,7 +657,7 @@ export async function sendAbandonedCartRecoveryEmail(recipient: {
         </div>
 
         <div class="footer">
-          <p style="margin: 0 0 6px 0; font-weight: bold; color: #5E0B10;">Namo Narayana Vedic Farm • Bharat</p>
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #17231E;">Namo Narayana Vedic Farm • Bharat</p>
           <p style="margin: 0; font-size: 10px; color: #9A7B70;">
             This cart recovery reminder was sent to ${recipient.email}. You can ignore this email if you have already completed your purchase.
           </p>
@@ -766,7 +766,7 @@ export async function sendPrepaidConversionEmail(options: PrepaidConversionEmail
   const itemsHtml = items.length > 0 ? `
     <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 15px 0; border-collapse: collapse; font-size: 13px;">
       <thead>
-        <tr style="background-color: #FAF6EE; color: #5E0B10; text-align: left;">
+        <tr style="background-color: #FAF6EE; color: #17231E; text-align: left;">
           <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Item</th>
           <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; text-align: center; font-size: 11px; text-transform: uppercase;">Qty</th>
           <th style="padding: 10px 12px; border-bottom: 2px solid #EAD7BC; text-align: right; font-size: 11px; text-transform: uppercase;">Status</th>
@@ -807,7 +807,7 @@ export async function sendPrepaidConversionEmail(options: PrepaidConversionEmail
           
           <!-- Header -->
           <tr>
-            <td bgcolor="#5E0B10" style="background: linear-gradient(135deg, #5E0B10 0%, #8A1B14 100%); padding: 30px 24px; text-align: center; border-bottom: 4px solid #D4A017;">
+            <td bgcolor="#17231E" style="background: linear-gradient(135deg, #075B43 0%, #064635 100%); padding: 30px 24px; text-align: center; border-bottom: 4px solid #D4A017;">
               <h1 style="color: #FFFFFF; font-size: 22px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: 1px; text-transform: uppercase;">
                 NAMO NARAYANA
               </h1>
@@ -846,20 +846,20 @@ export async function sendPrepaidConversionEmail(options: PrepaidConversionEmail
               </table>
 
               <!-- Delivery Instruction Notice -->
-              <div style="background-color: #FAF6EE; border-left: 4px solid #D4A017; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 13px; color: #5E0B10;">
+              <div style="background-color: #FAF6EE; border-left: 4px solid #D4A017; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 13px; color: #17231E;">
                 <strong>📦 Important Doorstep Delivery Note:</strong><br/>
                 We have updated our logistics courier manifest for your consignment. <strong>You DO NOT need to arrange cash, OTP, or change at your doorstep.</strong> Your delivery executive will hand over your pure A2 Gir Cow Ghee package directly with priority contactless delivery.
               </div>
 
               <!-- Items Breakdown -->
-              <h4 style="color: #5E0B10; margin: 25px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <h4 style="color: #17231E; margin: 25px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
                 Consignment Details:
               </h4>
               ${itemsHtml}
 
               ${shippingAddress ? `
               <div style="background-color: #FCFAF5; border: 1px solid #EAD7BC; border-radius: 8px; padding: 14px 18px; margin: 20px 0; font-size: 12px; color: #4A352F;">
-                <strong style="color: #5E0B10; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 11px;">Delivery Address:</strong>
+                <strong style="color: #17231E; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 11px;">Delivery Address:</strong>
                 ${shippingAddress.name || customerName}<br/>
                 ${shippingAddress.address || ""}<br/>
                 ${shippingAddress.city ? `${shippingAddress.city}, ` : ""}${shippingAddress.state ? `${shippingAddress.state} ` : ""}${shippingAddress.pincode || ""}
@@ -869,7 +869,7 @@ export async function sendPrepaidConversionEmail(options: PrepaidConversionEmail
               <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 25px 0 10px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${STORE_URL}/track-order?orderId=${encodeURIComponent(cleanOrderId)}" style="display: inline-block; background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%); color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 14px 28px; border-radius: 8px; box-shadow: 0 4px 12px rgba(94, 11, 16, 0.2);">
+                    <a href="${STORE_URL}/track-order?orderId=${encodeURIComponent(cleanOrderId)}" style="display: inline-block; background: linear-gradient(135deg, #075B43 0%, #064635 100%); color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 14px 28px; border-radius: 8px; box-shadow: 0 4px 12px rgba(94, 11, 16, 0.2);">
                       Track Your Shipment Live &rarr;
                     </a>
                   </td>

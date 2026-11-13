@@ -98,27 +98,29 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
         <div className="absolute inset-0 z-10 w-full h-full flex flex-col justify-center">
           <div className="nn-container w-full h-full relative">
             <div className="flex flex-col items-start justify-center h-full max-w-2xl pt-12 md:pt-0">
-              {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2.5 bg-[#5E0B10]/85 border border-amber-400/60 rounded-full px-4 py-1.5 mb-6 backdrop-blur-md shadow-lg">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span className="text-xs sm:text-sm font-bold tracking-widest text-amber-300 uppercase">
-                  PURE VEDIC BILONA METHOD • 100% DESI GIR COW GHEE
+              {/* Eyebrow: Elvish Yadav × Vedic Bilona Branding */}
+              <div className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#064E3B]/90 via-[#0A1612]/90 to-[#032B1D]/90 border border-emerald-400/50 rounded-full px-4 py-1.5 mb-6 backdrop-blur-md shadow-lg">
+                <Sparkles className="w-4 h-4 text-emerald-300 shrink-0" />
+                <span className="text-xs sm:text-sm font-bold tracking-widest text-emerald-200 uppercase">
+                  ELVISH YADAV × VEDIC BILONA METHOD • 100% DESI GIR COW GHEE
                 </span>
               </div>
               
               {/* Headline */}
               <h1
-                className="font-serif text-white text-4xl sm:text-5xl md:text-[74px] leading-[1.08] tracking-tight font-bold mb-6 drop-shadow-[0_4px_10px_rgba(0,0,0,0.9)]"
+                className="font-serif text-white text-4xl sm:text-5xl md:text-[72px] leading-[1.06] tracking-tight font-bold mb-6 drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]"
               >
-                Authentic Purity, <br/>
-                <span className="diwali-shimmer italic font-normal">As Nature Intended</span>
+                A Tradition Worth <br/>
+                <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#F7E7B4] via-[#D4AF37] to-[#F7E7B4] drop-shadow-sm">
+                  Bringing Home
+                </span>
               </h1>
 
               {/* Subtitle */}
               <p
-                className="text-amber-50 max-w-[500px] text-base md:text-lg mb-8 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] font-medium"
+                className="text-emerald-50/90 max-w-[520px] text-base md:text-lg mb-8 leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] font-medium"
               >
-                Handcrafted from free-grazing indigenous Gir cows using the traditional curd-churned wooden Bilona method. 100% pure, natural golden granules, rich aroma &amp; gut-nourishing A2 nutrients.
+                Handcrafted from indigenous, free-grazing Gir cows using the sacred curd-churned wooden Bilona method. 100% pure golden granules with verified A2 beta-casein nutrients, direct from our Vedic Gaushala.
               </p>
 
               {/* Badges/Icons */}
@@ -129,13 +131,13 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
                   { icon: Droplets, label: "Vedic Bilona\nChurned" },
                   { icon: ShieldCheck, label: "Lab Tested\n100% Pure" },
                   { icon: Sparkles, label: "Golden Grainy\nDanedar" },
-                  { icon: Truck, label: "Free Pan-India\nDelivery" }
+                  { icon: Truck, label: "Pan-India\nFast Express" }
                 ].map((item, idx) => (
                   <div key={idx} className="flex flex-col items-center gap-2">
-                    <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center bg-black/40 backdrop-blur-sm shadow-md">
-                      <item.icon className="w-5 h-5 text-amber-300" />
+                    <div className="w-12 h-12 rounded-full border border-emerald-400/40 flex items-center justify-center bg-black/40 backdrop-blur-sm shadow-md">
+                      <item.icon className="w-5 h-5 text-emerald-300" />
                     </div>
-                    <span className="text-[11px] font-bold text-amber-100 text-center leading-tight drop-shadow-md whitespace-pre-line">{item.label}</span>
+                    <span className="text-[11px] font-bold text-emerald-100 text-center leading-tight drop-shadow-md whitespace-pre-line">{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -143,15 +145,15 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
               {/* CTA Buttons */}
               <div className="flex flex-wrap items-center gap-4">
                 <Link 
-                  href="/collections/all-products" 
-                  className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 rounded-full px-8 py-4 font-extrabold text-base md:text-lg transition-all flex items-center gap-3 shadow-2xl hover:scale-105 active:scale-95"
+                  href="/collections/ghee" 
+                  className="bg-gradient-to-r from-[#10B981] via-[#059669] to-[#047857] hover:from-[#34D399] hover:to-[#059669] text-white rounded-full px-8 py-4 font-extrabold text-base md:text-lg transition-all flex items-center gap-3 shadow-xl hover:scale-105 active:scale-95 border border-emerald-300/40"
                 >
-                  <Sparkles className="w-5 h-5 text-stone-900" />
-                  <span>Explore Pure Ghee Packs</span>
-                  <ArrowRight className="w-5 h-5 text-stone-900" />
+                  <Sparkles className="w-5 h-5 text-amber-200" />
+                  <span>Explore Ghee Collection</span>
+                  <ArrowRight className="w-5 h-5 text-white" />
                 </Link>
 
-                <div className="bg-black/50 backdrop-blur-md border border-amber-400/40 rounded-full px-5 py-3 text-xs md:text-sm text-amber-200 font-bold flex items-center gap-2">
+                <div className="bg-gradient-to-r from-[#062419]/80 to-[#0B1A14]/80 backdrop-blur-md border border-emerald-400/40 rounded-full px-5 py-3 text-xs md:text-sm text-emerald-200 font-bold flex items-center gap-2 shadow-md">
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>Use Code: <span className="text-white underline font-black">NAMO10</span> for 10% OFF</span>
                 </div>
@@ -188,17 +190,18 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
 
             {/* Right side floating Vedic Purity Seal */}
             <div className="hidden lg:flex flex-col items-center absolute right-8 xl:right-16 top-1/4 z-20">
-              <div className="bg-[#4E0E12]/90 border-2 border-amber-400/70 rounded-3xl p-7 backdrop-blur-md shadow-2xl text-center max-w-[280px] text-white animate-festive-float">
-                <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-amber-400/20 border border-amber-400/60 flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-amber-300" />
+              <div className="bg-gradient-to-b from-[#0A1612]/95 via-[#063024]/95 to-[#042018]/95 border-2 border-emerald-400/60 rounded-3xl p-7 backdrop-blur-md shadow-2xl text-center max-w-[285px] text-white">
+                <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-emerald-400/20 border border-emerald-400/60 flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-emerald-300" />
                 </div>
-                <span className="text-amber-300 font-serif text-2xl font-bold block mb-0.5">Vedic Purity</span>
-                <span className="text-[11px] text-amber-100/90 font-bold uppercase tracking-widest block mb-3">100% Desi Gir Cow Ghee</span>
-                <p className="border-t border-amber-400/30 pt-3 text-xs text-amber-100 leading-relaxed">
-                  Handcrafted in small batches from whole curd. Rich aroma, granular texture, zero preservatives.
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F7E7B4] via-[#D4AF37] to-[#F7E7B4] font-serif text-2xl font-bold block mb-0.5">Vedic Purity</span>
+                <span className="text-[11px] text-emerald-200 font-bold uppercase tracking-widest block mb-1">Elvish Yadav Endorsed</span>
+                <span className="text-[10px] text-emerald-300/80 uppercase tracking-wider block mb-3">100% Desi Gir Cow Ghee</span>
+                <p className="border-t border-emerald-400/30 pt-3 text-xs text-emerald-100/90 leading-relaxed font-sans">
+                  Crafted strictly from whole Gir cow curd using the bidirectional wooden Bilona method. Lab tested &amp; pure.
                 </p>
-                <div className="mt-4 bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 text-[11px] font-black py-2 px-3 rounded-xl uppercase tracking-wider shadow-md">
-                  Free Shipping • Pan-India
+                <div className="mt-4 bg-gradient-to-r from-[#D4AF37] to-[#F5BD47] text-stone-950 text-[11px] font-black py-2 px-3 rounded-xl uppercase tracking-wider shadow-md">
+                  Pan-India Express Dispatch
                 </div>
               </div>
             </div>
@@ -206,20 +209,22 @@ export default function HeroCarousel({ slides, autoPlayInterval = 8000 }: Props)
         </div>
       </section>
 
-      {/* Trust Bar below hero */}
-      <div className="bg-[#FCFAF5] py-7 border-b border-[#E9E5D9] shadow-inner">
+      {/* Trust Bar below hero: Light Mode Obsidian Emerald Gradient */}
+      <div className="bg-gradient-to-r from-[#FAF8F5] via-[#F4F9F6] to-[#FAF8F5] py-7 border-b border-emerald-900/10 shadow-xs">
         <div className="nn-container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-amber-200">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-emerald-900/10">
             {[
               { icon: Droplets, title: "Traditional Bilona Churned", desc: "Curd-churned with wooden bi-directional churner" },
               { icon: ShieldCheck, title: "Lab Tested 100% Pure", desc: "Free from adulteration, chemicals & preservatives" },
               { icon: Gift, title: "Complimentary Oils", desc: "Cold-pressed oils included on selected packs" },
-              { icon: Truck, title: "Free Pan-India Delivery", desc: "Dispatched fresh directly from our farms" }
+              { icon: Truck, title: "Free Pan-India Delivery", desc: "Dispatched fresh directly from our Vedic Gaushala" }
             ].map((item, idx) => (
               <div key={idx} className={cn("flex flex-col items-center text-center px-4", idx % 2 === 0 ? "border-l-0" : "", idx === 0 ? "md:border-l-0" : "")}>
-                <item.icon className="w-7 h-7 text-[#8A1B14] mb-2" strokeWidth={1.75} />
-                <h4 className="text-[#5E0B10] font-bold text-sm mb-0.5">{item.title}</h4>
-                <p className="text-[#7A4A3B] text-xs font-medium">{item.desc}</p>
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-100/80 to-emerald-50/80 flex items-center justify-center mb-2.5 border border-emerald-300/40 shadow-2xs">
+                  <item.icon className="w-6 h-6 text-[#059669]" strokeWidth={1.85} />
+                </div>
+                <h4 className="text-[#064E3B] font-bold text-sm mb-0.5">{item.title}</h4>
+                <p className="text-[#4B5548] text-xs font-medium">{item.desc}</p>
               </div>
             ))}
           </div>

@@ -6,44 +6,77 @@
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-serif: var(--font-serif), Georgia, serif;
 
-  /* Modern Indian Heritage Luxury Palette */
-  --color-nn-maroon:       #68191D;
-  --color-nn-deep-maroon:  #4E1013;
-  --color-nn-ivory:        #F8F5EE;
-  --color-nn-gold:         #C5A16B;
-  --color-nn-charcoal:     #29251F;
-  --color-nn-brown:        #78634B;
-  --color-nn-sandstone:    #EAE3D7;
+  /* ─── Obsidian Emerald Master Palette (Light Mode Luxury) ─── */
+  --color-emerald-primary:     #075B43;
+  --color-emerald-deep:        #064635;
+  --color-obsidian:            #17231E;
+  --color-emerald-soft:        #E8F1EC;
+  --color-sage:                #DCE8DF;
+  --color-ivory:               #FAF9F5;
+  --color-warm-white:          #FFFFFF;
+  --color-stone:               #EAE7DF;
+  --color-muted-text:          #727B75;
+  --color-champagne:           #B89A62;
+  --color-status-success:      #287A50;
+  --color-status-error:        #B54747;
+
+  /* Aliased for backward compatibility */
+  --color-nn-obsidian:         #17231E;
+  --color-nn-obsidian-surface: #E8F1EC;
+  --color-nn-obsidian-card:    #FFFFFF;
+  --color-nn-obsidian-border:  #EAE7DF;
+  --color-nn-obsidian-hover:   #DCE8DF;
+
+  --color-nn-emerald:          #075B43;
+  --color-nn-emerald-deep:     #064635;
+  --color-nn-emerald-glow:     #059669;
+  --color-nn-emerald-neon:     #10B981;
+  --color-nn-emerald-mint:     #34D399;
+
+  --color-nn-swarna:           #B89A62;
+  --color-nn-gold:             #D4AF37;
+  --color-nn-gold-light:       #F3E5AB;
+
+  /* Modern Indian Heritage Luxury Palette (Mapped to Obsidian Emerald) */
+  --color-nn-maroon:       #075B43;
+  --color-nn-deep-maroon:  #064635;
+  --color-nn-ivory:        #FAF9F5;
+  --color-nn-pearl:        #FAF9F5;
+  --color-nn-charcoal:     #17231E;
+  --color-nn-brown:        #727B75;
+  --color-nn-sandstone:    #EAE7DF;
   --color-nn-white:        #FFFFFF;
-  --color-nn-green:        #42634F;
+  --color-nn-green:        #075B43;
 
   /* Semantic Aliases */
-  --color-nn-forest:       #68191D;
-  --color-nn-forest-deep:  #4E1013;
-  --color-nn-forest-dark:  #380A0D;
+  --color-nn-forest:       #064E3B;
+  --color-nn-forest-deep:  #032B1D;
+  --color-nn-forest-dark:  #060908;
   
   --color-nn-cream:        #F8F5EE;
   --color-nn-beige:        #EAE3D7;
   
-  --color-nn-earth:        #78634B;
-  --color-nn-earth-light:  #A3896D;
+  --color-nn-earth:        #C5A16B;
+  --color-nn-earth-light:  #D4AF37;
   
-  --color-nn-saffron:      #C5A16B;
-  --color-nn-leaf:         #42634F;
-  --color-nn-sage:         #42634F;
+  --color-nn-saffron:      #D4AF37;
+  --color-nn-leaf:         #10B981;
+  --color-nn-sage:         #34D399;
 
-  --color-nn-ink:          #29251F;
-  --color-nn-bark:         #78634B;
-  --color-nn-hairline:     #EAE3D7;
-  --color-nn-bg:           #F8F5EE;
+  --color-nn-ink:          #111815;
+  --color-nn-bark:         #4B5548;
+  --color-nn-hairline:     rgba(6, 78, 59, 0.12);
+  --color-nn-bg:           #FAF8F5;
 
   --radius-card: 16px;
   --radius-btn:  8px;
   --radius-pill: 9999px;
 
-  --shadow-card:       0 4px 14px rgba(78, 16, 19, 0.05);
-  --shadow-card-hover: 0 16px 32px rgba(78, 16, 19, 0.10);
-  --shadow-glow:       0 0 30px rgba(197, 161, 107, 0.25);
+  --shadow-card:          0 4px 18px rgba(6, 78, 59, 0.06);
+  --shadow-card-hover:    0 16px 36px rgba(6, 78, 59, 0.14);
+  --shadow-glow:          0 0 30px rgba(16, 185, 129, 0.25);
+  --shadow-swarna:        0 0 30px rgba(212, 175, 55, 0.25);
+  --shadow-obsidian-card: 0 10px 30px -10px rgba(6, 78, 59, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.15);
 
   --color-diwali-flame:     #FFB703;
   --color-diwali-cream:     #FFFDF7;
@@ -56,12 +89,14 @@
   body {
     background-color: var(--color-nn-bg);
     color: var(--color-nn-ink);
-    /* Subtle global noise/grain texture */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.04) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
   }
 
   ::selection {
-    background-color: #68191D;
+    background-color: #064E3B;
     color: #F8F5EE;
   }
 }
@@ -96,7 +131,9 @@
     font-weight: 400;
     line-height: 1.05;
     letter-spacing: -0.02em;
-    color: var(--color-nn-forest-deep);
+    background: linear-gradient(135deg, #0A1411 0%, #064E3B 65%, #043828 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .nn-title-light {
@@ -128,52 +165,57 @@
   }
   
   .nn-btn-primary {
-    background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%);
-    color: var(--color-nn-ivory);
-    box-shadow: 0 4px 14px rgba(138, 27, 20, 0.25);
+    background: linear-gradient(135deg, #10B981 0%, #059669 45%, #064E3B 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    box-shadow: 0 4px 16px rgba(5, 150, 105, 0.28);
   }
   .nn-btn-primary:hover {
-    background: linear-gradient(135deg, #9E1F17 0%, #6E0D14 100%);
+    background: linear-gradient(135deg, #34D399 0%, #10B981 45%, #059669 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(138, 27, 20, 0.35);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+    border-color: rgba(52, 211, 153, 0.6);
   }
   
   .nn-btn-accent {
-    background: linear-gradient(135deg, #F5BD47 0%, #C48B28 100%);
-    color: #1F1414;
+    background: linear-gradient(135deg, #F5E5B8 0%, #D4AF37 50%, #B8860B 100%);
+    color: #0A1411;
     font-weight: 700;
-    box-shadow: 0 4px 14px rgba(245, 189, 71, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.25);
   }
   .nn-btn-accent:hover {
-    background: linear-gradient(135deg, #FFC857 0%, #D88927 100%);
+    background: linear-gradient(135deg, #FFF0C2 0%, #E5C158 50%, #D4AF37 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(245, 189, 71, 0.45);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45);
   }
   
   .nn-btn-ghost {
-    background: transparent;
-    border-color: var(--color-nn-hairline);
-    color: var(--color-nn-forest);
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F9F6 100%);
+    border: 1px solid rgba(6, 78, 59, 0.22);
+    color: #064E3B;
+    box-shadow: 0 2px 8px rgba(6, 78, 59, 0.04);
   }
   .nn-btn-ghost:hover {
-    border-color: var(--color-nn-forest);
-    background: var(--color-nn-cream);
+    border-color: rgba(16, 185, 129, 0.5);
+    background: linear-gradient(135deg, #F0FAF4 0%, #E6F5EC 100%);
+    color: #044E35;
   }
 
   /* Card */
   .nn-card {
-    background: var(--color-nn-ivory);
-    border: 1px solid var(--color-nn-hairline);
+    background: linear-gradient(145deg, #FFFFFF 0%, #F8FAF8 60%, #F3F8F5 100%);
+    border: 1px solid rgba(6, 78, 59, 0.12);
     border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 4px 20px -4px rgba(6, 78, 59, 0.06), 0 0 0 1px rgba(16, 185, 129, 0.05);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
   }
   .nn-card:hover {
     transform: translateY(-6px);
-    box-shadow: var(--shadow-card-hover);
-    border-color: rgba(138, 27, 20, 0.12);
+    box-shadow: 0 18px 40px -10px rgba(6, 78, 59, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.3);
+    border-color: rgba(16, 185, 129, 0.4);
   }
 
   /* Sale badge */
@@ -210,10 +252,89 @@
   }
 
   .diwali-badge {
-    background: linear-gradient(135deg, #8A1B14 0%, #5E0B10 100%);
-    border: 1px solid rgba(245, 189, 71, 0.5);
-    color: #FFFDF7;
-    box-shadow: 0 2px 8px rgba(138, 27, 20, 0.4);
+    background: linear-gradient(135deg, #075B43 0%, #064635 100%);
+    border: 1px solid rgba(184, 154, 98, 0.5);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(7, 91, 67, 0.3);
+  }
+
+  /* ─── Obsidian Emerald Vedic Luxury Tokens & Components ─── */
+  .glass-obsidian {
+    background: rgba(11, 18, 14, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(52, 211, 153, 0.15);
+  }
+
+  .glass-obsidian-elevated {
+    background: rgba(16, 25, 21, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(52, 211, 153, 0.22);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 25px rgba(16, 185, 129, 0.12);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.28);
+  }
+
+  .glow-swarna {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.32);
+  }
+
+  .text-swarna-gold {
+    background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #C5A16B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-emerald-glow {
+    color: #10B981;
+    text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .nn-btn-emerald {
+    background: linear-gradient(135deg, #10B981 0%, #064E3B 100%);
+    color: #FFFFFF;
+    font-weight: 700;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .nn-btn-emerald:hover {
+    background: linear-gradient(135deg, #34D399 0%, #059669 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(16, 185, 129, 0.5);
+    border-color: rgba(52, 211, 153, 0.6);
+  }
+
+  .nn-btn-swarna {
+    background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #B8860B 100%);
+    color: #060908;
+    font-weight: 800;
+    border: 1px solid rgba(243, 229, 171, 0.5);
+    box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .nn-btn-swarna:hover {
+    background: linear-gradient(135deg, #FFFFFF 0%, #E5C158 50%, #D4AF37 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(212, 175, 55, 0.55);
+  }
+
+  .nn-card-obsidian {
+    background: #0B120E;
+    border: 1px solid rgba(52, 211, 153, 0.16);
+    border-radius: var(--radius-card);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .nn-card-obsidian:hover {
+    transform: translateY(-5px);
+    border-color: rgba(52, 211, 153, 0.4);
+    box-shadow: 0 18px 45px -12px rgba(5, 150, 105, 0.3), 0 0 0 1px rgba(52, 211, 153, 0.3);
   }
 }
 

@@ -11,7 +11,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-1-litre",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     badge: "MOST POPULAR",
-    badgeColor: "bg-[#C38936] text-white",
+    badgeColor: "bg-[#075B43] text-white",
   },
   {
     title: "2.5 Litre Value Pack",
@@ -19,7 +19,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-2-5-litre",
     image: "/assets/product_6-2p5_jpg.webp",
     badge: "VALUE PACK",
-    badgeColor: "bg-[#8A1B14] text-white",
+    badgeColor: "bg-[#B89A62] text-[#17231E]",
   },
   {
     title: "5 Litre Family Pack",
@@ -27,7 +27,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-5-litre",
     image: "/assets/product_6-5L_jpg.webp",
     badge: "BEST VALUE",
-    badgeColor: "bg-[#C38936] text-white",
+    badgeColor: "bg-[#075B43] text-white",
   },
   {
     title: "500 ml Starter Pack",
@@ -35,7 +35,7 @@ const categories = [
     href: "/products/pure-desi-cow-ghee-500-ml",
     image: "/assets/product_6_jpg_669162f4-5007-41a6-85ac-bbc8b7cdf942.webp",
     badge: "STARTER PACK",
-    badgeColor: "bg-[#8A1B14] text-white",
+    badgeColor: "bg-[#B89A62] text-[#17231E]",
   }
 ];
 
@@ -56,13 +56,13 @@ export default function CategoryExperience() {
           className="flex flex-col md:flex-row md:items-end justify-between mb-12"
         >
           <div className="max-w-2xl">
-            <span className="text-[11px] font-bold text-[#C38936] uppercase tracking-[0.2em] mb-4 block">Choose Your Pack</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#5E0B10] mb-4">Shop by Size</h2>
-            <p className="text-[#4A352F] text-base md:text-lg">
+            <span className="text-[11px] font-bold text-[#075B43] uppercase tracking-[0.2em] mb-4 block">Choose Your Pack</span>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-[#17231E] mb-4">Shop by Size</h2>
+            <p className="text-[#727B75] text-base md:text-lg">
               Pure A2 Gir Cow Ghee crafted for every kitchen. Choose what fits your home.
             </p>
           </div>
-          <div className="hidden lg:block text-[#7A4A3B] text-3xl md:text-4xl font-serif italic font-light leading-tight drop-shadow-sm text-right mt-6 md:mt-0 opacity-70">
+          <div className="hidden lg:block text-[#B89A62] text-3xl md:text-4xl font-serif italic font-light leading-tight drop-shadow-sm text-right mt-6 md:mt-0 opacity-70">
             Good <br/> Food <br/> Brighter <br/> Days
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function CategoryExperience() {
                   </div>
                   
                   {/* Arrow Button */}
-                  <div className="w-10 h-10 rounded-full border border-white/40 backdrop-blur-sm flex items-center justify-center text-white shrink-0 group-hover:bg-[#C38936] group-hover:border-[#C38936] group-hover:scale-110 transition-all duration-300 shadow-sm">
+                  <div className="w-10 h-10 rounded-full border border-white/40 backdrop-blur-sm flex items-center justify-center text-white shrink-0 group-hover:bg-[#075B43] group-hover:border-[#075B43] group-hover:scale-110 transition-all duration-300 shadow-sm">
                     <ArrowRight className="w-5 h-5" />
                   </div>
                 </div>

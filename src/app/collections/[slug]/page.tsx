@@ -46,8 +46,8 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       <section className="nn-section bg-nn-bg">
         <div className="nn-container">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-[#5E0B10] text-amber-200 text-xs font-bold px-4 py-1.5 rounded-full mb-3 shadow-md border border-amber-400/50">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <div className="inline-flex items-center gap-2 bg-[#E8F1EC] text-[#075B43] text-xs font-bold px-4 py-1.5 rounded-full mb-3 shadow-xs border border-[#DCE8DF]">
+              <Sparkles className="w-3.5 h-3.5 text-[#B89A62]" />
               <span>100% PURE BILONA GHEE • FLAT 10% OFF WITH CODE: NAMO10</span>
             </div>
             <h1 className="nn-title">{collection.title}</h1>

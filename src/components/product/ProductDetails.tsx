@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import ProductReviews from "./ProductReviews";
 import ProductJourney from "./ProductJourney";
+import VedicHeritageRewardBanner from "./VedicHeritageRewardBanner";
 import { PRODUCT_REVIEWS_MAP, PRODUCT_REVIEW_STATS } from "@/lib/reviews-data";
 
 interface ProductDetailsProps {
@@ -330,21 +331,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
   return (
     <div className="pb-28 lg:pb-12 text-[#24211E]">
 
-      {/* DIWALI PROMO BANNER */}
-      <div className="mb-6 bg-gradient-to-r from-[#8A1B14] to-[#142918] rounded-2xl p-4 sm:p-5 text-white flex items-center justify-between shadow-lg">
-        <div>
-          <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
-            <Sparkles className="text-[#D6A53B]" /> Diwali Special Reward
-          </h3>
-          <p className="text-[11px] sm:text-xs opacity-90 mt-1">
-            Order now and get a <strong>₹{rewardAmount} Gift Card</strong> for your next purchase!
-          </p>
-        </div>
-        <div className="text-center bg-white/10 rounded-lg p-2 min-w-[70px]">
-          <span className="block text-xl font-bold">₹{rewardAmount}</span>
-          <span className="text-[9px] uppercase tracking-wider">Discount</span>
-        </div>
-      </div>
+      {/* VEDIC HERITAGE REWARD PROMOTIONAL BANNER */}
+      <VedicHeritageRewardBanner amount={rewardAmount || 250} className="mb-6" />
 
       {/* 2-Column Responsive Product Container (Section 14) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
