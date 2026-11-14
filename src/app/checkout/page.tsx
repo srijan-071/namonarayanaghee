@@ -113,6 +113,8 @@ export default function CheckoutPage() {
 
   const [couponCode, setCouponCode] = useState("");
   const [tempCoupon, setTempCoupon] = useState("");
+  const [isStickyCouponOpen, setIsStickyCouponOpen] = useState(false);
+  const [stickyTempCoupon, setStickyTempCoupon] = useState("");
   const latestPincodeRef = useRef("");
   const pincodeCache = useRef<Record<string, { city: string; state: string }>>({});
 
@@ -552,6 +554,15 @@ export default function CheckoutPage() {
     }
     return base;
   }, [cart.items, cart.subtotal, paymentMethod, form.email, couponCode]);
+
+  // Total savings across coupon, prepaid discount, and free delivery
+  const totalSavings = useMemo(() => {
+    let savings = pricing.discount || 0;
+    if (paymentMethod === "prepaid") {
+      savings += (pricing.prepaidDiscount || 10000) + 25000;
+    }
+    return savings;
+  }, [pricing.discount, pricing.prepaidDiscount, paymentMethod]);
 
   const freeGifts = useMemo(() => {
     return getFreeGiftsForCart(cart.items);
@@ -1037,7 +1048,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* ─── 3. Main Checkout Container (2 Columns) ─── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-32 lg:pb-16">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-44 lg:pb-16">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
           {/* ═══ Left Column: Seamless Unified Checkout Form ═══ */}
@@ -1840,8 +1851,8 @@ export default function CheckoutPage() {
                     <Lock className="w-4 h-4 text-[#B89A62]" />
                     <span>
                       {paymentMethod === "cod"
-                        ? `Pay ${formatPrice(pricing.amountToPay)} to Confirm Order →`
-                        : `Pay ${formatPrice(pricing.amountToPay)} (Save ₹350) →`}
+                        ? `Proceed to Pay ${formatPrice(pricing.amountToPay)} (Advance) →`
+                        : `Proceed to Pay ${formatPrice(pricing.amountToPay)}${totalSavings > 0 ? ` (Save ${formatPrice(totalSavings)})` : ""} →`}
                     </span>
                   </>
                 )}
@@ -1876,38 +1887,228 @@ export default function CheckoutPage() {
         </footer>
       </main>
 
-      {/* ─── 4. Mobile Sticky Bottom Bar (Zero Friction) ─── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md px-4 py-2.5 border-t border-[#EAE7DF] shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
-          <div className="flex flex-col shrink-0">
-            <span className="text-[9px] text-[#727B75] font-bold uppercase tracking-wider">
-              {paymentMethod === "cod" ? "Pay Now" : "Total"}
-            </span>
-            <span className="text-xl font-extrabold text-[#17231E] leading-tight">
-              {formatPrice(pricing.amountToPay)}
-            </span>
-            <span className="text-[9px] text-stone-500 font-medium">
-              {paymentMethod === "cod" ? `+ ${formatPrice(pricing.amountRemaining)} on Delivery` : "Free Delivery"}
-            </span>
+      {/* ─── 4. Luxury Mobile Sticky Bottom Bar (High Conversion & Coupon Quick-Apply) ─── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-xl border-t border-[#EAE7DF] shadow-[0_-8px_30px_rgba(23,35,30,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-all">
+        
+        {/* ─── A. Expandable Quick-Coupon Tray / Drawer ─── */}
+        {isStickyCouponOpen && (
+          <div className="bg-[#FAF9F5] border-b border-[#EAE7DF] px-4 py-3 space-y-2.5 max-h-[300px] overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#17231E] flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-[#075B43]" />
+                <span>Available Offers &amp; Promo Codes</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsStickyCouponOpen(false)}
+                className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-stone-200 text-stone-500 transition cursor-pointer"
+                aria-label="Close coupon drawer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Custom Coupon Input */}
+            <div className="flex gap-1.5">
+              <input
+                type="text"
+                placeholder="Enter coupon code..."
+                value={stickyTempCoupon}
+                onChange={(e) => setStickyTempCoupon(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && stickyTempCoupon.trim()) {
+                    handleApplyCoupon(stickyTempCoupon);
+                    setStickyTempCoupon("");
+                    setIsStickyCouponOpen(false);
+                  }
+                }}
+                className="flex-1 bg-white border border-[#EAE7DF] focus:border-[#075B43] rounded-lg px-3 py-2 text-xs uppercase font-mono tracking-wider focus:outline-none placeholder:font-sans placeholder:normal-case placeholder:text-stone-400"
+              />
+              <button
+                type="button"
+                disabled={!stickyTempCoupon.trim()}
+                onClick={() => {
+                  if (stickyTempCoupon.trim()) {
+                    handleApplyCoupon(stickyTempCoupon);
+                    setStickyTempCoupon("");
+                    setIsStickyCouponOpen(false);
+                  }
+                }}
+                className="bg-[#075B43] hover:bg-[#064635] disabled:opacity-40 text-white font-bold text-xs px-4 py-2 rounded-lg transition active:scale-95 cursor-pointer shadow-xs"
+              >
+                Apply
+              </button>
+            </div>
+
+            {/* Quick Coupons List */}
+            <div className="space-y-1.5 pt-0.5">
+              {QUICK_COUPONS.map((c) => {
+                const isCurrent = couponCode === c.code;
+                return (
+                  <div
+                    key={c.code}
+                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs transition ${
+                      isCurrent
+                        ? "bg-[#E8F1EC] border-[#075B43]/30 text-[#075B43]"
+                        : "bg-white border-[#EAE7DF] text-[#17231E]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-[11px] bg-[#FAF9F5] border border-[#EAE7DF] px-2 py-0.5 rounded text-[#075B43]">
+                        {c.code}
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-[#17231E] font-semibold">{c.desc}</span>
+                        <span className="text-[10px] text-stone-500 font-medium">Flat {c.label} on this order</span>
+                      </div>
+                    </div>
+
+                    {isCurrent ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#075B43] bg-white px-2 py-1 rounded border border-[#075B43]/20">
+                        <Check className="w-3 h-3 stroke-[3]" /> Applied
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleApplyCoupon(c.code);
+                          setIsStickyCouponOpen(false);
+                        }}
+                        className="text-[10px] font-bold text-[#075B43] bg-[#E8F1EC] hover:bg-[#DCE8DF] px-3 py-1 rounded-md cursor-pointer transition active:scale-95"
+                      >
+                        Apply
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ─── B. Quick Coupon Micro-Strip (Zero-Friction 1-Tap) ─── */}
+        {couponCode ? (
+          <div className="bg-[#E8F1EC] border-b border-[#075B43]/15 px-3.5 py-1.5 flex items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#075B43] shrink-0" />
+              <span className="truncate text-[11px] font-medium text-[#075B43]">
+                Code <strong className="font-mono font-bold">{couponCode}</strong> applied · Saved {formatPrice(pricing.discount)}!
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsStickyCouponOpen(!isStickyCouponOpen)}
+                className="text-[10px] text-[#075B43] hover:underline font-bold cursor-pointer"
+              >
+                Change
+              </button>
+              <span className="text-stone-300">|</span>
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="text-[10px] text-stone-500 hover:text-red-700 font-semibold underline cursor-pointer"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#FAF9F5] border-b border-[#EAE7DF] px-3.5 py-1.5 flex items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full bg-[#E8F1EC] text-[#075B43]">
+                <Sparkles className="w-3 h-3 text-[#B89A62]" />
+              </span>
+              <span className="truncate text-[11px] text-[#17231E]">
+                Save <strong className="text-[#075B43]">₹250</strong> with code <span className="font-mono font-bold bg-[#E8F1EC] text-[#075B43] px-1 py-0.5 rounded text-[10px]">FIRST250</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleApplyCoupon("FIRST250")}
+                className="bg-[#075B43] hover:bg-[#064635] text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95 cursor-pointer"
+              >
+                Apply
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsStickyCouponOpen(!isStickyCouponOpen)}
+                className="text-[#727B75] hover:text-[#17231E] px-1.5 py-1 text-[10px] font-semibold underline cursor-pointer flex items-center gap-0.5"
+              >
+                <span>{isStickyCouponOpen ? "Hide" : "Coupons"}</span>
+                {isStickyCouponOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ─── C. Primary Bottom Action Bar ─── */}
+        <div className="px-4 py-2.5 flex items-center justify-between gap-3 max-w-lg mx-auto">
+          {/* Left: Price & Savings Stack */}
+          <div className="flex flex-col shrink-0 min-w-[100px]">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-[#17231E] tracking-tight leading-none">
+                {formatPrice(pricing.amountToPay)}
+              </span>
+              {(pricing.discount > 0 || (paymentMethod === "prepaid" && pricing.subtotal > pricing.amountToPay)) && (
+                <span className="text-xs text-stone-400 line-through font-normal">
+                  {formatPrice(pricing.subtotal)}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 mt-1 flex-wrap">
+              {totalSavings > 0 ? (
+                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#075B43] bg-[#E8F1EC] px-1.5 py-0.5 rounded">
+                  <Sparkles className="w-2.5 h-2.5 text-[#B89A62]" />
+                  Save {formatPrice(totalSavings)}
+                </span>
+              ) : (
+                <span className="text-[9px] text-[#727B75] font-bold uppercase tracking-wider">
+                  {paymentMethod === "cod" ? "Pay Advance" : "Total to Pay"}
+                </span>
+              )}
+              <span className="text-[9.5px] text-stone-500 font-medium">
+                {paymentMethod === "cod" ? `(+${formatPrice(pricing.amountRemaining)} on del.)` : "• Free Del."}
+              </span>
+            </div>
           </div>
 
+          {/* Right: Proceed to Pay Button */}
           <button
             type="button"
             onClick={handlePlaceOrder}
             disabled={isSubmitting}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 h-[46px] rounded-xl font-bold text-xs sm:text-sm transition-all bg-gradient-to-r from-[#075B43] to-[#064635] hover:from-[#064635] hover:to-[#043327] text-white shadow-md shadow-[#075B43]/20 active:scale-[0.98] cursor-pointer"
+            className="flex-1 flex items-center justify-between px-3.5 sm:px-4 h-[48px] rounded-xl font-bold text-xs sm:text-sm transition-all bg-gradient-to-r from-[#075B43] via-[#064635] to-[#043327] hover:from-[#064635] hover:to-[#02241b] text-white shadow-lg shadow-[#075B43]/25 active:scale-[0.98] cursor-pointer ring-1 ring-white/20 disabled:opacity-75 disabled:pointer-events-none"
           >
             {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Processing...</span>
-              </>
+              <div className="w-full flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-[#B89A62]" />
+                <span className="text-xs font-bold tracking-wide">Connecting Payment...</span>
+              </div>
             ) : (
               <>
-                <Lock className="w-3.5 h-3.5 text-[#B89A62]" />
-                <span>
-                  {paymentMethod === "cod" ? `Pay ${formatPrice(pricing.amountToPay)} to Confirm →` : `Pay ${formatPrice(pricing.amountToPay)} →`}
-                </span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                    <Lock className="w-3.5 h-3.5 text-[#B89A62]" />
+                  </div>
+                  <div className="text-left flex flex-col leading-tight">
+                    <span className="text-xs sm:text-[13px] font-extrabold tracking-wide uppercase truncate">
+                      Proceed to Pay
+                    </span>
+                    <span className="text-[9px] text-[#DCE8DF] font-medium hidden xs:inline">
+                      100% Secure Checkout
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 pl-2.5 border-l border-white/20 shrink-0">
+                  <span className="text-xs sm:text-sm font-extrabold">
+                    {formatPrice(pricing.amountToPay)}
+                  </span>
+                  <span className="text-sm font-bold text-[#B89A62]">→</span>
+                </div>
               </>
             )}
           </button>
