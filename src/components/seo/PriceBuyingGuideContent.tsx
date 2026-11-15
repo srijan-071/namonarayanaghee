@@ -118,6 +118,23 @@ const PACK_CATALOG: PackItem[] = [
     savings: "69% OFF",
     packaging: "Heavy-duty bulk food-grade container",
   },
+  {
+    id: 9545155000010,
+    variantId: 55812000000010,
+    slug: "pure-desi-cow-ghee-10-litre",
+    title: "Pure A2 Gir Cow Ghee 10 Litre",
+    size: "10 Litre",
+    price: 799900,
+    compareAtPrice: 1999900,
+    effectiveRatePerLitre: "₹7,999 (₹6,499 with 1st Order Gift Card)",
+    badge: "🏛️ MEGA HERITAGE CAN",
+    badgeColor: "bg-emerald-900",
+    image: "/assets/product_10L.webp",
+    bestFor: "Mega joint households, sacred rituals, long-term reserves, and authentic Ayurvedic wellness",
+    dailyCost: "~₹22 / day",
+    savings: "60% OFF",
+    packaging: "Heavy-duty food-grade steel heritage can",
+  },
 ];
 
 const FAQS = [

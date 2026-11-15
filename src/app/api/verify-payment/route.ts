@@ -145,21 +145,24 @@ export async function POST(req: Request) {
     items.forEach((item: any) => {
       const qty = Number(item.quantity) || 1;
       const title = `${item.name || ""} ${item.title || ""} ${item.variantTitle || ""} ${item.slug || ""}`.toLowerCase();
-      if (title.includes("500 ml") || title.includes("500ml")) gheeVolume += 0.5 * qty;
+      if (title.includes("10 litre") || title.includes("10l") || title.includes("10-litre")) gheeVolume += 10 * qty;
+      else if (title.includes("500 ml") || title.includes("500ml")) gheeVolume += 0.5 * qty;
       else if (title.includes("2.5 litre") || title.includes("2.5l") || title.includes("2.5")) gheeVolume += 2.5 * qty;
       else if (title.includes("5 litre") || title.includes("5l") || title.includes("5")) gheeVolume += 5 * qty;
       else if (title.includes("1 litre") || title.includes("1l") || title.includes("1 kg")) gheeVolume += 1 * qty;
     });
 
     let rewardAmount = orderData.rewardAmount || 0;
-    if (gheeVolume >= 5) rewardAmount = 1000;
+    if (gheeVolume >= 10) rewardAmount = 1500;
+    else if (gheeVolume >= 5) rewardAmount = 1000;
     else if (gheeVolume >= 2.5) rewardAmount = 500;
     else if (gheeVolume >= 1) rewardAmount = 250;
     else if (gheeVolume >= 0.5) rewardAmount = 100;
     else {
       // Dynamic fallback based on order total if volume title didn't match
       const orderTotalRupees = (orderData.amountToPay || orderData.totalAmount || 0) / 100;
-      if (orderTotalRupees >= 3000) rewardAmount = 1000;
+      if (orderTotalRupees >= 6000) rewardAmount = 1500;
+      else if (orderTotalRupees >= 3000) rewardAmount = 1000;
       else if (orderTotalRupees >= 1700) rewardAmount = 500;
       else if (orderTotalRupees >= 700) rewardAmount = 250;
       else rewardAmount = 100;

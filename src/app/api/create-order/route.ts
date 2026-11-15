@@ -20,6 +20,8 @@ const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value: numbe
   "VEDIC500": { type: 'fixed', value: 500 },
   "FIRST1000": { type: 'fixed', value: 1000 },
   "VEDIC1000": { type: 'fixed', value: 1000 },
+  "FIRST1500": { type: 'fixed', value: 1500 },
+  "VEDIC1500": { type: 'fixed', value: 1500 },
   "FIRSTORDER": { type: 'fixed', value: 250 },
   "GIFTCARD": { type: 'fixed', value: 250 },
   "VEDICREWARD": { type: 'fixed', value: 250 },
@@ -113,8 +115,8 @@ export async function POST(req: Request) {
         } else if (coupon.type === 'fixed') {
           discount = coupon.value * 100;
         }
-      } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(couponCode)) {
-        const match = couponCode.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
+      } else if (/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/.test(couponCode)) {
+        const match = couponCode.match(/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/);
         if (match) {
           discount = parseInt(match[2], 10) * 100;
         }

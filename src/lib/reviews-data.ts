@@ -68,6 +68,13 @@ export const PRODUCT_REVIEWS_MAP: Record<string, Review[]> = {
     { id: "5l-4", author: "Meera", initial: "M", rating: 5, date: "2024-03-15", content: "Amazing texture and smell. Really pure A2 ghee. The 5L pack is the most economical.", verified: true },
     { id: "5l-5", author: "Sunil K.", initial: "S", rating: 5, date: "2024-02-05", content: "Excellent service and excellent product. Using this for our restaurant and the taste is unparalleled.", verified: true },
     { id: "5l-6", author: "Jatin", initial: "J", rating: 5, date: "2024-01-10", content: "Elvish bhai rocks! 5 Litre order kiya seedha, mazaa aa gaya.", verified: true }
+  ],
+  "pure-desi-cow-ghee-10-litre": [
+    { id: "10l-1", author: "Rajendra Sharma", initial: "R", rating: 5, date: "2024-03-10", content: "The 10 Litre Heritage Can is a masterpiece. Heavy-gauge traditional steel container keeps the ghee smelling as divine as the day it was churned. Unbeatable rate per litre!", verified: true },
+    { id: "10l-2", author: "Sunita Deshmukh", initial: "S", rating: 5, date: "2024-03-05", content: "Bought for daughter's wedding ceremonies and daily family meals. Absolutely authentic Vedic Bilona taste, golden granules, and the complimentary oils are top quality.", verified: true },
+    { id: "10l-3", author: "Dr. Arvind Joshi", initial: "A", rating: 5, date: "2024-02-22", content: "As an Ayurvedic practitioner, finding genuine 100% Gir cow bilona ghee in bulk was difficult until Namo Narayana. This 10L can is exceptional value and pure medicine.", verified: true },
+    { id: "10l-4", author: "Vikram Malhotra", initial: "V", rating: 5, date: "2024-02-14", content: "Huge savings at ₹7,999 for 10 litres! Packaging was rock-solid and delivery arrived via express courier in 3 days. Full marks to Elvish and team.", verified: true },
+    { id: "10l-5", author: "Pooja Singhal", initial: "P", rating: 5, date: "2024-01-29", content: "Traditional dairy freshness in a heritage steel can. Best decision for our joint family household. Aromatic and truly unadulterated.", verified: true }
   ]
 };
 
@@ -76,4 +83,5 @@ export const PRODUCT_REVIEW_STATS: Record<string, { total: number; average: numb
   "pure-desi-cow-ghee-1-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-1-litre"]?.length || 6, average: 5.0 },
   "pure-desi-cow-ghee-2-5-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-2-5-litre"]?.length || 6, average: 4.8 },
   "pure-desi-cow-ghee-5-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-5-litre"]?.length || 6, average: 5.0 },
+  "pure-desi-cow-ghee-10-litre": { total: PRODUCT_REVIEWS_MAP["pure-desi-cow-ghee-10-litre"]?.length || 5, average: 5.0 },
 };

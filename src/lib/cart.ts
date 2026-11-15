@@ -54,6 +54,8 @@ export const VALID_COUPONS: Record<string, { type: 'percentage' | 'fixed'; value
   "VEDIC500": { type: 'fixed', value: 500 },
   "FIRST1000": { type: 'fixed', value: 1000 },
   "VEDIC1000": { type: 'fixed', value: 1000 },
+  "FIRST1500": { type: 'fixed', value: 1500 },
+  "VEDIC1500": { type: 'fixed', value: 1500 },
   "FIRSTORDER": { type: 'fixed', value: 250 },
   "GIFTCARD": { type: 'fixed', value: 250 },
   "VEDICREWARD": { type: 'fixed', value: 250 },
@@ -78,8 +80,8 @@ function recalculate(items: CartItem[], discountCode?: string): Cart {
       } else if (coupon.type === 'fixed') {
         discountAmount = coupon.value * 100;
       }
-    } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(code)) {
-      const match = code.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
+    } else if (/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/.test(code)) {
+      const match = code.match(/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/);
       if (match) {
         const val = parseInt(match[2], 10);
         validCode = code;
@@ -190,7 +192,7 @@ export function applyCoupon(code: string): boolean {
   if (normalized.includes("DIWALI")) {
     return false;
   }
-  if (VALID_COUPONS[normalized] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000)/.test(normalized)) {
+  if (VALID_COUPONS[normalized] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000|1500)/.test(normalized)) {
     writeCart(recalculate(cart.items, normalized));
     return true;
   }

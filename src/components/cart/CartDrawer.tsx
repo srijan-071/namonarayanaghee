@@ -36,6 +36,8 @@ export default function CartDrawer() {
 
   // Dynamic First-Purchase Vedic Gift Card calculation based on cart items
   const firstOrderDiscount = (() => {
+    const has10L = cart.items.some((i) => (i.slug || "").includes("10-litre") || (i.variantTitle || "").includes("10 Litre"));
+    if (has10L) return 1500;
     const has5L = cart.items.some((i) => (i.slug || "").includes("5-litre") || (i.variantTitle || "").includes("5 Litre"));
     if (has5L) return 1000;
     const has2_5L = cart.items.some((i) => (i.slug || "").includes("2-5-litre") || (i.variantTitle || "").includes("2.5 Litre"));

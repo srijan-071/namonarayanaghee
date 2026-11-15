@@ -40,6 +40,9 @@ function normaliseProduct(raw: Record<string, unknown>): Product {
   } else if (handle.includes("2-5-litre")) {
     weightGrams = 2500;
     packSize = "2.5 Litre";
+  } else if (handle.includes("10-litre")) {
+    weightGrams = 10000;
+    packSize = "10 Litre";
   } else if (handle.includes("5-litre")) {
     weightGrams = 5000;
     packSize = "5 Litre";

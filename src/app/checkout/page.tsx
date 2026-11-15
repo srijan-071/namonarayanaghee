@@ -517,7 +517,7 @@ export default function CheckoutPage() {
       return;
     }
     const cartLib = await import("@/lib/cart");
-    if (cartLib.VALID_COUPONS[val] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000)/.test(val)) {
+    if (cartLib.VALID_COUPONS[val] || /^(FIRST|VEDIC|WELCOME)(100|250|500|1000|1500)/.test(val)) {
       setCouponCode(val);
       cartLib.applyCoupon(val);
       setTempCoupon("");
@@ -567,6 +567,27 @@ export default function CheckoutPage() {
   const freeGifts = useMemo(() => {
     return getFreeGiftsForCart(cart.items);
   }, [cart.items]);
+
+  const suggestedFirstCoupon = useMemo(() => {
+    const has10L = cart.items.some((i) => (i.slug || "").includes("10-litre") || (i.variantTitle || "").includes("10 Litre"));
+    if (has10L) return { code: "FIRST1500", amount: 1500, label: "₹1,500 OFF" };
+    const has5L = cart.items.some((i) => (i.slug || "").includes("5-litre") || (i.variantTitle || "").includes("5 Litre"));
+    if (has5L) return { code: "FIRST1000", amount: 1000, label: "₹1,000 OFF" };
+    const has2_5L = cart.items.some((i) => (i.slug || "").includes("2-5-litre") || (i.variantTitle || "").includes("2.5 Litre"));
+    if (has2_5L) return { code: "FIRST500", amount: 500, label: "₹500 OFF" };
+    const has1L = cart.items.some((i) => (i.slug || "").includes("1-litre") || (i.variantTitle || "").includes("1 Litre"));
+    if (has1L) return { code: "FIRST250", amount: 250, label: "₹250 OFF" };
+    const has500 = cart.items.some((i) => (i.slug || "").includes("500-ml") || (i.variantTitle || "").includes("500 ml"));
+    if (has500) return { code: "FIRST100", amount: 100, label: "₹100 OFF" };
+    return { code: "FIRST250", amount: 250, label: "₹250 OFF" };
+  }, [cart.items]);
+
+  const activeQuickCoupons = useMemo(() => [
+    { code: suggestedFirstCoupon.code, label: suggestedFirstCoupon.label, desc: "First Order Gift Card" },
+    { code: "NAMO10", label: "10% OFF", desc: "Special 10% Off" },
+    { code: "SHUBHLAABH", label: "₹100 OFF", desc: "Instant Discount" },
+    { code: "WELCOME", label: "5% OFF", desc: "First Order" },
+  ], [suggestedFirstCoupon]);
 
   // Family wellness trial jar addon (500ml)
   const bumpVariantId = 55812012572839;
@@ -1763,7 +1784,7 @@ export default function CheckoutPage() {
                     {/* 1-Tap Quick Coupon Badges */}
                     <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
                       <span className="text-[10px] text-stone-500 font-medium">Quick tap:</span>
-                      {QUICK_COUPONS.map((c) => (
+                      {activeQuickCoupons.map((c) => (
                         <button
                           key={c.code}
                           type="button"
@@ -1942,7 +1963,7 @@ export default function CheckoutPage() {
 
             {/* Quick Coupons List */}
             <div className="space-y-1.5 pt-0.5">
-              {QUICK_COUPONS.map((c) => {
+              {activeQuickCoupons.map((c) => {
                 const isCurrent = couponCode === c.code;
                 return (
                   <div
@@ -2020,13 +2041,13 @@ export default function CheckoutPage() {
                 <Sparkles className="w-3 h-3 text-[#B89A62]" />
               </span>
               <span className="truncate text-[11px] text-[#17231E]">
-                Save <strong className="text-[#075B43]">₹250</strong> with code <span className="font-mono font-bold bg-[#E8F1EC] text-[#075B43] px-1 py-0.5 rounded text-[10px]">FIRST250</span>
+                Save <strong className="text-[#075B43]">₹{suggestedFirstCoupon.amount}</strong> with code <span className="font-mono font-bold bg-[#E8F1EC] text-[#075B43] px-1 py-0.5 rounded text-[10px]">{suggestedFirstCoupon.code}</span>
               </span>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
-                onClick={() => handleApplyCoupon("FIRST250")}
+                onClick={() => handleApplyCoupon(suggestedFirstCoupon.code)}
                 className="bg-[#075B43] hover:bg-[#064635] text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95 cursor-pointer"
               >
                 Apply

@@ -22,14 +22,19 @@ export function getFreeGiftsForCart(items: CartItem[]): FreeGift[] {
   let qty1L = 0;
   let qty2_5L = 0;
   let qty5L = 0;
+  let qty10L = 0;
 
   for (const item of items) {
     const title = (item.title || "").toLowerCase();
     const slug = (item.slug || "").toLowerCase();
     const variant = (item.variantTitle || "").toLowerCase();
 
+    // 10 Litre check (must be checked before 1-litre because "10-litre" contains "1-litre")
+    if (slug.includes("10-litre") || slug.includes("10l") || variant.includes("10 litre") || title.includes("10 litre")) {
+      qty10L += item.quantity;
+    }
     // 2.5 Litre check (must be checked before 5-litre because "2-5-litre" contains "5-litre")
-    if (slug.includes("2-5-litre") || slug.includes("2.5") || variant.includes("2.5") || title.includes("2.5")) {
+    else if (slug.includes("2-5-litre") || slug.includes("2.5") || variant.includes("2.5") || title.includes("2.5")) {
       qty2_5L += item.quantity;
     }
     // 5 Litre check
@@ -37,7 +42,7 @@ export function getFreeGiftsForCart(items: CartItem[]): FreeGift[] {
       qty5L += item.quantity;
     }
     // 1 Litre check
-    else if (slug.includes("1-litre") || variant.includes("1 litre") || (title.includes("1 litre") && !title.includes("2.5"))) {
+    else if ((slug.includes("1-litre") || variant.includes("1 litre") || title.includes("1 litre")) && !slug.includes("10") && !title.includes("10") && !title.includes("2.5")) {
       qty1L += item.quantity;
     }
   }
@@ -126,11 +131,55 @@ export function getFreeGiftsForCart(items: CartItem[]): FreeGift[] {
     });
   }
 
+  // Gifts for 10 Litre Ghee: Coconut 250ml + Groundnut 250ml + Mustard 500ml + Yellow Mustard 250ml
+  if (qty10L > 0) {
+    gifts.push({
+      id: "gift-coconut-250-10l",
+      name: "Coconut Oil – 250 ml (Free Gift)",
+      variant: "250ml",
+      size: "250ml",
+      image: "/assets/coconut-oil-250ml.webp",
+      quantity: qty10L,
+      price: 0,
+      isGift: true,
+    });
+    gifts.push({
+      id: "gift-groundnut-250-10l",
+      name: "Groundnut Oil – 250 ml (Free Gift)",
+      variant: "250ml",
+      size: "250ml",
+      image: "/assets/groundnut-oil-250ml.webp",
+      quantity: qty10L,
+      price: 0,
+      isGift: true,
+    });
+    gifts.push({
+      id: "gift-mustard-500-10l",
+      name: "Mustard Oil – 500 ml (Free Gift)",
+      variant: "500ml",
+      size: "500ml",
+      image: "/assets/mustard-oil-500ml.webp",
+      quantity: qty10L,
+      price: 0,
+      isGift: true,
+    });
+    gifts.push({
+      id: "gift-yellow-mustard-250-10l",
+      name: "Yellow Mustard Oil – 250 ml (Free Gift)",
+      variant: "250ml",
+      size: "250ml",
+      image: "/assets/yellow-mustard-oil-250ml.webp",
+      quantity: qty10L,
+      price: 0,
+      isGift: true,
+    });
+  }
+
   return gifts;
 }
 
 /**
- * Checks if the cart contains 500ml ghee and no 1L/2.5L/5L ghee
+ * Checks if the cart contains 500ml ghee and no 1L/2.5L/5L/10L ghee
  */
 export function has500mlGheeUpsell(items: CartItem[]): boolean {
   const has500ml = items.some(
@@ -144,9 +193,11 @@ export function has500mlGheeUpsell(items: CartItem[]): boolean {
       item.slug.includes("1-litre") ||
       item.slug.includes("2-5-litre") ||
       item.slug.includes("5-litre") ||
+      item.slug.includes("10-litre") ||
       (item.variantTitle || "").toLowerCase().includes("1 litre") ||
       (item.variantTitle || "").toLowerCase().includes("2.5") ||
-      (item.variantTitle || "").toLowerCase().includes("5 litre")
+      (item.variantTitle || "").toLowerCase().includes("5 litre") ||
+      (item.variantTitle || "").toLowerCase().includes("10 litre")
   );
   return has500ml && !hasLargerGhee;
 }

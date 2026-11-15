@@ -86,6 +86,7 @@ export default function Footer() {
               <li><Link href="/products/pure-desi-cow-ghee-1-litre" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">1 Litre Ghee</Link></li>
               <li><Link href="/products/pure-desi-cow-ghee-2-5-litre" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">2.5 Litre Ghee</Link></li>
               <li><Link href="/products/pure-desi-cow-ghee-5-litre" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">5 Litre Family Pack</Link></li>
+              <li><Link href="/products/pure-desi-cow-ghee-10-litre" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">10 Litre Heritage Can</Link></li>
               <li><Link href="/collections/all-products" className="hover:text-amber-200 hover:underline underline-offset-4 transition-all">All Products</Link></li>
             </ul>
           </div>

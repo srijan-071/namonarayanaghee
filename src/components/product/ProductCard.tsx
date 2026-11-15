@@ -26,6 +26,7 @@ const FALLBACK_VARIANTS: Record<string, { id: number; variantId: number; variant
   "pure-desi-cow-ghee-1-litre": { id: 9545153446056, variantId: 55812012572840, variantTitle: "1 Litre" },
   "pure-desi-cow-ghee-2-5-litre": { id: 9545146237096, variantId: 55811997728936, variantTitle: "2.5 Litre" },
   "pure-desi-cow-ghee-5-litre": { id: 9545149055144, variantId: 55812002971816, variantTitle: "5 Litre" },
+  "pure-desi-cow-ghee-10-litre": { id: 9545155000010, variantId: 55812000000010, variantTitle: "10 Litre" },
   "pure-desi-cow-ghee-500-ml": { id: 9545153446055, variantId: 55812012572839, variantTitle: "500 ml" },
   "pure-a2-gir-cow-ghee-500-ml": { id: 9545153446055, variantId: 55812012572839, variantTitle: "500 ml" },
 };

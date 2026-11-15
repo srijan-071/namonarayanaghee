@@ -85,6 +85,20 @@ const GHEE_COLLECTION: GheePack[] = [
     giftText: "+ 3 Free Cold-Pressed Oils",
     image: "/assets/product_6-5L_jpg.webp",
   },
+  {
+    id: 9545155000010,
+    variantId: 55812000000010,
+    slug: "pure-desi-cow-ghee-10-litre",
+    title: "Pure A2 Gir Cow Ghee",
+    variantTitle: "10 Litre",
+    size: "10 Litre Heritage Can",
+    label: "Mega Heritage Reserve",
+    price: 799900,
+    compareAtPrice: 1999900,
+    ratePerLitre: "₹7,999 (₹6,499 with 1st Order Gift Card)",
+    giftText: "+ 4 Free Cold-Pressed Oils",
+    image: "/assets/product_10L.webp",
+  },
 ];
 
 function GheeCardItem({
@@ -312,8 +326,8 @@ export default function Bestsellers() {
           </p>
         </div>
 
-        {/* 4-Column 3D Tilt Responsive Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 5-Column 3D Tilt Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-6">
           {GHEE_COLLECTION.map((pack) => (
             <GheeCardItem
               key={pack.slug}

@@ -30,6 +30,14 @@ const categories = [
     badgeColor: "bg-[#075B43] text-white",
   },
   {
+    title: "10 Litre Heritage Can",
+    subtitle: "Mega Heritage Reserve",
+    href: "/products/pure-desi-cow-ghee-10-litre",
+    image: "/assets/product_10L.webp",
+    badge: "MEGA SAVINGS",
+    badgeColor: "bg-[#075B43] text-white",
+  },
+  {
     title: "500 ml Starter Pack",
     subtitle: "Perfect to begin your journey",
     href: "/products/pure-desi-cow-ghee-500-ml",
@@ -68,7 +76,7 @@ export default function CategoryExperience() {
         </div>
         
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5">
           {categories.map((cat, index) => (
             <div
               key={cat.href}
@@ -83,7 +91,7 @@ export default function CategoryExperience() {
                     alt={cat.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                    sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     quality={90}
                   />
                 </div>

@@ -76,8 +76,8 @@ export function calculateCheckoutPricing(
       } else if (coupon.type === 'fixed') {
         discount += coupon.value * 100; // Value is in rupees, subtotal is in paise
       }
-    } else if (/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/.test(normalizedCode)) {
-      const match = normalizedCode.match(/^(FIRST|VEDIC|WELCOME)(1000|500|250|100)/);
+    } else if (/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/.test(normalizedCode)) {
+      const match = normalizedCode.match(/^(FIRST|VEDIC|WELCOME)(1500|1000|500|250|100)/);
       if (match) {
         const val = parseInt(match[2], 10);
         discount += val * 100; // Convert rupee reward into paise

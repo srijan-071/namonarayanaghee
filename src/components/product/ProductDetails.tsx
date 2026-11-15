@@ -116,6 +116,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
   const is1L = slugLower.includes("1-litre") || slugLower.includes("1l");
   const is2_5L = slugLower.includes("2-5-litre") || slugLower.includes("2.5");
   const is5L = slugLower.includes("5-litre") || slugLower.includes("5l");
+  const is10L = slugLower.includes("10-litre") || slugLower.includes("10l");
 
   // Gift definition based strictly on selected pack (Section 7)
   const giftData = useMemo(() => {
@@ -126,6 +127,19 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         description: "Choose 1 Litre or larger packs to receive complimentary cold-pressed oil gifts.",
         badge: "STARTER PACK",
         items: [] as Array<{ name: string; image: string; size: string }>,
+      };
+    } else if (is10L) {
+      return {
+        hasGift: true,
+        title: "4 Complimentary Pure Oils & Heritage Gift Set Included",
+        description: "Your 10L Heritage Can includes 4 complimentary cold-pressed oils (Coconut 250ml, Groundnut 250ml, Mustard 500ml, Yellow Mustard 250ml).",
+        badge: "MEGA HERITAGE GIFT",
+        items: [
+          { name: "Coconut Oil", image: "/assets/coconut-oil-250ml.webp", size: "250 ml" },
+          { name: "Groundnut Oil", image: "/assets/groundnut-oil-250ml.webp", size: "250 ml" },
+          { name: "Mustard Oil", image: "/assets/mustard-oil-500ml.webp", size: "500 ml" },
+          { name: "Yellow Mustard Oil", image: "/assets/yellow-mustard-oil-250ml.webp", size: "250 ml" },
+        ],
       };
     } else if (is2_5L) {
       return {
@@ -163,7 +177,7 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
         ],
       };
     }
-  }, [is500ml, is1L, is2_5L, is5L]);
+  }, [is500ml, is1L, is2_5L, is5L, is10L]);
 
   // Add to Cart handler (Section 12)
   const handleAddToCart = () => {
@@ -313,8 +327,9 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
     if (is1L) return 250;
     if (is2_5L) return 500;
     if (is5L) return 1000;
+    if (is10L) return 1500;
     return 0;
-  }, [is500ml, is1L, is2_5L, is5L]);
+  }, [is500ml, is1L, is2_5L, is5L, is10L]);
 
   // Automatic image slideshow
   useEffect(() => {
@@ -516,6 +531,10 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                     ml = 5000;
                     packRole = "Best Value";
                     giftNote = "+ 3 Large Free Oils";
+                  } else if (pack.slug.includes("10-litre")) {
+                    ml = 10000;
+                    packRole = "Mega Heritage";
+                    giftNote = "+ 4 Free Oils & Gifts";
                   }
 
                   const perLitre = Math.round((pack.price / 100) / (ml / 1000));
@@ -538,6 +557,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                         }
                       }}
                       className={`relative text-left rounded-xl p-3 border transition-all duration-150 flex flex-col justify-between cursor-pointer ${
+                        pack.slug.includes("10-litre") ? "col-span-2 sm:col-span-1" : ""
+                      } ${
                         isSelected
                           ? "border-[#1E3A24] bg-[#FAF8F2] ring-1 ring-[#1E3A24] shadow-2xs"
                           : "border-[#E9E3D9] bg-white hover:border-[#1E3A24]/40 hover:bg-[#FAF8F2]/40"
@@ -922,6 +943,8 @@ export default function ProductDetails({ product, gheePacks }: ProductDetailsPro
                   ? "1L"
                   : pack.slug.includes("2-5-litre")
                   ? "2.5L"
+                  : pack.slug.includes("10-litre")
+                  ? "10L"
                   : "5L";
                 const shortPrice = `₹${Math.round(pack.price / 100).toLocaleString("en-IN")}`;
                 const isNavigatingThis = navigatingSlug === pack.slug;
