@@ -125,7 +125,7 @@ export default function Header() {
       <header className="sticky top-3.5 sm:top-5 mt-2 sm:mt-2.5 z-40 w-full px-3 sm:px-6 max-w-[1380px] mx-auto pointer-events-none">
         <nav
           className={cn(
-            "pointer-events-auto w-full bg-white/95 backdrop-blur-md border border-[#E5E0D8]/90 rounded-full py-2 px-3 sm:px-5 flex items-center justify-between gap-2.5 sm:gap-4 transition-all duration-300",
+            "pointer-events-auto w-full bg-white/95 backdrop-blur-md border border-[#E5E0D8]/90 rounded-full py-2 pl-3 pr-4 sm:px-5 flex items-center justify-between gap-2.5 sm:gap-4 transition-all duration-300",
             scrolled
               ? "shadow-[0_10px_32px_-6px_rgba(13,43,29,0.14),0_2px_6px_rgba(0,0,0,0.04)] bg-white/98 border-[#D8D2C6]"
               : "shadow-[0_6px_24px_-4px_rgba(13,43,29,0.08),0_1px_3px_rgba(0,0,0,0.02)]"
@@ -135,7 +135,7 @@ export default function Header() {
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-1.5 -ml-1 text-[#064E3B] hover:text-[#059669] transition-colors cursor-pointer rounded-full hover:bg-stone-100"
+              className="w-9 h-9 flex items-center justify-center text-[#064E3B] hover:text-[#059669] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" strokeWidth={1.75} />
@@ -284,7 +284,7 @@ export default function Header() {
           </nav>
 
           {/* Right Section: Search Pill, Track Order (Tablet), Account, Shopping Bag */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Tablet Quick Track Order Button */}
             <Link
               href="/track-order"
@@ -316,16 +316,16 @@ export default function Header() {
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="md:hidden p-1.5 text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100"
+              className="md:hidden w-9 h-9 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95 cursor-pointer"
               aria-label="Search"
             >
-              <Search className="w-4 h-4" strokeWidth={1.85} />
+              <Search className="w-4.5 h-4.5" strokeWidth={1.85} />
             </button>
 
             {/* Account */}
             <Link
               href="/account"
-              className="p-1.5 text-[#29251F] hover:text-[#064E3B] transition-colors hidden sm:block rounded-full hover:bg-stone-100"
+              className="w-9 h-9 hidden sm:flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95"
               aria-label="Account"
               title="My Account"
             >
@@ -336,16 +336,18 @@ export default function Header() {
             <button
               onClick={open}
               onMouseEnter={() => router.prefetch("/checkout")}
-              className="relative p-1.5 text-[#29251F] hover:text-[#064E3B] transition-colors flex items-center cursor-pointer rounded-full hover:bg-stone-100"
+              className="relative w-9 h-9 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95 group"
               aria-label="Open cart"
               title="Shopping Bag"
             >
-              <ShoppingBag className="w-4.5 h-4.5" strokeWidth={1.85} />
-              {cart.totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#064E3B] text-white text-[9.5px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow-xs">
-                  {cart.totalItems}
-                </span>
-              )}
+              <div className="relative flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5 text-[#29251F] group-hover:text-[#064E3B] transition-colors" strokeWidth={1.85} />
+                {cart.totalItems > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-[#064E3B] text-white text-[9.5px] font-bold rounded-full min-w-[16px] h-[16px] px-1 flex items-center justify-center shadow-xs ring-2 ring-white leading-none pointer-events-none">
+                    {cart.totalItems}
+                  </span>
+                )}
+              </div>
             </button>
           </div>
         </nav>
