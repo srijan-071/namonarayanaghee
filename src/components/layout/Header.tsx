@@ -122,10 +122,10 @@ export default function Header() {
       </div>
 
       {/* ─── Floating Capsule Navbar ─── */}
-      <header className="sticky top-3.5 sm:top-5 mt-2 sm:mt-2.5 z-40 w-full px-3 sm:px-6 max-w-[1380px] mx-auto pointer-events-none">
+      <header className="sticky top-3.5 sm:top-5 mt-2 sm:mt-2.5 z-40 w-full px-2 sm:px-6 max-w-[1380px] mx-auto pointer-events-none">
         <nav
           className={cn(
-            "pointer-events-auto w-full bg-white/95 backdrop-blur-md border border-[#E5E0D8]/90 rounded-full py-2 pl-3 pr-4 sm:px-5 flex items-center justify-between gap-2.5 sm:gap-4 transition-all duration-300",
+            "pointer-events-auto w-full bg-white/95 backdrop-blur-md border border-[#E5E0D8]/90 rounded-full py-1.5 sm:py-2 px-2.5 sm:px-5 flex items-center justify-between gap-1.5 sm:gap-4 transition-all duration-300",
             scrolled
               ? "shadow-[0_10px_32px_-6px_rgba(13,43,29,0.14),0_2px_6px_rgba(0,0,0,0.04)] bg-white/98 border-[#D8D2C6]"
               : "shadow-[0_6px_24px_-4px_rgba(13,43,29,0.08),0_1px_3px_rgba(0,0,0,0.02)]"
@@ -135,7 +135,7 @@ export default function Header() {
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(true)}
-              className="w-9 h-9 flex items-center justify-center text-[#064E3B] hover:text-[#059669] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95"
+              className="w-8.5 h-8.5 flex items-center justify-center text-[#064E3B] hover:text-[#059669] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" strokeWidth={1.75} />
@@ -145,9 +145,9 @@ export default function Header() {
           {/* Left: Brand Identity (Logo + Name + Vedic Tagline) */}
           <Link
             href="/"
-            className="flex items-center gap-2 sm:gap-2.5 shrink-0 group focus:outline-none"
+            className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 group focus:outline-none"
           >
-            <div className="relative w-9 h-9 sm:w-11 sm:h-11 shrink-0">
+            <div className="relative w-8 h-8 sm:w-11 sm:h-11 shrink-0">
               <Image
                 src="/assets/logo.png"
                 alt="Namo Narayana"
@@ -156,14 +156,19 @@ export default function Header() {
                 priority
               />
             </div>
-            <div className="flex flex-col text-left">
-              <span className="font-serif font-bold text-[15px] sm:text-[17px] leading-tight text-[#0D2B1D] tracking-tight">
+            <div className="flex flex-col text-left min-w-0">
+              <span className="font-serif font-bold text-[14px] sm:text-[17px] leading-tight text-[#0D2B1D] tracking-tight truncate">
                 Namo Narayana
               </span>
-              <span className="text-[8px] sm:text-[9.5px] font-bold tracking-wider uppercase leading-none mt-0.5">
+              {/* Desktop / Tablet Tagline */}
+              <span className="hidden sm:inline-block text-[9.5px] font-bold tracking-wider uppercase leading-none mt-0.5 whitespace-nowrap">
                 <span className="text-[#064E3B]">PURE A2 GIR COW GHEE</span>
                 <span className="text-stone-300 mx-1">•</span>
                 <span className="text-[#B85D19]">VEDIC BILONA</span>
+              </span>
+              {/* Mobile Compact Tagline */}
+              <span className="sm:hidden text-[7.5px] font-bold tracking-wider uppercase leading-none mt-0.5 whitespace-nowrap">
+                <span className="text-[#064E3B]">A2 GIR COW GHEE</span>
               </span>
             </div>
           </Link>
@@ -316,16 +321,16 @@ export default function Header() {
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="md:hidden w-9 h-9 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95 cursor-pointer"
+              className="md:hidden w-8.5 h-8.5 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95 cursor-pointer"
               aria-label="Search"
             >
-              <Search className="w-4.5 h-4.5" strokeWidth={1.85} />
+              <Search className="w-4 h-4" strokeWidth={1.85} />
             </button>
 
             {/* Account */}
             <Link
               href="/account"
-              className="w-9 h-9 hidden sm:flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95"
+              className="w-8.5 h-8.5 sm:w-9 sm:h-9 hidden sm:flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors rounded-full hover:bg-stone-100 active:scale-95"
               aria-label="Account"
               title="My Account"
             >
@@ -336,14 +341,14 @@ export default function Header() {
             <button
               onClick={open}
               onMouseEnter={() => router.prefetch("/checkout")}
-              className="relative w-9 h-9 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95 group"
+              className="relative w-8.5 h-8.5 sm:w-9 sm:h-9 flex items-center justify-center text-[#29251F] hover:text-[#064E3B] transition-colors cursor-pointer rounded-full hover:bg-stone-100 active:scale-95 group mr-0.5 sm:mr-0"
               aria-label="Open cart"
               title="Shopping Bag"
             >
               <div className="relative flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-[#29251F] group-hover:text-[#064E3B] transition-colors" strokeWidth={1.85} />
+                <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-[#29251F] group-hover:text-[#064E3B] transition-colors" strokeWidth={1.85} />
                 {cart.totalItems > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-[#064E3B] text-white text-[9.5px] font-bold rounded-full min-w-[16px] h-[16px] px-1 flex items-center justify-center shadow-xs ring-2 ring-white leading-none pointer-events-none">
+                  <span className="absolute -top-1 -right-1.5 bg-[#064E3B] text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] px-0.5 flex items-center justify-center shadow-xs ring-1.5 ring-white leading-none pointer-events-none">
                     {cart.totalItems}
                   </span>
                 )}
