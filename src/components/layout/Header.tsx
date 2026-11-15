@@ -14,6 +14,7 @@ import {
   X,
   ChevronDown,
   Crown,
+  Truck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -77,7 +78,7 @@ export default function Header() {
     { href: "/a2-ghee-guide", label: "Bilona Method" },
     { href: "/pages/certifications", label: "Quality & Testing" },
     { href: "/pages/namo-narayana-ghee-price-buying-guide", label: "Price Guide" },
-    { href: "/pages/contact", label: "Contact" },
+    { href: "/track-order", label: "Track Order" },
   ];
 
   const shopPacks = [
@@ -121,13 +122,13 @@ export default function Header() {
       </div>
 
       {/* ─── Floating Capsule Navbar ─── */}
-      <header className="sticky top-2 sm:top-3 z-40 w-full px-3 sm:px-6 max-w-[1380px] mx-auto pointer-events-none">
+      <header className="sticky top-3.5 sm:top-5 mt-2 sm:mt-2.5 z-40 w-full px-3 sm:px-6 max-w-[1380px] mx-auto pointer-events-none">
         <nav
           className={cn(
             "pointer-events-auto w-full bg-white/95 backdrop-blur-md border border-[#E5E0D8]/90 rounded-full py-2 px-3 sm:px-5 flex items-center justify-between gap-2.5 sm:gap-4 transition-all duration-300",
             scrolled
-              ? "shadow-[0_8px_30px_-6px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.04)] bg-white/98 border-[#D8D2C6]"
-              : "shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.02)]"
+              ? "shadow-[0_10px_32px_-6px_rgba(13,43,29,0.14),0_2px_6px_rgba(0,0,0,0.04)] bg-white/98 border-[#D8D2C6]"
+              : "shadow-[0_6px_24px_-4px_rgba(13,43,29,0.08),0_1px_3px_rgba(0,0,0,0.02)]"
           )}
         >
           {/* Mobile: Left Hamburger */}
@@ -241,6 +242,24 @@ export default function Header() {
             {/* Standard Links */}
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
+              if (link.href === "/track-order") {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12.5px] font-semibold transition-all duration-200 shadow-2xs whitespace-nowrap group",
+                      isActive
+                        ? "bg-[#064E3B] text-white shadow-xs"
+                        : "bg-emerald-50/90 text-[#064E3B] hover:bg-[#064E3B] hover:text-white border border-emerald-200/90 hover:border-[#064E3B]"
+                    )}
+                    title="Track Order Status"
+                  >
+                    <Truck className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+                    <span>Track Order</span>
+                  </Link>
+                );
+              }
               return (
                 <Link
                   key={link.href}
@@ -264,8 +283,22 @@ export default function Header() {
             <span className="h-4 w-px bg-stone-300" />
           </nav>
 
-          {/* Right Section: Search Pill, Account, Shopping Bag */}
+          {/* Right Section: Search Pill, Track Order (Tablet), Account, Shopping Bag */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Tablet Quick Track Order Button */}
+            <Link
+              href="/track-order"
+              className={cn(
+                "hidden sm:inline-flex lg:hidden items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-2xs",
+                pathname === "/track-order"
+                  ? "bg-[#064E3B] text-white shadow-xs"
+                  : "bg-emerald-50/90 text-[#064E3B] hover:bg-[#064E3B] hover:text-white border border-emerald-200"
+              )}
+              title="Track Order Status"
+            >
+              <Truck className="w-3.5 h-3.5" />
+              <span>Track Order</span>
+            </Link>
             {/* Desktop Search Input Field (Capsule Pill) */}
             <div className="hidden md:block relative">
               <form onSubmit={handleSearchSubmit} className="relative">
@@ -397,6 +430,28 @@ export default function Header() {
                 </li>
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href;
+                  if (link.href === "/track-order") {
+                    return (
+                      <li key={link.href} className="pt-1">
+                        <Link
+                          href={link.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={cn(
+                            "flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all shadow-2xs border",
+                            isActive
+                              ? "bg-[#064E3B] text-white border-[#064E3B]"
+                              : "bg-emerald-50/90 text-[#064E3B] hover:bg-[#064E3B] hover:text-white border-emerald-200/90"
+                          )}
+                        >
+                          <Truck className="w-4 h-4 shrink-0" />
+                          <span>Track Order</span>
+                          <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-[#064E3B] px-2 py-0.5 rounded-full border border-emerald-300/60">
+                            Live Status
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  }
                   return (
                     <li key={link.href}>
                       <Link
@@ -418,11 +473,19 @@ export default function Header() {
             </div>
 
             {/* Drawer Footer */}
-            <div className="p-4 border-t border-[#EAE3D7] bg-white">
+            <div className="p-4 border-t border-[#EAE3D7] bg-white flex items-center justify-between">
+              <Link
+                href="/track-order"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#064E3B] hover:bg-emerald-50 rounded-lg transition-colors"
+              >
+                <Truck className="w-4 h-4" />
+                <span>Track Order</span>
+              </Link>
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-[#064E3B]"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-stone-700 hover:text-[#064E3B] rounded-lg hover:bg-stone-100 transition-colors"
               >
                 <User className="w-4 h-4" />
                 <span>My Account</span>
