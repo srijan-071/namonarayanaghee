@@ -163,8 +163,8 @@ export default function CheckoutPage() {
           // Update abandoned cart lifecycle to PAID / recovered
           const cleanPhone = form.phone.replace(/\D/g, "");
           import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
-            if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "paid", { orderId: data.orderId }).catch(() => {});
-            if (form.email) updateAbandonedCartStatus(form.email, "paid", { orderId: data.orderId }).catch(() => {});
+            if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "paid", { orderId: data.orderId }).catch(() => { });
+            if (form.email) updateAbandonedCartStatus(form.email, "paid", { orderId: data.orderId }).catch(() => { });
           });
 
           await fetch("/api/verify-payment", {
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
         // Preserve lead: update lifecycle status to 'failed' (dismissed) without deleting
         const cleanPhone = form.phone.replace(/\D/g, "");
         import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
-          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: "Payment dismissed by user" }).catch(() => {});
+          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: "Payment dismissed by user" }).catch(() => { });
         });
 
         toast.info("Payment window closed. You can complete your order whenever you're ready.");
@@ -207,7 +207,7 @@ export default function CheckoutPage() {
         // Preserve lead: update lifecycle status to 'failed' with reason
         const cleanPhone = form.phone.replace(/\D/g, "");
         import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
-          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: data.error?.description || "Gateway payment failure" }).catch(() => {});
+          if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "failed", { failedReason: data.error?.description || "Gateway payment failure" }).catch(() => { });
         });
 
         toast.error(data.error?.description || "Payment failed. Please try another payment method.");
@@ -535,7 +535,7 @@ export default function CheckoutPage() {
         toast.success(`Coupon ${val} applied! ₹${res.amount || 0} discount`);
         return;
       }
-    } catch {}
+    } catch { }
 
     toast.error("Invalid coupon code");
   };
@@ -785,8 +785,8 @@ export default function CheckoutPage() {
       // Transition abandoned cart lead to 'pending' with orderId attached.
       // Lead remains active and recoverable if gateway is closed without payment.
       import("@/lib/abandoned-cart").then(({ updateAbandonedCartStatus }) => {
-        if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "pending", { orderId }).catch(() => {});
-        if (form.email.trim()) updateAbandonedCartStatus(form.email.trim(), "pending", { orderId }).catch(() => {});
+        if (cleanPhone) updateAbandonedCartStatus(cleanPhone, "pending", { orderId }).catch(() => { });
+        if (form.email.trim()) updateAbandonedCartStatus(form.email.trim(), "pending", { orderId }).catch(() => { });
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
@@ -1116,9 +1116,8 @@ export default function CheckoutPage() {
                         onChange={(e) => handleFieldChange("phone", e.target.value.replace(/\D/g, ""))}
                         onBlur={handlePhoneBlur}
                         onFocus={handleContactFocus}
-                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${
-                          fieldErrors.phone ? "bg-red-50/20" : ""
-                        }`}
+                        className={`w-full px-3 py-2.5 sm:py-3 text-sm focus:outline-none bg-transparent font-medium ${fieldErrors.phone ? "bg-red-50/20" : ""
+                          }`}
                       />
                     </div>
                     {fieldErrors.phone ? (
@@ -1149,11 +1148,10 @@ export default function CheckoutPage() {
                         onChange={(e) => handleFieldChange("name", e.target.value)}
                         onBlur={handleNameBlur}
                         onFocus={handleContactFocus}
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.name
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.name
                             ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                        }`}
+                          }`}
                       />
                     </div>
                     {fieldErrors.name && (
@@ -1183,11 +1181,10 @@ export default function CheckoutPage() {
                         value={form.email}
                         onChange={(e) => handleFieldChange("email", e.target.value)}
                         onBlur={handleEmailBlur}
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.email
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.email
                             ? "border-red-500 ring-1 ring-red-500 bg-red-50/20"
                             : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                        }`}
+                          }`}
                       />
                     </div>
                     {fieldErrors.email && (
@@ -1243,11 +1240,10 @@ export default function CheckoutPage() {
                         onChange={(e) => handlePincodeChange(e.target.value)}
                         onBlur={handlePincodeBlur}
                         onFocus={handleAddressFocus}
-                        className={`w-full border rounded-xl pl-10 pr-9 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white transition ${
-                          fieldErrors.pincode
+                        className={`w-full border rounded-xl pl-10 pr-9 py-2.5 sm:py-3 text-sm focus:outline-none font-medium bg-white transition ${fieldErrors.pincode
                             ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                        }`}
+                          }`}
                       />
                       {isFetchingPincode && (
                         <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-1/2 -translate-y-1/2 text-[#075B43]" />
@@ -1292,11 +1288,10 @@ export default function CheckoutPage() {
                         onChange={(e) => handleFieldChange("address", e.target.value)}
                         onBlur={handleAddressBlur}
                         onFocus={handleAddressFocus}
-                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                          fieldErrors.address
+                        className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.address
                             ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                             : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                        }`}
+                          }`}
                       />
                     </div>
                     {fieldErrors.address && (
@@ -1351,11 +1346,10 @@ export default function CheckoutPage() {
                           value={form.city}
                           onChange={(e) => handleFieldChange("city", e.target.value)}
                           onBlur={handleCityBlur}
-                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${
-                            fieldErrors.city
+                          className={`w-full border rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white ${fieldErrors.city
                               ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                          }`}
+                            }`}
                         />
                       </div>
                       {fieldErrors.city && (
@@ -1382,11 +1376,10 @@ export default function CheckoutPage() {
                           value={form.state}
                           onChange={(e) => handleFieldChange("state", e.target.value)}
                           onBlur={handleStateBlur}
-                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${
-                            fieldErrors.state
+                          className={`w-full border rounded-xl px-3.5 py-2.5 sm:py-3 text-sm focus:outline-none transition bg-white appearance-none cursor-pointer pr-8 ${fieldErrors.state
                               ? "border-red-500 ring-1 ring-red-400 bg-red-50/20"
                               : "border-stone-200 focus:border-[#075B43] focus:ring-1 focus:ring-[#075B43]"
-                          }`}
+                            }`}
                         >
                           <option value="">Select State</option>
                           {INDIAN_STATES.map((st) => (
@@ -1477,17 +1470,15 @@ export default function CheckoutPage() {
                         cartTotal: pricing.subtotal,
                       });
                     }}
-                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
-                      paymentMethod === "prepaid"
+                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${paymentMethod === "prepaid"
                         ? "bg-[#E8F1EC]/40 border-[#075B43] shadow-xs"
                         : "bg-white border-stone-200 hover:border-stone-300"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${
-                          paymentMethod === "prepaid" ? "border-[#075B43] bg-white" : "border-stone-300 bg-white"
-                        }`} />
+                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${paymentMethod === "prepaid" ? "border-[#075B43] bg-white" : "border-stone-300 bg-white"
+                          }`} />
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-bold text-[#17231E]">
@@ -1498,7 +1489,7 @@ export default function CheckoutPage() {
                             </span>
                           </div>
                           <p className="text-xs text-stone-600 mt-1 font-medium">
-                            <span className="text-emerald-700 font-semibold">₹100 Instant Discount</span> + <span className="text-emerald-700 font-semibold">₹250 COD Fee Waived</span>
+                            <span className="text-emerald-700 font-semibold">₹100 Instant Discount</span> + <span className="text-emerald-700 font-semibold">₹250 COD Fee Removed</span>
                           </p>
                         </div>
                       </div>
@@ -1540,17 +1531,15 @@ export default function CheckoutPage() {
                         cartTotal: pricing.subtotal,
                       });
                     }}
-                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${
-                      paymentMethod === "cod"
+                    className={`rounded-xl p-3.5 sm:p-4 transition-all cursor-pointer relative border-2 ${paymentMethod === "cod"
                         ? "bg-[#FAF9F5] border-[#075B43] shadow-xs"
                         : "bg-white border-stone-200 hover:border-stone-300"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${
-                          paymentMethod === "cod" ? "border-[#075B43] bg-white" : "border-stone-300 bg-white"
-                        }`} />
+                        <div className={`w-4 h-4 rounded-full border-4 flex items-center justify-center shrink-0 ${paymentMethod === "cod" ? "border-[#075B43] bg-white" : "border-stone-300 bg-white"
+                          }`} />
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-bold text-[#17231E]">
@@ -1910,7 +1899,7 @@ export default function CheckoutPage() {
 
       {/* ─── 4. Luxury Mobile Sticky Bottom Bar (High Conversion & Coupon Quick-Apply) ─── */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-xl border-t border-[#EAE7DF] shadow-[0_-8px_30px_rgba(23,35,30,0.12)] pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-all">
-        
+
         {/* ─── A. Expandable Quick-Coupon Tray / Drawer ─── */}
         {isStickyCouponOpen && (
           <div className="bg-[#FAF9F5] border-b border-[#EAE7DF] px-4 py-3 space-y-2.5 max-h-[300px] overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
@@ -1968,11 +1957,10 @@ export default function CheckoutPage() {
                 return (
                   <div
                     key={c.code}
-                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs transition ${
-                      isCurrent
+                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs transition ${isCurrent
                         ? "bg-[#E8F1EC] border-[#075B43]/30 text-[#075B43]"
                         : "bg-white border-[#EAE7DF] text-[#17231E]"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-[11px] bg-[#FAF9F5] border border-[#EAE7DF] px-2 py-0.5 rounded text-[#075B43]">
