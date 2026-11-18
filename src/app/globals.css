@@ -99,6 +99,19 @@
     background-color: #064E3B;
     color: #F8F5EE;
   }
+
+  /* Prevent iOS Safari auto-zoom on input focus (minimum 16px font-size on mobile) */
+  @media screen and (max-width: 767px) {
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
 }
 
 /* ─── Reusable component classes ─────────────────────── */
