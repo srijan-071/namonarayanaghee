@@ -175,7 +175,7 @@ ${headerTitle}
 Order ID: #${orderId}
 Status: ⏳ PENDING GATEWAY PAYMENT
 Payment Method: ${methodTitle}
-Gateway Domain: potter-world.com
+Gateway Domain: octopusperfume.in (PayU)
 
 👤 Customer Details:
 Name: ${shipping.name || contact.name || "N/A"}
@@ -263,7 +263,7 @@ ${successHeader}
 Order ID: #${orderId}
 Payment ID: ${paymentId}
 Status: ${successStatus}
-Payment Gateway: Razorpay (potter-world.com)
+Payment Gateway: PayU (octopusperfume.in)
 Payment Mode: ${isCod ? "CASH ON DELIVERY (Advance Booking)" : "100% PREPAID"}
 
 👤 Customer Details:

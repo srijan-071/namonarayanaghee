@@ -18,11 +18,12 @@ export async function POST(req: Request) {
       sessionId,
       razorpay_order_id,
       razorpay_signature,
-      gateway = "razorpay"
+      gateway = "payu"
     } = body;
 
-    const cleanOrderId = orderId || txnid || id;
-    const paymentId = razorpay_payment_id || payment_id || payuid || sessionId || "verified";
+    const rawId = (orderId || txnid || id || "").toString().replace(/^#/, "").trim();
+    const cleanOrderId = rawId.replace(/-PREPAY$/i, "");
+    const paymentId = payuid || razorpay_payment_id || payment_id || sessionId || "verified";
 
     if (!cleanOrderId) {
       return NextResponse.json({ error: "Missing order ID" }, { status: 400 });
@@ -89,12 +90,14 @@ export async function POST(req: Request) {
 
     const cleanPaymentDetails: Record<string, any> = {
       ...(orderData.paymentDetails || {}),
+      payuid: payuid || orderData.paymentDetails?.payuid || paymentId,
+      mihpayid: payuid || orderData.paymentDetails?.mihpayid || paymentId,
       razorpay_payment_id: paymentId,
       razorpay_order_id: razorpay_order_id || orderData.paymentDetails?.razorpay_order_id || null,
       razorpay_signature: razorpay_signature || orderData.paymentDetails?.razorpay_signature || null,
       signatureVerified: signatureVerified ?? orderData.paymentDetails?.signatureVerified ?? null,
-      gateway: gateway || orderData.paymentDetails?.gateway || "razorpay",
-      proxyDomain: "potter-world.com",
+      gateway: gateway || orderData.paymentDetails?.gateway || "payu",
+      proxyDomain: "octopusperfume.in",
       paidAt: orderData.paymentDetails?.paidAt || nowIso,
       thankYouPageReachedAt: nowIso,
       advancePaidAmount: isCod ? advancePaid : 0,

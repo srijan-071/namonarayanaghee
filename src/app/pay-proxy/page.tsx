@@ -31,39 +31,34 @@ function PayProxyContent() {
       return;
     }
 
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
-    const returnUrl = isPrepay
-      ? `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(baseOrderId)}&amount=${effectiveAmount}`
-      : `${origin}/api/razorpay/callback`;
-    const cancelUrl = isPrepay
-      ? `${origin}/track-order?orderId=${encodeURIComponent(baseOrderId)}`
-      : `${origin}/cart`;
+    const payuParams = new URLSearchParams();
+    payuParams.set("txnid", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
+    payuParams.set("amount", effectiveAmount);
+    payuParams.set("firstname", firstname);
+    payuParams.set("email", email);
+    payuParams.set("phone", phone);
+    payuParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId}` : productinfo);
+    payuParams.set("udf1", "namonarayanaghee");
 
-    const potterParams = new URLSearchParams();
-    potterParams.set("order_id", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
-    potterParams.set("txnid", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
-    potterParams.set("amount", effectiveAmount);
-    potterParams.set("firstname", firstname);
-    potterParams.set("email", email);
-    potterParams.set("phone", phone);
-    potterParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId} (COD to Prepaid)` : productinfo);
-    potterParams.set("embed", "true");
-    potterParams.set("returnUrl", returnUrl);
-    potterParams.set("cancelUrl", cancelUrl);
-    potterParams.set("brand", "namonarayanaghee");
-
-    const target = `https://potter-world.com/pay-proxy?${potterParams.toString()}`;
+    const target = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payuParams.toString()}`;
     setDestinationUrl(target);
+
+    // Instant top-level redirect for best mobile UPI compatibility
+    const redirectTimer = setTimeout(() => {
+      window.location.href = target;
+    }, 150);
+
+    return () => clearTimeout(redirectTimer);
   }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("octopusperfume.in")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
         if (isPrepay) {
           try {
             await fetch("/api/convert-cod-to-prepaid", {
@@ -175,7 +170,7 @@ function PayProxyContent() {
             </div>
           )}
           <p className="text-[#727B75] text-[11px] leading-relaxed text-center pt-2">
-            You are being securely directed to complete your transaction via <strong>Razorpay</strong>.
+            You are being securely directed to complete your transaction via <strong>PayU</strong>.
           </p>
         </div>
 

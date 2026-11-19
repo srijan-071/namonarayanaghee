@@ -135,15 +135,15 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  // Listen for message events from secure embedded payment gateway (potter-world.com)
+  // Listen for message events from secure embedded payment gateway (octopusperfume.in)
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("octopusperfume.in")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(true);
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
         // Track payment info submission now that payment credentials succeeded
         trackEvent("add_payment_info", {
           orderId: data.orderId,
-          payment_type: "razorpay_prepaid",
+          payment_type: "payu_prepaid",
           value: pricing.amountToPay,
           currency: "INR"
         });
@@ -790,25 +790,18 @@ export default function CheckoutPage() {
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
       const payParams = new URLSearchParams();
-      payParams.set("order_id", orderId);
       payParams.set("txnid", orderId);
       payParams.set("amount", amountInINR.toString());
       payParams.set("firstname", address.name || "Customer");
       payParams.set("email", customerEmail);
       payParams.set("phone", cleanPhone);
       payParams.set("productinfo", paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`);
-      payParams.set("embed", "true");
-      payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
-      payParams.set("cancelUrl", `${origin}/checkout`);
-      payParams.set("brand", "namonarayanaghee");
+      payParams.set("udf1", "namonarayanaghee");
 
-      const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
+      const targetUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
 
       toast.dismiss(loadingToastId);
-      setIframeUrl(targetUrl);
-      setIsIframeOpen(true);
 
       // User has reached and viewed the actual payment interface
       trackEvent("payment_step_viewed", {
@@ -816,6 +809,9 @@ export default function CheckoutPage() {
         value: effectivePricing.amountToPay,
         currency: "INR"
       });
+
+      // Redirect directly to PayU proxy on octopusperfume.in for seamless mobile UPI & payment experience
+      window.location.href = targetUrl;
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");
@@ -865,10 +861,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen text-[#2A1612] w-full max-w-full overflow-x-hidden">
-      <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://potter-world.com" />
+      <link rel="preconnect" href="https://octopusperfume.in" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://octopusperfume.in" />
 
-      {/* ─── Seamless In-Page Razorpay Gateway via potter-world.com iframe ─── */}
+      {/* ─── Seamless Secure PayU Gateway via octopusperfume.in proxy ─── */}
       {isIframeOpen && iframeUrl && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
           <button

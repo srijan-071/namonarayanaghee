@@ -66,7 +66,9 @@ function Confetti() {
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId") || searchParams.get("txnid");
+  const rawOrderId = searchParams.get("orderId") || searchParams.get("order_id") || searchParams.get("txnid");
+  const isPrepay = (rawOrderId || "").toUpperCase().endsWith("-PREPAY") || searchParams.get("action") === "prepay";
+  const orderId = (rawOrderId || "").replace(/^#/, "").replace(/-PREPAY$/i, "").trim();
   const status = searchParams.get("status");
   const sessionId = searchParams.get("session_id");
   const razorpayPaymentId = searchParams.get("razorpay_payment_id") || searchParams.get("payment_id");
@@ -90,7 +92,7 @@ function SuccessContent() {
     }
 
     setOrderLoading(true);
-    const paymentId = razorpayPaymentId || payuid || sessionId || "verified";
+    const paymentId = payuid || razorpayPaymentId || sessionId || "verified";
 
     // Clear cart immediately upon successful payment return
     import("@/lib/cart").then((cartLib) => cartLib.clearCart()).catch(() => {});
@@ -148,28 +150,68 @@ function SuccessContent() {
 
     loadOrderData();
 
-    // 2. Call /api/verify-payment to mark order PAID in Firestore,
-    // and send Telegram notification to Admin & Order Confirmation Email to customer.
-    fetch("/api/verify-payment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        orderId,
-        razorpay_payment_id: paymentId,
-        razorpay_order_id: razorpayOrderId,
-        razorpay_signature: razorpaySignature,
-        gateway: payuid ? "payu" : "razorpay"
-      }),
-    })
-    .then((res) => res.json())
-    .then(async (resData) => {
-      if (!isMounted) return;
-      if (resData.success && resData.order) {
-        setOrderData(resData.order);
-        setPaymentVerified(true);
-        setOrderLoading(false);
-      } else {
-        // Fallback update to paid if verify-payment endpoint failed
+    // 2. Call /api/verify-payment (or /api/convert-cod-to-prepaid for prepay conversions)
+    if (isPrepay) {
+      fetch("/api/convert-cod-to-prepaid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          payuid: paymentId,
+          razorpay_payment_id: paymentId,
+          razorpay_order_id: razorpayOrderId,
+          razorpay_signature: razorpaySignature,
+        }),
+      })
+      .then((res) => res.json())
+      .then((resData) => {
+        if (!isMounted) return;
+        if (resData.success && resData.order) {
+          setOrderData(resData.order);
+          setPaymentVerified(true);
+          setOrderLoading(false);
+        }
+      })
+      .catch((err) => console.error("Convert prepay error:", err));
+    } else {
+      fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          payuid: paymentId,
+          razorpay_payment_id: paymentId,
+          razorpay_order_id: razorpayOrderId,
+          razorpay_signature: razorpaySignature,
+          gateway: "payu"
+        }),
+      })
+      .then((res) => res.json())
+      .then(async (resData) => {
+        if (!isMounted) return;
+        if (resData.success && resData.order) {
+          setOrderData(resData.order);
+          setPaymentVerified(true);
+          setOrderLoading(false);
+        } else {
+          // Fallback update to paid if verify-payment endpoint failed
+          try {
+            const { db } = await import("@/lib/firebase");
+            const { doc, updateDoc } = await import("firebase/firestore/lite");
+            await updateDoc(doc(db, "orders", orderId), {
+              paymentStatus: "paid",
+              status: "processing",
+              thankYouPageReached: true,
+              updatedAt: new Date()
+            });
+          } catch {}
+          setPaymentVerified(true);
+          setOrderLoading(false);
+        }
+      })
+      .catch(async (err) => {
+        console.error("Order confirmation on thank-you page error:", err);
+        if (!isMounted) return;
         try {
           const { db } = await import("@/lib/firebase");
           const { doc, updateDoc } = await import("firebase/firestore/lite");
@@ -182,30 +224,14 @@ function SuccessContent() {
         } catch {}
         setPaymentVerified(true);
         setOrderLoading(false);
-      }
-    })
-    .catch(async (err) => {
-      console.error("Order confirmation on thank-you page error:", err);
-      if (!isMounted) return;
-      try {
-        const { db } = await import("@/lib/firebase");
-        const { doc, updateDoc } = await import("firebase/firestore/lite");
-        await updateDoc(doc(db, "orders", orderId), {
-          paymentStatus: "paid",
-          status: "processing",
-          thankYouPageReached: true,
-          updatedAt: new Date()
-        });
-      } catch {}
-      setPaymentVerified(true);
-      setOrderLoading(false);
-    });
+      });
+    }
 
     return () => {
       isMounted = false;
       clearTimeout(safetyTimer);
     };
-  }, [orderId, isSuccess, razorpayPaymentId, razorpayOrderId, razorpaySignature, payuid, sessionId]);
+  }, [orderId, isSuccess, isPrepay, razorpayPaymentId, razorpayOrderId, razorpaySignature, payuid, sessionId]);
 
   useEffect(() => {
     if (isSuccess) {

@@ -427,20 +427,17 @@ function TrackOrderContent() {
       const cleanName = order.shippingAddress?.name || order.contactInfo?.name || order.customerName || "Customer";
 
       const payParams = new URLSearchParams();
-      payParams.set("order_id", `${cleanOrderId}-PREPAY`);
       payParams.set("txnid", `${cleanOrderId}-PREPAY`);
       payParams.set("amount", finalPrepayAmountRupees.toString());
       payParams.set("firstname", cleanName);
       payParams.set("email", cleanEmail);
       payParams.set("phone", cleanPhone);
-      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId} (COD to Prepaid)`);
-      payParams.set("embed", "true");
-      payParams.set("returnUrl", `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(cleanOrderId)}&amount=${finalPrepayAmountRupees}`);
-      payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
-      payParams.set("brand", "namonarayanaghee");
+      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId}`);
+      payParams.set("udf1", "namonarayanaghee");
 
-      setIframeUrl(`https://potter-world.com/pay-proxy?${payParams.toString()}`);
-      setIsIframeOpen(true);
+      const targetUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
+      toast.loading("Connecting to secure PayU gateway...");
+      window.location.href = targetUrl;
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
       toast.error("Could not initiate payment. Please try again.");
@@ -458,13 +455,13 @@ function TrackOrderContent() {
     }
   }, [searchParams, isCodActive, isIframeOpen]);
 
-  // Listen for Razorpay postMessage from potter-world payment iframe
+  // Listen for PayU/proxy postMessage from payment window
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
       const data = e.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
 

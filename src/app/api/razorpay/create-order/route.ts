@@ -50,37 +50,6 @@ export async function POST(req: Request) {
 
     if (!rzpRes.ok || !data.id) {
       console.error('Direct Razorpay order error:', data);
-      // Fallback: try via potter-world.com/api/create-order
-      try {
-        const fallbackRes = await fetch('https://potter-world.com/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: finalAmount,
-            currency: 'INR',
-            receipt: (orderId || `rcpt_${Date.now()}`).toString().slice(0, 40),
-            notes: {
-              merchant: 'namonarayanaghee',
-              origin_order_id: orderId,
-              customer_email: email,
-              ...notes,
-            },
-          }),
-        });
-        const fallbackData = await fallbackRes.json();
-        if (fallbackRes.ok && (fallbackData.order_id || fallbackData.id)) {
-          return NextResponse.json({
-            success: true,
-            order_id: fallbackData.order_id || fallbackData.id,
-            amount: fallbackData.amount,
-            currency: fallbackData.currency || 'INR',
-            key_id,
-          });
-        }
-      } catch (fbErr) {
-        console.error('Fallback create-order error:', fbErr);
-      }
-
       throw new Error(data.error?.description || data.error?.message || 'Failed to create payment session');
     }
 
