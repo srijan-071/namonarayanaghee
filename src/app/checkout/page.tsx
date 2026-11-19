@@ -790,6 +790,58 @@ export default function CheckoutPage() {
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
+
+      // Directly generate PayU signed payment form and submit straight to secure.payu.in/_payment
+      // Eliminates any intermediate loading animation or proxy screen completely!
+      try {
+        const hashRes = await fetch("/api/payu/hash", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            txnid: orderId,
+            amount: amountInINR,
+            firstname: address.name || "Customer",
+            email: customerEmail,
+            phone: cleanPhone,
+            productinfo: paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`,
+            udf1: "namonarayanaghee",
+          }),
+        });
+
+        const payuData = await hashRes.json();
+
+        if (payuData && payuData.hash && payuData.key) {
+          toast.dismiss(loadingToastId);
+          trackEvent("payment_step_viewed", {
+            orderId,
+            value: effectivePricing.amountToPay,
+            currency: "INR"
+          });
+
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = payuData.action || "https://secure.payu.in/_payment";
+          form.style.display = "none";
+
+          Object.entries(payuData).forEach(([k, v]) => {
+            if (k !== "action" && v !== undefined && v !== null) {
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = k;
+              input.value = String(v);
+              form.appendChild(input);
+            }
+          });
+
+          document.body.appendChild(form);
+          form.submit();
+          return;
+        }
+      } catch (hashErr) {
+        console.error("Direct PayU hash error:", hashErr);
+      }
+
+      // Safe fallback if direct hash generation failed
       const payParams = new URLSearchParams();
       payParams.set("txnid", orderId);
       payParams.set("amount", amountInINR.toString());
@@ -799,19 +851,8 @@ export default function CheckoutPage() {
       payParams.set("productinfo", paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`);
       payParams.set("udf1", "namonarayanaghee");
 
-      const targetUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
-
       toast.dismiss(loadingToastId);
-
-      // User has reached and viewed the actual payment interface
-      trackEvent("payment_step_viewed", {
-        orderId,
-        value: effectivePricing.amountToPay,
-        currency: "INR"
-      });
-
-      // Redirect directly to PayU proxy on octopusperfume.in for seamless mobile UPI & payment experience
-      window.location.href = targetUrl;
+      window.location.href = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");

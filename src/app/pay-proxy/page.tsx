@@ -43,12 +43,45 @@ function PayProxyContent() {
     const target = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payuParams.toString()}`;
     setDestinationUrl(target);
 
-    // Instant top-level redirect for best mobile UPI compatibility
-    const redirectTimer = setTimeout(() => {
+    // Direct submit to secure.payu.in/_payment with zero intermediate loading delay
+    fetch("/api/payu/hash", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        txnid: isPrepay ? `${baseOrderId}-PREPAY` : txnid,
+        amount: effectiveAmount,
+        firstname,
+        email,
+        phone,
+        productinfo: isPrepay ? `Prepay Upgrade for Order #${baseOrderId}` : productinfo,
+        udf1: "namonarayanaghee",
+      }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.hash && data.key) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.action || "https://secure.payu.in/_payment";
+        form.style.display = "none";
+        Object.entries(data).forEach(([k, v]) => {
+          if (k !== "action" && v !== undefined && v !== null) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = k;
+            input.value = String(v);
+            form.appendChild(input);
+          }
+        });
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        window.location.href = target;
+      }
+    })
+    .catch(() => {
       window.location.href = target;
-    }, 150);
-
-    return () => clearTimeout(redirectTimer);
+    });
   }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {

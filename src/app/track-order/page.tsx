@@ -415,7 +415,7 @@ function TrackOrderContent() {
   const tenPercentDiscountRupees = Math.round(tenPercentDiscountPaise / 100);
 
   // Initiate In-Page Prepay Checkout
-  const handleInitiatePrepay = () => {
+  const handleInitiatePrepay = async () => {
     if (!order) return;
     setIsInitiatingPayment(true);
 
@@ -426,6 +426,49 @@ function TrackOrderContent() {
       const cleanEmail = order.contactInfo?.email || order.email || order.customerEmail || `${cleanPhone || "care"}@namonarayanaghee.store`;
       const cleanName = order.shippingAddress?.name || order.contactInfo?.name || order.customerName || "Customer";
 
+      // Directly generate PayU signed payment form and submit straight to secure.payu.in/_payment
+      try {
+        const hashRes = await fetch("/api/payu/hash", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            txnid: `${cleanOrderId}-PREPAY`,
+            amount: finalPrepayAmountRupees,
+            firstname: cleanName,
+            email: cleanEmail,
+            phone: cleanPhone,
+            productinfo: `Prepay Upgrade for Order #${cleanOrderId}`,
+            udf1: "namonarayanaghee",
+          }),
+        });
+
+        const payuData = await hashRes.json();
+
+        if (payuData && payuData.hash && payuData.key) {
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = payuData.action || "https://secure.payu.in/_payment";
+          form.style.display = "none";
+
+          Object.entries(payuData).forEach(([k, v]) => {
+            if (k !== "action" && v !== undefined && v !== null) {
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = k;
+              input.value = String(v);
+              form.appendChild(input);
+            }
+          });
+
+          document.body.appendChild(form);
+          form.submit();
+          return;
+        }
+      } catch (hashErr) {
+        console.error("Direct PayU hash error in track-order:", hashErr);
+      }
+
+      // Fallback
       const payParams = new URLSearchParams();
       payParams.set("txnid", `${cleanOrderId}-PREPAY`);
       payParams.set("amount", finalPrepayAmountRupees.toString());
