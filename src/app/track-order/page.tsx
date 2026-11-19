@@ -415,7 +415,7 @@ function TrackOrderContent() {
   const tenPercentDiscountRupees = Math.round(tenPercentDiscountPaise / 100);
 
   // Initiate In-Page Prepay Checkout
-  const handleInitiatePrepay = async () => {
+  const handleInitiatePrepay = () => {
     if (!order) return;
     setIsInitiatingPayment(true);
 
@@ -426,61 +426,21 @@ function TrackOrderContent() {
       const cleanEmail = order.contactInfo?.email || order.email || order.customerEmail || `${cleanPhone || "care"}@namonarayanaghee.store`;
       const cleanName = order.shippingAddress?.name || order.contactInfo?.name || order.customerName || "Customer";
 
-      // Directly generate PayU signed payment form and submit straight to secure.payu.in/_payment
-      try {
-        const hashRes = await fetch("/api/payu/hash", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            txnid: `${cleanOrderId}-PREPAY`,
-            amount: finalPrepayAmountRupees,
-            firstname: cleanName,
-            email: cleanEmail,
-            phone: cleanPhone,
-            productinfo: `Prepay Upgrade for Order #${cleanOrderId}`,
-            udf1: "namonarayanaghee",
-          }),
-        });
-
-        const payuData = await hashRes.json();
-
-        if (payuData && payuData.hash && payuData.key) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = payuData.action || "https://secure.payu.in/_payment";
-          form.style.display = "none";
-
-          Object.entries(payuData).forEach(([k, v]) => {
-            if (k !== "action" && v !== undefined && v !== null) {
-              const input = document.createElement("input");
-              input.type = "hidden";
-              input.name = k;
-              input.value = String(v);
-              form.appendChild(input);
-            }
-          });
-
-          document.body.appendChild(form);
-          form.submit();
-          return;
-        }
-      } catch (hashErr) {
-        console.error("Direct PayU hash error in track-order:", hashErr);
-      }
-
-      // Fallback
       const payParams = new URLSearchParams();
+      payParams.set("order_id", `${cleanOrderId}-PREPAY`);
       payParams.set("txnid", `${cleanOrderId}-PREPAY`);
       payParams.set("amount", finalPrepayAmountRupees.toString());
       payParams.set("firstname", cleanName);
       payParams.set("email", cleanEmail);
       payParams.set("phone", cleanPhone);
-      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId}`);
-      payParams.set("udf1", "namonarayanaghee");
+      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId} (COD to Prepaid)`);
+      payParams.set("embed", "true");
+      payParams.set("returnUrl", `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(cleanOrderId)}&amount=${finalPrepayAmountRupees}`);
+      payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
+      payParams.set("brand", "namonarayanaghee");
 
-      const targetUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
-      toast.loading("Connecting to secure PayU gateway...");
-      window.location.href = targetUrl;
+      setIframeUrl(`https://underneatbykusha.in/pay-proxy?${payParams.toString()}`);
+      setIsIframeOpen(true);
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
       toast.error("Could not initiate payment. Please try again.");
@@ -498,13 +458,14 @@ function TrackOrderContent() {
     }
   }, [searchParams, isCodActive, isIframeOpen]);
 
-  // Listen for PayU/proxy postMessage from payment window
+  // Listen for Razorpay postMessage from underneatbykusha payment iframe
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
+      if (e.origin && !e.origin.includes("underneatbykusha.in") && !e.origin.includes("potter-world.com") && !e.origin.includes(window.location.host)) return;
       const data = e.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "RAZORPAY_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
 

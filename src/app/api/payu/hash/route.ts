@@ -17,9 +17,9 @@ export async function POST(req: Request) {
     const rawProductInfo = (body.productinfo || body.cartSummary || "Order Payment").toString();
     const productinfo = rawProductInfo.replace(/[^a-zA-Z0-9 ]/g, "").trim().slice(0, 100) || "Order Payment";
 
-    const udf1 = "namonarayanaghee";
-    const udf2 = phone || "";
-    const udf3 = "namonarayanaghee";
+    const udf1 = (body.udf1 || "namonarayanaghee").toString().replace(/[^a-zA-Z0-9_-]/g, "").trim();
+    const udf2 = "";
+    const udf3 = "";
     const udf4 = "";
     const udf5 = "";
 
@@ -37,8 +37,13 @@ export async function POST(req: Request) {
     const hashString = `${key}|${txnid}|${amountStr}|${productinfo}|${firstname}|${email}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
     const hash = crypto.createHash("sha512").update(hashString).digest("hex");
 
-    const surl = "https://octopusperfume.in/api/payu/callback";
-    const furl = "https://octopusperfume.in/api/payu/callback";
+    // Dynamically resolve caller origin for surl/furl
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "namonarayanaghee.store";
+    const proto = req.headers.get("x-forwarded-proto") || "https";
+    const origin = `${proto}://${host}`;
+
+    const surl = `${origin}/api/payu/callback`;
+    const furl = `${origin}/api/payu/callback`;
     const action = "https://secure.payu.in/_payment";
 
     return NextResponse.json({

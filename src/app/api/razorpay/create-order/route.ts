@@ -18,8 +18,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const key_id = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string) || 'rzp_live_TX8xr1CVxZnqPs';
-    const key_secret = (process.env.RAZORPAY_KEY_SECRET as string) || 'JC4fbxH7njMTfzctnXrFVyPs';
+    const key_id = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string) || 'rzp_live_U27tKk9vB577AJ';
+    const key_secret = (process.env.RAZORPAY_KEY_SECRET as string) || 'zgudZ0GXG8y38NYl7WKdCC2G';
 
     const auth = Buffer.from(`${key_id}:${key_secret}`).toString('base64');
 
@@ -50,6 +50,39 @@ export async function POST(req: Request) {
 
     if (!rzpRes.ok || !data.id) {
       console.error('Direct Razorpay order error:', data);
+      // Fallback: try via underneatbykusha.in/api/create-order
+      try {
+        const fallbackRes = await fetch('https://underneatbykusha.in/api/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: finalAmount,
+            currency: 'INR',
+            receipt: (orderId || `rcpt_${Date.now()}`).toString().slice(0, 40),
+            brand: 'namonarayanaghee',
+            notes: {
+              merchant: 'namonarayanaghee',
+              brand: 'Namo Narayana',
+              origin_order_id: orderId,
+              customer_email: email,
+              ...notes,
+            },
+          }),
+        });
+        const fallbackData = await fallbackRes.json();
+        if (fallbackRes.ok && (fallbackData.order_id || fallbackData.id)) {
+          return NextResponse.json({
+            success: true,
+            order_id: fallbackData.order_id || fallbackData.id,
+            amount: fallbackData.amount,
+            currency: fallbackData.currency || 'INR',
+            key_id,
+          });
+        }
+      } catch (fbErr) {
+        console.error('Fallback create-order error:', fbErr);
+      }
+
       throw new Error(data.error?.description || data.error?.message || 'Failed to create payment session');
     }
 

@@ -31,67 +31,39 @@ function PayProxyContent() {
       return;
     }
 
-    const payuParams = new URLSearchParams();
-    payuParams.set("txnid", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
-    payuParams.set("amount", effectiveAmount);
-    payuParams.set("firstname", firstname);
-    payuParams.set("email", email);
-    payuParams.set("phone", phone);
-    payuParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId}` : productinfo);
-    payuParams.set("udf1", "namonarayanaghee");
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
+    const returnUrl = isPrepay
+      ? `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(baseOrderId)}&amount=${effectiveAmount}`
+      : `${origin}/api/razorpay/callback`;
+    const cancelUrl = isPrepay
+      ? `${origin}/track-order?orderId=${encodeURIComponent(baseOrderId)}`
+      : `${origin}/cart`;
 
-    const target = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payuParams.toString()}`;
+    const potterParams = new URLSearchParams();
+    potterParams.set("order_id", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
+    potterParams.set("txnid", isPrepay ? `${baseOrderId}-PREPAY` : txnid);
+    potterParams.set("amount", effectiveAmount);
+    potterParams.set("firstname", firstname);
+    potterParams.set("email", email);
+    potterParams.set("phone", phone);
+    potterParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId} (COD to Prepaid)` : productinfo);
+    potterParams.set("embed", "true");
+    potterParams.set("returnUrl", returnUrl);
+    potterParams.set("cancelUrl", cancelUrl);
+    potterParams.set("brand", "namonarayanaghee");
+
+    const target = `https://underneatbykusha.in/pay-proxy?${potterParams.toString()}`;
     setDestinationUrl(target);
-
-    // Direct submit to secure.payu.in/_payment with zero intermediate loading delay
-    fetch("/api/payu/hash", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        txnid: isPrepay ? `${baseOrderId}-PREPAY` : txnid,
-        amount: effectiveAmount,
-        firstname,
-        email,
-        phone,
-        productinfo: isPrepay ? `Prepay Upgrade for Order #${baseOrderId}` : productinfo,
-        udf1: "namonarayanaghee",
-      }),
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data && data.hash && data.key) {
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = data.action || "https://secure.payu.in/_payment";
-        form.style.display = "none";
-        Object.entries(data).forEach(([k, v]) => {
-          if (k !== "action" && v !== undefined && v !== null) {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = k;
-            input.value = String(v);
-            form.appendChild(input);
-          }
-        });
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        window.location.href = target;
-      }
-    })
-    .catch(() => {
-      window.location.href = target;
-    });
   }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("octopusperfume.in")) return;
+      if (!event.origin.includes("underneatbykusha.in") && !event.origin.includes("potter-world.com")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "RAZORPAY_SUCCESS") {
         if (isPrepay) {
           try {
             await fetch("/api/convert-cod-to-prepaid", {
@@ -203,7 +175,7 @@ function PayProxyContent() {
             </div>
           )}
           <p className="text-[#727B75] text-[11px] leading-relaxed text-center pt-2">
-            You are being securely directed to complete your transaction via <strong>PayU</strong>.
+            You are being securely directed to complete your transaction via <strong>Razorpay</strong>.
           </p>
         </div>
 

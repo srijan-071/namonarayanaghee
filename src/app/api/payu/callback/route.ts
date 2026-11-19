@@ -33,32 +33,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to process PayU callback' }, { status: 500 });
   }
 }
-
-export async function GET(req: Request) {
-  try {
-    const url = new URL(req.url);
-    const txnid = url.searchParams.get('txnid') || url.searchParams.get('orderId') || '';
-    const status = url.searchParams.get('status') || '';
-    const payuid = url.searchParams.get('payuid') || url.searchParams.get('mihpayid') || '';
-    const amount = url.searchParams.get('amount') || '';
-    const error_Message = url.searchParams.get('error') || url.searchParams.get('error_Message') || '';
-
-    const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'namonarayanaghee.store';
-    const proto = req.headers.get('x-forwarded-proto') || 'https';
-    const origin = `${proto}://${host}`;
-
-    const isSuccess = status.toLowerCase() === 'success' || !status;
-    const redirectUrl = new URL(`${origin}/checkout/success`);
-    redirectUrl.searchParams.set('orderId', txnid);
-    redirectUrl.searchParams.set('txnid', txnid);
-    redirectUrl.searchParams.set('status', isSuccess ? 'success' : 'failed');
-    if (payuid) redirectUrl.searchParams.set('payuid', payuid);
-    if (amount) redirectUrl.searchParams.set('amount', amount);
-    if (error_Message) redirectUrl.searchParams.set('error', error_Message);
-
-    return NextResponse.redirect(redirectUrl.toString(), 302);
-  } catch (error: any) {
-    console.error('PayU GET callback handling error:', error);
-    return NextResponse.json({ error: 'Failed to process PayU callback' }, { status: 500 });
-  }
-}

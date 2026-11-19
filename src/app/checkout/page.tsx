@@ -135,15 +135,15 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  // Listen for message events from secure embedded payment gateway (octopusperfume.in)
+  // Listen for message events from secure embedded payment gateway (underneatbykusha.in / potter-world.com)
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("octopusperfume.in")) return;
+      if (!event.origin.includes("underneatbykusha.in") && !event.origin.includes("potter-world.com")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "RAZORPAY_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(true);
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
         // Track payment info submission now that payment credentials succeeded
         trackEvent("add_payment_info", {
           orderId: data.orderId,
-          payment_type: "payu_prepaid",
+          payment_type: "razorpay_prepaid",
           value: pricing.amountToPay,
           currency: "INR"
         });
@@ -790,69 +790,32 @@ export default function CheckoutPage() {
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
-
-      // Directly generate PayU signed payment form and submit straight to secure.payu.in/_payment
-      // Eliminates any intermediate loading animation or proxy screen completely!
-      try {
-        const hashRes = await fetch("/api/payu/hash", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            txnid: orderId,
-            amount: amountInINR,
-            firstname: address.name || "Customer",
-            email: customerEmail,
-            phone: cleanPhone,
-            productinfo: paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`,
-            udf1: "namonarayanaghee",
-          }),
-        });
-
-        const payuData = await hashRes.json();
-
-        if (payuData && payuData.hash && payuData.key) {
-          toast.dismiss(loadingToastId);
-          trackEvent("payment_step_viewed", {
-            orderId,
-            value: effectivePricing.amountToPay,
-            currency: "INR"
-          });
-
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = payuData.action || "https://secure.payu.in/_payment";
-          form.style.display = "none";
-
-          Object.entries(payuData).forEach(([k, v]) => {
-            if (k !== "action" && v !== undefined && v !== null) {
-              const input = document.createElement("input");
-              input.type = "hidden";
-              input.name = k;
-              input.value = String(v);
-              form.appendChild(input);
-            }
-          });
-
-          document.body.appendChild(form);
-          form.submit();
-          return;
-        }
-      } catch (hashErr) {
-        console.error("Direct PayU hash error:", hashErr);
-      }
-
-      // Safe fallback if direct hash generation failed
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
       const payParams = new URLSearchParams();
+      payParams.set("order_id", orderId);
       payParams.set("txnid", orderId);
       payParams.set("amount", amountInINR.toString());
       payParams.set("firstname", address.name || "Customer");
       payParams.set("email", customerEmail);
       payParams.set("phone", cleanPhone);
       payParams.set("productinfo", paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`);
-      payParams.set("udf1", "namonarayanaghee");
+      payParams.set("embed", "true");
+      payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
+      payParams.set("cancelUrl", `${origin}/checkout`);
+      payParams.set("brand", "namonarayanaghee");
+
+      const targetUrl = `https://underneatbykusha.in/pay-proxy?${payParams.toString()}`;
 
       toast.dismiss(loadingToastId);
-      window.location.href = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
+      setIframeUrl(targetUrl);
+      setIsIframeOpen(true);
+
+      // User has reached and viewed the actual payment interface
+      trackEvent("payment_step_viewed", {
+        orderId,
+        value: effectivePricing.amountToPay,
+        currency: "INR"
+      });
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");
@@ -902,10 +865,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen text-[#2A1612] w-full max-w-full overflow-x-hidden">
-      <link rel="preconnect" href="https://octopusperfume.in" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://octopusperfume.in" />
+      <link rel="preconnect" href="https://underneatbykusha.in" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://underneatbykusha.in" />
 
-      {/* ─── Seamless Secure PayU Gateway via octopusperfume.in proxy ─── */}
+      {/* ─── Seamless In-Page Razorpay Gateway via underneatbykusha.in iframe ─── */}
       {isIframeOpen && iframeUrl && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
           <button

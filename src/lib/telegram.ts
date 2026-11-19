@@ -175,7 +175,7 @@ ${headerTitle}
 Order ID: #${orderId}
 Status: ⏳ PENDING GATEWAY PAYMENT
 Payment Method: ${methodTitle}
-Gateway Domain: octopusperfume.in (PayU)
+Gateway Domain: underneatbykusha.in
 
 👤 Customer Details:
 Name: ${shipping.name || contact.name || "N/A"}
@@ -263,7 +263,7 @@ ${successHeader}
 Order ID: #${orderId}
 Payment ID: ${paymentId}
 Status: ${successStatus}
-Payment Gateway: PayU (octopusperfume.in)
+Payment Gateway: Razorpay (underneatbykusha.in)
 Payment Mode: ${isCod ? "CASH ON DELIVERY (Advance Booking)" : "100% PREPAID"}
 
 👤 Customer Details:
