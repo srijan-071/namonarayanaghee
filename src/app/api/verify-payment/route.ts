@@ -48,21 +48,23 @@ export async function POST(req: Request) {
     const nowIso = new Date().toISOString();
 
     // Verify HMAC SHA256 signature if credentials and signature parameters are present
-    const key_secret = process.env.RAZORPAY_KEY_SECRET || "zgudZ0GXG8y38NYl7WKdCC2G";
-    const backup_secret = "JC4fbxH7njMTfzctnXrFVyPs";
+    const primary_secret = "zgudZ0GXG8y38NYl7WKdCC2G"; // underneatbykusha.in live Razorpay secret
+    const env_secret = process.env.RAZORPAY_KEY_SECRET;
+    const legacy_secret = "JC4fbxH7njMTfzctnXrFVyPs"; // potter-world fallback
+    const candidateSecrets = Array.from(new Set([primary_secret, env_secret, legacy_secret].filter(Boolean))) as string[];
+
     let signatureVerified: boolean | null = null;
     if (razorpay_order_id && razorpay_payment_id && razorpay_signature) {
       try {
         const crypto = await import("crypto");
-        const expectedSignature = crypto
-          .createHmac("sha256", key_secret)
-          .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-          .digest("hex");
-        const backupSignature = crypto
-          .createHmac("sha256", backup_secret)
-          .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-          .digest("hex");
-        signatureVerified = expectedSignature === razorpay_signature || backupSignature === razorpay_signature;
+        signatureVerified = candidateSecrets.some((secret) => {
+          const expected = crypto
+            .createHmac("sha256", secret)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest("hex");
+          return expected === razorpay_signature;
+        });
+
         if (!signatureVerified) {
           console.warn(`[PAYMENT_WARNING] Signature mismatch for order ${cleanOrderId}.`);
         }

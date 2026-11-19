@@ -18,8 +18,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const key_id = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string) || 'rzp_live_U27tKk9vB577AJ';
-    const key_secret = (process.env.RAZORPAY_KEY_SECRET as string) || 'zgudZ0GXG8y38NYl7WKdCC2G';
+    const key_id = process.env.RAZORPAY_KEY_ID_NEW || 'rzp_live_U27tKk9vB577AJ';
+    const key_secret = process.env.RAZORPAY_KEY_SECRET_NEW || 'zgudZ0GXG8y38NYl7WKdCC2G';
 
     const auth = Buffer.from(`${key_id}:${key_secret}`).toString('base64');
 
