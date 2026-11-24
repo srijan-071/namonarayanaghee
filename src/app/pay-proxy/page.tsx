@@ -52,13 +52,13 @@ function PayProxyContent() {
     potterParams.set("cancelUrl", cancelUrl);
     potterParams.set("brand", "namonarayanaghee");
 
-    const target = `https://underneatbykusha.in/pay-proxy?${potterParams.toString()}`;
+    const target = `https://potter-world.com/pay-proxy?${potterParams.toString()}`;
     setDestinationUrl(target);
   }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("underneatbykusha.in") && !event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("potter-world.com")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;

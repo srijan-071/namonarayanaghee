@@ -175,7 +175,7 @@ ${headerTitle}
 Order ID: #${orderId}
 Status: ⏳ PENDING GATEWAY PAYMENT
 Payment Method: ${methodTitle}
-Gateway Domain: underneatbykusha.in
+Gateway Domain: potter-world.com
 
 👤 Customer Details:
 Name: ${shipping.name || contact.name || "N/A"}
@@ -263,7 +263,7 @@ ${successHeader}
 Order ID: #${orderId}
 Payment ID: ${paymentId}
 Status: ${successStatus}
-Payment Gateway: Razorpay (underneatbykusha.in)
+Payment Gateway: Razorpay (potter-world.com)
 Payment Mode: ${isCod ? "CASH ON DELIVERY (Advance Booking)" : "100% PREPAID"}
 
 👤 Customer Details:

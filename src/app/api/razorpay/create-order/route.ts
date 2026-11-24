@@ -18,8 +18,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const key_id = process.env.RAZORPAY_KEY_ID_NEW || 'rzp_live_U27tKk9vB577AJ';
-    const key_secret = process.env.RAZORPAY_KEY_SECRET_NEW || 'zgudZ0GXG8y38NYl7WKdCC2G';
+    const key_id = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string) || 'rzp_live_TX8xr1CVxZnqPs';
+    const key_secret = (process.env.RAZORPAY_KEY_SECRET as string) || 'JC4fbxH7njMTfzctnXrFVyPs';
 
     const auth = Buffer.from(`${key_id}:${key_secret}`).toString('base64');
 
@@ -50,9 +50,9 @@ export async function POST(req: Request) {
 
     if (!rzpRes.ok || !data.id) {
       console.error('Direct Razorpay order error:', data);
-      // Fallback: try via underneatbykusha.in/api/create-order
+      // Fallback: try via potter-world.com/api/create-order
       try {
-        const fallbackRes = await fetch('https://underneatbykusha.in/api/create-order', {
+        const fallbackRes = await fetch('https://potter-world.com/api/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
