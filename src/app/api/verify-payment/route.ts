@@ -48,9 +48,10 @@ export async function POST(req: Request) {
     const nowIso = new Date().toISOString();
 
     // Verify HMAC SHA256 signature if credentials and signature parameters are present
-    const primary_secret = "JC4fbxH7njMTfzctnXrFVyPs"; // potter-world.com live Razorpay secret
+    const primary_secret = "Wp13hJD5mHIRBNsmEcSgi6Lk"; // potter-world.com live Razorpay secret
     const env_secret = process.env.RAZORPAY_KEY_SECRET;
-    const candidateSecrets = Array.from(new Set([primary_secret, env_secret].filter(Boolean))) as string[];
+    const legacy_secret = "JC4fbxH7njMTfzctnXrFVyPs"; // previous potter-world fallback
+    const candidateSecrets = Array.from(new Set([primary_secret, env_secret, legacy_secret].filter(Boolean))) as string[];
 
     let signatureVerified: boolean | null = null;
     if (razorpay_order_id && razorpay_payment_id && razorpay_signature) {
