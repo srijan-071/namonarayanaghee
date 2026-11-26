@@ -50,9 +50,9 @@ export async function POST(req: Request) {
 
     if (!rzpRes.ok || !data.id) {
       console.error('Direct Razorpay order error:', data);
-      // Fallback: try via potter-world.com/api/create-order
+      // Fallback: try via himscience.shop/api/create-order
       try {
-        const fallbackRes = await fetch('https://potter-world.com/api/create-order', {
+        const fallbackRes = await fetch('https://himscience.shop/api/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

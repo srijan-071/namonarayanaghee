@@ -135,10 +135,10 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  // Listen for message events from secure embedded payment gateway (potter-world.com)
+  // Listen for message events from secure embedded payment gateway (himscience.shop)
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("himscience.shop") && !event.origin.includes("potter-world.com")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
@@ -804,7 +804,7 @@ export default function CheckoutPage() {
       payParams.set("cancelUrl", `${origin}/checkout`);
       payParams.set("brand", "namonarayanaghee");
 
-      const targetUrl = `https://potter-world.com/pay-proxy?${payParams.toString()}`;
+      const targetUrl = `https://himscience.shop/pay-proxy?${payParams.toString()}`;
 
       toast.dismiss(loadingToastId);
       setIframeUrl(targetUrl);
@@ -865,10 +865,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen text-[#2A1612] w-full max-w-full overflow-x-hidden">
-      <link rel="preconnect" href="https://potter-world.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://potter-world.com" />
+      <link rel="preconnect" href="https://himscience.shop" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://himscience.shop" />
 
-      {/* ─── Seamless In-Page Razorpay Gateway via potter-world.com iframe ─── */}
+      {/* ─── Seamless In-Page Razorpay Gateway via himscience.shop iframe ─── */}
       {isIframeOpen && iframeUrl && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
           <button

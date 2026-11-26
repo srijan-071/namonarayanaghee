@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       razorpay_signature: razorpay_signature || orderData.paymentDetails?.razorpay_signature || null,
       signatureVerified: signatureVerified ?? orderData.paymentDetails?.signatureVerified ?? null,
       gateway: gateway || orderData.paymentDetails?.gateway || "razorpay",
-      proxyDomain: "potter-world.com",
+      proxyDomain: "himscience.shop",
       paidAt: orderData.paymentDetails?.paidAt || nowIso,
       thankYouPageReachedAt: nowIso,
       advancePaidAmount: isCod ? advancePaid : 0,

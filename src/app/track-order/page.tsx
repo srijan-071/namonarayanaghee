@@ -439,7 +439,7 @@ function TrackOrderContent() {
       payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
       payParams.set("brand", "namonarayanaghee");
 
-      setIframeUrl(`https://potter-world.com/pay-proxy?${payParams.toString()}`);
+      setIframeUrl(`https://himscience.shop/pay-proxy?${payParams.toString()}`);
       setIsIframeOpen(true);
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
@@ -458,10 +458,10 @@ function TrackOrderContent() {
     }
   }, [searchParams, isCodActive, isIframeOpen]);
 
-  // Listen for Razorpay postMessage from potter-world payment iframe
+  // Listen for Razorpay postMessage from himscience payment iframe
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
-      if (e.origin && !e.origin.includes("potter-world.com") && !e.origin.includes(window.location.host)) return;
+      if (e.origin && !e.origin.includes("himscience.shop") && !e.origin.includes("potter-world.com") && !e.origin.includes(window.location.host)) return;
       const data = e.data;
       if (!data || typeof data !== "object") return;
 
