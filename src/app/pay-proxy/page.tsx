@@ -46,24 +46,25 @@ function PayProxyContent() {
     potterParams.set("firstname", firstname);
     potterParams.set("email", email);
     potterParams.set("phone", phone);
-    potterParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId} (COD to Prepaid)` : productinfo);
+    potterParams.set("productinfo", isPrepay ? `Prepay Upgrade for Order #${baseOrderId}` : productinfo);
     potterParams.set("embed", "true");
     potterParams.set("returnUrl", returnUrl);
     potterParams.set("cancelUrl", cancelUrl);
     potterParams.set("brand", "namonarayanaghee");
+    potterParams.set("udf1", "namonarayanaghee");
 
-    const target = `https://himscience.shop/pay-proxy?${potterParams.toString()}`;
+    const target = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${potterParams.toString()}`;
     setDestinationUrl(target);
   }, [txnid, amount, productinfo, firstname, email, phone, isPrepay, baseOrderId, effectiveAmount]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("himscience.shop")) return;
+      if (!event.origin.includes("octopusperfume.in") && !event.origin.includes("himscience.shop")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
         if (isPrepay) {
           try {
             await fetch("/api/convert-cod-to-prepaid", {

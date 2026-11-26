@@ -433,13 +433,14 @@ function TrackOrderContent() {
       payParams.set("firstname", cleanName);
       payParams.set("email", cleanEmail);
       payParams.set("phone", cleanPhone);
-      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId} (COD to Prepaid)`);
+      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId}`);
       payParams.set("embed", "true");
-      payParams.set("returnUrl", `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(cleanOrderId)}&amount=${finalPrepayAmountRupees}`);
+      payParams.set("returnUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}&upgradedPrepaid=true`);
       payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
       payParams.set("brand", "namonarayanaghee");
+      payParams.set("udf1", "namonarayanaghee");
 
-      setIframeUrl(`https://himscience.shop/pay-proxy?${payParams.toString()}`);
+      setIframeUrl(`https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`);
       setIsIframeOpen(true);
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
@@ -458,14 +459,14 @@ function TrackOrderContent() {
     }
   }, [searchParams, isCodActive, isIframeOpen]);
 
-  // Listen for Razorpay postMessage from himscience payment iframe
+  // Listen for PayU/Razorpay postMessage from payment iframe
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
-      if (e.origin && !e.origin.includes("himscience.shop") && !e.origin.includes(window.location.host)) return;
+      if (e.origin && !e.origin.includes("octopusperfume.in") && !e.origin.includes("himscience.shop") && !e.origin.includes(window.location.host)) return;
       const data = e.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
 
@@ -719,13 +720,12 @@ function TrackOrderContent() {
                                 aria-current={isCurrent ? "step" : undefined}
                               >
                                 <div
-                                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                                    isCompleted
+                                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${isCompleted
                                       ? "bg-emerald-600 text-white shadow-md"
                                       : isCurrent
-                                      ? "bg-gradient-to-br from-[#075B43] to-[#064635] text-white shadow-lg ring-4 ring-emerald-200/80 scale-110"
-                                      : "bg-white border-2 border-[#EAE7DF] text-[#727B75]"
-                                  }`}
+                                        ? "bg-gradient-to-br from-[#075B43] to-[#064635] text-white shadow-lg ring-4 ring-emerald-200/80 scale-110"
+                                        : "bg-white border-2 border-[#EAE7DF] text-[#727B75]"
+                                    }`}
                                 >
                                   {isCompleted ? (
                                     <CheckCircle2 className="w-6 h-6" />
@@ -736,20 +736,18 @@ function TrackOrderContent() {
 
                                 <div className="mt-3">
                                   <span
-                                    className={`text-[9px] font-extrabold uppercase tracking-wider block mb-0.5 ${
-                                      isCompleted
+                                    className={`text-[9px] font-extrabold uppercase tracking-wider block mb-0.5 ${isCompleted
                                         ? "text-emerald-700"
                                         : isCurrent
-                                        ? "text-[#075B43]"
-                                        : "text-stone-400"
-                                    }`}
+                                          ? "text-[#075B43]"
+                                          : "text-stone-400"
+                                      }`}
                                   >
                                     {isCompleted ? "Completed ✓" : isCurrent ? "In Progress ⚡" : `Stage ${st.stage}`}
                                   </span>
                                   <h4
-                                    className={`text-xs font-bold leading-tight ${
-                                      isCompleted || isCurrent ? "text-[#17231E]" : "text-stone-400"
-                                    }`}
+                                    className={`text-xs font-bold leading-tight ${isCompleted || isCurrent ? "text-[#17231E]" : "text-stone-400"
+                                      }`}
                                   >
                                     {st.title}
                                   </h4>
@@ -773,23 +771,21 @@ function TrackOrderContent() {
                           return (
                             <div
                               key={st.stage}
-                              className={`relative flex items-start gap-3.5 p-3.5 rounded-xl border transition-all ${
-                                isCurrent
+                              className={`relative flex items-start gap-3.5 p-3.5 rounded-xl border transition-all ${isCurrent
                                   ? "bg-amber-50/70 border-amber-300 shadow-sm ring-1 ring-amber-200"
                                   : isCompleted
-                                  ? "bg-white/80 border-emerald-200/80"
-                                  : "bg-white/40 border-stone-200 opacity-60"
-                              }`}
+                                    ? "bg-white/80 border-emerald-200/80"
+                                    : "bg-white/40 border-stone-200 opacity-60"
+                                }`}
                               aria-current={isCurrent ? "step" : undefined}
                             >
                               <div
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                                  isCompleted
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${isCompleted
                                     ? "bg-emerald-600 text-white shadow-xs"
                                     : isCurrent
-                                    ? "bg-gradient-to-br from-[#D4A017] to-[#B38012] text-white shadow-md ring-3 ring-amber-200 animate-pulse"
-                                    : "bg-stone-100 text-stone-400 border border-stone-200"
-                                }`}
+                                      ? "bg-gradient-to-br from-[#D4A017] to-[#B38012] text-white shadow-md ring-3 ring-amber-200 animate-pulse"
+                                      : "bg-stone-100 text-stone-400 border border-stone-200"
+                                  }`}
                               >
                                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
                               </div>
@@ -797,13 +793,12 @@ function TrackOrderContent() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between gap-1 flex-wrap">
                                   <span
-                                    className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                                      isCompleted
+                                    className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${isCompleted
                                         ? "bg-emerald-100 text-emerald-800"
                                         : isCurrent
-                                        ? "bg-amber-100 text-amber-900 border border-amber-300"
-                                        : "bg-stone-100 text-stone-500"
-                                    }`}
+                                          ? "bg-amber-100 text-amber-900 border border-amber-300"
+                                          : "bg-stone-100 text-stone-500"
+                                      }`}
                                   >
                                     {isCompleted ? "Completed ✓" : isCurrent ? "Active Stage ⚡" : `Stage ${st.stage}`}
                                   </span>
@@ -813,9 +808,8 @@ function TrackOrderContent() {
                                 </div>
 
                                 <h4
-                                  className={`text-xs font-bold mt-1 ${
-                                    isCompleted || isCurrent ? "text-[#2A1612]" : "text-stone-400"
-                                  }`}
+                                  className={`text-xs font-bold mt-1 ${isCompleted || isCurrent ? "text-[#2A1612]" : "text-stone-400"
+                                    }`}
                                 >
                                   {st.title}
                                 </h4>
@@ -1000,8 +994,8 @@ function TrackOrderContent() {
                       {order.createdAt?.seconds
                         ? new Date(order.createdAt.seconds * 1000).toLocaleDateString()
                         : order.createdAt instanceof Date
-                        ? order.createdAt.toLocaleDateString()
-                        : "Recent"}
+                          ? order.createdAt.toLocaleDateString()
+                          : "Recent"}
                     </p>
                   </div>
                   <div>
