@@ -58,7 +58,7 @@ function PayProxyContent() {
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("himscience.shop") && !event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("himscience.shop")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;

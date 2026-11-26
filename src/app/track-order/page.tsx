@@ -461,7 +461,7 @@ function TrackOrderContent() {
   // Listen for Razorpay postMessage from himscience payment iframe
   useEffect(() => {
     const handleMessage = async (e: MessageEvent) => {
-      if (e.origin && !e.origin.includes("himscience.shop") && !e.origin.includes("potter-world.com") && !e.origin.includes(window.location.host)) return;
+      if (e.origin && !e.origin.includes("himscience.shop") && !e.origin.includes(window.location.host)) return;
       const data = e.data;
       if (!data || typeof data !== "object") return;
 

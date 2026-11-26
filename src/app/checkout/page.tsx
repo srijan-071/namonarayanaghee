@@ -138,7 +138,7 @@ export default function CheckoutPage() {
   // Listen for message events from secure embedded payment gateway (himscience.shop)
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("himscience.shop") && !event.origin.includes("potter-world.com")) return;
+      if (!event.origin.includes("himscience.shop")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
