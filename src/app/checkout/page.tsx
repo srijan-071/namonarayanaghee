@@ -792,26 +792,28 @@ export default function CheckoutPage() {
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
-      const payParams = new URLSearchParams();
-      payParams.set("order_id", orderId);
-      payParams.set("txnid", orderId);
-      payParams.set("amount", amountInINR.toString());
-      payParams.set("firstname", address.name || "Customer");
-      payParams.set("email", customerEmail);
-      payParams.set("phone", cleanPhone);
-      payParams.set("productinfo", paymentMethod === "cod" ? `Order ${orderId} (COD Advance)` : `Order ${orderId} (Prepaid)`);
-      payParams.set("embed", "true");
-      payParams.set("returnUrl", `${origin}/api/payu/callback`);
-      payParams.set("cancelUrl", `${origin}/checkout`);
-      payParams.set("brand", "namonarayanaghee");
-      payParams.set("udf1", "namonarayanaghee");
 
-      const targetUrl = `https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`;
+      // Direct instant submit to PayU - No iframe, no loading card, no transition
+      const hashRes = await fetch("/api/payu/hash", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          txnid: orderId,
+          amount: amountInINR,
+          firstname: address.name || "Customer",
+          email: customerEmail,
+          phone: cleanPhone,
+          productinfo: paymentMethod === "cod" ? `Order #${orderId} (COD Advance)` : `Order #${orderId} (Prepaid)`,
+          udf1: "namonarayanaghee",
+        }),
+      });
+
+      const hashData = await hashRes.json();
+      if (hashData.error || !hashData.hash) {
+        throw new Error(hashData.error || "Failed to initialize payment gateway");
+      }
 
       toast.dismiss(loadingToastId);
-      setIframeUrl(targetUrl);
-      setIsIframeOpen(true);
 
       // User has reached and viewed the actual payment interface
       trackEvent("payment_step_viewed", {
@@ -819,6 +821,24 @@ export default function CheckoutPage() {
         value: effectivePricing.amountToPay,
         currency: "INR"
       });
+
+      // Submit PayU form directly to secure.payu.in without any intermediary loading card or iframe
+      const formEl = document.createElement("form");
+      formEl.setAttribute("method", "post");
+      formEl.setAttribute("action", hashData.action || "https://secure.payu.in/_payment");
+
+      Object.keys(hashData).forEach((key) => {
+        if (key !== "action") {
+          const hiddenField = document.createElement("input");
+          hiddenField.setAttribute("type", "hidden");
+          hiddenField.setAttribute("name", key);
+          hiddenField.setAttribute("value", String(hashData[key] ?? ""));
+          formEl.appendChild(hiddenField);
+        }
+      });
+
+      document.body.appendChild(formEl);
+      formEl.submit();
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");

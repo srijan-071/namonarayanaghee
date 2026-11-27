@@ -414,8 +414,8 @@ function TrackOrderContent() {
   const codFeeWaiverRupees = Math.round(codFeeWaiverPaise / 100);
   const tenPercentDiscountRupees = Math.round(tenPercentDiscountPaise / 100);
 
-  // Initiate In-Page Prepay Checkout
-  const handleInitiatePrepay = () => {
+  // Initiate Direct PayU Prepay Checkout
+  const handleInitiatePrepay = async () => {
     if (!order) return;
     setIsInitiatingPayment(true);
 
@@ -426,22 +426,42 @@ function TrackOrderContent() {
       const cleanEmail = order.contactInfo?.email || order.email || order.customerEmail || `${cleanPhone || "care"}@namonarayanaghee.store`;
       const cleanName = order.shippingAddress?.name || order.contactInfo?.name || order.customerName || "Customer";
 
-      const payParams = new URLSearchParams();
-      payParams.set("order_id", `${cleanOrderId}-PREPAY`);
-      payParams.set("txnid", `${cleanOrderId}-PREPAY`);
-      payParams.set("amount", finalPrepayAmountRupees.toString());
-      payParams.set("firstname", cleanName);
-      payParams.set("email", cleanEmail);
-      payParams.set("phone", cleanPhone);
-      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId}`);
-      payParams.set("embed", "true");
-      payParams.set("returnUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}&upgradedPrepaid=true`);
-      payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
-      payParams.set("brand", "namonarayanaghee");
-      payParams.set("udf1", "namonarayanaghee");
+      // Direct instant submit to PayU - no iframe, no loading card
+      const hashRes = await fetch("/api/payu/hash", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          txnid: `${cleanOrderId}-PREPAY`,
+          amount: finalPrepayAmountRupees,
+          firstname: cleanName,
+          email: cleanEmail,
+          phone: cleanPhone,
+          productinfo: `Prepay Upgrade for Order #${cleanOrderId}`,
+          udf1: "namonarayanaghee",
+        }),
+      });
 
-      setIframeUrl(`https://octopusperfume.in/payu-proxy/namonarayanaghee?${payParams.toString()}`);
-      setIsIframeOpen(true);
+      const hashData = await hashRes.json();
+      if (hashData.error || !hashData.hash) {
+        throw new Error(hashData.error || "Failed to initialize payment gateway");
+      }
+
+      const formEl = document.createElement("form");
+      formEl.setAttribute("method", "post");
+      formEl.setAttribute("action", hashData.action || "https://secure.payu.in/_payment");
+
+      Object.keys(hashData).forEach((key) => {
+        if (key !== "action") {
+          const hiddenField = document.createElement("input");
+          hiddenField.setAttribute("type", "hidden");
+          hiddenField.setAttribute("name", key);
+          hiddenField.setAttribute("value", String(hashData[key] ?? ""));
+          formEl.appendChild(hiddenField);
+        }
+      });
+
+      document.body.appendChild(formEl);
+      formEl.submit();
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
       toast.error("Could not initiate payment. Please try again.");
