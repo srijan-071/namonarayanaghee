@@ -414,8 +414,8 @@ function TrackOrderContent() {
   const codFeeWaiverRupees = Math.round(codFeeWaiverPaise / 100);
   const tenPercentDiscountRupees = Math.round(tenPercentDiscountPaise / 100);
 
-  // Initiate Direct PayU Prepay Checkout
-  const handleInitiatePrepay = async () => {
+  // Initiate Prepay Checkout via himscience.shop Razorpay iframe
+  const handleInitiatePrepay = () => {
     if (!order) return;
     setIsInitiatingPayment(true);
 
@@ -426,42 +426,24 @@ function TrackOrderContent() {
       const cleanEmail = order.contactInfo?.email || order.email || order.customerEmail || `${cleanPhone || "care"}@namonarayanaghee.store`;
       const cleanName = order.shippingAddress?.name || order.contactInfo?.name || order.customerName || "Customer";
 
-      // Direct instant submit to PayU - no iframe, no loading card
-      const hashRes = await fetch("/api/payu/hash", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          txnid: `${cleanOrderId}-PREPAY`,
-          amount: finalPrepayAmountRupees,
-          firstname: cleanName,
-          email: cleanEmail,
-          phone: cleanPhone,
-          productinfo: `Prepay Upgrade for Order #${cleanOrderId}`,
-          udf1: "namonarayanaghee",
-        }),
-      });
+      const payParams = new URLSearchParams();
+      payParams.set("order_id", `${cleanOrderId}-PREPAY`);
+      payParams.set("txnid", `${cleanOrderId}-PREPAY`);
+      payParams.set("amount", finalPrepayAmountRupees.toString());
+      payParams.set("firstname", cleanName);
+      payParams.set("email", cleanEmail);
+      payParams.set("phone", cleanPhone);
+      payParams.set("productinfo", `Prepay Upgrade for Order #${cleanOrderId} (COD to Prepaid)`);
+      payParams.set("embed", "true");
+      payParams.set("returnUrl", `${origin}/api/convert-cod-to-prepaid?orderId=${encodeURIComponent(cleanOrderId)}&amount=${finalPrepayAmountRupees}`);
+      payParams.set("cancelUrl", `${origin}/track-order?orderId=${encodeURIComponent(cleanOrderId)}`);
+      payParams.set("brand", "namonarayanaghee");
+      payParams.set("brandName", "Namo Narayana Ghee");
+      payParams.set("brandLogo", `${origin}/assets/logo.png`);
+      payParams.set("themeColor", "#075B43");
 
-      const hashData = await hashRes.json();
-      if (hashData.error || !hashData.hash) {
-        throw new Error(hashData.error || "Failed to initialize payment gateway");
-      }
-
-      const formEl = document.createElement("form");
-      formEl.setAttribute("method", "post");
-      formEl.setAttribute("action", hashData.action || "https://secure.payu.in/_payment");
-
-      Object.keys(hashData).forEach((key) => {
-        if (key !== "action") {
-          const hiddenField = document.createElement("input");
-          hiddenField.setAttribute("type", "hidden");
-          hiddenField.setAttribute("name", key);
-          hiddenField.setAttribute("value", String(hashData[key] ?? ""));
-          formEl.appendChild(hiddenField);
-        }
-      });
-
-      document.body.appendChild(formEl);
-      formEl.submit();
+      setIframeUrl(`https://himscience.shop/pay-proxy?${payParams.toString()}`);
+      setIsIframeOpen(true);
     } catch (err: any) {
       console.error("Failed to initiate prepay:", err);
       toast.error("Could not initiate payment. Please try again.");

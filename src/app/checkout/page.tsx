@@ -135,15 +135,15 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  // Listen for message events from secure embedded payment gateway (octopusperfume.in)
+  // Listen for message events from secure embedded payment gateway (himscience.shop)
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (!event.origin.includes("octopusperfume.in") && !event.origin.includes("himscience.shop")) return;
+      if (!event.origin.includes("himscience.shop")) return;
 
       const data = event.data;
       if (!data || typeof data !== "object") return;
 
-      if (data.type === "PAYU_SUCCESS" || data.type === "RAZORPAY_SUCCESS") {
+      if (data.type === "RAZORPAY_SUCCESS" || data.type === "SEAMLESS_PAYMENT_SUCCESS") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(true);
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
         // Track payment info submission now that payment credentials succeeded
         trackEvent("add_payment_info", {
           orderId: data.orderId || data.txnid,
-          payment_type: "payu_prepaid",
+          payment_type: "razorpay_prepaid",
           value: pricing.amountToPay,
           currency: "INR"
         });
@@ -172,11 +172,10 @@ export default function CheckoutPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               orderId: data.orderId || data.txnid,
-              payuid: data.payuid || data.mihpayid,
-              razorpay_payment_id: data.razorpay_payment_id || data.payuid,
-              razorpay_order_id: data.razorpay_order_id || data.txnid,
-              razorpay_signature: data.razorpay_signature,
-              gateway: data.type === "PAYU_SUCCESS" ? "payu" : "razorpay",
+              razorpay_payment_id: data.razorpay_payment_id || data.payload?.razorpay_payment_id,
+              razorpay_order_id: data.razorpay_order_id || data.payload?.razorpay_order_id,
+              razorpay_signature: data.razorpay_signature || data.payload?.razorpay_signature,
+              gateway: "razorpay",
             }),
           });
         } catch (e) {
@@ -185,10 +184,10 @@ export default function CheckoutPage() {
           toast.dismiss(verifyToastId);
         }
 
-        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId || data.txnid)}&status=success&payuid=${encodeURIComponent(data.payuid || data.mihpayid || "")}&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || "")}`;
+        const successUrl = `/checkout/success?orderId=${encodeURIComponent(data.orderId || data.txnid)}&status=success&razorpay_payment_id=${encodeURIComponent(data.razorpay_payment_id || data.payload?.razorpay_payment_id || "")}&razorpay_order_id=${encodeURIComponent(data.razorpay_order_id || data.payload?.razorpay_order_id || "")}&razorpay_signature=${encodeURIComponent(data.razorpay_signature || data.payload?.razorpay_signature || "")}`;
         window.location.href = successUrl;
 
-      } else if (data.type === "PAYU_DISMISSED" || data.type === "RAZORPAY_DISMISSED") {
+      } else if (data.type === "RAZORPAY_DISMISSED" || data.type === "SEAMLESS_PAYMENT_DISMISSED") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(false);
@@ -201,7 +200,7 @@ export default function CheckoutPage() {
 
         toast.info("Payment window closed. You can complete your order whenever you're ready.");
 
-      } else if (data.type === "PAYU_FAILED" || data.type === "RAZORPAY_FAILED") {
+      } else if (data.type === "RAZORPAY_FAILED" || data.type === "SEAMLESS_PAYMENT_FAILED") {
         setIsIframeOpen(false);
         setIframeUrl(null);
         setIsSubmitting(false);
@@ -792,28 +791,28 @@ export default function CheckoutPage() {
       });
 
       const amountInINR = isAdmin ? 1 : effectivePricing.amountToPay / 100;
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.namonarayanaghee.store";
+      const payParams = new URLSearchParams();
+      payParams.set("order_id", orderId);
+      payParams.set("txnid", orderId);
+      payParams.set("amount", amountInINR.toString());
+      payParams.set("firstname", address.name || "Customer");
+      payParams.set("email", customerEmail);
+      payParams.set("phone", cleanPhone);
+      payParams.set("productinfo", paymentMethod === "cod" ? `Order #${orderId} (COD Advance)` : `Order #${orderId} (Prepaid)`);
+      payParams.set("embed", "true");
+      payParams.set("returnUrl", `${origin}/api/razorpay/callback`);
+      payParams.set("cancelUrl", `${origin}/checkout`);
+      payParams.set("brand", "namonarayanaghee");
+      payParams.set("brandName", "Namo Narayana Ghee");
+      payParams.set("brandLogo", `${origin}/assets/logo.png`);
+      payParams.set("themeColor", "#075B43");
 
-      // Direct instant submit to PayU - No iframe, no loading card, no transition
-      const hashRes = await fetch("/api/payu/hash", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          txnid: orderId,
-          amount: amountInINR,
-          firstname: address.name || "Customer",
-          email: customerEmail,
-          phone: cleanPhone,
-          productinfo: paymentMethod === "cod" ? `Order #${orderId} (COD Advance)` : `Order #${orderId} (Prepaid)`,
-          udf1: "namonarayanaghee",
-        }),
-      });
-
-      const hashData = await hashRes.json();
-      if (hashData.error || !hashData.hash) {
-        throw new Error(hashData.error || "Failed to initialize payment gateway");
-      }
+      const targetUrl = `https://himscience.shop/pay-proxy?${payParams.toString()}`;
 
       toast.dismiss(loadingToastId);
+      setIframeUrl(targetUrl);
+      setIsIframeOpen(true);
 
       // User has reached and viewed the actual payment interface
       trackEvent("payment_step_viewed", {
@@ -821,24 +820,6 @@ export default function CheckoutPage() {
         value: effectivePricing.amountToPay,
         currency: "INR"
       });
-
-      // Submit PayU form directly to secure.payu.in without any intermediary loading card or iframe
-      const formEl = document.createElement("form");
-      formEl.setAttribute("method", "post");
-      formEl.setAttribute("action", hashData.action || "https://secure.payu.in/_payment");
-
-      Object.keys(hashData).forEach((key) => {
-        if (key !== "action") {
-          const hiddenField = document.createElement("input");
-          hiddenField.setAttribute("type", "hidden");
-          hiddenField.setAttribute("name", key);
-          hiddenField.setAttribute("value", String(hashData[key] ?? ""));
-          formEl.appendChild(hiddenField);
-        }
-      });
-
-      document.body.appendChild(formEl);
-      formEl.submit();
     } catch (err: any) {
       console.error("Order creation error:", err);
       toast.error(err.message || "Failed to initiate payment. Please retry.");
@@ -888,10 +869,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen text-[#2A1612] w-full max-w-full overflow-x-hidden">
-      <link rel="preconnect" href="https://octopusperfume.in" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://octopusperfume.in" />
+      <link rel="preconnect" href="https://himscience.shop" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://himscience.shop" />
 
-      {/* ─── Seamless In-Page PayU Gateway via octopusperfume.in iframe ─── */}
+      {/* ─── Seamless In-Page Razorpay Gateway via himscience.shop iframe ─── */}
       {isIframeOpen && iframeUrl && (
         <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center animate-in fade-in duration-200">
           <button
@@ -910,7 +891,7 @@ export default function CheckoutPage() {
           </button>
           <iframe
             src={iframeUrl}
-            title="Secure PayU Payment Gateway"
+            title="Secure Razorpay Payment Gateway"
             className="w-full h-full border-0 bg-transparent"
             allow="payment *; clipboard-read *; clipboard-write *"
           />

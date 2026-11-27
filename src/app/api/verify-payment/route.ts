@@ -48,10 +48,11 @@ export async function POST(req: Request) {
     const nowIso = new Date().toISOString();
 
     // Verify HMAC SHA256 signature if credentials and signature parameters are present
-    const primary_secret = "Wp13hJD5mHIRBNsmEcSgi6Lk"; // himscience.shop live Razorpay secret
+    const primary_secret = "yEYgbjIpkfKEO8IP3Iexxe41"; // himscience.shop live Razorpay secret
+    const secondary_secret = "Wp13hJD5mHIRBNsmEcSgi6Lk"; 
     const env_secret = process.env.RAZORPAY_KEY_SECRET;
     const legacy_secret = "JC4fbxH7njMTfzctnXrFVyPs"; // legacy fallback
-    const candidateSecrets = Array.from(new Set([primary_secret, env_secret, legacy_secret].filter(Boolean))) as string[];
+    const candidateSecrets = Array.from(new Set([primary_secret, secondary_secret, env_secret, legacy_secret].filter(Boolean))) as string[];
 
     let signatureVerified: boolean | null = null;
     if (razorpay_order_id && razorpay_payment_id && razorpay_signature) {
